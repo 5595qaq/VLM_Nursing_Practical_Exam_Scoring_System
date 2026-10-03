@@ -25,7 +25,10 @@ SEGMENTS = {
     "agent_C": {"start": "01:40", "end": "03:00"},
     "agent_D": {"start": "02:40", "end": "04:00"},
 }
-GAZE_RESULT = {"overlay_uri": "gs://bucket/gaze.mp4", "metadata_uri": "gs://bucket/gaze.json"}
+GAZE_RESULT = {"artifacts": {
+    "Agent_A": {"overlay_uri": "gs://bucket/gaze-a.mp4", "metadata_uri": "gs://bucket/gaze-a.json"},
+    "Agent_D": {"overlay_uri": "gs://bucket/gaze-d.mp4", "metadata_uri": "gs://bucket/gaze-d.json"},
+}}
 
 
 @pytest.fixture(autouse=True)
@@ -100,8 +103,15 @@ async def test_single_agent_runs_only_selected_agent(pool, fake_models, agent):
     assert rows[0]["status"] == "finished"
     assert [item["Agent_Name"] for item in json.loads(rows[0]["result"])["items"]] == [agent]
     assert [call.args[1] for call in scoring.await_args_list] == [agent]
-    assert gaze.call_count == int(agent == "Agent_A")
-    assert await pool.fetchval("SELECT completed_steps FROM evaluation_progress WHERE job_id=$1", job["id"]) == 2 + int(agent == "Agent_A")
+    score_call = scoring.await_args_list[0]
+    if agent in ("Agent_A", "Agent_D"):
+        assert score_call.args[0] == "gs://bucket/gaze.mp4"
+        assert score_call.kwargs["already_clipped"] is True
+    else:
+        assert score_call.args[0].startswith("gs://test-bucket/videos/")
+        assert score_call.kwargs["already_clipped"] is False
+    assert gaze.call_count == int(agent in ("Agent_A", "Agent_D"))
+    assert await pool.fetchval("SELECT completed_steps FROM evaluation_progress WHERE job_id=$1", job["id"]) == 2 + int(agent in ("Agent_A", "Agent_D"))
     assert await pool.fetchval("SELECT count(*) FROM evaluation_agent_runs") == 1
     assert cutting.await_count == 1
 
@@ -124,7 +134,7 @@ async def test_selected_agents_retry_only_unfinished_runs(pool, fake_models):
     assert await pool.fetchval("SELECT completed_steps FROM evaluation_progress") == 2
 
 
-async def test_multiple_selected_agents_without_gaze(pool, fake_models):
+async def test_agent_d_waits_for_gaze_when_multiple_agents_are_selected(pool, fake_models):
     _, scoring, gaze = fake_models
     job = await create(pool, 1, ["Agent_D", "Agent_B"])
     async with workers(pool):
@@ -132,8 +142,13 @@ async def test_multiple_selected_agents_without_gaze(pool, fake_models):
     assert rows[0]["status"] == "finished"
     assert [item["Agent_Name"] for item in json.loads(rows[0]["result"])["items"]] == ["Agent_B", "Agent_D"]
     assert {call.args[1] for call in scoring.await_args_list} == {"Agent_B", "Agent_D"}
-    assert gaze.call_count == 0
-    assert await pool.fetchval("SELECT completed_steps FROM evaluation_progress") == 3
+    calls_by_agent = {call.args[1]: call for call in scoring.await_args_list}
+    assert calls_by_agent["Agent_B"].args[0].startswith("gs://test-bucket/videos/")
+    assert calls_by_agent["Agent_B"].kwargs["already_clipped"] is False
+    assert calls_by_agent["Agent_D"].args[0] == "gs://bucket/gaze.mp4"
+    assert calls_by_agent["Agent_D"].kwargs["already_clipped"] is True
+    assert gaze.call_count == 1
+    assert await pool.fetchval("SELECT completed_steps FROM evaluation_progress") == 4
 
 
 async def test_23_videos_window_refills_only_after_four_scores(pool, fake_models):
@@ -223,7 +238,7 @@ async def test_duplicate_completion_is_idempotent_and_fanout_atomic(pool, fake_m
     original = repo.enqueue
     async def broken(conn, call, position=0):
         await original(conn, call, position)
-        if position == 2:
+        if call.action == "score" and call.agent == "Agent_C":
             raise RuntimeError("fanout interrupted")
     monkeypatch.setattr(repo, "enqueue", broken)
     with pytest.raises(RuntimeError):
@@ -233,7 +248,7 @@ async def test_duplicate_completion_is_idempotent_and_fanout_atomic(pool, fake_m
     monkeypatch.setattr(repo, "enqueue", original)
     await asyncio.gather(*(repo.persist_result(pool, call, SEGMENTS) for _ in range(3)))
     assert await pool.fetchval("SELECT completed_steps FROM evaluation_progress") == 1
-    assert await pool.fetchval("SELECT count(*) FROM pgqueuer") == 5
+    assert await pool.fetchval("SELECT count(*) FROM pgqueuer") == 4
 
 
 async def test_failed_parent_skips_pending_and_discards_inflight_results(pool, fake_models):

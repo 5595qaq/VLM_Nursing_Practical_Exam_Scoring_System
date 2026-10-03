@@ -7,7 +7,7 @@ import asyncpg
 from pgqueuer import PgQueuer
 
 from app.db import asyncpg_dsn
-from app.services import evaluation_queue as repository, gazelle_service
+from app.services import agents, evaluation_queue as repository, gazelle_service
 
 
 async def process_gaze_call(job, pool):
@@ -16,10 +16,14 @@ async def process_gaze_call(job, pool):
         video = await repository.prepare_call(pool, call)
         if video is None:
             return
-        result = await asyncio.to_thread(
-            gazelle_service.infer_overlay, call.video_id, video["uri"],
-            video["segments"]["agent_A"],
-        )
+        artifacts = {}
+        for agent_name in video["gaze_agents"]:
+            segment_key = agents.AGENT_SEGMENT_KEYS[agent_name]
+            artifacts[agent_name] = await asyncio.to_thread(
+                gazelle_service.infer_overlay, call.video_id, video["uri"],
+                video["segments"][segment_key], agent_name,
+            )
+        result = {"artifacts": artifacts}
         await repository.persist_result(pool, call, result)
     except asyncio.CancelledError:
         raise

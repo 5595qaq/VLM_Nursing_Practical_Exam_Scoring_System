@@ -58,7 +58,12 @@ def heatmap_peak(heatmap) -> tuple[float, float]:
     return (float(col) + .5) / heatmap.shape[1], (float(row) + .5) / heatmap.shape[0]
 
 
-def infer_overlay(video_id: str, source_uri: str, segment: dict[str, str]) -> dict[str, str]:
+def infer_overlay(
+    video_id: str,
+    source_uri: str,
+    segment: dict[str, str],
+    agent_name: str,
+) -> dict[str, str]:
     """Run Gazelle at 5 FPS. Missing/invalid frames remain explicit discontinuities."""
     import cv2
     import numpy as np
@@ -74,7 +79,8 @@ def infer_overlay(video_id: str, source_uri: str, segment: dict[str, str]) -> di
     start_s = agents.timestamp_to_seconds(segment["start"])
     end_s = agents.timestamp_to_seconds(segment["end"])
     prefix = _artifact_prefix(video_id, segment)
-    overlay_name, metadata_name = f"{prefix}/Agent_A_gaze.mp4", f"{prefix}/gaze.json"
+    overlay_name = f"{prefix}/{agent_name}_gaze.mp4"
+    metadata_name = f"{prefix}/{agent_name}_gaze.json"
     overlay_uri, metadata_uri = gcs_service.gcs_uri_for(overlay_name), gcs_service.gcs_uri_for(metadata_name)
     if gcs_service.blob_exists(overlay_name) and gcs_service.blob_exists(metadata_name):
         return {"overlay_uri": overlay_uri, "metadata_uri": metadata_uri}
@@ -140,7 +146,7 @@ def infer_overlay(video_id: str, source_uri: str, segment: dict[str, str]) -> di
             "-i", silent_path, "-map", "1:v:0", "-map", "0:a?", "-c:v", "libx264",
             "-c:a", "aac", "-shortest", overlay_path,
         ], check=True)
-        metadata = {"model_name": settings.GAZELLE_MODEL_NAME,
+        metadata = {"agent_name": agent_name, "model_name": settings.GAZELLE_MODEL_NAME,
                     "model_version": settings.GAZELLE_MODEL_VERSION, "fps": 5,
                     "segment": segment, "inout_threshold": settings.GAZELLE_INOUT_THRESHOLD,
                     "frames": frames}

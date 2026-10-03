@@ -84,6 +84,7 @@ async def main():
         for statement in (
             "ALTER TABLE evaluation_videos ADD COLUMN IF NOT EXISTS gaze_overlay_uri varchar",
             "ALTER TABLE evaluation_videos ADD COLUMN IF NOT EXISTS gaze_metadata_uri varchar",
+            "ALTER TABLE evaluation_videos ADD COLUMN IF NOT EXISTS gaze_artifacts json",
             "ALTER TABLE evaluation_videos ADD COLUMN IF NOT EXISTS gaze_status varchar NOT NULL DEFAULT 'pending'",
             "ALTER TABLE evaluation_videos ALTER COLUMN gaze_status SET DEFAULT 'pending'",
             "ALTER TABLE evaluation_videos ADD COLUMN IF NOT EXISTS gaze_error varchar",
