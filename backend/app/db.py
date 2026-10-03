@@ -4,14 +4,24 @@ import os
 
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/vlm_eval")
 
-engine = create_engine(DATABASE_URL)
+# SQLAlchemy 2.1 changed PostgreSQL's default driver from psycopg2 to psycopg.
+# Select the driver we install explicitly instead of depending on that default.
+SQLALCHEMY_DATABASE_URL = DATABASE_URL.replace(
+    "postgresql://", "postgresql+psycopg2://", 1,
+)
+
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
 
 
 def asyncpg_dsn() -> str:
-    return DATABASE_URL.replace("postgresql+psycopg2://", "postgresql://", 1)
+    return (
+        DATABASE_URL
+        .replace("postgresql+psycopg2://", "postgresql://", 1)
+        .replace("postgresql+psycopg://", "postgresql://", 1)
+    )
 
 def get_db():
     db = SessionLocal()
