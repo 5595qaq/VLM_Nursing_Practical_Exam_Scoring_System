@@ -105,6 +105,8 @@ async def test_single_agent_runs_only_selected_agent(pool, fake_models, agent):
         rows = await wait_terminal(pool, [job["id"]])
     assert rows[0]["status"] == "finished"
     assert [item["Agent_Name"] for item in json.loads(rows[0]["result"])["items"]] == [agent]
+    result_artifacts = json.loads(rows[0]["result"])["gaze_artifacts"][job["video_paths"][0]]
+    assert set(result_artifacts) == ({agent} if agent in ("Agent_A", "Agent_D") else set())
     assert [call.args[1] for call in scoring.await_args_list] == [agent]
     score_call = scoring.await_args_list[0]
     if agent in ("Agent_A", "Agent_D"):
@@ -515,7 +517,8 @@ async def test_gaze_migration_preserves_compatible_and_completed_jobs(pool, fake
             await repo.persist_result(pool, call.model_copy(update={"action": "gaze"}), GAZE_RESULT)
         else:
             await pool.execute(
-                "UPDATE evaluation_videos SET gaze_status='finished',gaze_overlay_uri='gs://bucket/legacy-a.mp4' "
+                "UPDATE evaluation_videos SET gaze_status='finished',gaze_overlay_uri='gs://bucket/legacy-a.mp4',"
+                "gaze_metadata_uri='gs://bucket/legacy-a.json' "
                 "WHERE id=$1", video_id,
             )
             await pool.execute(
@@ -539,6 +542,40 @@ async def test_gaze_migration_preserves_compatible_and_completed_jobs(pool, fake
         rows = await wait_terminal(pool, [legacy_a["id"], modern["id"]])
     assert all(row["status"] == "finished" for row in rows)
     assert fake_models[2].call_count == 0
+    results = {row["id"]: json.loads(row["result"]) for row in rows}
+    uri = legacy_a["video_paths"][0]
+    assert results[legacy_a["id"]]["gaze_artifacts"][uri] == {"Agent_A": {
+        "overlay_uri": "gs://bucket/legacy-a.mp4", "metadata_uri": "gs://bucket/legacy-a.json",
+    }}
+    assert results[modern["id"]]["gaze_artifacts"][uri] == GAZE_RESULT["artifacts"]
+
+
+@pytest.mark.parametrize("artifacts", [None, {}])
+@pytest.mark.parametrize("metadata_uri", [None, "gs://bucket/legacy-a.json"])
+async def test_legacy_agent_a_retry_preserves_artifacts_in_final_result(pool, fake_models, artifacts, metadata_uri):
+    job = await create(pool, 1, ["Agent_A"])
+    video = await pool.fetchrow("SELECT * FROM evaluation_videos WHERE job_id=$1", job["id"])
+    call = repo.ModelCall(evaluation_id=job["id"], video_id=video["id"], action="segment")
+    await repo.persist_result(pool, call, SEGMENTS)
+    await pool.execute(
+        "UPDATE evaluation_videos SET gaze_status='finished',gaze_artifacts=$2::json,"
+        "gaze_overlay_uri='gs://bucket/legacy-a.mp4',gaze_metadata_uri=$3 WHERE id=$1",
+        video["id"], json.dumps(artifacts) if artifacts is not None else None, metadata_uri,
+    )
+    await pool.execute("UPDATE evaluation_progress SET completed_steps=2 WHERE job_id=$1", job["id"])
+    await repo.fail_job(pool, call.model_copy(update={"action": "score", "agent": "Agent_A"}),
+                        RuntimeError("old score failed"))
+    await repo.retry_evaluation(pool, job["id"])
+    async with workers(pool):
+        rows = await wait_terminal(pool, [job["id"]])
+    assert rows[0]["status"] == "finished"
+    assert json.loads(rows[0]["result"])["gaze_artifacts"][video["uri"]] == {"Agent_A": {
+        "overlay_uri": "gs://bucket/legacy-a.mp4", "metadata_uri": metadata_uri,
+    }}
+    fake_models[0].assert_not_awaited()
+    fake_models[2].assert_not_called()
+    assert fake_models[1].await_args.args[0] == "gs://bucket/legacy-a.mp4"
+    assert await pool.fetchval("SELECT completed_steps FROM evaluation_progress WHERE job_id=$1", job["id"]) == 3
 
 
 @pytest.mark.parametrize("selected", [["Agent_D"], ["Agent_B", "Agent_D"]])
@@ -573,6 +610,7 @@ async def test_legacy_agent_d_skipped_gaze_uses_original_video(pool, fake_models
     assert rows[0]["status"] == "finished"
     result = json.loads(rows[0]["result"])
     assert {item["Agent_Name"] for item in result["items"]} == set(selected)
+    assert result["gaze_artifacts"][video["uri"]] == {}
     d_calls = [call for call in scoring.await_args_list if call.args[1] == "Agent_D"]
     assert len(d_calls) == 1 + int(retry)
     for call in d_calls:

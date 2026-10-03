@@ -380,9 +380,20 @@ async def finalize(conn, job_id):
         "SELECT r.* FROM evaluation_agent_runs r JOIN evaluation_videos v ON v.id=r.video_id "
         "WHERE v.job_id=$1 ORDER BY v.position,r.agent_name", job_id,
     )
+    gaze_artifacts = {}
+    agent_a_videos = {r["video_id"] for r in runs if r["agent_name"] == "Agent_A"}
+    for video in videos:
+        artifacts = decoded(video["gaze_artifacts"]) or {}
+        # Match the scoring fallback for legacy A overlays. The legacy columns
+        # can also mirror D in new jobs, so only expose A when it was selected.
+        if video["id"] in agent_a_videos and not artifacts.get("Agent_A") and video["gaze_overlay_uri"]:
+            artifacts["Agent_A"] = {
+                "overlay_uri": video["gaze_overlay_uri"],
+                "metadata_uri": video["gaze_metadata_uri"],
+            }
+        gaze_artifacts[video["uri"]] = artifacts
     result = {"segments": {v["uri"]: decoded(v["segments"]) for v in videos},
-              "gaze_artifacts": {v["uri"]: (decoded(v["gaze_artifacts"]) or {})
-                                   for v in videos},
+              "gaze_artifacts": gaze_artifacts,
               "items": [item for r in runs for item in decoded(r["result"])]}
     await conn.execute("UPDATE evaluation_jobs SET status='finished',result=$2::json WHERE id=$1", job_id, json.dumps(result))
     await branch(conn, job_id, "LLM_SCORING", "completed", "Evaluation completed successfully.")
