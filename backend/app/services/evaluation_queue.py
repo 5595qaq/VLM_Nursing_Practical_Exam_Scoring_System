@@ -221,7 +221,10 @@ async def prepare_call(pool, call: ModelCall):
                 return None
             if video["segments"] is None:
                 raise ValueError("Scoring cannot start before segmentation")
-            if call.agent in ("Agent_A", "Agent_D") and video["gaze_status"] != "finished":
+            # Before Agent D gained its own overlay, D-only jobs skipped gaze
+            # and scored the original video. Keep those durable calls retryable.
+            allowed_gaze_statuses = ("finished", "skipped") if call.agent == "Agent_D" else ("finished",)
+            if call.agent in ("Agent_A", "Agent_D") and video["gaze_status"] not in allowed_gaze_statuses:
                 raise ValueError(f"{call.agent} cannot start before Gazelle preprocessing")
             await conn.execute(
                 "UPDATE evaluation_agent_runs SET status='processing' WHERE video_id=$1 AND agent_name=$2",
@@ -442,7 +445,8 @@ async def retry_evaluation(pool, job_id):
         await branch(conn, job_id, "LLM_SCORING", "pending", None)
         if {"Agent_A", "Agent_D"}.intersection(decoded(job["selected_agents"])):
             pending_gaze = await conn.fetchval(
-                "SELECT count(*) FROM evaluation_videos WHERE job_id=$1 AND gaze_status <> 'finished'",
+                "SELECT count(*) FROM evaluation_videos WHERE job_id=$1 "
+                "AND gaze_status NOT IN ('finished','skipped')",
                 job_id,
             )
             await branch(conn, job_id, "GAZE_PROCESSING",

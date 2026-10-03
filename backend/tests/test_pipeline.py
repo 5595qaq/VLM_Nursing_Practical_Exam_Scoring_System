@@ -539,3 +539,64 @@ async def test_gaze_migration_preserves_compatible_and_completed_jobs(pool, fake
         rows = await wait_terminal(pool, [legacy_a["id"], modern["id"]])
     assert all(row["status"] == "finished" for row in rows)
     assert fake_models[2].call_count == 0
+
+
+@pytest.mark.parametrize("selected", [["Agent_D"], ["Agent_B", "Agent_D"]])
+@pytest.mark.parametrize("retry", [False, True])
+async def test_legacy_agent_d_skipped_gaze_uses_original_video(pool, fake_models, selected, retry):
+    cutting, scoring, gaze = fake_models
+    job = await create(pool, 1, selected)
+    video = await pool.fetchrow("SELECT * FROM evaluation_videos WHERE job_id=$1", job["id"])
+    # Restore the previous release's state before segmentation: D did not add
+    # a gaze stage or progress step unless A was also selected.
+    await pool.execute("UPDATE evaluation_videos SET gaze_status='skipped' WHERE id=$1", video["id"])
+    await pool.execute(
+        "UPDATE evaluation_progress SET total_steps=total_steps-1 WHERE job_id=$1", job["id"],
+    )
+    if retry:
+        async def fail_d_once(uri, agent, *args, **kwargs):
+            if agent == "Agent_D":
+                raise RuntimeError("temporary D failure")
+            return [{"Video_Path": uri, "Agent_Name": agent}]
+        scoring.side_effect = fail_d_once
+        async with workers(pool):
+            rows = await wait_terminal(pool, [job["id"]])
+        assert rows[0]["status"] == "failed"
+        scoring.side_effect = lambda uri, agent, *args, **kwargs: [{"Video_Path": uri, "Agent_Name": agent}]
+        await repo.retry_evaluation(pool, job["id"])
+        assert await pool.fetchval("SELECT gaze_status FROM evaluation_videos WHERE id=$1", video["id"]) == "skipped"
+        assert await pool.fetchval(
+            "SELECT status FROM job_branches WHERE job_id=$1 AND branch_name='GAZE_PROCESSING'", job["id"],
+        ) == "completed"
+    async with workers(pool):
+        rows = await wait_terminal(pool, [job["id"]])
+    assert rows[0]["status"] == "finished"
+    result = json.loads(rows[0]["result"])
+    assert {item["Agent_Name"] for item in result["items"]} == set(selected)
+    d_calls = [call for call in scoring.await_args_list if call.args[1] == "Agent_D"]
+    assert len(d_calls) == 1 + int(retry)
+    for call in d_calls:
+        assert call.args[0] == video["uri"]
+        assert call.kwargs["already_clipped"] is False
+        assert call.args[3] == SEGMENTS["agent_D"]
+    assert cutting.await_count == 1
+    gaze.assert_not_called()
+    progress = await pool.fetchrow("SELECT * FROM evaluation_progress WHERE job_id=$1", job["id"])
+    assert progress["completed_steps"] == progress["total_steps"] == 1 + len(selected)
+
+
+@pytest.mark.parametrize("agent,status", [
+    ("Agent_D", "pending"), ("Agent_D", "processing"), ("Agent_D", "failed"),
+    ("Agent_A", "pending"), ("Agent_A", "skipped"),
+])
+async def test_gaze_compatibility_still_requires_preprocessing(pool, agent, status):
+    job = await create(pool, 1, [agent])
+    video_id = await pool.fetchval("SELECT id FROM evaluation_videos WHERE job_id=$1", job["id"])
+    call = repo.ModelCall(evaluation_id=job["id"], video_id=video_id, action="segment")
+    await repo.persist_result(pool, call, SEGMENTS)
+    await pool.execute("UPDATE evaluation_videos SET gaze_status=$2 WHERE id=$1", video_id, status)
+    with pytest.raises(ValueError, match=f"{agent} cannot start before Gazelle preprocessing"):
+        await repo.prepare_call(pool, call.model_copy(update={"action": "score", "agent": agent}))
+    assert await pool.fetchval(
+        "SELECT status FROM evaluation_agent_runs WHERE video_id=$1 AND agent_name=$2", video_id, agent,
+    ) == "pending"
