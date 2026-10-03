@@ -13,7 +13,7 @@
 - **單一 5 FPS 影片來源**：後端用 ffmpeg 將影片統一轉成 5 FPS（H.265）；Gemini 與 Gazelle 共用同一個 GCS 物件。
 - **Vertex AI 認證**：後端統一使用 GCP service account 認證 Vertex AI／GCS，組員不需要各自準備或輸入 Gemini API Key。
 - **彈性結果格式**：多個 Agent 產出的評分 JSON 欄位尚未統一，前端以通用卡片＋原始 JSON 檢視的方式呈現，方便邊測 prompt 邊看結果。
-- **時間分段＋可選 Agent 評分**：`Time_cuting.txt` 先對完整影片找出四個重疊時間區段，再執行所選的 Agent_A ~ Agent_D；各 Agent 的 prompt 分別存放於 `backend/app/prompts/Agent_A.txt` ~ `Agent_D.txt`。評分表單可複選 Agent，預設全選；只選 Agent_A 時仍會先執行 Gazelle，未選 A 時跳過 Gazelle。
+- **時間分段＋可選 Agent 評分**：`Time_cuting.txt` 先對完整影片找出四個重疊時間區段，再執行所選的 Agent_A ~ Agent_D；各 Agent 的 prompt 分別存放於 `backend/app/prompts/Agent_A.txt` ~ `Agent_D.txt`。評分表單可複選 Agent，預設全選；選到 Agent_A 或 Agent_D 時會先執行 Gazelle，兩者皆未選時才跳過 Gazelle。
 - **PostgreSQL 持久佇列**：PgQueuer 管理派送、去重與中斷恢復；每個評分工作最多 10 支活動影片，所有 worker 合計最多 5 個 Gemini 呼叫。
 
 ## 系統運作流程與架構
@@ -51,15 +51,15 @@ Vertex AI 回傳 429／`RESOURCE_EXHAUSTED`、499／`CANCELLED`，或呼叫超�
 
 SDK 對 408、429、500、502、503、504 及其支援的暫時性網路錯誤執行指數退避：1 秒起跳、倍率 2、最高 60 秒、jitter 1。400、401、403、404 不重試；應用層另以 `GEMINI_CALL_TIMEOUT_SECONDS` 限制整次呼叫。JSON／切段驗證最多重試一次；10 支影片正常為 50 次邏輯呼叫，只有切段重試時最多 60 次，若切段及評分都各重試一次則最多 100 次，HTTP attempts 另計。
 
-任一任務用盡重試後整個 evaluation 失敗，後續排隊任務跳過，已在執行的結果不再寫入。結果順序固定為輸入影片順序，再依所選 Agent A–D。每支影片的進度步驟為切段、所選 Agent，以及選到 Agent_A 時的 Gazelle。重試沿用建立工作時的 Agent 選擇。API 建立 evaluation 時可傳入 `selected_agents`，例如 `["Agent_B"]`；省略時執行全部，空清單、重複或未知 Agent 會回傳 422。
+任一任務用盡重試後整個 evaluation 失敗，後續排隊任務跳過，已在執行的結果不再寫入。結果順序固定為輸入影片順序，再依所選 Agent A–D。每支影片的進度步驟為切段、所選 Agent，以及選到 Agent_A 或 Agent_D 時的 Gazelle。重試沿用建立工作時的 Agent 選擇。API 建立 evaluation 時可傳入 `selected_agents`，例如 `["Agent_B"]`；省略時執行全部，空清單、重複或未知 Agent 會回傳 422。
 
 ### Gazelle gaze preprocessing
 
-上傳 API 只產生一支 `videos/{sha256}_5fps.mp4`。Gemini 時間切段及 Agent B–D 直接使用這支影片；獨立 GPU worker 也以同一支影片對 Agent A 時段執行 Gazelle，產生紫色注視點影片與逐幀 JSON，再用 overlay 啟動 Agent A。
+上傳 API 只產生一支 `videos/{sha256}_5fps.mp4`。Gemini 時間切段及 Agent B、C 直接使用這支影片；獨立 GPU worker 會分別對 Agent A 與 Agent D 的時段執行 Gazelle，產生各自的紫色注視點影片與逐幀 JSON，再用對應的 overlay 啟動 Agent A／D。
 
-1. 下載 `gazelle_dinov2_vitb14_inout` checkpoint 到 `./models/gazelle.pt`（或設定 `GAZELLE_CHECKPOINT_PATH`）。
+1. 下載 `gazelle_dinov2_vitb14_inout.pt` checkpoint，存成 `./models/gazelle.pt`（或設定 `GAZELLE_CHECKPOINT_PATH` 指向原檔名）。
 2. 將 `GAZELLE_REF` 設為部署驗證過的 Gazelle commit SHA；未設定時 Docker build 使用 `main`，僅適合開發。
-3. 安裝 NVIDIA Container Toolkit；Gazelle 是 Agent A 的必要前置，標準的 `docker compose up -d --build` 會自動啟動 GPU worker。
+3. 安裝 NVIDIA Container Toolkit；Gazelle 是 Agent A 與 Agent D 的必要前置，標準的 `docker compose up -d --build` 會自動啟動 GPU worker。
 
 可用 `GAZELLE_MODEL_NAME`、`GAZELLE_MODEL_VERSION`、`GAZELLE_INOUT_THRESHOLD` 與 `GAZELLE_DOT_RADIUS` 調整模型與疊點行為。`GAZELLE_MODEL_NAME` 必須選擇帶有 in/out head 的 `_inout` 模型，並使用對應 checkpoint；Gazelle worker 會在啟動時拒絕不支援的名稱。正式環境應固定 Git commit、checkpoint 檔及 DINOv2 快取版本。
 

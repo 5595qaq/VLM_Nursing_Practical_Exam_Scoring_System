@@ -123,10 +123,13 @@ async def process_model_call(job, pool):
                 emit("model_stage_skipped")
                 return
         else:
-            is_gaze_overlay = call.agent == "Agent_A" and video["gaze_status"] != "skipped"
-            source_uri = video["gaze_overlay_uri"] if is_gaze_overlay else video["uri"]
+            is_gaze_overlay = call.agent in ("Agent_A", "Agent_D") and video["gaze_status"] != "skipped"
+            artifact = (video.get("gaze_artifacts") or {}).get(call.agent) if is_gaze_overlay else None
+            if is_gaze_overlay and call.agent == "Agent_A" and not artifact and video.get("gaze_overlay_uri"):
+                artifact = {"overlay_uri": video["gaze_overlay_uri"]}
+            source_uri = artifact["overlay_uri"] if artifact else (None if is_gaze_overlay else video["uri"])
             if is_gaze_overlay and not source_uri:
-                raise ValueError("Agent A cannot run before the gaze overlay is ready")
+                raise ValueError(f"{call.agent} cannot run before its gaze overlay is ready")
             result = await agents.run_agent(
                 source_uri, call.agent, video["exam_topic"],
                 video["segments"][agents.AGENT_SEGMENT_KEYS[call.agent]],

@@ -43,6 +43,7 @@ class EvaluationVideo(Base):
     verified = Column(Boolean, nullable=False, default=False)
     gaze_overlay_uri = Column(String, nullable=True)
     gaze_metadata_uri = Column(String, nullable=True)
+    gaze_artifacts = Column(JSON, nullable=True)
     gaze_status = Column(String, nullable=False, default="pending", server_default="pending")
     gaze_error = Column(String, nullable=True)
 

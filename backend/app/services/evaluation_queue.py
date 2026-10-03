@@ -118,7 +118,8 @@ async def fill_window(conn, job_id):
                                           generation=generation), position)
             runs = await conn.fetch(
                 "SELECT agent_name FROM evaluation_agent_runs WHERE video_id=$1 "
-                "AND agent_name <> 'Agent_A' AND status <> 'finished' ORDER BY agent_name", video["id"],
+                "AND agent_name NOT IN ('Agent_A','Agent_D') "
+                "AND status <> 'finished' ORDER BY agent_name", video["id"],
             )
             for agent_position, run in enumerate(runs):
                 await enqueue(conn, ModelCall(evaluation_id=job_id, video_id=video["id"], action="score",
@@ -140,7 +141,7 @@ async def fill_window(conn, job_id):
 
 
 async def initialize_videos(conn, job_id, video_paths, selected_agents):
-    enable_gaze = "Agent_A" in selected_agents
+    enable_gaze = bool({"Agent_A", "Agent_D"}.intersection(selected_agents))
     await conn.execute(
         "INSERT INTO evaluation_progress(job_id,total_steps,completed_steps) VALUES($1,$2,0)",
         job_id, len(video_paths) * (1 + len(selected_agents) + int(enable_gaze)),
@@ -173,7 +174,7 @@ async def create_evaluation(conn, exam_topic, video_paths, selected_agents=None)
         )
         for name in ("GEMINI_UPLOAD", "GAZE_PROCESSING", "GEMINI_PROCESSING", "LLM_SCORING"):
             await branch(conn, job_id, name, "pending")
-        if "Agent_A" not in selected_agents:
+        if not {"Agent_A", "Agent_D"}.intersection(selected_agents):
             await branch(conn, job_id, "GAZE_PROCESSING", "completed", "Gaze analysis not selected")
         await initialize_videos(conn, job_id, video_paths, selected_agents)
     return dict(id=job_id, exam_topic=exam_topic, status="pending", video_paths=video_paths,
@@ -220,11 +221,24 @@ async def prepare_call(pool, call: ModelCall):
                 return None
             if video["segments"] is None:
                 raise ValueError("Scoring cannot start before segmentation")
+            if call.agent in ("Agent_A", "Agent_D") and video["gaze_status"] != "finished":
+                raise ValueError(f"{call.agent} cannot start before Gazelle preprocessing")
             await conn.execute(
                 "UPDATE evaluation_agent_runs SET status='processing' WHERE video_id=$1 AND agent_name=$2",
                 call.video_id, call.agent,
             )
-        return {**dict(video), "exam_topic": job["exam_topic"], "segments": decoded(video["segments"])}
+        gaze_agents = await conn.fetch(
+            "SELECT agent_name FROM evaluation_agent_runs WHERE video_id=$1 "
+            "AND agent_name IN ('Agent_A','Agent_D') ORDER BY agent_name",
+            call.video_id,
+        )
+        return {
+            **dict(video),
+            "exam_topic": job["exam_topic"],
+            "segments": decoded(video["segments"]),
+            "gaze_agents": [row["agent_name"] for row in gaze_agents],
+            "gaze_artifacts": decoded(video["gaze_artifacts"]) if video["gaze_artifacts"] else {},
+        }
 
 
 async def mark_verified(pool, call):
@@ -291,7 +305,7 @@ async def persist_result(pool, call, result):
             if video["gaze_status"] != "skipped":
                 await enqueue(conn, ModelCall(evaluation_id=call.evaluation_id, video_id=call.video_id,
                                               action="gaze", generation=call.generation))
-                score_agents.remove("Agent_A")
+                score_agents = [name for name in score_agents if name not in ("Agent_A", "Agent_D")]
             for position, name in enumerate(score_agents):
                 await enqueue(conn, ModelCall(evaluation_id=call.evaluation_id, video_id=call.video_id,
                                               action="score", agent=name,
@@ -300,17 +314,25 @@ async def persist_result(pool, call, result):
         elif call.action == "gaze":
             if video["gaze_status"] in ("finished", "skipped"):
                 return
+            artifacts = result["artifacts"]
+            expected_agents = {
+                row["agent_name"] for row in await conn.fetch(
+                    "SELECT agent_name FROM evaluation_agent_runs WHERE video_id=$1 "
+                    "AND agent_name IN ('Agent_A','Agent_D')",
+                    call.video_id,
+                )
+            }
+            if set(artifacts) != expected_agents:
+                raise ValueError("Gazelle artifacts must match the selected Agent A/D runs")
+            first = next(iter(artifacts.values()))
             await conn.execute(
-                "UPDATE evaluation_videos SET gaze_status='finished',gaze_overlay_uri=$2,"
-                "gaze_metadata_uri=$3,gaze_error=NULL WHERE id=$1",
-                call.video_id, result["overlay_uri"], result["metadata_uri"],
+                "UPDATE evaluation_videos SET gaze_status='finished',gaze_artifacts=$2::json,"
+                "gaze_overlay_uri=$3,gaze_metadata_uri=$4,gaze_error=NULL WHERE id=$1",
+                call.video_id, json.dumps(artifacts), first["overlay_uri"], first["metadata_uri"],
             )
-            if await conn.fetchval(
-                "SELECT 1 FROM evaluation_agent_runs WHERE video_id=$1 AND agent_name='Agent_A'",
-                call.video_id,
-            ):
+            for agent_name in artifacts:
                 await enqueue(conn, ModelCall(evaluation_id=call.evaluation_id, video_id=call.video_id,
-                                              action="score", agent="Agent_A",
+                                              action="score", agent=agent_name,
                                               generation=call.generation))
             gaze_counts = await conn.fetchrow(
                 "SELECT count(*) AS total,count(*) FILTER (WHERE gaze_status='finished') AS finished "
@@ -356,8 +378,7 @@ async def finalize(conn, job_id):
         "WHERE v.job_id=$1 ORDER BY v.position,r.agent_name", job_id,
     )
     result = {"segments": {v["uri"]: decoded(v["segments"]) for v in videos},
-              "gaze_artifacts": {v["uri"]: {"overlay_uri": v["gaze_overlay_uri"],
-                                                "metadata_uri": v["gaze_metadata_uri"]}
+              "gaze_artifacts": {v["uri"]: (decoded(v["gaze_artifacts"]) or {})
                                    for v in videos},
               "items": [item for r in runs for item in decoded(r["result"])]}
     await conn.execute("UPDATE evaluation_jobs SET status='finished',result=$2::json WHERE id=$1", job_id, json.dumps(result))
@@ -419,7 +440,7 @@ async def retry_evaluation(pool, job_id):
                      "Resuming unfinished video analysis...",
                      f"{progress['completed_steps']}/{progress['total_steps']}")
         await branch(conn, job_id, "LLM_SCORING", "pending", None)
-        if "Agent_A" in decoded(job["selected_agents"]):
+        if {"Agent_A", "Agent_D"}.intersection(decoded(job["selected_agents"])):
             pending_gaze = await conn.fetchval(
                 "SELECT count(*) FROM evaluation_videos WHERE job_id=$1 AND gaze_status <> 'finished'",
                 job_id,
