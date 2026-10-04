@@ -14,8 +14,11 @@ from app.worker import register
 from app.gazelle_worker import register as register_gazelle
 from app.config import settings
 from app.bootstrap import (
+    GAZE_ARTIFACTS_MIGRATION,
+    GAZE_ARTIFACTS_MIGRATION_ERROR,
     UNIFIED_SOURCE_MIGRATION,
     UNIFIED_SOURCE_MIGRATION_ERROR,
+    migrate_agent_gaze_artifacts,
     migrate_unified_video_source,
 )
 
@@ -102,6 +105,8 @@ async def test_single_agent_runs_only_selected_agent(pool, fake_models, agent):
         rows = await wait_terminal(pool, [job["id"]])
     assert rows[0]["status"] == "finished"
     assert [item["Agent_Name"] for item in json.loads(rows[0]["result"])["items"]] == [agent]
+    result_artifacts = json.loads(rows[0]["result"])["gaze_artifacts"][job["video_paths"][0]]
+    assert set(result_artifacts) == ({agent} if agent in ("Agent_A", "Agent_D") else set())
     assert [call.args[1] for call in scoring.await_args_list] == [agent]
     score_call = scoring.await_args_list[0]
     if agent in ("Agent_A", "Agent_D"):
@@ -429,3 +434,207 @@ async def test_stagger_is_persisted(pool):
     await create(pool, 10)
     delays = await pool.fetch("SELECT execute_after-created AS delay FROM pgqueuer ORDER BY id")
     assert [round(r["delay"].total_seconds(), 2) for r in delays] == [i * .25 for i in range(10)]
+
+
+@pytest.mark.parametrize("status", ["pending", "processing", "failed"])
+@pytest.mark.parametrize("legacy_artifacts", [None, {"Agent_A": {
+    "overlay_uri": "gs://bucket/legacy-a.mp4", "metadata_uri": "gs://bucket/legacy-a.json",
+}}])
+@pytest.mark.parametrize("selected,completed", [
+    (["Agent_A", "Agent_D"], ["Agent_A"]),
+    (["Agent_D"], []),
+])
+async def test_legacy_gaze_migration_regenerates_missing_artifacts_on_retry(
+    pool, fake_models, status, selected, completed, legacy_artifacts,
+):
+    await pool.execute("DELETE FROM app_schema_migrations WHERE name=$1", GAZE_ARTIFACTS_MIGRATION)
+    job = await create(pool, 1, selected)
+    video = await pool.fetchrow("SELECT * FROM evaluation_videos WHERE job_id=$1", job["id"])
+    call = repo.ModelCall(evaluation_id=job["id"], video_id=video["id"], action="segment")
+    await repo.persist_result(pool, call, SEGMENTS)
+    # Simulate the old release: gaze is complete but only A's overlay is stored.
+    await pool.execute(
+        "UPDATE evaluation_videos SET gaze_status='finished',gaze_artifacts=$3::json,"
+        "gaze_overlay_uri=$2,gaze_metadata_uri='gs://bucket/legacy-a.json' WHERE id=$1",
+        video["id"], "gs://bucket/legacy-a.mp4", json.dumps(legacy_artifacts) if legacy_artifacts else None,
+    )
+    await pool.execute(
+        "UPDATE evaluation_progress SET completed_steps=completed_steps+1 WHERE job_id=$1", job["id"],
+    )
+    for name in completed:
+        await repo.persist_result(pool, call.model_copy(update={"action": "score", "agent": name}),
+                                  [{"Agent_Name": name, "preserved": True}])
+    await pool.execute("UPDATE evaluation_jobs SET status=$2 WHERE id=$1", job["id"], status)
+    unrelated = await create(pool, 1, ["Agent_B"])
+
+    async with pool.acquire() as conn:
+        assert await migrate_agent_gaze_artifacts(conn) is True
+        assert await migrate_agent_gaze_artifacts(conn) is False
+    migrated = await pool.fetchrow("SELECT * FROM evaluation_videos WHERE id=$1", video["id"])
+    assert migrated["gaze_status"] == "pending"
+    assert migrated["gaze_artifacts"] is None
+    assert migrated["gaze_overlay_uri"] is None
+    assert await pool.fetchval("SELECT status FROM evaluation_jobs WHERE id=$1", job["id"]) == "failed"
+    assert await pool.fetchval("SELECT result->>'error' FROM evaluation_jobs WHERE id=$1", job["id"]) == \
+        GAZE_ARTIFACTS_MIGRATION_ERROR
+    assert await pool.fetchval("SELECT status FROM evaluation_jobs WHERE id=$1", unrelated["id"]) == "pending"
+    assert await pool.fetchval("SELECT completed_steps FROM evaluation_progress WHERE job_id=$1", job["id"]) == \
+        1 + len(completed)
+    stale_gaze = call.model_copy(update={"action": "gaze"})
+    assert await repo.prepare_call(pool, stale_gaze) is None
+
+    await repo.retry_evaluation(pool, job["id"])
+    # Old in-flight results cannot overwrite the reset stage in the new generation.
+    await repo.persist_result(pool, stale_gaze, GAZE_RESULT)
+    assert await repo.prepare_call(pool, stale_gaze) is None
+    assert await pool.fetchval("SELECT gaze_status FROM evaluation_videos WHERE id=$1", video["id"]) == "pending"
+    async with workers(pool):
+        rows = await wait_terminal(pool, [job["id"], unrelated["id"]])
+    assert all(row["status"] == "finished" for row in rows)
+    result = json.loads(next(row["result"] for row in rows if row["id"] == job["id"]))
+    assert set(result["gaze_artifacts"][video["uri"]]) == set(selected)
+    assert {item["Agent_Name"] for item in result["items"]} == set(selected)
+    for item in result["items"]:
+        if item["Agent_Name"] in completed:
+            assert item["preserved"] is True
+    assert [c.args[1] for c in fake_models[1].await_args_list if c.args[1] in selected] == \
+        [name for name in selected if name not in completed]
+    assert fake_models[2].call_count == len(selected)
+    assert await pool.fetchval("SELECT completed_steps FROM evaluation_progress WHERE job_id=$1", job["id"]) == \
+        2 + len(selected)
+
+
+async def test_gaze_migration_preserves_compatible_and_completed_jobs(pool, fake_models):
+    await pool.execute("DELETE FROM app_schema_migrations WHERE name=$1", GAZE_ARTIFACTS_MIGRATION)
+    legacy_a = await create(pool, 1, ["Agent_A"])
+    modern = await create(pool, 1, ["Agent_A", "Agent_D"])
+    complete = await create(pool, 1, ["Agent_A", "Agent_D"])
+    for job in (legacy_a, modern, complete):
+        video_id = await pool.fetchval("SELECT id FROM evaluation_videos WHERE job_id=$1", job["id"])
+        call = repo.ModelCall(evaluation_id=job["id"], video_id=video_id, action="segment")
+        await repo.persist_result(pool, call, SEGMENTS)
+        if job is modern:
+            await repo.persist_result(pool, call.model_copy(update={"action": "gaze"}), GAZE_RESULT)
+        else:
+            await pool.execute(
+                "UPDATE evaluation_videos SET gaze_status='finished',gaze_overlay_uri='gs://bucket/legacy-a.mp4',"
+                "gaze_metadata_uri='gs://bucket/legacy-a.json' "
+                "WHERE id=$1", video_id,
+            )
+            await pool.execute(
+                "UPDATE evaluation_progress SET completed_steps=completed_steps+1 WHERE job_id=$1", job["id"],
+            )
+            if job is legacy_a:
+                async with pool.acquire() as conn:
+                    await repo.enqueue(conn, call.model_copy(update={"action": "score", "agent": "Agent_A"}))
+    await pool.execute(
+        "UPDATE evaluation_jobs SET status='finished',result='{\"preserved\":true}'::json WHERE id=$1", complete["id"],
+    )
+    before = await pool.fetch("SELECT * FROM evaluation_jobs ORDER BY id")
+    videos_before = await pool.fetch("SELECT * FROM evaluation_videos ORDER BY id")
+    queued = await pool.fetchval("SELECT count(*) FROM pgqueuer")
+    async with pool.acquire() as conn:
+        assert await migrate_agent_gaze_artifacts(conn) is True
+    assert await pool.fetch("SELECT * FROM evaluation_jobs ORDER BY id") == before
+    assert await pool.fetch("SELECT * FROM evaluation_videos ORDER BY id") == videos_before
+    assert await pool.fetchval("SELECT count(*) FROM pgqueuer") == queued
+    async with workers(pool):
+        rows = await wait_terminal(pool, [legacy_a["id"], modern["id"]])
+    assert all(row["status"] == "finished" for row in rows)
+    assert fake_models[2].call_count == 0
+    results = {row["id"]: json.loads(row["result"]) for row in rows}
+    uri = legacy_a["video_paths"][0]
+    assert results[legacy_a["id"]]["gaze_artifacts"][uri] == {"Agent_A": {
+        "overlay_uri": "gs://bucket/legacy-a.mp4", "metadata_uri": "gs://bucket/legacy-a.json",
+    }}
+    assert results[modern["id"]]["gaze_artifacts"][uri] == GAZE_RESULT["artifacts"]
+
+
+@pytest.mark.parametrize("artifacts", [None, {}])
+@pytest.mark.parametrize("metadata_uri", [None, "gs://bucket/legacy-a.json"])
+async def test_legacy_agent_a_retry_preserves_artifacts_in_final_result(pool, fake_models, artifacts, metadata_uri):
+    job = await create(pool, 1, ["Agent_A"])
+    video = await pool.fetchrow("SELECT * FROM evaluation_videos WHERE job_id=$1", job["id"])
+    call = repo.ModelCall(evaluation_id=job["id"], video_id=video["id"], action="segment")
+    await repo.persist_result(pool, call, SEGMENTS)
+    await pool.execute(
+        "UPDATE evaluation_videos SET gaze_status='finished',gaze_artifacts=$2::json,"
+        "gaze_overlay_uri='gs://bucket/legacy-a.mp4',gaze_metadata_uri=$3 WHERE id=$1",
+        video["id"], json.dumps(artifacts) if artifacts is not None else None, metadata_uri,
+    )
+    await pool.execute("UPDATE evaluation_progress SET completed_steps=2 WHERE job_id=$1", job["id"])
+    await repo.fail_job(pool, call.model_copy(update={"action": "score", "agent": "Agent_A"}),
+                        RuntimeError("old score failed"))
+    await repo.retry_evaluation(pool, job["id"])
+    async with workers(pool):
+        rows = await wait_terminal(pool, [job["id"]])
+    assert rows[0]["status"] == "finished"
+    assert json.loads(rows[0]["result"])["gaze_artifacts"][video["uri"]] == {"Agent_A": {
+        "overlay_uri": "gs://bucket/legacy-a.mp4", "metadata_uri": metadata_uri,
+    }}
+    fake_models[0].assert_not_awaited()
+    fake_models[2].assert_not_called()
+    assert fake_models[1].await_args.args[0] == "gs://bucket/legacy-a.mp4"
+    assert await pool.fetchval("SELECT completed_steps FROM evaluation_progress WHERE job_id=$1", job["id"]) == 3
+
+
+@pytest.mark.parametrize("selected", [["Agent_D"], ["Agent_B", "Agent_D"]])
+@pytest.mark.parametrize("retry", [False, True])
+async def test_legacy_agent_d_skipped_gaze_uses_original_video(pool, fake_models, selected, retry):
+    cutting, scoring, gaze = fake_models
+    job = await create(pool, 1, selected)
+    video = await pool.fetchrow("SELECT * FROM evaluation_videos WHERE job_id=$1", job["id"])
+    # Restore the previous release's state before segmentation: D did not add
+    # a gaze stage or progress step unless A was also selected.
+    await pool.execute("UPDATE evaluation_videos SET gaze_status='skipped' WHERE id=$1", video["id"])
+    await pool.execute(
+        "UPDATE evaluation_progress SET total_steps=total_steps-1 WHERE job_id=$1", job["id"],
+    )
+    if retry:
+        async def fail_d_once(uri, agent, *args, **kwargs):
+            if agent == "Agent_D":
+                raise RuntimeError("temporary D failure")
+            return [{"Video_Path": uri, "Agent_Name": agent}]
+        scoring.side_effect = fail_d_once
+        async with workers(pool):
+            rows = await wait_terminal(pool, [job["id"]])
+        assert rows[0]["status"] == "failed"
+        scoring.side_effect = lambda uri, agent, *args, **kwargs: [{"Video_Path": uri, "Agent_Name": agent}]
+        await repo.retry_evaluation(pool, job["id"])
+        assert await pool.fetchval("SELECT gaze_status FROM evaluation_videos WHERE id=$1", video["id"]) == "skipped"
+        assert await pool.fetchval(
+            "SELECT status FROM job_branches WHERE job_id=$1 AND branch_name='GAZE_PROCESSING'", job["id"],
+        ) == "completed"
+    async with workers(pool):
+        rows = await wait_terminal(pool, [job["id"]])
+    assert rows[0]["status"] == "finished"
+    result = json.loads(rows[0]["result"])
+    assert {item["Agent_Name"] for item in result["items"]} == set(selected)
+    assert result["gaze_artifacts"][video["uri"]] == {}
+    d_calls = [call for call in scoring.await_args_list if call.args[1] == "Agent_D"]
+    assert len(d_calls) == 1 + int(retry)
+    for call in d_calls:
+        assert call.args[0] == video["uri"]
+        assert call.kwargs["already_clipped"] is False
+        assert call.args[3] == SEGMENTS["agent_D"]
+    assert cutting.await_count == 1
+    gaze.assert_not_called()
+    progress = await pool.fetchrow("SELECT * FROM evaluation_progress WHERE job_id=$1", job["id"])
+    assert progress["completed_steps"] == progress["total_steps"] == 1 + len(selected)
+
+
+@pytest.mark.parametrize("agent,status", [
+    ("Agent_D", "pending"), ("Agent_D", "processing"), ("Agent_D", "failed"),
+    ("Agent_A", "pending"), ("Agent_A", "skipped"),
+])
+async def test_gaze_compatibility_still_requires_preprocessing(pool, agent, status):
+    job = await create(pool, 1, [agent])
+    video_id = await pool.fetchval("SELECT id FROM evaluation_videos WHERE job_id=$1", job["id"])
+    call = repo.ModelCall(evaluation_id=job["id"], video_id=video_id, action="segment")
+    await repo.persist_result(pool, call, SEGMENTS)
+    await pool.execute("UPDATE evaluation_videos SET gaze_status=$2 WHERE id=$1", video_id, status)
+    with pytest.raises(ValueError, match=f"{agent} cannot start before Gazelle preprocessing"):
+        await repo.prepare_call(pool, call.model_copy(update={"action": "score", "agent": agent}))
+    assert await pool.fetchval(
+        "SELECT status FROM evaluation_agent_runs WHERE video_id=$1 AND agent_name=$2", video_id, agent,
+    ) == "pending"

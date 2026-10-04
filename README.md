@@ -222,6 +222,10 @@ docker compose down
 
 從舊版升級時先 `docker compose stop backend worker gazelle-worker`（舊版沒有對應 worker service 時可忽略），再 `docker compose up -d --build`。`init` 使用 PgQueuer 官方 install/upgrade 介面與 durable 預設建表；API、一般 worker 與 Gazelle worker 在初始化完成後才啟動。統一 5 FPS 來源的首次升級會把所有未完成或已失敗的舊格式工作標記為不可重試的 `retired`，並清除舊 queue 任務；需使用本系統產生的 5 FPS URI 重新提交。已完成工作的結果，以及已失敗工作的原始錯誤結果會保留。升級是向前遷移，不要同時執行新舊 worker，也不要刪除 PostgreSQL volume。
 
+從只有 Agent A overlay 的版本升級到 Agent A／D 各自產生 overlay 的版本時，`init` 會一次性檢查未完成或可重試工作。若尚未完成的 Agent 缺少可用的對應 overlay，工作會標記為可重試的 `failed`，並顯示需要重新產生 gaze 來源的訊息；點選「重試」即可重新執行受影響影片的 Gazelle 階段，再完成剩餘評分。已完成的切段與 Agent 評分會保留，進度會扣除失效的 gaze 階段；舊佇列或執行中的結果會被 generation 檢查忽略。已完成的工作、具有完整來源的工作，以及仍可使用舊 overlay 的 Agent A 工作不受此遷移影響。
+
+舊版選到 Agent D、未選 Agent A 且 gaze 狀態為 `skipped` 的工作，會繼續使用原影片與 Agent D 時段評分，重試也保留此方式與原本的進度總數。新建立的 Agent D 工作仍必須完成 Gazelle 前處理後才評分。
+
 若要增加 worker：`docker compose up -d --scale worker=2`，所有 worker 使用同一份環境設定。PgQueuer 預設 heartbeat timeout 為 30 秒，中斷任務會在 heartbeat 過期後重新派發。`pgq` 管理指令使用 PostgreSQL 的 `PGHOST/PGUSER/PGPASSWORD/PGDATABASE` 環境變數；本專案的 `app.bootstrap`／`app.worker` 則使用 `DATABASE_URL`。
 
 ### 方式二：手動本機環境設定
