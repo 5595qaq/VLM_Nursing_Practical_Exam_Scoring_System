@@ -33,6 +33,7 @@ Each evaluated SOP step must be one JSON object using exactly this shared schema
 "步驟": "Disinfect vial stopper",
 "判定": "未通過",
 "得分": 0,
+"證據時間點": "00:14-00:17",
 "看到什麼": "手持酒精棉片靠近藥瓶頂部，但畫面中未見棉片接觸橡皮塞或擦拭動作",
 "信心": 0.82,
 "理由": "SOP 要求使用酒精棉片擦拭藥瓶橡皮塞；僅靠近而未見接觸與擦拭，因此不符合要求",
@@ -47,6 +48,7 @@ Field definitions:
 * "步驟": string; use the exact step name listed in [Task]
 * "判定": enum; only "通過" or "未通過"
 * "得分": integer; "通過" = 1 and "未通過" = 0; all steps have equal weight
+* "證據時間點": string; video time range that most directly supports the judgment, formatted as "MM:SS-MM:SS"
 * "看到什麼": string; objective physical facts visible in the video, without a judgment or conclusion
 * "信心": number from 0 to 1; confidence in the judgment
 * "理由": string; explain the inference after comparing the observed facts against the SOP rule
@@ -59,11 +61,12 @@ Field definitions:
 
 Rules:
 
-* Always output all eight fields for every evaluated step.
+* Always output all nine fields for every evaluated step.
+* "證據時間點" must identify the video interval that directly supports "看到什麼" and "理由". If a step is not observed, use the most relevant inspected interval in which the action should have occurred.
 * Internal TRUE maps to "判定": "通過" and "得分": 1.
 * Internal FALSE maps to "判定": "未通過" and "得分": 0.
 * If the step is not observed, describe the absence objectively in "看到什麼".
-* Do not output separate score, start_time, end_time, temporal_status, success_reason, failure_reason, or evidence fields.
+* Do not output separate score, start_time, end_time, temporal_status, success_reason, failure_reason, or any other evidence fields.
 
 ---
 
