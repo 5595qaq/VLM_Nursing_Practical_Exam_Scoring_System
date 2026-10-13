@@ -1,0 +1,266 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SOP video segmentation result",
+  "type": "object",
+  "required": [
+    "video_id",
+    "meta",
+    "steps",
+    "observations"
+  ],
+  "properties": {
+    "video_id": {
+      "type": "string"
+    },
+    "meta": {
+      "type": "object",
+      "required": [
+        "duration",
+        "crop"
+      ],
+      "properties": {
+        "duration": {
+          "type": "number"
+        },
+        "crop": {
+          "type": "object",
+          "required": [
+            "box"
+          ],
+          "properties": {
+            "box": {
+              "type": "array",
+              "items": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "minItems": 4,
+              "maxItems": 4
+            },
+            "hands_box": {
+              "type": "array",
+              "items": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "minItems": 4,
+              "maxItems": 4
+            },
+            "rounds": {
+              "type": "integer"
+            },
+            "notes": {
+              "type": "string"
+            }
+          }
+        },
+        "budget": {
+          "type": "object",
+          "properties": {
+            "crop_rounds": {
+              "type": "integer"
+            },
+            "overview_calls": {
+              "type": "integer"
+            },
+            "zoom_calls": {
+              "type": "integer"
+            },
+            "images_sent": {
+              "type": "integer"
+            },
+            "est_input_tokens": {
+              "type": "integer"
+            }
+          }
+        }
+      }
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "step_id",
+          "start",
+          "end",
+          "confidence",
+          "evidence",
+          "status"
+        ],
+        "properties": {
+          "step_id": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 30
+          },
+          "start": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "end": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "evidence": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "detected",
+              "not_visually_determinable",
+              "not_performed"
+            ]
+          },
+          "frames": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "merged_with": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "logical_window": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2
+          },
+          "handoff": {
+            "type": "string",
+            "enum": [
+              "flick_detector"
+            ],
+            "description": "此步交給後續程式判定確切時間；start/end 為候選時段"
+          }
+        }
+      }
+    },
+    "unassigned_spans": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "start": {
+            "type": "number"
+          },
+          "end": {
+            "type": "number"
+          },
+          "note": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "zoom_log": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "times": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "region": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "for_steps": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "finding": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "observations": {
+      "type": "array",
+      "description": "主動描述的流程偏離：只描述，不評分",
+      "items": {
+        "type": "object",
+        "required": [
+          "type",
+          "start",
+          "end",
+          "steps",
+          "description",
+          "evidence",
+          "confidence"
+        ],
+        "properties": {
+          "type": {
+            "enum": [
+              "out_of_order",
+              "repeated",
+              "extra_action",
+              "interrupted",
+              "skipped",
+              "left_work_area",
+              "other"
+            ]
+          },
+          "start": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "end": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "steps": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 30
+            }
+          },
+          "description": {
+            "type": "string"
+          },
+          "evidence": {
+            "type": "string"
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        }
+      }
+    }
+  }
+}
