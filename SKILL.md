@@ -243,5 +243,6 @@ zoom 規則：
 
 - 30 步每步至少一筆；同一步做了兩次（例如重抽）可輸出兩筆。
 - `evidence` 必須引用具體影格（`global #k`、`ov@120-150 #k`、`zoom@245.0`），不能只寫「看起來像」。
-- `observations` 必填（沒有偏離就輸出空陣列，但要確實檢查過第 6 節的每一類）。
+- `observations` 必填（沒有偏離就輸出空陣列，但要確實檢查過第 6 節的每一類）。`unassigned_spans`、`zoom_log` 也必填，沒有就輸出空陣列。
+- 只能使用 `schema.json` 定義的欄位；多出或拼錯的欄位會被 `scripts/validate_result.py` 退回。
 - `confidence`：zoom 確認＝0.8–1.0；overview 確認＝0.6–0.8；只有總覽圖＝0.4–0.6；依邏輯分配＝≤0.5。

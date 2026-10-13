@@ -2,11 +2,14 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "SOP video segmentation result",
   "type": "object",
+  "additionalProperties": false,
   "required": [
     "video_id",
     "meta",
     "steps",
-    "observations"
+    "unassigned_spans",
+    "observations",
+    "zoom_log"
   ],
   "properties": {
     "video_id": {
@@ -14,18 +17,22 @@
     },
     "meta": {
       "type": "object",
+      "additionalProperties": false,
       "required": [
         "duration",
         "crop"
       ],
       "properties": {
         "duration": {
-          "type": "number"
+          "type": "number",
+          "minimum": 0
         },
         "crop": {
           "type": "object",
+          "additionalProperties": false,
           "required": [
-            "box"
+            "box",
+            "hands_box"
           ],
           "properties": {
             "box": {
@@ -49,7 +56,8 @@
               "maxItems": 4
             },
             "rounds": {
-              "type": "integer"
+              "type": "integer",
+              "minimum": 0
             },
             "notes": {
               "type": "string"
@@ -58,21 +66,27 @@
         },
         "budget": {
           "type": "object",
+          "additionalProperties": false,
           "properties": {
             "crop_rounds": {
-              "type": "integer"
+              "type": "integer",
+              "minimum": 0
             },
             "overview_calls": {
-              "type": "integer"
+              "type": "integer",
+              "minimum": 0
             },
             "zoom_calls": {
-              "type": "integer"
+              "type": "integer",
+              "minimum": 0
             },
             "images_sent": {
-              "type": "integer"
+              "type": "integer",
+              "minimum": 0
             },
             "est_input_tokens": {
-              "type": "integer"
+              "type": "integer",
+              "minimum": 0
             }
           }
         }
@@ -82,6 +96,7 @@
       "type": "array",
       "items": {
         "type": "object",
+        "additionalProperties": false,
         "required": [
           "step_id",
           "start",
@@ -132,19 +147,25 @@
           "merged_with": {
             "type": "array",
             "items": {
-              "type": "integer"
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 30
             }
           },
           "logical_window": {
-            "type": [
-              "array",
-              "null"
-            ],
-            "items": {
-              "type": "number"
-            },
-            "minItems": 2,
-            "maxItems": 2
+            "anyOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "minItems": 2,
+                "maxItems": 2
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "handoff": {
             "type": "string",
@@ -160,6 +181,12 @@
       "type": "array",
       "items": {
         "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "start",
+          "end",
+          "note"
+        ],
         "properties": {
           "start": {
             "type": "number"
@@ -177,23 +204,38 @@
       "type": "array",
       "items": {
         "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "times",
+          "region",
+          "for_steps",
+          "finding"
+        ],
         "properties": {
           "times": {
             "type": "array",
             "items": {
               "type": "number"
-            }
+            },
+            "minItems": 1,
+            "maxItems": 4
           },
           "region": {
             "type": "array",
             "items": {
-              "type": "number"
-            }
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "minItems": 4,
+            "maxItems": 4
           },
           "for_steps": {
             "type": "array",
             "items": {
-              "type": "integer"
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 30
             }
           },
           "finding": {
@@ -207,6 +249,7 @@
       "description": "主動描述的流程偏離：只描述，不評分",
       "items": {
         "type": "object",
+        "additionalProperties": false,
         "required": [
           "type",
           "start",
