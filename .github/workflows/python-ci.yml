@@ -40,8 +40,8 @@ jobs:
     # 5. SOP skill 的 schema／結果驗證測試（不需要資料庫）
     - name: Run SOP skill script tests
       run: |
-        pip install -r scripts/requirements.txt
-        pytest scripts/tests/ -v
+        pip install -r tests/sop_skill/requirements.txt
+        pytest tests/sop_skill/ -v
 
     # 6. 執行測試！
     - name: Run Pytest
