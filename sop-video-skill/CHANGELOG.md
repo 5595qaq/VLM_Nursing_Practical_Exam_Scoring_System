@@ -21,6 +21,11 @@
 ### 動作 schema（actions.schema.json）
 - **`final.result` 改成 `{"$ref": "schema.json"}`：** 原本只寫 `{"type": "object"}`，任何物件都能通過，壞掉的最終結果要到動作驗證之後才會被發現；也因為不是封閉物件，無法用於 Structured Outputs。現在 `validate_action.py` 收到 `final` 時就用 schema.json 驗證 `result`，不合格會退回（不扣預算）。
 
+### 外部程式（scripts/）
+- `validate_result.py`、`schema_tools.py` 從 repo 根目錄移入 skill，打包後不再缺檔。
+- `validate_action.py` 收到 `final` 時，schema 通過後接著跑 `validate_result.py` 的規則檢查（30 步齊全、步驟 11 等），一次驗完。
+- `schema_tools.py`：轉換前把引用的檔案（`schema.json`）嵌入 `$defs`，供 Structured Outputs 使用。
+
 ### 流程與文件（SKILL.md）
 - 第 7 節輸出規定同步：`unassigned_spans`、`zoom_log` 必填；只能使用 `schema.json` 定義的欄位。
 

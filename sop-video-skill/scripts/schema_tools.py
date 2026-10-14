@@ -10,9 +10,9 @@ A schema may point at another file (actions.schema.json has
 inside the same document, so the CLI first copies each referenced file into
 `$defs` (inline_file_refs) and then converts.
 
-Usage:
-    python scripts/schema_tools.py sop-video-skill/schema.json > schema.structured.json
-    python scripts/schema_tools.py sop-video-skill/actions.schema.json > actions.structured.json
+Usage (from the skill folder):
+    python scripts/schema_tools.py schema.json > schema.structured.json
+    python scripts/schema_tools.py actions.schema.json > actions.structured.json
 """
 
 import copy

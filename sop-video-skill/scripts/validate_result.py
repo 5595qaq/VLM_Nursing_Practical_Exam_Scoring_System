@@ -6,7 +6,7 @@ Two layers:
      step 11 not_performed, start <= end, hands_box inside box, ...).
 
 Usage:
-    python scripts/validate_result.py result.json
+    python scripts/validate_result.py result.json   (run from the skill folder)
 Exit code 0 = valid, 1 = invalid (errors printed one per line).
 """
 
@@ -16,7 +16,7 @@ from pathlib import Path
 
 from jsonschema import Draft202012Validator
 
-SCHEMA_PATH = Path(__file__).resolve().parent.parent / "sop-video-skill" / "schema.json"
+SCHEMA_PATH = Path(__file__).resolve().parent.parent / "schema.json"
 
 STEP_COUNT = 30
 REMOVED_STEP = 11  # removed from the score sheet; always not_performed

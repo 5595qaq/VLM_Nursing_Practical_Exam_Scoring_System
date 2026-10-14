@@ -7,6 +7,7 @@ Checks actions.schema.json (if the `jsonschema` package is installed; final.resu
 against schema.json through its $ref) plus rules the schema cannot
 express: box ordering, hands_box inside context box, zoom region size, overview span length,
 times inside the video, crop must be confirmed before overview/zoom, remaining budget.
+For final, the SKILL.md result rules in validate_result.py run as well.
 
 Prints {"ok": bool, "errors": [...], "warnings": [...]} and exits 0 (ok) or 1 (rejected).
 A rejected action is NOT executed and does NOT consume budget: return the errors to the model
@@ -64,6 +65,14 @@ def validate(act, state, duration=None):
         return errs, warns
 
     a = act["action"]
+    if a == "final":
+        # Schema passed; now the SKILL.md rules a schema cannot express (all 30 steps, step 11, ...).
+        try:
+            from validate_result import validate_result
+        except ImportError:
+            return errs, warns  # needs jsonschema; already warned above
+        errs += [f"result: {e}" for e in validate_result(act["result"])]
+        return errs, warns
     used = state.get("used", {})
     if a in BUDGET and used.get(a, 0) >= BUDGET[a]:
         errs.append(f"budget for {a} exhausted ({BUDGET[a]}); output final with current draft")

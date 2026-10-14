@@ -41,3 +41,11 @@ def test_error_points_inside_result():
 def test_empty_result_is_rejected():
     errors, _ = validate(final({}), state={})
     assert errors
+
+
+def test_result_breaking_a_skill_rule_is_rejected():
+    # Schema-valid, but SKILL.md requires every one of the 30 steps.
+    result = make_valid_result()
+    result["steps"] = [s for s in result["steps"] if s["step_id"] != 5]
+    errors, _ = validate(final(result), state={})
+    assert any(e.startswith("result: ") and "5" in e for e in errors), errors
