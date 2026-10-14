@@ -1,11 +1,11 @@
 name: Python 自動化測試 (Pytest CI)
 
-# 觸發條件：當有人 push 到 main 分支，或發起針對 main 的 Pull Request 時
+# 觸發條件：當有人 push 到 main 或 release/* 維護分支，或發起針對它們的 Pull Request 時
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "release/**" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "release/**" ]
 
 jobs:
   test-logic:
