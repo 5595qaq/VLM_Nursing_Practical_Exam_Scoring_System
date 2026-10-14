@@ -1,5 +1,26 @@
 # CHANGELOG
 
+## 1.4
+
+`schema.json` 補齊限制，讓 jsonschema 能完整驗證最終結果（`scripts/validate_result.py`）。
+
+### 結果 schema（schema.json）
+- **所有物件加上 `additionalProperties: false`：** 多出或拼錯的欄位會被退回，不再默默通過。
+- **補上缺的 `required`：**
+  - 最外層加入 `unassigned_spans`、`zoom_log`（沒有就輸出空陣列）；
+  - `meta.crop` 加入 `hands_box`；
+  - `unassigned_spans[]` 要求 `start`、`end`、`note`；
+  - `zoom_log[]` 要求 `times`、`region`、`for_steps`、`finding`。
+- **數值範圍：**
+  - `duration`、`rounds`、`budget.*` ≥ 0；
+  - `merged_with`、`for_steps` 的步驟編號限 1–30；
+  - `zoom_log.times` 1–4 個時間點；
+  - `zoom_log.region` 固定 4 個 0–1 的數。
+- **`logical_window`：** 由 `type: [array, null]` 改成 `anyOf`，null 時不再套用陣列的長度限制。
+
+### 流程與文件（SKILL.md）
+- 第 7 節輸出規定同步：`unassigned_spans`、`zoom_log` 必填；只能使用 `schema.json` 定義的欄位。
+
 ## 1.3
 
 依 v1.2 測試（20250522 影片）回顧修改。
