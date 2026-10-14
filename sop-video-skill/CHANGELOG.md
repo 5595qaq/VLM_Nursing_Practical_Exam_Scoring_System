@@ -18,6 +18,9 @@
   - `zoom_log.region` 固定 4 個 0–1 的數。
 - **`logical_window`：** 由 `type: [array, null]` 改成 `anyOf`，null 時不再套用陣列的長度限制。
 
+### 動作 schema（actions.schema.json）
+- **`final.result` 改成 `{"$ref": "schema.json"}`：** 原本只寫 `{"type": "object"}`，任何物件都能通過，壞掉的最終結果要到動作驗證之後才會被發現；也因為不是封閉物件，無法用於 Structured Outputs。現在 `validate_action.py` 收到 `final` 時就用 schema.json 驗證 `result`，不合格會退回（不扣預算）。
+
 ### 流程與文件（SKILL.md）
 - 第 7 節輸出規定同步：`unassigned_spans`、`zoom_log` 必填；只能使用 `schema.json` 定義的欄位。
 

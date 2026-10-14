@@ -72,7 +72,7 @@
       "additionalProperties": false,
       "properties": {
         "action": {"const": "final"},
-        "result": {"type": "object", "description": "符合 schema.json"}
+        "result": {"$ref": "schema.json", "description": "最終結果，格式由 schema.json 定義"}
       }
     }
   ]

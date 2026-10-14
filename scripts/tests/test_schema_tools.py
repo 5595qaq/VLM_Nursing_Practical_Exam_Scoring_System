@@ -1,11 +1,13 @@
 """Tests for schema_tools.py (full schema -> Structured Outputs schema)."""
 
 import copy
+import json
+from pathlib import Path
 
 import pytest
 from jsonschema import Draft202012Validator
 
-from schema_tools import UNSUPPORTED_KEYWORDS, to_structured_output_schema
+from schema_tools import UNSUPPORTED_KEYWORDS, inline_file_refs, to_structured_output_schema
 from validate_result import load_schema
 
 
@@ -77,3 +79,33 @@ def test_open_object_is_rejected():
               "additionalProperties": False}
     with pytest.raises(ValueError, match="#/properties/inner"):
         to_structured_output_schema(schema)
+
+
+# --- actions.schema.json (final.result points at schema.json) ----------------
+
+SKILL_DIR = Path(__file__).resolve().parents[2] / "sop-video-skill"
+
+
+def load_actions_schema() -> dict:
+    return json.loads((SKILL_DIR / "actions.schema.json").read_text(encoding="utf-8"))
+
+
+def test_actions_schema_converts_after_inlining():
+    bundled = inline_file_refs(load_actions_schema(), SKILL_DIR)
+    converted = to_structured_output_schema(bundled)
+    Draft202012Validator.check_schema(converted)
+    final = next(b for b in converted["anyOf"] if b["properties"]["action"].get("const") == "final")
+    assert final["properties"]["result"]["$ref"] == "#/$defs/schema"
+    assert converted["$defs"]["schema"]["required"] == load_schema()["required"]
+
+
+def test_file_ref_without_inlining_is_rejected():
+    with pytest.raises(ValueError, match="run inline_file_refs first"):
+        to_structured_output_schema(load_actions_schema())
+
+
+def test_inline_file_refs_does_not_change_the_original():
+    schema = load_actions_schema()
+    before = copy.deepcopy(schema)
+    inline_file_refs(schema, SKILL_DIR)
+    assert schema == before

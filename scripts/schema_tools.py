@@ -5,8 +5,14 @@ validation (validate_result.py). Structured Outputs only supports a subset of
 JSON Schema, so this module derives a copy without the unsupported keywords.
 The removed constraints are still enforced by validate_result.py.
 
+A schema may point at another file (actions.schema.json has
+`"result": {"$ref": "schema.json"}`). Structured Outputs only resolves refs
+inside the same document, so the CLI first copies each referenced file into
+`$defs` (inline_file_refs) and then converts.
+
 Usage:
     python scripts/schema_tools.py sop-video-skill/schema.json > schema.structured.json
+    python scripts/schema_tools.py sop-video-skill/actions.schema.json > actions.structured.json
 """
 
 import copy
@@ -36,6 +42,38 @@ _SUBSCHEMA_LIST = {"anyOf", "allOf", "oneOf", "prefixItems"}
 _SUBSCHEMA_DICT = {"properties", "$defs", "definitions"}
 
 
+def inline_file_refs(schema: dict, base_dir: Path) -> dict:
+    """Return a copy of `schema` with every file `$ref` moved into `$defs`.
+
+    `{"$ref": "schema.json"}` becomes `{"$ref": "#/$defs/schema"}` and the
+    contents of base_dir/schema.json are stored under `$defs.schema`. Only one
+    level is inlined: a referenced file must not itself point at other files.
+    """
+    schema = copy.deepcopy(schema)
+    defs = schema.setdefault("$defs", {})
+
+    def visit(node):
+        if isinstance(node, dict):
+            ref = node.get("$ref")
+            if isinstance(ref, str) and not ref.startswith("#"):
+                name = Path(ref).name.split(".")[0]
+                if name not in defs:
+                    defs[name] = json.loads((base_dir / ref).read_text(encoding="utf-8"))
+                node["$ref"] = f"#/$defs/{name}"
+            for value in node.values():
+                visit(value)
+        elif isinstance(node, list):
+            for item in node:
+                visit(item)
+
+    visit({k: v for k, v in schema.items() if k != "$defs"})
+    for name in list(defs):
+        visit(defs[name])
+    if not defs:
+        del schema["$defs"]
+    return schema
+
+
 def to_structured_output_schema(schema: dict) -> dict:
     """Return a copy of `schema` that Structured Outputs accepts.
 
@@ -48,6 +86,10 @@ def to_structured_output_schema(schema: dict) -> dict:
 def _convert(node: dict, path: str) -> dict:
     for key in UNSUPPORTED_KEYWORDS & node.keys():
         del node[key]
+
+    ref = node.get("$ref")
+    if isinstance(ref, str) and not ref.startswith("#"):
+        raise ValueError(f"{path}: $ref {ref!r} points at a file; run inline_file_refs first")
 
     if "oneOf" in node:
         # Not supported; anyOf is the closest supported keyword.
@@ -74,7 +116,9 @@ def main(argv: list[str]) -> int:
     if len(argv) != 2:
         print(__doc__, file=sys.stderr)
         return 2
-    schema = json.loads(Path(argv[1]).read_text(encoding="utf-8"))
+    path = Path(argv[1])
+    schema = inline_file_refs(json.loads(path.read_text(encoding="utf-8")), path.parent)
+    sys.stdout.reconfigure(encoding="utf-8")  # schema text has non-ASCII (e.g. ≤)
     json.dump(to_structured_output_schema(schema), sys.stdout, ensure_ascii=False, indent=2)
     print()
     return 0

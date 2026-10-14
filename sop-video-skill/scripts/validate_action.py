@@ -3,7 +3,8 @@
 usage: python validate_action.py ACTION_JSON_FILE --state run/state.json [--probe run/probe.json]
        python validate_action.py - --state run/state.json < action.json
 
-Checks actions.schema.json (if the `jsonschema` package is installed) plus rules the schema cannot
+Checks actions.schema.json (if the `jsonschema` package is installed; final.result is checked
+against schema.json through its $ref) plus rules the schema cannot
 express: box ordering, hands_box inside context box, zoom region size, overview span length,
 times inside the video, crop must be confirmed before overview/zoom, remaining budget.
 
@@ -41,8 +42,12 @@ def validate(act, state, duration=None):
     errs, warns = [], []
     try:
         import jsonschema
+        from referencing import Registry, Resource
         schema = json.load(open(os.path.join(HERE, "..", "actions.schema.json"), encoding="utf-8"))
-        v = jsonschema.Draft202012Validator(schema)
+        # final.result is {"$ref": "schema.json"}; register that file so the ref resolves.
+        result_schema = json.load(open(os.path.join(HERE, "..", "schema.json"), encoding="utf-8"))
+        registry = Registry().with_resource("schema.json", Resource.from_contents(result_schema))
+        v = jsonschema.Draft202012Validator(schema, registry=registry)
         if not v.is_valid(act):
             a = act.get("action") if isinstance(act, dict) else None
             branch = next((s for s in schema["oneOf"]
@@ -52,7 +57,7 @@ def validate(act, state, duration=None):
             else:
                 sub = dict(branch, **{"$defs": schema["$defs"]})
                 errs += [f"schema: {'/'.join(map(str, e.path)) or '(root)'}: {e.message}"
-                         for e in jsonschema.Draft202012Validator(sub).iter_errors(act)]
+                         for e in jsonschema.Draft202012Validator(sub, registry=registry).iter_errors(act)]
     except ImportError:
         warns.append("jsonschema not installed: only rule checks were run")
     if errs:
