@@ -16,7 +16,7 @@ from pathlib import Path
 
 from jsonschema import Draft202012Validator
 
-SCHEMA_PATH = Path(__file__).resolve().parent.parent / "schema.json"
+SCHEMA_PATH = Path(__file__).resolve().parent.parent / "sop-video-skill" / "schema.json"
 
 STEP_COUNT = 30
 REMOVED_STEP = 11  # removed from the score sheet; always not_performed

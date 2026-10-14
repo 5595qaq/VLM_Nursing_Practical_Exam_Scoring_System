@@ -6,7 +6,7 @@ JSON Schema, so this module derives a copy without the unsupported keywords.
 The removed constraints are still enforced by validate_result.py.
 
 Usage:
-    python scripts/schema_tools.py schema.json > schema.structured.json
+    python scripts/schema_tools.py sop-video-skill/schema.json > schema.structured.json
 """
 
 import copy

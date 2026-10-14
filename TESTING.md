@@ -29,13 +29,13 @@ pytest backend/tests/test_agents.py backend/tests/test_model_retries.py -q
 pytest backend/tests/test_worker_reliability.py -k in_memory -q
 ```
 
-SOP skill 的結果驗證（`schema.json`、`scripts/`）不需要資料庫：
+SOP skill（`sop-video-skill/`）的結果驗證（`schema.json`、`scripts/`）不需要資料庫：
 
 ```bash
 pip install -r scripts/requirements.txt
 pytest scripts/tests -q
 python scripts/validate_result.py result.json           # 驗證一份 final 結果
-python scripts/schema_tools.py schema.json > out.json    # 產生 Structured Outputs 用的 schema
+python scripts/schema_tools.py sop-video-skill/schema.json > out.json    # 產生 Structured Outputs 用的 schema
 ```
 
 ## 驗證範圍
