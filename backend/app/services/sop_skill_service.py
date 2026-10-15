@@ -27,7 +27,7 @@ from pathlib import Path
 from typing import Awaitable, Callable
 
 from app.config import settings
-from app.services import agents, gcs_service
+from app.services import agents, gcs_service, usage
 from app.services.model_logging import attempt_state
 
 BUDGET_LIMITS = {"crop_preview": 5, "overview": 20, "zoom": 15}
@@ -438,13 +438,13 @@ async def claude_call(system: str, content: list[dict]) -> ModelReply:
     async with asyncio.timeout(settings.CLAUDE_CALL_TIMEOUT_SECONDS):
         async with stream as events:
             message = await events.get_final_message()
-    usage = message.usage
+    counts = usage.claude_counts(message.usage)
+    await usage.record("claude", settings.CLAUDE_MODEL_NAME, counts)
     return ModelReply(
         text="".join(block.text for block in message.content if block.type == "text"),
         stop_reason=message.stop_reason,
-        input_tokens=(usage.input_tokens + (usage.cache_read_input_tokens or 0)
-                      + (usage.cache_creation_input_tokens or 0)),
-        output_tokens=usage.output_tokens,
+        input_tokens=counts["input_tokens"] + counts["cached_input_tokens"] + counts["cache_write_tokens"],
+        output_tokens=counts["output_tokens"],
     )
 
 
@@ -490,9 +490,10 @@ async def gemini_call(system: str, content: list[dict]) -> ModelReply:
     finally:
         attempt_state.reset(token)
 
-    usage = response.usage_metadata
-    input_tokens = (usage.prompt_token_count or 0) if usage else 0
-    output_tokens = ((usage.candidates_token_count or 0) + (usage.thoughts_token_count or 0)) if usage else 0
+    counts = usage.gemini_counts(getattr(response, "usage_metadata", None))
+    await usage.record("gemini", settings.SOP_SKILL_GEMINI_MODEL, counts)
+    input_tokens = counts["input_tokens"] + counts["cached_input_tokens"]
+    output_tokens = counts["output_tokens"]
     feedback = getattr(response, "prompt_feedback", None)
     if feedback is not None and _name(feedback.block_reason) in _GEMINI_REFUSALS:
         return ModelReply("", "refusal", input_tokens, output_tokens)

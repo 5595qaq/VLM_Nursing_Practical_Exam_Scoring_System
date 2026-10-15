@@ -14,6 +14,7 @@
 - **Vertex AI 認證**：後端統一使用 GCP service account 認證 Vertex AI／GCS，組員不需要各自準備或輸入 Gemini API Key。
 - **彈性結果格式**：多個 Agent 產出的評分 JSON 欄位尚未統一，前端以通用卡片＋原始 JSON 檢視的方式呈現，方便邊測 prompt 邊看結果。
 - **時間分段＋可選 Agent 評分**：`Time_cuting.txt` 先對完整影片找出四個重疊時間區段，再執行所選的 Agent_A ~ Agent_D；各 Agent 的 prompt 分別存放於 `backend/app/prompts/Agent_A.txt` ~ `Agent_D.txt`。評分表單可複選 Agent，預設全選；選到 Agent_A 或 Agent_D 時會先執行 Gazelle，兩者皆未選時才跳過 Gazelle。
+- **Token 用量與成本**：每一次模型回應（Time_cuting、Agent A–D、SOP skill 每回合，包含 JSON 驗證失敗後的重送）的 token 數都會存進 PostgreSQL 的 `model_usage` 表，可從前端下載「token 用量 CSV」；設定 `MODEL_PRICES_JSON` 後會一併算出估計成本，詳見下方〈Token 用量與成本〉。
 - **評分證據時間點**：Agent_A、Agent_B、Agent_D 的每個評分步驟都會輸出 `證據時間點`（`MM:SS-MM:SS`），指出最直接支持判定的影片區間；未觀察到的步驟則填該動作應出現的檢查區間。前端下載的 CSV 也會帶出此欄位。
 - **PostgreSQL 持久佇列**：PgQueuer 管理派送、去重與中斷恢復；每個評分工作最多 10 支活動影片，所有 worker 合計最多 5 個 Gemini 呼叫。
 - **SOP 影片步驟切分 skill（開發中）**：`sop-video-skill/` 是新的前處理方案，把影片切成 30 個 SOP 步驟各自的時間區段（只切分、不評分）。評分表單的「執行模式」選「只跑 SOP 步驟切分」即可執行，詳見下方「SOP 影片步驟切分 skill」。
@@ -122,6 +123,31 @@ python sop-video-skill/scripts/schema_tools.py sop-video-skill/schema.json > out
 | `SOP_SKILL_MAX_TURNS` | 60 | 每支影片的最多回合數（預算用滿約 42 回合） |
 
 Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499，或 Claude 回傳 429／529（overloaded），且 SDK 重試用盡時，該影片的 skill 任務會依 queue 層退避重新派送，並從頭重跑該影片；其他錯誤（模型拒答、連續 6 次不合格動作、超過回合上限）會讓工作失敗，可在前端「從失敗處繼續」只重跑未完成的影片。
+
+### Token 用量與成本
+
+每一次成功的模型回應寫一列到 `model_usage`，記錄 evaluation、影片、階段（`Time_cuting`、`Agent_A`～`Agent_D`、`SOP_skill`）、generation、queue attempt、provider 與實際使用的模型。JSON 驗證失敗後的重送與 SOP skill 的每一回合也都會計費，所以各自算一列；HTTP 失敗、沒有回應的嘗試沒有 token，不會記錄。工作被刪除時，對應的用量列也會一起刪除。
+
+| 欄位 | 意義 |
+| --- | --- |
+| `input_tokens` | 以一般輸入單價計費的輸入 token（不含快取命中） |
+| `cached_input_tokens` | 從快取讀取的輸入 token（Gemini 隱式快取、Claude cache read） |
+| `cache_write_tokens` | 寫入快取的輸入 token（只有 Claude 有） |
+| `output_tokens` | 以輸出單價計費的 token，包含思考 token |
+| `thinking_tokens` | `output_tokens` 中屬於思考的部分（只有 Gemini 會回報） |
+
+查詢方式：
+
+- 前端：評分完成後按「下載 token 用量 CSV」。內容是每次回應一列，最後附上各模型合計與總計。檔案帶 UTF-8 BOM，Excel 可以直接開啟。
+- API：`GET /api/v1/evaluations/{job_id}/usage`（JSON，含各模型合計），或 `GET /api/v1/evaluations/{job_id}/usage.csv`。
+
+成本只在設定單價後才會計算。在 `.env` 設定 `MODEL_PRICES_JSON`，單位是每 1M token 的美元價格；JSON 要用單引號包起來：
+
+```env
+MODEL_PRICES_JSON='{"gemini-3.1-pro-preview": {"input": 2.0, "cached_input": 0.2, "output": 12.0}, "gemini-4-argon": {"input": 1.0, "output": 5.0}}'
+```
+
+上面的數字只是格式示範，請依 [Vertex AI 定價頁](https://cloud.google.com/vertex-ai/generative-ai/pricing) 填入實際單價。`cached_input`、`cache_write` 沒有填時，會沿用 `input` 的單價。沒有設定單價的模型，估計成本欄位留空，API 會列在 `unpriced_models`。單價在查詢時才套用，修改後重啟 backend，舊工作也會用新單價重新計算。Gemini 部分模型的輸入超過一定長度時會改用較高的單價，這裡沒有區分，需要精算時請以 GCP 帳單為準。
 
 ### 核心模組架構
 
@@ -338,7 +364,7 @@ docker compose down
 1. 無需特別的伺服器。請使用檔案總管進入 `frontend` 資料夾，直接**對著 `index.html` 點擊兩下**開啟，或是將 `index.html` 檔案**直接拖曳到您的瀏覽器視窗**中。
    *(注意：請不要直接在網址列手動輸入 `frontend/index.html`，否則瀏覽器會當成網址搜尋而報錯)*
 2. 選擇評估項目後，在「Upload Videos to GCS」選取本機影片檔案並按下「Upload to GCS」——內容相同的影片（依 SHA-256 判斷，與檔名無關）若已存在於 bucket 中會直接沿用，不會重複上傳。也可以在下方文字框貼上本系統先前產生的 `gs://` 路徑。
-3. 點擊「Start Evaluation」進行即時評分！結果會依 Agent 分組顯示，並提供「View Raw JSON Response」查看模型原始輸出，方便測試/調整 prompt。完成後可用「下載評分總表 CSV」與「下載完整分析資料 CSV」匯出結果。
+3. 點擊「Start Evaluation」進行即時評分！結果會依 Agent 分組顯示，並提供「View Raw JSON Response」查看模型原始輸出，方便測試/調整 prompt。完成後可用「下載評分總表 CSV」與「下載完整分析資料 CSV」匯出結果，用「下載 token 用量 CSV」查看每次模型呼叫的 token 數與估計成本。
 
 ## 測試與 CI
 
@@ -402,6 +428,7 @@ my-awesome-project/
 │   │   │   ├── gemini_service.py
 │   │   │   ├── model_logging.py
 │   │   │   ├── sop_skill_service.py
+│   │   │   ├── usage.py
 │   │   │   └── video_service.py
 │   │   ├── bootstrap.py
 │   │   ├── config.py

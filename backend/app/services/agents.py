@@ -9,6 +9,7 @@ from google.genai import types
 import httpx
 
 from app.config import settings
+from app.services import usage
 from app.services.model_logging import LoggedTransport, attempt_state
 
 _PROMPTS_DIR = Path(__file__).resolve().parent.parent / "prompts"
@@ -147,13 +148,16 @@ async def _generate_json(contents, response_json_schema=None, on_progress=None):
             on_progress("queued")
             on_progress("analyzing")
         async with asyncio.timeout(settings.GEMINI_CALL_TIMEOUT_SECONDS):
-            return await get_client().aio.models.generate_content(
+            response = await get_client().aio.models.generate_content(
                 model=settings.GEMINI_MODEL_NAME,
                 contents=contents,
                 config=types.GenerateContentConfig(**config_kwargs),
             )
     finally:
         attempt_state.reset(token)
+    # Every response is billed, including ones later rejected as invalid JSON.
+    await usage.record("gemini", settings.GEMINI_MODEL_NAME, usage.gemini_counts(getattr(response, "usage_metadata", None)))
+    return response
 
 
 async def run_time_cutting_agent(
