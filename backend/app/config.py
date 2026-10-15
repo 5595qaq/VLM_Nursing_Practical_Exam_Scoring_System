@@ -26,7 +26,13 @@ class Settings:
     GAZELLE_CHECKPOINT_PATH = os.getenv("GAZELLE_CHECKPOINT_PATH", "/models/gazelle.pt")
     GAZELLE_INOUT_THRESHOLD = float(os.getenv("GAZELLE_INOUT_THRESHOLD", "0.5"))
     GAZELLE_DOT_RADIUS = _integer("GAZELLE_DOT_RADIUS", 10)
-    # sop-video-skill: Claude on Vertex AI runs the skill's external-program loop.
+    # sop-video-skill: the model that drives the skill's external-program loop.
+    # "gemini" (default) uses the Vertex AI Gemini client; "claude" uses Claude on Vertex AI.
+    SOP_SKILL_PROVIDER = os.getenv("SOP_SKILL_PROVIDER", "gemini").strip().lower()
+    SOP_SKILL_GEMINI_MODEL = os.getenv("SOP_SKILL_GEMINI_MODEL", "gemini-4-argon")
+    # Optional; unset leaves the model defaults.
+    SOP_SKILL_GEMINI_THINKING_LEVEL = os.getenv("SOP_SKILL_GEMINI_THINKING_LEVEL", "").strip().lower() or None
+    SOP_SKILL_GEMINI_MAX_OUTPUT_TOKENS = _integer("SOP_SKILL_GEMINI_MAX_OUTPUT_TOKENS", 0, 0) or None
     CLAUDE_MODEL_NAME = os.getenv("CLAUDE_MODEL_NAME", "claude-opus-5-5")
     CLAUDE_VERTEX_REGION = os.getenv("CLAUDE_VERTEX_REGION", "global")
     CLAUDE_EFFORT = os.getenv("CLAUDE_EFFORT", "high")
@@ -37,6 +43,9 @@ class Settings:
     )
     SOP_SKILL_CONCURRENCY = _integer("SOP_SKILL_CONCURRENCY", 2)
     SOP_SKILL_MAX_TURNS = _integer("SOP_SKILL_MAX_TURNS", 60)
+
+    if SOP_SKILL_PROVIDER not in ("gemini", "claude"):
+        raise ValueError("SOP_SKILL_PROVIDER must be 'gemini' or 'claude'")
 
     if GEMINI_QUEUE_RETRY_MAX_SECONDS < GEMINI_QUEUE_RETRY_BASE_SECONDS:
         raise ValueError(

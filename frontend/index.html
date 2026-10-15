@@ -47,7 +47,7 @@
                     <label><input type="radio" name="pipeline" value="agents" checked> 完整評分（Time_cuting＋Agent A–D）</label>
                     <label><input type="radio" name="pipeline" value="sop_skill"> 只跑 SOP 步驟切分（sop-video-skill）</label>
                 </div>
-                <p class="field-hint" id="pipeline-hint" hidden>由 Claude 依 sop-video-skill 切出 30 個步驟的時間區段（不評分），可下載結果 JSON、圖片與對話紀錄。每支影片需數分鐘至數十分鐘。</p>
+                <p class="field-hint" id="pipeline-hint" hidden>由 Gemini（預設 gemini-4-argon）依 sop-video-skill 切出 30 個步驟的時間區段（不評分），可下載結果 JSON、圖片與對話紀錄。每支影片需數分鐘至數十分鐘。</p>
             </fieldset>
 
             <fieldset class="agent-selection" id="agent-selection">

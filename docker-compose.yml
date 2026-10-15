@@ -40,7 +40,11 @@ services:
       - GAZELLE_MODEL_VERSION=${GAZELLE_MODEL_VERSION:-gazelle-dinov2-vitb14-inout-v1}
       - GAZELLE_INOUT_THRESHOLD=${GAZELLE_INOUT_THRESHOLD:-0.5}
       - GAZELLE_DOT_RADIUS=${GAZELLE_DOT_RADIUS:-10}
-      # sop-video-skill：worker 透過 Vertex AI 呼叫 Claude（需在 GCP 專案啟用該 Claude 模型）
+      # sop-video-skill：預設由 Vertex AI 上的 Gemini 執行；SOP_SKILL_PROVIDER=claude 改用 Vertex AI 上的 Claude
+      - SOP_SKILL_PROVIDER=${SOP_SKILL_PROVIDER:-gemini}
+      - SOP_SKILL_GEMINI_MODEL=${SOP_SKILL_GEMINI_MODEL:-gemini-4-argon}
+      - SOP_SKILL_GEMINI_THINKING_LEVEL=${SOP_SKILL_GEMINI_THINKING_LEVEL:-}
+      - SOP_SKILL_GEMINI_MAX_OUTPUT_TOKENS=${SOP_SKILL_GEMINI_MAX_OUTPUT_TOKENS:-0}
       - CLAUDE_MODEL_NAME=${CLAUDE_MODEL_NAME:-claude-opus-5-5}
       - CLAUDE_VERTEX_REGION=${CLAUDE_VERTEX_REGION:-global}
       - CLAUDE_EFFORT=${CLAUDE_EFFORT:-high}

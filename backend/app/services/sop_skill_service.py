@@ -1,4 +1,5 @@
-"""External-program loop for sop-video-skill (SKILL.md section 0), driven by Claude.
+"""External-program loop for sop-video-skill (SKILL.md section 0), driven by Gemini on Vertex AI
+(default, SOP_SKILL_PROVIDER=gemini) or Claude on Vertex AI (SOP_SKILL_PROVIDER=claude).
 
 The skill is the system prompt; the model answers every turn with exactly one action JSON.
 This module validates the action with the skill's own validate_action.py, runs the matching
@@ -26,7 +27,8 @@ from pathlib import Path
 from typing import Awaitable, Callable
 
 from app.config import settings
-from app.services import gcs_service
+from app.services import agents, gcs_service
+from app.services.model_logging import attempt_state
 
 BUDGET_LIMITS = {"crop_preview": 5, "overview": 20, "zoom": 15}
 MAX_REQUEST_IMAGE_BYTES = 30_000_000  # SKILL.md section 0: <= 30 MB of images per request
@@ -328,7 +330,7 @@ async def run_skill_loop(video_path: Path, video_id: str, workdir: Path, model_c
         _write_transcript(workdir / "transcript.json", transcript)
 
         if reply.stop_reason == "refusal":
-            raise SkillRunError("Claude declined the request (stop_reason=refusal)")
+            raise SkillRunError("the model declined the request (stop_reason=refusal)")
         try:
             if reply.stop_reason == "max_tokens":
                 raise ValueError("回覆超過 max_tokens 被截斷；請精簡 draft／evidence 後重送")
@@ -446,6 +448,71 @@ async def claude_call(system: str, content: list[dict]) -> ModelReply:
     )
 
 
+# Gemini finish/block reasons that mean the model would not answer (Claude: stop_reason=refusal).
+_GEMINI_REFUSALS = {"SAFETY", "BLOCKLIST", "PROHIBITED_CONTENT", "SPII", "IMAGE_SAFETY",
+                    "IMAGE_PROHIBITED_CONTENT", "MODEL_ARMOR", "JAILBREAK"}
+
+
+def _gemini_parts(content: list[dict]):
+    """Claude-style content blocks (built by build_content) -> Gemini parts, same order."""
+    from google.genai import types
+    parts = []
+    for block in content:
+        if block["type"] == "text":
+            parts.append(types.Part.from_text(text=block["text"]))
+        elif block["type"] == "image":
+            source = block["source"]
+            parts.append(types.Part.from_bytes(data=base64.standard_b64decode(source["data"]),
+                                               mime_type=source["media_type"]))
+    return parts
+
+
+def _name(value) -> str | None:
+    return getattr(value, "name", None) or (str(value) if value is not None else None)
+
+
+async def gemini_call(system: str, content: list[dict]) -> ModelReply:
+    """One request to Gemini on Vertex AI through the shared client (SDK retries + attempt logging)."""
+    from google.genai import types
+    config = {"system_instruction": system, "response_mime_type": "application/json"}
+    if settings.SOP_SKILL_GEMINI_THINKING_LEVEL:
+        config["thinking_config"] = types.ThinkingConfig(thinking_level=settings.SOP_SKILL_GEMINI_THINKING_LEVEL)
+    if settings.SOP_SKILL_GEMINI_MAX_OUTPUT_TOKENS:
+        config["max_output_tokens"] = settings.SOP_SKILL_GEMINI_MAX_OUTPUT_TOKENS
+    token = attempt_state.set({"attempt": 0})
+    try:
+        async with asyncio.timeout(settings.GEMINI_CALL_TIMEOUT_SECONDS):
+            response = await agents.get_client().aio.models.generate_content(
+                model=settings.SOP_SKILL_GEMINI_MODEL,
+                contents=[types.Content(role="user", parts=_gemini_parts(content))],
+                config=types.GenerateContentConfig(**config),
+            )
+    finally:
+        attempt_state.reset(token)
+
+    usage = response.usage_metadata
+    input_tokens = (usage.prompt_token_count or 0) if usage else 0
+    output_tokens = ((usage.candidates_token_count or 0) + (usage.thoughts_token_count or 0)) if usage else 0
+    feedback = getattr(response, "prompt_feedback", None)
+    if feedback is not None and _name(feedback.block_reason) in _GEMINI_REFUSALS:
+        return ModelReply("", "refusal", input_tokens, output_tokens)
+    candidate = (response.candidates or [None])[0]
+    finish = _name(getattr(candidate, "finish_reason", None))
+    parts = (candidate.content.parts or []) if candidate is not None and candidate.content else []
+    text = "".join(part.text for part in parts if part.text and not part.thought)
+    stop_reason = ("refusal" if finish in _GEMINI_REFUSALS
+                   else "max_tokens" if finish == "MAX_TOKENS" else "end_turn")
+    return ModelReply(text, stop_reason, input_tokens, output_tokens)
+
+
+def model_name() -> str:
+    return settings.SOP_SKILL_GEMINI_MODEL if settings.SOP_SKILL_PROVIDER == "gemini" else settings.CLAUDE_MODEL_NAME
+
+
+def default_model_call() -> ModelCall:
+    return gemini_call if settings.SOP_SKILL_PROVIDER == "gemini" else claude_call
+
+
 def artifact_prefix(video_id: str, generation: int) -> str:
     return f"sop_runs/{video_id}/g{generation}"
 
@@ -476,7 +543,8 @@ async def run_sop_skill(video_uri: str, video_id: str, generation: int,
         video = root / "source.mp4"
         await asyncio.to_thread(gcs_service.download_to_filename, video_uri, str(video))
         try:
-            outcome = await run_skill_loop(video, video_id, workdir, model_call or claude_call, on_progress)
+            outcome = await run_skill_loop(video, video_id, workdir, model_call or default_model_call(),
+                                          on_progress)
         finally:
             prefix = artifact_prefix(video_id, generation)
             try:
@@ -485,4 +553,4 @@ async def run_sop_skill(video_uri: str, video_id: str, generation: int,
                 files = None
         if files is None:
             raise SkillRunError("failed to upload sop-video-skill artifacts to GCS")
-        return {**outcome, "files": files, "model": settings.CLAUDE_MODEL_NAME}
+        return {**outcome, "files": files, "model": model_name()}

@@ -816,7 +816,7 @@ function localizeMessage(message = '') {
     if (sopProgress) {
         const [, turn, phase, crop, overview, zoom, seconds, uri] = sopProgress;
         const phases = {
-            thinking: '等待 Claude 回覆',
+            thinking: '等待模型回覆',
             crop_preview: '產生裁切預覽',
             set_crop: '確定裁切，產生全片總覽圖與動作能量',
             overview: '產生區間總覽圖',

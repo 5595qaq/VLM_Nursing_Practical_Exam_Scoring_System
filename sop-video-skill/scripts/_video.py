@@ -1,7 +1,7 @@
 """Shared helpers: frame grabbing (ffmpeg seek), labels, tiling, JPEG size control.
 
 All scripts are deterministic and do not call any model. They only produce images / JSON
-that are then sent to the model (Claude on Vertex AI) together with SKILL.md as system prompt.
+that are then sent to the model (Gemini or Claude on Vertex AI) together with SKILL.md as system prompt.
 """
 import json
 import os
