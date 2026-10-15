@@ -35,8 +35,11 @@ jobs:
           prompt: "/code-review:code-review --comment ${{ github.repository }}/pull/${{ github.event.pull_request.number }}"
           # code-review 外掛先用 gh 讀取 PR 狀態與 diff，再留言；只開放行內留言工具時，
           # 它讀不到 PR 就會直接結束（約 5 秒、不留言，卻顯示成功）。
-          # 工具清單取自外掛 commands/code-review.md 的 allowed-tools。
+          # gh 工具清單取自外掛 commands/code-review.md 的 allowed-tools。
+          # 外掛還會派子代理平行檢查（規範、bug、驗證），需要子代理工具與唯讀檔案工具；
+          # 少了它們 Claude 只能簡化審查（#51 只讀了 3 個檔案就留言 No issues found）。
+          # 子代理工具新版叫 Agent、舊版叫 Task，兩個都列以相容不同版本。
           claude_args: >-
-            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr comment:*),Bash(gh pr list:*),Bash(gh issue view:*),Bash(gh issue list:*),Bash(gh search:*)"
+            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr comment:*),Bash(gh pr list:*),Bash(gh issue view:*),Bash(gh issue list:*),Bash(gh search:*),Agent,Task,Read,Glob,Grep"
           # 暫時開啟：在 Actions log 顯示 Claude 的完整輸出，確認真的有審查；確認後可移除
           show_full_output: true
