@@ -14,7 +14,9 @@
 - **Vertex AI 認證**：後端統一使用 GCP service account 認證 Vertex AI／GCS，組員不需要各自準備或輸入 Gemini API Key。
 - **彈性結果格式**：多個 Agent 產出的評分 JSON 欄位尚未統一，前端以通用卡片＋原始 JSON 檢視的方式呈現，方便邊測 prompt 邊看結果。
 - **時間分段＋可選 Agent 評分**：`Time_cuting.txt` 先對完整影片找出四個重疊時間區段，再執行所選的 Agent_A ~ Agent_D；各 Agent 的 prompt 分別存放於 `backend/app/prompts/Agent_A.txt` ~ `Agent_D.txt`。評分表單可複選 Agent，預設全選；選到 Agent_A 或 Agent_D 時會先執行 Gazelle，兩者皆未選時才跳過 Gazelle。
+- **評分證據時間點**：Agent_A、Agent_B、Agent_D 的每個評分步驟都會輸出 `證據時間點`（`MM:SS-MM:SS`），指出最直接支持判定的影片區間；未觀察到的步驟則填該動作應出現的檢查區間。前端下載的 CSV 也會帶出此欄位。
 - **PostgreSQL 持久佇列**：PgQueuer 管理派送、去重與中斷恢復；每個評分工作最多 10 支活動影片，所有 worker 合計最多 5 個 Gemini 呼叫。
+- **SOP 影片步驟切分 skill（開發中）**：`sop-video-skill/` 是新的前處理方案，把影片切成 30 個 SOP 步驟各自的時間區段（只切分、不評分），詳見下方「SOP 影片步驟切分 skill」。目前尚未接入評分流程。
 
 ## 系統運作流程與架構
 
@@ -68,6 +70,28 @@ SDK 對 408、429、500、502、503、504 及其支援的暫時性網路錯誤�
 PgQueuer 提供 at-least-once delivery。已提交結果會跳過重跑，重複完成不會重複累計；但若 Gemini 成功後、資料庫提交前 worker 中斷，恢復時可能再次呼叫並計費。也不能以本地 worker 的名額保證被中斷的遠端 Google 請求已立即停止。
 
 `docker compose logs -f worker` 可查看 `gemini_http_attempt` JSON 日誌，包含 queue/evaluation/video/agent ID、queue attempt、HTTP attempt、狀態碼、重試間隔及耗時；不記錄影片內容或認證標頭。
+
+### SOP 影片步驟切分 skill
+
+`sop-video-skill/` 以「無菌抽藥技術－vial 粉劑」的 30 個步驟為準，輸出每個步驟發生的時間區段 JSON。模型不直接看影片，而是由外部程式抽幀、裁切、拼圖後提供影格圖片；模型每回合輸出一個 JSON 動作請求（`crop_preview`、`set_crop`、`overview`、`zoom`、`final`），由 `scripts/` 執行後回傳下一批圖片。
+
+| 檔案 | 用途 |
+| --- | --- |
+| `SKILL.md` | 部署時當作 system prompt 的規則 |
+| `references/sop_steps.md` | 30 個步驟的定義、視覺線索與易混淆配對 |
+| `actions.schema.json` | 動作請求格式，由 `scripts/validate_action.py` 檢查 |
+| `schema.json` | `final` 結果格式，由 `scripts/validate_result.py` 驗證 |
+| `scripts/` | 抽幀／裁切（`prepare.py`、`crop.py`、`sheets.py`、`grid_overlay.py`）、動作能量（`motion.py`）、順序檢查（`sequence_check.py`）、與標準答案比對（`eval.py`）、Structured Outputs schema 轉換（`schema_tools.py`） |
+| `CHANGELOG.md` | 各版本的修改紀錄 |
+
+抽幀、裁切與動作能量腳本需要 ffmpeg；結果驗證與 schema 轉換只需要 `jsonschema`，不需要資料庫或 ffmpeg：
+
+```bash
+python sop-video-skill/scripts/validate_result.py result.json
+python sop-video-skill/scripts/schema_tools.py sop-video-skill/schema.json > out.json
+```
+
+測試位於 `tests/sop_skill/`，執行方式見 [TESTING.md](TESTING.md)。打包好的 `sop-video-skill*.zip` 已被 `.gitignore` 排除，請直接使用 `sop-video-skill/` 目錄。
 
 ### 核心模組架構
 
@@ -279,21 +303,47 @@ docker compose down
 ### 前端執行方式
 1. 無需特別的伺服器。請使用檔案總管進入 `frontend` 資料夾，直接**對著 `index.html` 點擊兩下**開啟，或是將 `index.html` 檔案**直接拖曳到您的瀏覽器視窗**中。
    *(注意：請不要直接在網址列手動輸入 `frontend/index.html`，否則瀏覽器會當成網址搜尋而報錯)*
-2. 選擇評估項目後，在「Upload Videos to GCS」選取本機影片檔案並按下「Upload to GCS」——同檔名的影片若已存在於 bucket 中會直接沿用，不會重複上傳。也可以在下方文字框直接貼上已存在的 `gs://` 路徑。
-3. 點擊「Start Evaluation」進行即時評分！結果會依 Agent 分組顯示，並提供「View Raw JSON Response」查看模型原始輸出，方便測試/調整 prompt。
+2. 選擇評估項目後，在「Upload Videos to GCS」選取本機影片檔案並按下「Upload to GCS」——內容相同的影片（依 SHA-256 判斷，與檔名無關）若已存在於 bucket 中會直接沿用，不會重複上傳。也可以在下方文字框貼上本系統先前產生的 `gs://` 路徑。
+3. 點擊「Start Evaluation」進行即時評分！結果會依 Agent 分組顯示，並提供「View Raw JSON Response」查看模型原始輸出，方便測試/調整 prompt。完成後可用「下載評分總表 CSV」與「下載完整分析資料 CSV」匯出結果。
+
+## 測試與 CI
+
+測試方式與驗證範圍見 [TESTING.md](TESTING.md)。GitHub Actions 設定在 `.github/workflows/`：
+
+| Workflow | 觸發 | 內容 |
+| --- | --- | --- |
+| `python-ci.yml` | push 或 PR 到 `main`、`release/**` | 先跑 `tests/sop_skill/`，再以 PostgreSQL 跑後端 pytest |
+| `claude-code-review.yml` | PR 開啟、推送新提交、重新開啟或轉為可審查 | Claude 以 code-review 外掛審查 PR，結果以行內留言貼回（草稿與 fork 的 PR 不審查） |
+| `claude.yml` | issue／PR 留言、review 或新 issue 中提到 `@claude` | Claude 回應並可推送提交；只有具寫入權限的人能觸發 |
+
+兩個 Claude workflow 需要在 repo secrets 設定 `CLAUDE_CODE_OAUTH_TOKEN`。注意 `python-ci.yml` 只對目標為 `main`／`release/**` 的 PR 執行，疊在其他功能分支上的 PR 需要在本機自行跑測試。
+
+協作規則（溝通語言、模型權重不得提交、測試範圍）寫在 [AGENTS.md](AGENTS.md)，`CLAUDE.md` 會引用它。
 
 ## 目錄結構
 ```text
 my-awesome-project/
+├── .github/workflows/
+│   ├── python-ci.yml
+│   ├── claude-code-review.yml
+│   └── claude.yml
 ├── docker-compose.yml
+├── AGENTS.md
+├── CLAUDE.md
+├── TESTING.md
+├── locustfile.py
 ├── frontend/
 │   ├── index.html
 │   ├── style.css
-│   └── app.js
+│   ├── app.js
+│   ├── csv-export.js
+│   └── recovery.js
 ├── backend/
 │   ├── Dockerfile
+│   ├── Dockerfile.gazelle
 │   ├── .dockerignore
 │   ├── requirements.txt
+│   ├── requirements.gazelle.txt
 │   ├── app/
 │   │   ├── api/
 │   │   │   └── endpoints/
@@ -311,12 +361,29 @@ my-awesome-project/
 │   │   │   └── evaluation.py
 │   │   ├── services/
 │   │   │   ├── agents.py
+│   │   │   ├── evaluation_queue.py
+│   │   │   ├── gazelle_service.py
 │   │   │   ├── gcs_service.py
 │   │   │   ├── gemini_service.py
+│   │   │   ├── model_logging.py
 │   │   │   └── video_service.py
+│   │   ├── bootstrap.py
 │   │   ├── config.py
 │   │   ├── db.py
+│   │   ├── gazelle_worker.py
 │   │   ├── main.py
+│   │   ├── worker.py
 │   │   └── ws_manager.py
+│   └── tests/
+├── sop-video-skill/
+│   ├── SKILL.md
+│   ├── CHANGELOG.md
+│   ├── schema.json
+│   ├── actions.schema.json
+│   ├── references/
+│   │   └── sop_steps.md
+│   └── scripts/
+├── tests/
+│   └── sop_skill/
 └── README.md
 ```
