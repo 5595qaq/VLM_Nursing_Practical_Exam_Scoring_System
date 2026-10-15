@@ -8,7 +8,8 @@ from google import genai
 from google.auth.credentials import AnonymousCredentials
 from google.genai import errors
 
-from app.services import agents
+from app.config import settings
+from app.services import agents, sop_skill_service
 from app.services.model_logging import context
 
 
@@ -59,6 +60,16 @@ async def test_transient_retries_use_sdk_backoff(sdk_client, status, caplog):
     logs = [json.loads(r.message) for r in caplog.records if r.name == "app.gemini"]
     assert [r["attempt"] for r in logs] == [1, 2, 3]
     assert all(r["queue_job_id"] == 7 for r in logs)
+    assert all(r["model"] == settings.GEMINI_MODEL_NAME for r in logs)
+
+
+async def test_sop_skill_attempt_logs_name_the_skill_model(sdk_client, caplog):
+    mock_http(sdk_client, [200])
+    with caplog.at_level("INFO", logger="app.gemini"):
+        await sop_skill_service.gemini_call("SYSTEM", [{"type": "text", "text": "turn"}])
+    (log,) = [json.loads(r.message) for r in caplog.records if r.name == "app.gemini"]
+    assert log["model"] == settings.SOP_SKILL_GEMINI_MODEL == "gemini-4-argon"
+    assert settings.GEMINI_MODEL_NAME != "gemini-4-argon"
 
 
 @pytest.mark.parametrize("status", [400, 401, 403, 404])

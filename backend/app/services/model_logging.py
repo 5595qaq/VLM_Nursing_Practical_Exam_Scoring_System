@@ -1,6 +1,7 @@
 """Per-HTTP-attempt logs, including SDK retries, without logging video content."""
 import json
 import logging
+import re
 import time
 from contextvars import ContextVar
 
@@ -11,6 +12,13 @@ from app.config import settings
 context: ContextVar[dict | None] = ContextVar("gemini_context", default=None)
 attempt_state: ContextVar[dict | None] = ContextVar("gemini_attempts", default=None)
 logger = logging.getLogger("app.gemini")
+_MODEL_IN_PATH = re.compile(r"/models/([^/:]+)")
+
+
+def _model_from(request) -> str:
+    """The model actually called (A–D and the SOP skill use different Gemini models)."""
+    match = _MODEL_IN_PATH.search(request.url.path)
+    return match.group(1) if match else settings.GEMINI_MODEL_NAME
 
 
 def emit(event: str, **values) -> None:
@@ -40,7 +48,7 @@ class LoggedTransport(httpx.AsyncBaseTransport):
         finally:
             ended = time.monotonic()
             state["ended"] = ended
-            emit("gemini_http_attempt", model=settings.GEMINI_MODEL_NAME,
+            emit("gemini_http_attempt", model=_model_from(request),
                  attempt=state["attempt"], delay_seconds=round(delay, 3),
                  elapsed_seconds=round(ended - started, 3), status_code=code, error=error)
 

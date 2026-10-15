@@ -276,7 +276,7 @@ gcloud storage ls gs://YOUR_BUCKET_NAME
 docker compose down
 ```
 
-若出現認證或 bucket 權限錯誤，先確認 `.env` 內的 project/bucket 是否正確，以及 `GCP_SA_KEY_PATH` 指向的 ADC 或金鑰 JSON 檔確實存在；修改 `.env` 後請重新執行 `docker compose up -d --build`。
+若出現認證或 bucket 權限錯誤，先確認 `.env` 內的 project/bucket 是否正確，以及 `GCP_SA_KEY_PATH` 指向的 ADC 或金鑰 JSON 檔確實存在；修改 `.env` 後請重新執行 `docker compose up -d --build`。`docker-compose.yml` 會把 `GCP_PROJECT_ID` 同時設成 `GOOGLE_CLOUD_PROJECT`，所以使用不含 project 的 ADC 檔時，不會再出現 `No project ID could be determined` 警告；手動本機執行時若看到這個警告，可以忽略，或自行設定 `GOOGLE_CLOUD_PROJECT`。
 
 從舊版升級時先 `docker compose stop backend worker gazelle-worker`（舊版沒有對應 worker service 時可忽略），再 `docker compose up -d --build`。`init` 使用 PgQueuer 官方 install/upgrade 介面與 durable 預設建表；API、一般 worker 與 Gazelle worker 在初始化完成後才啟動。統一 5 FPS 來源的首次升級會把所有未完成或已失敗的舊格式工作標記為不可重試的 `retired`，並清除舊 queue 任務；需用原始影片重新上傳後再提交。已完成工作的結果，以及已失敗工作的原始錯誤結果會保留。升級是向前遷移，不要同時執行新舊 worker，也不要刪除 PostgreSQL volume。
 
