@@ -7,14 +7,19 @@ from pgqueuer import PgQueuer
 
 from app.config import settings
 from app.db import asyncpg_dsn
-from app.services import agents
-from app.services.evaluation_queue import ENTRYPOINT
+from app.services import agents, sop_skill_service
+from app.services.evaluation_queue import ENTRYPOINT, SOP_SKILL_ENTRYPOINT
 from app.services.gemini_service import process_model_call
 
 
 def register(pgq, pool):
     @pgq.entrypoint(ENTRYPOINT, concurrency_limit=settings.GEMINI_GLOBAL_CONCURRENCY, on_failure="hold")
     async def handle(job):
+        await process_model_call(job, pool)
+
+    # Claude skill runs are long CPU+model loops with their own fleet-wide limit.
+    @pgq.entrypoint(SOP_SKILL_ENTRYPOINT, concurrency_limit=settings.SOP_SKILL_CONCURRENCY, on_failure="hold")
+    async def handle_sop_skill(job):
         await process_model_call(job, pool)
 
 
@@ -29,4 +34,5 @@ async def main():
             yield pgq
         finally:
             await agents.close_client()
+            await sop_skill_service.close_client()
             await connection.close()

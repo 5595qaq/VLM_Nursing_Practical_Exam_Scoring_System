@@ -69,6 +69,32 @@ PgQueuer 提供 at-least-once delivery。已提交結果會跳過重跑，重複
 
 `docker compose logs -f worker` 可查看 `gemini_http_attempt` JSON 日誌，包含 queue/evaluation/video/agent ID、queue attempt、HTTP attempt、狀態碼、重試間隔及耗時；不記錄影片內容或認證標頭。
 
+### SOP 步驟切分（sop-video-skill，只跑切分）
+
+評分表單的「執行模式」可選 **只跑 SOP 步驟切分**。此模式不執行 Time_cuting、Gazelle 與 Agent A–D，而是由 worker 依 `sop-video-skill/SKILL.md` 執行外部程式迴圈，透過 Vertex AI 呼叫 Claude（預設 `claude-opus-5-5`），輸出 30 個步驟各自的時間區段（`sop-video-skill/schema.json`，不評分）。
+
+1. worker 從 GCS 下載上傳時產生的 5 FPS 影片，執行 `prepare.py` 產生 proxy 與格線圖。
+2. 每回合 Claude 回覆一個動作 JSON（`crop_preview`／`set_crop`／`overview`／`zoom`／`final`）；worker 先用 `validate_action.py` 驗證，不合格就把錯誤回傳、不執行也不扣預算，合格才執行對應腳本並把新圖片送回。
+3. 每次請求只附「全片總覽圖＋動作能量圖＋最新一批圖片＋最新 draft＋動作紀錄＋剩餘預算」（SKILL.md 第 0 節），不重送舊的對話回合。
+4. `final` 通過 `schema.json` 與 `validate_result.py` 規則後，`video_id` 與 `meta.budget` 由 worker 依實際執行紀錄填入；`sequence_check.py` 的自動比對另存於 `sequence_check`，不寫進 result。
+5. 結果 JSON、模型對話紀錄（`transcript.json`）與全部中間圖片（`artifacts.zip`）上傳到 `gs://<bucket>/sop_runs/<video_id>/g<generation>/`。失敗的執行也會上傳對話紀錄，方便除錯。
+
+前端完成後顯示每支影片的 30 步表格與流程觀察，可下載「步驟切分 CSV」，以及每支影片的結果 JSON、圖片 ZIP、模型對話紀錄（後端 `GET /api/v1/evaluations/{job_id}/sop-skill/{影片序號}/{result|artifacts|transcript}` 代為從 GCS 讀取）。API 建立工作時傳 `"pipeline": "sop_skill"` 即為此模式（不可同時傳 `selected_agents`）；省略時為原本的 `"agents"` 模式。
+
+前置需求：GCP 專案需在 Vertex AI Model Garden 啟用對應的 Claude 模型，service account 需有呼叫權限。skill 目錄以唯讀方式掛載進 worker（`docker-compose.yml`）；修改 skill 後重啟 worker 即生效，不必重建映像。
+
+| 設定 | 預設 | 意義 |
+| --- | --- | --- |
+| `CLAUDE_MODEL_NAME` | `claude-opus-5-5` | Vertex AI 上的 Claude 模型 ID |
+| `CLAUDE_VERTEX_REGION` | `global` | Claude 呼叫的 Vertex AI region |
+| `CLAUDE_EFFORT` | `high` | `output_config.effort`（low／medium／high／xhigh／max） |
+| `CLAUDE_MAX_TOKENS` | 64000 | 單回合輸出上限（final 含 30 步 evidence，需較大） |
+| `CLAUDE_CALL_TIMEOUT_SECONDS` | 900 | 單回合呼叫的最長等待秒數 |
+| `SOP_SKILL_CONCURRENCY` | 2 | 所有 worker 同時執行的 skill 數（獨立於 Gemini 的 5 路上限） |
+| `SOP_SKILL_MAX_TURNS` | 60 | 每支影片的最多回合數（預算用滿約 42 回合） |
+
+Claude 回傳 429 或 529（overloaded）且 SDK 重試用盡時，該影片的 skill 任務會依 queue 層退避重新派送，並從頭重跑該影片；其他錯誤（模型拒答、連續 6 次不合格動作、超過回合上限）會讓工作失敗，可在前端「從失敗處繼續」只重跑未完成的影片。
+
 ### 核心模組架構
 
 1. **Frontend**: 純 HTML, CSS, 與 vanilla JavaScript。透過 Fetch API 下達評估任務，並透過 WebSocket 監聽伺服器事件更新 DOM。
@@ -100,6 +126,8 @@ gcloud config set project YOUR_PROJECT_ID
 gcloud services enable aiplatform.googleapis.com storage.googleapis.com
 gcloud config get-value project
 ```
+
+若要使用「只跑 SOP 步驟切分」模式，另需在 Vertex AI Model Garden 啟用 Claude 模型（見下方〈SOP 步驟切分〉）。
 
 ### 3. 建立 GCS bucket
 
@@ -185,6 +213,9 @@ GCP_LOCATION=global
 GCS_BUCKET_NAME=YOUR_BUCKET_NAME
 GEMINI_MODEL_NAME=gemini-3.1-pro-preview
 GCP_SA_KEY_PATH=./secrets/gcp-key.json
+# 選填：SOP 步驟切分模式使用的 Claude 模型與 region
+CLAUDE_MODEL_NAME=claude-opus-5-5
+CLAUDE_VERTEX_REGION=global
 ```
 
 可用以下指令確認目前 gcloud 登入帳號、專案與 bucket：

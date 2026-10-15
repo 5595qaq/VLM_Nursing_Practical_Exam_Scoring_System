@@ -19,6 +19,9 @@ from app.services import agents, gcs_service
 
 ENTRYPOINT = "gemini_api_call"
 GAZELLE_ENTRYPOINT = "gazelle_inference"
+SOP_SKILL_ENTRYPOINT = "sop_skill_run"
+PIPELINE_AGENTS = "agents"  # Time_cuting + selected Agent_A ~ Agent_D
+PIPELINE_SOP_SKILL = "sop_skill"  # sop-video-skill segmentation only
 TERMINAL = {"finished", "failed", "retired"}
 NORMALIZED_VIDEO_OBJECT = re.compile(r"^videos/[0-9a-f]{64}_5fps\.mp4$")
 
@@ -28,7 +31,7 @@ class ModelCall(BaseModel):
     version: Literal[1] = 1
     evaluation_id: str
     video_id: str
-    action: Literal["segment", "gaze", "score"]
+    action: Literal["segment", "gaze", "score", "sop_skill"]
     agent: Literal["Agent_A", "Agent_B", "Agent_C", "Agent_D"] | None = None
     generation: int = 0
 
@@ -71,8 +74,9 @@ async def enqueue(conn, call: ModelCall, position: int = 0):
     base = (f"score:{call.video_id}:{call.agent}" if call.action == "score"
             else f"{call.action}:{call.video_id}")
     key = f"{base}:{call.generation}"
+    entrypoint = {"gaze": GAZELLE_ENTRYPOINT, "sop_skill": SOP_SKILL_ENTRYPOINT}.get(call.action, ENTRYPOINT)
     await Queries(AsyncpgDriver(conn)).enqueue(
-        GAZELLE_ENTRYPOINT if call.action == "gaze" else ENTRYPOINT, call.model_dump_json().encode(),
+        entrypoint, call.model_dump_json().encode(),
         execute_after=timedelta(milliseconds=position * settings.GEMINI_CALL_STAGGER_MS), dedupe_key=key,
     )
 
@@ -96,7 +100,8 @@ async def branch(conn, job_id, name, status, message=None, progress=None):
 
 async def fill_window(conn, job_id):
     """Caller holds the parent row lock, including during initial creation."""
-    generation = await conn.fetchval("SELECT generation FROM evaluation_jobs WHERE id=$1", job_id)
+    job = await conn.fetchrow("SELECT generation,pipeline FROM evaluation_jobs WHERE id=$1", job_id)
+    generation = job["generation"]
     active = await conn.fetchval(
         "SELECT count(*) FROM evaluation_videos WHERE job_id=$1 "
         "AND status IN ('queued','segmenting','scoring')", job_id,
@@ -107,6 +112,11 @@ async def fill_window(conn, job_id):
         job_id, max(0, settings.MAX_ACTIVE_VIDEOS_PER_EVALUATION - active),
     )
     for position, video in enumerate(videos):
+        if job["pipeline"] == PIPELINE_SOP_SKILL:
+            await conn.execute("UPDATE evaluation_videos SET status='queued' WHERE id=$1", video["id"])
+            await enqueue(conn, ModelCall(evaluation_id=job_id, video_id=video["id"], action="sop_skill",
+                                          generation=generation), position)
+            continue
         if video["segments"] is None:
             await conn.execute("UPDATE evaluation_videos SET status='queued' WHERE id=$1", video["id"])
             await enqueue(conn, ModelCall(evaluation_id=job_id, video_id=video["id"], action="segment",
@@ -141,6 +151,7 @@ async def fill_window(conn, job_id):
 
 
 async def initialize_videos(conn, job_id, video_paths, selected_agents):
+    # SOP-skill jobs select no agents: one step per video and no gaze.
     enable_gaze = bool({"Agent_A", "Agent_D"}.intersection(selected_agents))
     await conn.execute(
         "INSERT INTO evaluation_progress(job_id,total_steps,completed_steps) VALUES($1,$2,0)",
@@ -161,16 +172,19 @@ async def initialize_videos(conn, job_id, video_paths, selected_agents):
     await fill_window(conn, job_id)
 
 
-async def create_evaluation(conn, exam_topic, video_paths, selected_agents=None):
-    if selected_agents is None:
+async def create_evaluation(conn, exam_topic, video_paths, selected_agents=None,
+                            pipeline=PIPELINE_AGENTS):
+    if pipeline == PIPELINE_SOP_SKILL:
+        selected_agents = []
+    elif selected_agents is None:
         selected_agents = agents.AGENT_NAMES
     await validate_video_sources(video_paths)
     job_id = str(uuid.uuid4())
     async with conn.transaction():
         await conn.execute(
-            "INSERT INTO evaluation_jobs(id,exam_topic,processing_mode,status,generation,video_paths,selected_agents) "
-            "VALUES($1,$2,'standard','pending',0,$3::json,$4::json)",
-            job_id, exam_topic, json.dumps(video_paths), json.dumps(selected_agents),
+            "INSERT INTO evaluation_jobs(id,exam_topic,processing_mode,status,generation,video_paths,"
+            "selected_agents,pipeline) VALUES($1,$2,'standard','pending',0,$3::json,$4::json,$5)",
+            job_id, exam_topic, json.dumps(video_paths), json.dumps(selected_agents), pipeline,
         )
         for name in ("GEMINI_UPLOAD", "GAZE_PROCESSING", "GEMINI_PROCESSING", "LLM_SCORING"):
             await branch(conn, job_id, name, "pending")
@@ -178,7 +192,7 @@ async def create_evaluation(conn, exam_topic, video_paths, selected_agents=None)
             await branch(conn, job_id, "GAZE_PROCESSING", "completed", "Gaze analysis not selected")
         await initialize_videos(conn, job_id, video_paths, selected_agents)
     return dict(id=job_id, exam_topic=exam_topic, status="pending", video_paths=video_paths,
-                selected_agents=selected_agents, result=None)
+                selected_agents=selected_agents, pipeline=pipeline, result=None)
 
 
 async def prepare_call(pool, call: ModelCall):
@@ -193,8 +207,8 @@ async def prepare_call(pool, call: ModelCall):
         )
         if not video:
             raise ValueError("Queue payload references an unknown video")
-        if call.action == "segment":
-            if video["segments"] is not None:
+        if call.action in ("segment", "sop_skill"):
+            if video["segments" if call.action == "segment" else "sop_result"] is not None:
                 return None
             await conn.execute("UPDATE evaluation_videos SET status='segmenting' WHERE id=$1", call.video_id)
             if job["status"] == "pending":
@@ -267,6 +281,13 @@ async def mark_verified(pool, call):
 
 async def report_segment_progress(pool, call, phase, elapsed_seconds):
     """Publish a heartbeat without advancing the completed-step counter."""
+    return await report_progress(
+        pool, call, lambda uri: f"Time_cuting {phase} | {elapsed_seconds}s | {uri}",
+    )
+
+
+async def report_progress(pool, call, make_message):
+    """Publish make_message(video_uri) as a heartbeat; False once the call is obsolete."""
     async with pool.acquire() as conn, conn.transaction():
         job = await lock_job(conn, call.evaluation_id)
         if not job or job["status"] in TERMINAL or call.generation != job["generation"]:
@@ -283,7 +304,7 @@ async def report_segment_progress(pool, call, phase, elapsed_seconds):
         )
         await branch(
             conn, call.evaluation_id, "GEMINI_PROCESSING", "in-progress",
-            f"Time_cuting {phase} | {elapsed_seconds}s | {video['uri']}",
+            make_message(video["uri"]),
             f"{progress['completed_steps']}/{progress['total_steps']}",
         )
         return True
@@ -314,6 +335,13 @@ async def persist_result(pool, call, result):
                                               action="score", agent=name,
                                               generation=call.generation), position)
             message = f"Time_cuting finished segmenting {video['uri']}"
+        elif call.action == "sop_skill":
+            if video["sop_result"] is not None:
+                return
+            await conn.execute("UPDATE evaluation_videos SET sop_result=$2::json,status='finished' WHERE id=$1",
+                               call.video_id, json.dumps(result))
+            await fill_window(conn, call.evaluation_id)
+            message = f"SOP_skill finished segmenting {video['uri']}"
         elif call.action == "gaze":
             if video["gaze_status"] in ("finished", "skipped"):
                 return
@@ -376,6 +404,14 @@ async def persist_result(pool, call, result):
 async def finalize(conn, job_id):
     await branch(conn, job_id, "LLM_SCORING", "in-progress", "Aggregating agent outputs...")
     videos = await conn.fetch("SELECT * FROM evaluation_videos WHERE job_id=$1 ORDER BY position", job_id)
+    if await conn.fetchval("SELECT pipeline FROM evaluation_jobs WHERE id=$1", job_id) == PIPELINE_SOP_SKILL:
+        result = {"pipeline": PIPELINE_SOP_SKILL, "items": [],
+                  "sop_skill": [{"video_uri": v["uri"], **decoded(v["sop_result"])} for v in videos]}
+        await conn.execute("UPDATE evaluation_jobs SET status='finished',result=$2::json WHERE id=$1",
+                           job_id, json.dumps(result))
+        await branch(conn, job_id, "LLM_SCORING", "completed", "Evaluation completed successfully.")
+        await branch(conn, job_id, "FINISHED", "completed", "done")
+        return
     runs = await conn.fetch(
         "SELECT r.* FROM evaluation_agent_runs r JOIN evaluation_videos v ON v.id=r.video_id "
         "WHERE v.job_id=$1 ORDER BY v.position,r.agent_name", job_id,
@@ -465,4 +501,4 @@ async def retry_evaluation(pool, job_id):
         await fill_window(conn, job_id)
         return dict(id=job["id"], exam_topic=job["exam_topic"], status="processing",
                     video_paths=decoded(job["video_paths"]),
-                    selected_agents=decoded(job["selected_agents"]), result=None)
+                    selected_agents=decoded(job["selected_agents"]), pipeline=job["pipeline"], result=None)

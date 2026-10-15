@@ -40,6 +40,15 @@ services:
       - GAZELLE_MODEL_VERSION=${GAZELLE_MODEL_VERSION:-gazelle-dinov2-vitb14-inout-v1}
       - GAZELLE_INOUT_THRESHOLD=${GAZELLE_INOUT_THRESHOLD:-0.5}
       - GAZELLE_DOT_RADIUS=${GAZELLE_DOT_RADIUS:-10}
+      # sop-video-skill：worker 透過 Vertex AI 呼叫 Claude（需在 GCP 專案啟用該 Claude 模型）
+      - CLAUDE_MODEL_NAME=${CLAUDE_MODEL_NAME:-claude-opus-5-5}
+      - CLAUDE_VERTEX_REGION=${CLAUDE_VERTEX_REGION:-global}
+      - CLAUDE_EFFORT=${CLAUDE_EFFORT:-high}
+      - CLAUDE_MAX_TOKENS=${CLAUDE_MAX_TOKENS:-64000}
+      - CLAUDE_CALL_TIMEOUT_SECONDS=${CLAUDE_CALL_TIMEOUT_SECONDS:-900}
+      - SOP_SKILL_CONCURRENCY=${SOP_SKILL_CONCURRENCY:-2}
+      - SOP_SKILL_MAX_TURNS=${SOP_SKILL_MAX_TURNS:-60}
+      - SOP_SKILL_DIR=/sop-video-skill
     volumes:
       # 將本機下載的 service account 金鑰掛載進容器，路徑對應上面的 GOOGLE_APPLICATION_CREDENTIALS
       - ${GCP_SA_KEY_PATH:-./secrets/gcp-key.json}:/secrets/gcp-key.json:ro
@@ -63,6 +72,8 @@ services:
     stop_grace_period: 30s
     volumes:
       - ${GCP_SA_KEY_PATH:-./secrets/gcp-key.json}:/secrets/gcp-key.json:ro
+      # skill 位於 build context（./backend）之外，以唯讀方式掛載給 worker 執行
+      - ./sop-video-skill:/sop-video-skill:ro
     depends_on:
       init:
         condition: service_completed_successfully

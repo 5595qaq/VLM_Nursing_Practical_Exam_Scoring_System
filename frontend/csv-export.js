@@ -189,6 +189,6 @@
 
     return {
         EXPECTED_CRITERIA, SUMMARY_HEADERS, normalizeItems, createSummaryRows,
-        createDetailRows, buildSummaryCsv, buildDetailCsv, videoName
+        createDetailRows, buildSummaryCsv, buildDetailCsv, videoName, toCsv
     };
 });

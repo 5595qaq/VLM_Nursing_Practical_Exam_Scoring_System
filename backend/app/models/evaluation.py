@@ -16,6 +16,7 @@ class EvaluationJob(Base):
         default=lambda: ["Agent_A", "Agent_B", "Agent_C", "Agent_D"],
         server_default=text("'[\"Agent_A\",\"Agent_B\",\"Agent_C\",\"Agent_D\"]'::json"),
     )
+    pipeline = Column(String, nullable=False, default="agents", server_default="agents")
     result = Column(JSON, nullable=True)
     
 class JobBranch(Base):
@@ -46,6 +47,7 @@ class EvaluationVideo(Base):
     gaze_artifacts = Column(JSON, nullable=True)
     gaze_status = Column(String, nullable=False, default="pending", server_default="pending")
     gaze_error = Column(String, nullable=True)
+    sop_result = Column(JSON, nullable=True)
 
 
 class EvaluationAgentRun(Base):
