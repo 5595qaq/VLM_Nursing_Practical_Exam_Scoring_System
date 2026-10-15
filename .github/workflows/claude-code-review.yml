@@ -17,7 +17,8 @@ jobs:
     timeout-minutes: 30
     permissions:
       contents: read
-      pull-requests: read
+      # write：審查結果要以留言貼回 PR（read 時只能讀，留言會失敗）
+      pull-requests: write
       issues: read
       id-token: write
     steps:
@@ -32,4 +33,10 @@ jobs:
           plugin_marketplaces: "https://github.com/anthropics/claude-code.git"
           plugins: "code-review@claude-code-plugins"
           prompt: "/code-review:code-review --comment ${{ github.repository }}/pull/${{ github.event.pull_request.number }}"
-          claude_args: '--allowedTools "mcp__github_inline_comment__create_inline_comment"'
+          # code-review 外掛先用 gh 讀取 PR 狀態與 diff，再留言；只開放行內留言工具時，
+          # 它讀不到 PR 就會直接結束（約 5 秒、不留言，卻顯示成功）。
+          # 工具清單取自外掛 commands/code-review.md 的 allowed-tools。
+          claude_args: >-
+            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr comment:*),Bash(gh pr list:*),Bash(gh issue view:*),Bash(gh issue list:*),Bash(gh search:*)"
+          # 暫時開啟：在 Actions log 顯示 Claude 的完整輸出，確認真的有審查；確認後可移除
+          show_full_output: true
