@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 1.4.2
+
+後端預設改由 Vertex AI 上的 Gemini（`gemini-4-argon`）執行本 skill；設定 `SOP_SKILL_PROVIDER=claude` 可改回 Claude。skill 的規則、動作格式與 schema 都不變。
+
+- `SKILL.md` 的 description 由「Claude 不吃影片」改為「模型不直接讀影片」，不再綁定特定模型。
+
 ## 1.4.1
 
 修正 #51 審查找到的問題（腳本行為修正，schema 與 SKILL.md 規則不變）。

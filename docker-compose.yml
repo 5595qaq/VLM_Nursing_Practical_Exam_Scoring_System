@@ -25,6 +25,8 @@ services:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/vlm_eval
       # Vertex AI / GCS 設定，實際數值請放在專案根目錄的 .env 檔案中（不會被 git 追蹤）
       - GCP_PROJECT_ID=${GCP_PROJECT_ID}
+      # google-auth 讀這個變數；ADC 檔沒有寫 project 時，可避免「No project ID could be determined」警告
+      - GOOGLE_CLOUD_PROJECT=${GCP_PROJECT_ID}
       - GCP_LOCATION=${GCP_LOCATION:-global}
       - GCS_BUCKET_NAME=${GCS_BUCKET_NAME}
       - GEMINI_MODEL_NAME=${GEMINI_MODEL_NAME:-gemini-3.1-pro-preview}
@@ -40,7 +42,11 @@ services:
       - GAZELLE_MODEL_VERSION=${GAZELLE_MODEL_VERSION:-gazelle-dinov2-vitb14-inout-v1}
       - GAZELLE_INOUT_THRESHOLD=${GAZELLE_INOUT_THRESHOLD:-0.5}
       - GAZELLE_DOT_RADIUS=${GAZELLE_DOT_RADIUS:-10}
-      # sop-video-skill：worker 透過 Vertex AI 呼叫 Claude（需在 GCP 專案啟用該 Claude 模型）
+      # sop-video-skill：預設由 Vertex AI 上的 Gemini 執行；SOP_SKILL_PROVIDER=claude 改用 Vertex AI 上的 Claude
+      - SOP_SKILL_PROVIDER=${SOP_SKILL_PROVIDER:-gemini}
+      - SOP_SKILL_GEMINI_MODEL=${SOP_SKILL_GEMINI_MODEL:-gemini-4-argon}
+      - SOP_SKILL_GEMINI_THINKING_LEVEL=${SOP_SKILL_GEMINI_THINKING_LEVEL:-}
+      - SOP_SKILL_GEMINI_MAX_OUTPUT_TOKENS=${SOP_SKILL_GEMINI_MAX_OUTPUT_TOKENS:-0}
       - CLAUDE_MODEL_NAME=${CLAUDE_MODEL_NAME:-claude-opus-5-5}
       - CLAUDE_VERTEX_REGION=${CLAUDE_VERTEX_REGION:-global}
       - CLAUDE_EFFORT=${CLAUDE_EFFORT:-high}

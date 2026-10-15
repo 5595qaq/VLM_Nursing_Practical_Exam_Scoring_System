@@ -21,7 +21,7 @@ def _is_transient_model_error(exc):
     status = getattr(exc, "status", None)
     return (
         isinstance(exc, TimeoutError)
-        # Anthropic SDK errors (Claude on Vertex AI) after its own retries: rate limit / overloaded.
+        # Anthropic SDK errors (SOP_SKILL_PROVIDER=claude) after its own retries: rate limit / overloaded.
         or getattr(exc, "status_code", None) in (429, 529)
         or code in (429, 499)
         or str(code) in ("429", "499")
