@@ -1,6 +1,6 @@
 # VLM+LLM Nursing Practical Exam Scoring System
 
-這是一個基於 VLM (視覺語言模型) 與 LLM 架構的護理術科評分系統。系統包含 JavaScript 前端與 FastAPI (Python) 後端。影片先上傳到 Google Cloud Storage (GCS)，後端透過 Vertex AI 呼叫 Gemini 模型對 `gs://` 路徑的影片進行解析與術科自動評分；另有「只跑 SOP 步驟切分」模式，由 Claude 執行 `sop-video-skill/`。
+這是一個基於 VLM (視覺語言模型) 與 LLM 架構的護理術科評分系統。系統包含 JavaScript 前端與 FastAPI (Python) 後端。影片先上傳到 Google Cloud Storage (GCS)，後端透過 Vertex AI 呼叫 Gemini 模型對 `gs://` 路徑的影片進行解析與術科自動評分；另有「只跑 SOP 步驟切分」模式，由 Amazon Bedrock 上的 Claude 執行 `sop-video-skill/`（影片仍放在 GCS）。
 
 > 目前僅供組內測試使用，前端是設計給組員測試 prompt/影片評分效果的工具，尚未考慮一般使用者的多人權限管理。
 
@@ -95,7 +95,7 @@ python sop-video-skill/scripts/schema_tools.py sop-video-skill/schema.json > out
 
 #### 執行模式：只跑 SOP 步驟切分
 
-評分表單的「執行模式」可選 **只跑 SOP 步驟切分**。此模式不執行 Time_cuting、Gazelle 與 Agent A–D，而是由 worker 依 `sop-video-skill/SKILL.md` 執行外部程式迴圈，透過 Vertex AI 呼叫 Claude（預設 `claude-opus-5-5`），輸出 30 個步驟各自的時間區段（`sop-video-skill/schema.json`，不評分）。
+評分表單的「執行模式」可選 **只跑 SOP 步驟切分**。此模式不執行 Time_cuting、Gazelle 與 Agent A–D，而是由 worker 依 `sop-video-skill/SKILL.md` 執行外部程式迴圈，透過 Amazon Bedrock 呼叫 Claude（預設 `claude-opus-5-5`；設定 `CLAUDE_PROVIDER=vertex` 可改回 Vertex AI），輸出 30 個步驟各自的時間區段（`sop-video-skill/schema.json`，不評分）。
 
 1. worker 從 GCS 下載上傳時產生的 `_src.mp4` 原檔，執行 `prepare.py` 產生 proxy 與格線圖。
 2. 每回合 Claude 回覆一個動作 JSON（`crop_preview`／`set_crop`／`overview`／`zoom`／`final`）；worker 先用 `validate_action.py` 驗證，不合格就把錯誤回傳、不執行也不扣預算，合格才執行對應腳本並把新圖片送回。
@@ -105,12 +105,14 @@ python sop-video-skill/scripts/schema_tools.py sop-video-skill/schema.json > out
 
 前端完成後顯示每支影片的 30 步表格與流程觀察，可下載「步驟切分 CSV」，以及每支影片的結果 JSON、圖片 ZIP、模型對話紀錄（後端 `GET /api/v1/evaluations/{job_id}/sop-skill/{影片序號}/{result|artifacts|transcript}` 代為從 GCS 讀取）。API 建立工作時傳 `"pipeline": "sop_skill"` 即為此模式（不可同時傳 `selected_agents`）；省略時為原本的 `"agents"` 模式。
 
-前置需求：GCP 專案需在 Vertex AI Model Garden 啟用對應的 Claude 模型，service account 需有呼叫權限。skill 目錄以唯讀方式掛載進 worker（`docker-compose.yml`）；修改 skill 後重啟 worker 即生效，不必重建映像。
+前置需求：依下方〈AWS Bedrock 設定〉準備 Claude 的存取權與憑證；影片下載與結果上傳仍使用 GCS，所以 GCP 設定也要完成。skill 目錄以唯讀方式掛載進 worker（`docker-compose.yml`）；修改 skill 後重啟 worker 即生效，不必重建映像。
 
 | 設定 | 預設 | 意義 |
 | --- | --- | --- |
-| `CLAUDE_MODEL_NAME` | `claude-opus-5-5` | Vertex AI 上的 Claude 模型 ID |
-| `CLAUDE_VERTEX_REGION` | `global` | Claude 呼叫的 Vertex AI region |
+| `CLAUDE_PROVIDER` | `bedrock` | Claude 的呼叫平台：`bedrock`（Amazon Bedrock）或 `vertex`（Vertex AI） |
+| `CLAUDE_MODEL_NAME` | `claude-opus-5-5` | Claude 模型 ID（first-party 格式）；Bedrock 會自動加上 `anthropic.` 前綴 |
+| `CLAUDE_BEDROCK_REGION` | `us-east-1` | Bedrock region（未設定時依序讀 `AWS_REGION`、`AWS_DEFAULT_REGION`） |
+| `CLAUDE_VERTEX_REGION` | `global` | `CLAUDE_PROVIDER=vertex` 時的 Vertex AI region |
 | `CLAUDE_EFFORT` | `high` | `output_config.effort`（low／medium／high／xhigh／max） |
 | `CLAUDE_MAX_TOKENS` | 64000 | 單回合輸出上限（final 含 30 步 evidence，需較大） |
 | `CLAUDE_CALL_TIMEOUT_SECONDS` | 900 | 單回合呼叫的最長等待秒數 |
@@ -119,12 +121,26 @@ python sop-video-skill/scripts/schema_tools.py sop-video-skill/schema.json > out
 
 Claude 回傳 429 或 529（overloaded）且 SDK 重試用盡時，該影片的 skill 任務會依 queue 層退避重新派送，並從頭重跑該影片；其他錯誤（模型拒答、連續 6 次不合格動作、超過回合上限）會讓工作失敗，可在前端「從失敗處繼續」只重跑未完成的影片。
 
+#### AWS Bedrock 設定
+
+SOP 步驟切分模式預設透過 Amazon Bedrock 呼叫 Claude（Bedrock 的 Messages API 端點 `bedrock-mantle.<region>.api.aws`，SDK 為 `anthropic[bedrock]` 的 `AsyncAnthropicBedrockMantle`）。Gemini、GCS 與 Agent A–D 不受影響。
+
+1. 在 AWS 主控台開啟 Amazon Bedrock，切換到要使用的 region（預設 `us-east-1`），在模型存取設定中為 Anthropic 的 Claude Opus 5.5 申請／啟用存取權。第一次使用 Anthropic 模型時可能需要填寫用途表單。
+2. 準備憑證，以下二擇一，寫進根目錄 `.env`：
+   - **Bedrock API key**（最簡單）：在 Bedrock 主控台建立 API key，設定 `AWS_BEARER_TOKEN_BEDROCK`。
+   - **IAM access key**：建立具有 Bedrock 模型呼叫權限的 IAM 使用者，設定 `AWS_ACCESS_KEY_ID`、`AWS_SECRET_ACCESS_KEY`（臨時憑證另加 `AWS_SESSION_TOKEN`）。
+
+   兩者同時設定時，SDK 優先使用 `AWS_BEARER_TOKEN_BEDROCK`。`docker-compose.yml` 只傳入有設定的 AWS 變數。
+3. 設定 `CLAUDE_BEDROCK_REGION` 為步驟 1 啟用模型的 region，然後 `docker compose up -d --build`。依賴改為 `anthropic[bedrock,vertex]`，因此需要重建映像。
+
+AWS 憑證與 GCP 憑證一樣不得提交到 Git；`.env` 已被 `.gitignore` 排除。若要改回 Vertex AI，設定 `CLAUDE_PROVIDER=vertex`，並在 Vertex AI Model Garden 啟用 Claude 模型。
+
 ### 核心模組架構
 
 1. **Frontend**: 純 HTML, CSS, 與 vanilla JavaScript。透過 Fetch API 下達評估任務，並透過 WebSocket 監聽伺服器事件更新 DOM。
 2. **Backend**: Python FastAPI，提供 REST API 創建任務，以及管理 WebSocket 節點。
 3. **Database (Message Broker)**: PostgreSQL，除了使用 SQLAlchemy ORM 保存狀態外，更兼任 Pub/Sub 訊息佇列，掌控並觸發全域系統事件。
-4. **VLM/LLM Engine**: Vertex AI 上的 Gemini 模型，讀取 GCS 影片提供視覺解析與最終護理步驟檢核表的邏輯統整。
+4. **VLM/LLM Engine**: Vertex AI 上的 Gemini 模型，讀取 GCS 影片提供視覺解析與最終護理步驟檢核表的邏輯統整。SOP 步驟切分模式則由 Amazon Bedrock 上的 Claude 讀取 worker 產生的影格圖片。
 
 ## GCP / gcloud 首次設定（首次使用必看）
 
@@ -151,7 +167,7 @@ gcloud services enable aiplatform.googleapis.com storage.googleapis.com
 gcloud config get-value project
 ```
 
-若要使用「只跑 SOP 步驟切分」模式，另需在 Vertex AI Model Garden 啟用 Claude 模型（見下方〈SOP 步驟切分〉）。
+若要使用「只跑 SOP 步驟切分」模式，另需完成〈AWS Bedrock 設定〉（Claude 預設走 Amazon Bedrock）。
 
 ### 3. 建立 GCS bucket
 
@@ -237,9 +253,14 @@ GCP_LOCATION=global
 GCS_BUCKET_NAME=YOUR_BUCKET_NAME
 GEMINI_MODEL_NAME=gemini-3.1-pro-preview
 GCP_SA_KEY_PATH=./secrets/gcp-key.json
-# 選填：SOP 步驟切分模式使用的 Claude 模型與 region
+# SOP 步驟切分模式：Claude 走 Amazon Bedrock（見〈AWS Bedrock 設定〉）
+CLAUDE_PROVIDER=bedrock
 CLAUDE_MODEL_NAME=claude-opus-5-5
-CLAUDE_VERTEX_REGION=global
+CLAUDE_BEDROCK_REGION=us-east-1
+# AWS 憑證二擇一：Bedrock API key，或 IAM access key
+AWS_BEARER_TOKEN_BEDROCK=YOUR_BEDROCK_API_KEY
+# AWS_ACCESS_KEY_ID=...
+# AWS_SECRET_ACCESS_KEY=...
 ```
 
 可用以下指令確認目前 gcloud 登入帳號、專案與 bucket：
@@ -295,6 +316,8 @@ docker compose down
    $env:GCS_BUCKET_NAME="YOUR_BUCKET_NAME"
    $env:GEMINI_MODEL_NAME="gemini-3.1-pro-preview"
    $env:GOOGLE_APPLICATION_CREDENTIALS=(Resolve-Path ".\secrets\gcp-key.json").Path
+   $env:CLAUDE_BEDROCK_REGION="us-east-1"
+   $env:AWS_BEARER_TOKEN_BEDROCK="YOUR_BEDROCK_API_KEY"
    ```
 
    **macOS / Linux：**
@@ -304,6 +327,8 @@ docker compose down
    export GCS_BUCKET_NAME="YOUR_BUCKET_NAME"
    export GEMINI_MODEL_NAME="gemini-3.1-pro-preview"
    export GOOGLE_APPLICATION_CREDENTIALS="$(pwd)/secrets/gcp-key.json"
+   export CLAUDE_BEDROCK_REGION="us-east-1"
+   export AWS_BEARER_TOKEN_BEDROCK="YOUR_BEDROCK_API_KEY"
    ```
 4. 安裝相依套件：
    ```bash

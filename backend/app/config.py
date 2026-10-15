@@ -26,9 +26,13 @@ class Settings:
     GAZELLE_CHECKPOINT_PATH = os.getenv("GAZELLE_CHECKPOINT_PATH", "/models/gazelle.pt")
     GAZELLE_INOUT_THRESHOLD = float(os.getenv("GAZELLE_INOUT_THRESHOLD", "0.5"))
     GAZELLE_DOT_RADIUS = _integer("GAZELLE_DOT_RADIUS", 10)
-    # sop-video-skill: Claude on Vertex AI runs the skill's external-program loop.
+    # sop-video-skill: Claude runs the skill's external-program loop, on Amazon Bedrock
+    # (default) or Vertex AI. CLAUDE_MODEL_NAME is the first-party ID; Bedrock adds "anthropic.".
+    CLAUDE_PROVIDER = os.getenv("CLAUDE_PROVIDER", "bedrock").strip().lower()
     CLAUDE_MODEL_NAME = os.getenv("CLAUDE_MODEL_NAME", "claude-opus-5-5")
     CLAUDE_VERTEX_REGION = os.getenv("CLAUDE_VERTEX_REGION", "global")
+    CLAUDE_BEDROCK_REGION = (os.getenv("CLAUDE_BEDROCK_REGION") or os.getenv("AWS_REGION")
+                             or os.getenv("AWS_DEFAULT_REGION") or "us-east-1")
     CLAUDE_EFFORT = os.getenv("CLAUDE_EFFORT", "high")
     CLAUDE_MAX_TOKENS = _integer("CLAUDE_MAX_TOKENS", 64000)
     CLAUDE_CALL_TIMEOUT_SECONDS = _integer("CLAUDE_CALL_TIMEOUT_SECONDS", 900)
@@ -37,6 +41,9 @@ class Settings:
     )
     SOP_SKILL_CONCURRENCY = _integer("SOP_SKILL_CONCURRENCY", 2)
     SOP_SKILL_MAX_TURNS = _integer("SOP_SKILL_MAX_TURNS", 60)
+
+    if CLAUDE_PROVIDER not in ("bedrock", "vertex"):
+        raise ValueError("CLAUDE_PROVIDER must be 'bedrock' or 'vertex'")
 
     if GEMINI_QUEUE_RETRY_MAX_SECONDS < GEMINI_QUEUE_RETRY_BASE_SECONDS:
         raise ValueError(

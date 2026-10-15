@@ -1,4 +1,5 @@
-"""External-program loop for sop-video-skill (SKILL.md section 0), driven by Claude.
+"""External-program loop for sop-video-skill (SKILL.md section 0), driven by Claude
+(Amazon Bedrock by default, or Vertex AI; see CLAUDE_PROVIDER).
 
 The skill is the system prompt; the model answers every turn with exactly one action JSON.
 This module validates the action with the skill's own validate_action.py, runs the matching
@@ -405,15 +406,29 @@ async def run_skill_loop(video_path: Path, video_id: str, workdir: Path, model_c
 _client = None
 
 
+def claude_model_id() -> str:
+    """Bedrock model IDs carry an "anthropic." prefix; Vertex uses the first-party ID."""
+    name = settings.CLAUDE_MODEL_NAME
+    if settings.CLAUDE_PROVIDER == "bedrock" and not name.startswith("anthropic."):
+        return f"anthropic.{name}"
+    return name
+
+
 def get_client():
     global _client
     if _client is None:
-        from anthropic import AsyncAnthropicVertex
-        _client = AsyncAnthropicVertex(
-            project_id=settings.GCP_PROJECT_ID, region=settings.CLAUDE_VERTEX_REGION,
-            max_retries=settings.GEMINI_RETRY_ATTEMPTS - 1,
-            timeout=settings.CLAUDE_CALL_TIMEOUT_SECONDS,
-        )
+        options = {"max_retries": settings.GEMINI_RETRY_ATTEMPTS - 1,
+                   "timeout": settings.CLAUDE_CALL_TIMEOUT_SECONDS}
+        if settings.CLAUDE_PROVIDER == "bedrock":
+            # Credentials: AWS_BEARER_TOKEN_BEDROCK (Bedrock API key), or the standard AWS
+            # chain (AWS_ACCESS_KEY_ID/AWS_SECRET_ACCESS_KEY, AWS_PROFILE) signed with SigV4.
+            from anthropic import AsyncAnthropicBedrockMantle
+            _client = AsyncAnthropicBedrockMantle(aws_region=settings.CLAUDE_BEDROCK_REGION, **options)
+        else:
+            from anthropic import AsyncAnthropicVertex
+            _client = AsyncAnthropicVertex(
+                project_id=settings.GCP_PROJECT_ID, region=settings.CLAUDE_VERTEX_REGION, **options,
+            )
     return _client
 
 
@@ -427,7 +442,7 @@ async def close_client():
 async def claude_call(system: str, content: list[dict]) -> ModelReply:
     """One streamed request; Claude Opus 5.5 always uses adaptive thinking."""
     stream = get_client().messages.stream(
-        model=settings.CLAUDE_MODEL_NAME,
+        model=claude_model_id(),
         max_tokens=settings.CLAUDE_MAX_TOKENS,
         system=[{"type": "text", "text": system, "cache_control": {"type": "ephemeral"}}],
         output_config={"effort": settings.CLAUDE_EFFORT},
@@ -485,4 +500,4 @@ async def run_sop_skill(video_uri: str, video_id: str, generation: int,
                 files = None
         if files is None:
             raise SkillRunError("failed to upload sop-video-skill artifacts to GCS")
-        return {**outcome, "files": files, "model": settings.CLAUDE_MODEL_NAME}
+        return {**outcome, "files": files, "model": claude_model_id()}

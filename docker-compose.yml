@@ -40,9 +40,16 @@ services:
       - GAZELLE_MODEL_VERSION=${GAZELLE_MODEL_VERSION:-gazelle-dinov2-vitb14-inout-v1}
       - GAZELLE_INOUT_THRESHOLD=${GAZELLE_INOUT_THRESHOLD:-0.5}
       - GAZELLE_DOT_RADIUS=${GAZELLE_DOT_RADIUS:-10}
-      # sop-video-skill：worker 透過 Vertex AI 呼叫 Claude（需在 GCP 專案啟用該 Claude 模型）
+      # sop-video-skill：worker 呼叫 Claude，預設走 Amazon Bedrock（CLAUDE_PROVIDER=vertex 改回 Vertex AI）
+      - CLAUDE_PROVIDER=${CLAUDE_PROVIDER:-bedrock}
       - CLAUDE_MODEL_NAME=${CLAUDE_MODEL_NAME:-claude-opus-5-5}
       - CLAUDE_VERTEX_REGION=${CLAUDE_VERTEX_REGION:-global}
+      - CLAUDE_BEDROCK_REGION=${CLAUDE_BEDROCK_REGION:-us-east-1}
+      # AWS 憑證：只寫變數名稱，值取自 .env；未設定的不會傳進容器（空字串會干擾 AWS 憑證鏈）
+      - AWS_BEARER_TOKEN_BEDROCK
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+      - AWS_SESSION_TOKEN
       - CLAUDE_EFFORT=${CLAUDE_EFFORT:-high}
       - CLAUDE_MAX_TOKENS=${CLAUDE_MAX_TOKENS:-64000}
       - CLAUDE_CALL_TIMEOUT_SECONDS=${CLAUDE_CALL_TIMEOUT_SECONDS:-900}

@@ -39,7 +39,7 @@ python sop-video-skill/scripts/schema_tools.py sop-video-skill/schema.json > out
 python sop-video-skill/scripts/schema_tools.py sop-video-skill/actions.schema.json > actions.json  # 動作 schema（自動嵌入 schema.json）
 ```
 
-sop-video-skill 執行迴圈（`backend/tests/test_sop_skill_service.py`）用 ffmpeg 產生 60 秒合成影片，以真實的 skill 腳本執行 crop／set_crop／overview／zoom／final，模型以腳本化假回覆取代；需要 ffmpeg 與 `opencv-python-headless`、`matplotlib`、`jsonschema`（已列在 `backend/requirements.txt`），不需資料庫與 Google 憑證：
+sop-video-skill 執行迴圈（`backend/tests/test_sop_skill_service.py`）用 ffmpeg 產生 60 秒合成影片，以真實的 skill 腳本執行 crop／set_crop／overview／zoom／final，模型以腳本化假回覆取代；需要 ffmpeg 與 `opencv-python-headless`、`matplotlib`、`jsonschema`（已列在 `backend/requirements.txt`），不需資料庫、Google 或 AWS 憑證：
 
 ```bash
 pytest backend/tests/test_sop_skill_service.py backend/tests/test_sop_skill_claude.py -q
@@ -71,3 +71,5 @@ node frontend/sop-result.test.js
 ## 首次真實模型驗收
 
 自動測試通過後，可由使用者提交 10 支代表性影片，查看 `docker compose logs -f worker` 的 429 比率與耗時，再決定是否調整 5 路設定。真實模型容量、延遲及計費不由 mock 測試保證。增加 worker 不會增加全域上限，改動設定需同時重啟所有 worker。
+
+SOP 步驟切分模式的 Claude 預設走 Amazon Bedrock。第一次驗收時，先用一支影片確認 Bedrock 憑證與模型存取權沒有問題（worker 日誌不應出現 401／403／404），再跑多支影片。

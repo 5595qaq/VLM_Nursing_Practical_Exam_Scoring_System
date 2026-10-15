@@ -13,8 +13,8 @@ google-genai==2.23.0
 google-cloud-storage
 pgqueuer[asyncpg]==1.4.0
 numpy==1.26.4
-# sop-video-skill: Claude on Vertex AI + the skill's scripts (scripts/*.py)
-anthropic[vertex]==1.13.0
+# sop-video-skill: Claude on Amazon Bedrock or Vertex AI + the skill's scripts (scripts/*.py)
+anthropic[bedrock,vertex]==1.13.0
 jsonschema==4.24.0
 opencv-python-headless==4.10.0.84
 matplotlib==3.9.2
