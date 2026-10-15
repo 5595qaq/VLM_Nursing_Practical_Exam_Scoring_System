@@ -9,8 +9,8 @@
 - **事件驅動架構 (Event-Driven)**：採用高擴充性的 Worker 排程概念，完全解耦 API 請求與耗時推論任務。
 - **即時進度監控**：前端透過 WebSocket 即時取得任務執行進度 (Uploading -> Processing -> Scoring)，並在頁面上呈現終端機風格的進度條與日誌。
 - **資料庫狀態持久化**：所有的任務執行狀態與最終判定結果會被記錄至 PostgreSQL 資料庫中。
-- **GCS 影片上傳與內容去重**：前端可直接選取本機影片；後端依原始內容的 SHA-256 將轉檔存為 `videos/{sha256}_5fps.mp4`，相同內容直接沿用，不同內容即使同名也不會互相覆蓋。手動貼入時只接受本系統先前產生、位於設定 bucket 的 normalized URI。
-- **單一 5 FPS 影片來源**：後端用 ffmpeg 將影片統一轉成 5 FPS（H.265）；Gemini 與 Gazelle 共用同一個 GCS 物件。
+- **GCS 影片上傳與內容去重**：前端可直接選取本機影片；後端依原始內容的 SHA-256 將轉檔存為 `videos/{sha256}_src.mp4`，相同內容直接沿用，不同內容即使同名也不會互相覆蓋。手動貼入時只接受本系統先前產生、位於設定 bucket 的 normalized URI。
+- **單一原檔影片來源**：後端用 ffmpeg 轉成 H.264（CRF 18、保留原始解析度與幀率、固定幀率、每 1 秒一個關鍵影格、保留音訊）；Gemini、Gazelle 與 sop-video-skill 共用同一個 GCS 物件。Gazelle 自行從片段抽 5 FPS，skill 自行產生 proxy，zoom 直接讀原檔。舊的 `videos/{sha256}_5fps.mp4` 已停止產生，新工作也不再接受，需用原始影片重新上傳。
 - **Vertex AI 認證**：後端統一使用 GCP service account 認證 Vertex AI／GCS，組員不需要各自準備或輸入 Gemini API Key。
 - **彈性結果格式**：多個 Agent 產出的評分 JSON 欄位尚未統一，前端以通用卡片＋原始 JSON 檢視的方式呈現，方便邊測 prompt 邊看結果。
 - **時間分段＋可選 Agent 評分**：`Time_cuting.txt` 先對完整影片找出四個重疊時間區段，再執行所選的 Agent_A ~ Agent_D；各 Agent 的 prompt 分別存放於 `backend/app/prompts/Agent_A.txt` ~ `Agent_D.txt`。評分表單可複選 Agent，預設全選；選到 Agent_A 或 Agent_D 時會先執行 Gazelle，兩者皆未選時才跳過 Gazelle。
@@ -20,7 +20,7 @@
 
 API 與 PgQueuer worker 分開執行，共用 PostgreSQL，流程如下：
 
-0. **[影片上傳]**：前端選取本機影片，轉成內容雜湊命名的 5 FPS 影片並上傳到 GCS，取得唯一的 `gs://` 路徑；也可以貼上本系統先前產生的 normalized URI。
+0. **[影片上傳]**：前端選取本機影片，轉成內容雜湊命名的 `_src.mp4` 影片並上傳到 GCS，取得唯一的 `gs://` 路徑；也可以貼上本系統先前產生的 normalized URI。
 1. **[呼叫 API]**：前端帶著 `gs://` 路徑發起評分請求說：「我要上傳評分任務喔！」
 2. **[建立工作]**：API 在同一交易寫入評分工作、全部影片、四個 Agent 狀態與前 10 支影片的切段任務，然後回覆 HTTP 200。超過 10 支的影片保存在資料庫等候。
 3. **[喚醒 worker]**：PgQueuer 使用 `LISTEN/NOTIFY` 與 polling fallback 派送 PostgreSQL 中的任務。
@@ -55,7 +55,7 @@ SDK 對 408、429、500、502、503、504 及其支援的暫時性網路錯誤�
 
 ### Gazelle gaze preprocessing
 
-上傳 API 只產生一支 `videos/{sha256}_5fps.mp4`。Gemini 時間切段及 Agent B、C 直接使用這支影片；獨立 GPU worker 會分別對 Agent A 與 Agent D 的時段執行 Gazelle，產生各自的紫色注視點影片與逐幀 JSON，再用對應的 overlay 啟動 Agent A／D。
+上傳 API 只產生一支 `videos/{sha256}_src.mp4`。Gemini 時間切段及 Agent B、C 直接使用這支影片；獨立 GPU worker 會分別對 Agent A 與 Agent D 的時段執行 Gazelle，先將該時段抽成 5 FPS，產生各自的紫色注視點影片與逐幀 JSON，再用對應的 overlay 啟動 Agent A／D。
 
 1. 下載 `gazelle_dinov2_vitb14_inout.pt` checkpoint，存成 `./models/gazelle.pt`（或設定 `GAZELLE_CHECKPOINT_PATH` 指向原檔名）。
 2. 將 `GAZELLE_REF` 設為部署驗證過的 Gazelle commit SHA；未設定時 Docker build 使用 `main`，僅適合開發。
@@ -73,7 +73,7 @@ PgQueuer 提供 at-least-once delivery。已提交結果會跳過重跑，重複
 
 評分表單的「執行模式」可選 **只跑 SOP 步驟切分**。此模式不執行 Time_cuting、Gazelle 與 Agent A–D，而是由 worker 依 `sop-video-skill/SKILL.md` 執行外部程式迴圈，透過 Vertex AI 呼叫 Claude（預設 `claude-opus-5-5`），輸出 30 個步驟各自的時間區段（`sop-video-skill/schema.json`，不評分）。
 
-1. worker 從 GCS 下載上傳時產生的 5 FPS 影片，執行 `prepare.py` 產生 proxy 與格線圖。
+1. worker 從 GCS 下載上傳時產生的 `_src.mp4` 原檔，執行 `prepare.py` 產生 proxy 與格線圖。
 2. 每回合 Claude 回覆一個動作 JSON（`crop_preview`／`set_crop`／`overview`／`zoom`／`final`）；worker 先用 `validate_action.py` 驗證，不合格就把錯誤回傳、不執行也不扣預算，合格才執行對應腳本並把新圖片送回。
 3. 每次請求只附「全片總覽圖＋動作能量圖＋最新一批圖片＋最新 draft＋動作紀錄＋剩餘預算」（SKILL.md 第 0 節），不重送舊的對話回合。
 4. `final` 通過 `schema.json` 與 `validate_result.py` 規則後，`video_id` 與 `meta.budget` 由 worker 依實際執行紀錄填入；`sequence_check.py` 的自動比對另存於 `sequence_check`，不寫進 result。

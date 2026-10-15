@@ -73,7 +73,7 @@ async def wait_terminal(pool, job_ids):
 
 
 async def create(pool, count, selected_agents=None):
-    uris = [f"gs://test-bucket/videos/{i:064x}_5fps.mp4" for i in range(count)]
+    uris = [f"gs://test-bucket/videos/{i:064x}_src.mp4" for i in range(count)]
     async with pool.acquire() as conn:
         job = await repo.create_evaluation(conn, "exam", uris, selected_agents)
     return job
@@ -338,9 +338,9 @@ async def test_unified_source_migration_stops_active_jobs_and_runs_once(pool):
     )
     await pool.execute(
         "INSERT INTO evaluation_videos(id,job_id,position,uri,status,verified,gaze_source_uri) VALUES "
-        "('active-video','inflight',0,'gs://bucket/a_1fps.mp4','queued',true,'gs://bucket/a_gaze_5fps.mp4'),"
-        "('failed-video','legacy-failed',0,'gs://bucket/c_1fps.mp4','failed',true,'gs://bucket/c_gaze_5fps.mp4'),"
-        "('done-video','complete',0,'gs://bucket/b_1fps.mp4','finished',true,'gs://bucket/b_gaze_5fps.mp4')"
+        "('active-video','inflight',0,'gs://bucket/a_1fps.mp4','queued',true,'gs://bucket/a_gaze_src.mp4'),"
+        "('failed-video','legacy-failed',0,'gs://bucket/c_1fps.mp4','failed',true,'gs://bucket/c_gaze_src.mp4'),"
+        "('done-video','complete',0,'gs://bucket/b_1fps.mp4','finished',true,'gs://bucket/b_gaze_src.mp4')"
     )
     await pool.execute(
         "UPDATE evaluation_videos SET error='original video error',gaze_error='original gaze error' "
@@ -660,7 +660,7 @@ async def test_sop_skill_pipeline_runs_only_the_skill(pool, fake_models, fake_sk
     cutting, scoring, gaze = fake_models
     async with pool.acquire() as conn:
         job = await repo.create_evaluation(
-            conn, "exam", [f"gs://test-bucket/videos/{i:064x}_5fps.mp4" for i in range(3)],
+            conn, "exam", [f"gs://test-bucket/videos/{i:064x}_src.mp4" for i in range(3)],
             ["Agent_A"], pipeline=repo.PIPELINE_SOP_SKILL,
         )
     assert job["selected_agents"] == [] and job["pipeline"] == "sop_skill"
@@ -690,14 +690,14 @@ async def test_sop_skill_failure_then_retry_reruns_only_unfinished(pool, fake_mo
 
     async def flaky(video_uri, video_id, generation, on_progress):
         calls.append((video_uri, generation))
-        if video_uri.endswith(f"{1:064x}_5fps.mp4") and generation == 0:
+        if video_uri.endswith(f"{1:064x}_src.mp4") and generation == 0:
             raise RuntimeError("claude loop broke")
         return await run(video_uri, video_id, generation, on_progress)
 
     fake_skill.side_effect = flaky
     async with pool.acquire() as conn:
         job = await repo.create_evaluation(
-            conn, "exam", [f"gs://test-bucket/videos/{i:064x}_5fps.mp4" for i in range(2)],
+            conn, "exam", [f"gs://test-bucket/videos/{i:064x}_src.mp4" for i in range(2)],
             pipeline=repo.PIPELINE_SOP_SKILL,
         )
     async with workers(pool):
@@ -726,7 +726,7 @@ async def test_sop_skill_transient_claude_error_is_requeued(pool, fake_models, f
 
     fake_skill.side_effect = once_overloaded
     async with pool.acquire() as conn:
-        job = await repo.create_evaluation(conn, "exam", ["gs://test-bucket/videos/" + "a" * 64 + "_5fps.mp4"],
+        job = await repo.create_evaluation(conn, "exam", ["gs://test-bucket/videos/" + "a" * 64 + "_src.mp4"],
                                            pipeline=repo.PIPELINE_SOP_SKILL)
     async with workers(pool):
         rows = await wait_terminal(pool, [job["id"]])

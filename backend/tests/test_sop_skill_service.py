@@ -180,7 +180,7 @@ async def test_run_sop_skill_downloads_and_uploads_artifacts(video, monkeypatch)
     uploads = {}
 
     def download(uri, filename):
-        assert uri == "gs://test-bucket/videos/x_5fps.mp4"
+        assert uri == "gs://test-bucket/videos/x_src.mp4"
         shutil.copy(video, filename)
 
     def upload(local, object_name, content_type):
@@ -189,7 +189,7 @@ async def test_run_sop_skill_downloads_and_uploads_artifacts(video, monkeypatch)
 
     monkeypatch.setattr(skill.gcs_service, "download_to_filename", download)
     monkeypatch.setattr(skill.gcs_service, "upload_file", upload)
-    outcome = await skill.run_sop_skill("gs://test-bucket/videos/x_5fps.mp4", "vid-9", 3,
+    outcome = await skill.run_sop_skill("gs://test-bucket/videos/x_src.mp4", "vid-9", 3,
                                         model_call=ScriptedModel(HAPPY_PATH))
     assert outcome["files"] == {
         "artifacts": "gs://test-bucket/sop_runs/vid-9/g3/artifacts.zip",

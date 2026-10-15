@@ -29,7 +29,7 @@
             <div class="form-group">
                 <label for="video-files">上傳考試影片</label>
                 <input type="file" id="video-files" multiple accept="video/*">
-                <p class="field-hint">可一次選擇多部影片；系統會統一轉為 5 FPS 後上傳。</p>
+                <p class="field-hint">可一次選擇多部影片；系統會以原始解析度與幀率轉成 H.264 後上傳（檔案較大，轉檔需數分鐘）。</p>
                 <button type="button" id="upload-btn">上傳影片</button>
                 <button type="button" id="clear-uploads-btn" class="clear-uploads-btn" hidden>清空已上傳清單</button>
                 <ul id="upload-status-list" class="log-box upload-status-list"></ul>
@@ -37,8 +37,8 @@
 
             <div class="form-group">
                 <label for="video-paths">或輸入既有的影片雲端路徑（選填）</label>
-                <textarea id="video-paths" rows="3" placeholder="每行一個 5 FPS gs:// 路徑，也可使用逗號分隔"></textarea>
-                <p class="field-hint">只能貼入本系統上傳功能先前產生的 videos/&lt;SHA-256&gt;_5fps.mp4 路徑。</p>
+                <textarea id="video-paths" rows="3" placeholder="每行一個 gs:// 路徑，也可使用逗號分隔"></textarea>
+                <p class="field-hint">只能貼入本系統上傳功能先前產生的 videos/&lt;SHA-256&gt;_src.mp4 路徑；舊的 _5fps.mp4 已停用，請重新上傳原始影片。</p>
             </div>
 
             <fieldset class="agent-selection pipeline-selection">

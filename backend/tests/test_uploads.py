@@ -14,13 +14,13 @@ def _fake_convert(_input_path, output_path):
 
 
 def _target(content):
-    return f"videos/{hashlib.sha256(content).hexdigest()}_5fps.mp4"
+    return f"videos/{hashlib.sha256(content).hexdigest()}_src.mp4"
 
 
 def test_upload_reuses_existing_content_without_conversion(client):
     content = b"same video"
     with patch("app.services.gcs_service.blob_exists", return_value=True), \
-         patch("app.services.video_service.convert_to_5fps") as convert:
+         patch("app.services.video_service.normalize_source") as convert:
         response = client.post(
             "/api/v1/uploads/",
             files={"files": ("any-name.mov", io.BytesIO(content), "video/quicktime")},
@@ -39,7 +39,7 @@ def test_upload_converts_once_and_returns_only_unified_source(client):
     content = b"new video"
     target = _target(content)
     with patch("app.services.gcs_service.blob_exists", return_value=False), \
-         patch("app.services.video_service.convert_to_5fps", side_effect=_fake_convert) as convert, \
+         patch("app.services.video_service.normalize_source", side_effect=_fake_convert) as convert, \
          patch("app.services.gcs_service.upload_if_needed",
                return_value=(f"gs://bucket/{target}", "uploaded")) as upload:
         response = client.post(
@@ -58,7 +58,7 @@ def test_upload_converts_once_and_returns_only_unified_source(client):
 def test_identical_files_in_one_request_share_one_conversion(client):
     content = b"identical"
     with patch("app.services.gcs_service.blob_exists", return_value=False), \
-         patch("app.services.video_service.convert_to_5fps", side_effect=_fake_convert) as convert, \
+         patch("app.services.video_service.normalize_source", side_effect=_fake_convert) as convert, \
          patch("app.services.gcs_service.upload_if_needed",
                side_effect=lambda _f, name, _t: (f"gs://bucket/{name}", "uploaded")) as upload:
         response = client.post("/api/v1/uploads/", files=[
@@ -74,7 +74,7 @@ def test_identical_files_in_one_request_share_one_conversion(client):
 
 def test_same_filename_with_different_content_gets_different_uris(client):
     with patch("app.services.gcs_service.blob_exists", return_value=False), \
-         patch("app.services.video_service.convert_to_5fps", side_effect=_fake_convert), \
+         patch("app.services.video_service.normalize_source", side_effect=_fake_convert), \
          patch("app.services.gcs_service.upload_if_needed",
                side_effect=lambda _f, name, _t: (f"gs://bucket/{name}", "uploaded")):
         response = client.post("/api/v1/uploads/", files=[
@@ -105,7 +105,7 @@ def test_upload_processes_at_most_two_unique_videos_in_parallel(client):
     files = [("files", (f"cam{i}.mp4", io.BytesIO(f"video-{i}".encode()), "video/mp4"))
              for i in range(3)]
     with patch("app.services.gcs_service.blob_exists", return_value=False), \
-         patch("app.services.video_service.convert_to_5fps", side_effect=tracked_convert), \
+         patch("app.services.video_service.normalize_source", side_effect=tracked_convert), \
          patch("app.services.gcs_service.upload_if_needed",
                side_effect=lambda _f, name, _t: (f"gs://bucket/{name}", "uploaded")):
         response = client.post("/api/v1/uploads/", files=files)

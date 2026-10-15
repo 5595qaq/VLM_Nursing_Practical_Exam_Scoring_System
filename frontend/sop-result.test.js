@@ -41,12 +41,12 @@ assert.deepEqual(observations.map(row => [row.type, row.steps, row.source]),
 
 const csv = SopResult.buildStepsCsv({
     id: 'job-1',
-    result: { pipeline: 'sop_skill', sop_skill: [{ video_uri: 'gs://b/videos/abc_5fps.mp4', result }] }
-}, { 'gs://b/videos/abc_5fps.mp4': '考生一.mp4' });
+    result: { pipeline: 'sop_skill', sop_skill: [{ video_uri: 'gs://b/videos/abc_src.mp4', result }] }
+}, { 'gs://b/videos/abc_src.mp4': '考生一.mp4' });
 const lines = csv.replace(/^﻿/, '').split('\r\n');
 assert.equal(lines.length, 1 + 5);
 assert.match(lines[0], /^"工作編號","影片名稱","影片路徑","步驟編號"/);
-assert.match(lines[1], /^"job-1","考生一.mp4","gs:\/\/b\/videos\/abc_5fps.mp4","2",/);
+assert.match(lines[1], /^"job-1","考生一.mp4","gs:\/\/b\/videos\/abc_src.mp4","2",/);
 assert.ok(lines.some(line => line.includes(`"'=zoom@201"`)), 'formula-like evidence must be neutralized');
 
 assert.equal(SopResult.fileUrl('http://localhost:8000', 'a/b', 0, 'artifacts'),
