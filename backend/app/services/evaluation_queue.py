@@ -10,6 +10,7 @@ import uuid
 from datetime import timedelta
 from typing import Literal
 
+import asyncpg
 from pydantic import BaseModel, ConfigDict, model_validator
 from pgqueuer.db import AsyncpgDriver
 from pgqueuer.queries import Queries
@@ -400,6 +401,29 @@ async def persist_result(pool, call, result):
                      message, f"{progress['completed_steps']}/{progress['total_steps']}")
         if complete:
             await finalize(conn, call.evaluation_id)
+
+
+USAGE_COLUMNS = ("job_id", "video_id", "generation", "stage", "queue_attempt", "provider", "model",
+                 "input_tokens", "cached_input_tokens", "cache_write_tokens", "output_tokens", "thinking_tokens")
+
+
+async def record_usage(pool, row):
+    """Store the tokens of one model response (app.services.usage); skipped if the job is gone."""
+    placeholders = ",".join(f"${i}" for i in range(1, len(USAGE_COLUMNS) + 1))
+    defaults = {"generation": 0, **dict.fromkeys(USAGE_COLUMNS[7:], 0)}
+    try:
+        await pool.execute(
+            f"INSERT INTO model_usage ({','.join(USAGE_COLUMNS)}) VALUES ({placeholders})",
+            *(defaults.get(column) if row.get(column) is None else row[column] for column in USAGE_COLUMNS),
+        )
+    except asyncpg.ForeignKeyViolationError:
+        pass  # the evaluation was deleted while its model call was running
+
+
+async def usage_rows(conn, job_id):
+    return [dict(row) for row in await conn.fetch(
+        "SELECT u.*, v.position AS video_position, v.uri AS video_uri FROM model_usage u "
+        "LEFT JOIN evaluation_videos v ON v.id=u.video_id WHERE u.job_id=$1 ORDER BY u.id", job_id)]
 
 
 async def finalize(conn, job_id):

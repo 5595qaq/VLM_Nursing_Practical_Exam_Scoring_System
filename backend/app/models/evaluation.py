@@ -1,5 +1,6 @@
 import uuid
-from sqlalchemy import Column, String, JSON, ForeignKey, Integer, Boolean, UniqueConstraint, CheckConstraint, text
+from sqlalchemy import (Column, String, JSON, ForeignKey, Integer, Boolean, UniqueConstraint, CheckConstraint,
+                        DateTime, func, text)
 from app.db import Base
 
 class EvaluationJob(Base):
@@ -69,3 +70,22 @@ class EvaluationProgress(Base):
     total_steps = Column(Integer, nullable=False)
     completed_steps = Column(Integer, nullable=False, default=0)
 
+
+class ModelUsage(Base):
+    """Tokens of one model response (see app.services.usage for the column meanings)."""
+    __tablename__ = "model_usage"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    job_id = Column(String, ForeignKey("evaluation_jobs.id", ondelete="CASCADE"), nullable=False, index=True)
+    video_id = Column(String, nullable=True)
+    generation = Column(Integer, nullable=False, default=0, server_default="0")
+    stage = Column(String, nullable=True)  # Time_cuting, Agent_A–D, SOP_skill
+    queue_attempt = Column(Integer, nullable=True)
+    provider = Column(String, nullable=False)  # gemini or claude
+    model = Column(String, nullable=False)
+    input_tokens = Column(Integer, nullable=False, default=0, server_default="0")
+    cached_input_tokens = Column(Integer, nullable=False, default=0, server_default="0")
+    cache_write_tokens = Column(Integer, nullable=False, default=0, server_default="0")
+    output_tokens = Column(Integer, nullable=False, default=0, server_default="0")
+    thinking_tokens = Column(Integer, nullable=False, default=0, server_default="0")
+    created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())

@@ -8,7 +8,7 @@ from app.db import get_db
 from app.schemas.evaluation import EvaluationCreate, EvaluationResponse
 from app.models.evaluation import EvaluationJob
 from app.ws_manager import manager
-from app.services import evaluation_queue, gcs_service
+from app.services import evaluation_queue, gcs_service, usage
 
 router = APIRouter()
 
@@ -49,6 +49,27 @@ async def download_sop_skill_file(job_id: str, position: int,
     filename = f"sop_skill_{job_id[:8]}_{position + 1}_{kind}.{extension}"
     return Response(data, media_type=media_type,
                     headers={"Content-Disposition": f'attachment; filename="{filename}"'})
+
+
+async def _usage_summary(job_id: str, request: Request) -> dict:
+    async with request.app.state.queue_pool.acquire() as connection:
+        if not await connection.fetchval("SELECT 1 FROM evaluation_jobs WHERE id=$1", job_id):
+            raise HTTPException(status_code=404, detail="Job not found")
+        rows = await evaluation_queue.usage_rows(connection, job_id)
+    return usage.summarize(rows, usage.load_prices())
+
+
+@router.get("/{job_id}/usage")
+async def get_usage(job_id: str, request: Request):
+    """Tokens of every model response in this evaluation, with costs if MODEL_PRICES_JSON is set."""
+    return await _usage_summary(job_id, request)
+
+
+@router.get("/{job_id}/usage.csv")
+async def download_usage_csv(job_id: str, request: Request):
+    data = usage.to_csv(await _usage_summary(job_id, request))
+    return Response(data, media_type="text/csv; charset=utf-8",
+                    headers={"Content-Disposition": f'attachment; filename="token_usage_{job_id[:8]}.csv"'})
 
 
 @router.post("/", response_model=EvaluationResponse)

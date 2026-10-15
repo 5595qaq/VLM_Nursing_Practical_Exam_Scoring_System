@@ -31,6 +31,11 @@ async def sdk_client(monkeypatch):
     await agents.close_client()
 
 
+def attempt_logs(caplog):
+    logs = [json.loads(r.message) for r in caplog.records if r.name == "app.gemini"]
+    return [log for log in logs if log["event"] == "gemini_http_attempt"]
+
+
 def mock_http(client, statuses):
     seen = []
     async def respond(request):
@@ -57,7 +62,7 @@ async def test_transient_retries_use_sdk_backoff(sdk_client, status, caplog):
     delays = [float(c.args[0]) for c in sdk_client._api_client._async_retry.sleep.await_args_list]
     assert 1 <= delays[0] <= 2
     assert 2 <= delays[1] <= 3
-    logs = [json.loads(r.message) for r in caplog.records if r.name == "app.gemini"]
+    logs = attempt_logs(caplog)
     assert [r["attempt"] for r in logs] == [1, 2, 3]
     assert all(r["queue_job_id"] == 7 for r in logs)
     assert all(r["model"] == settings.GEMINI_MODEL_NAME for r in logs)
@@ -67,7 +72,7 @@ async def test_sop_skill_attempt_logs_name_the_skill_model(sdk_client, caplog):
     mock_http(sdk_client, [200])
     with caplog.at_level("INFO", logger="app.gemini"):
         await sop_skill_service.gemini_call("SYSTEM", [{"type": "text", "text": "turn"}])
-    (log,) = [json.loads(r.message) for r in caplog.records if r.name == "app.gemini"]
+    (log,) = attempt_logs(caplog)
     assert log["model"] == settings.SOP_SKILL_GEMINI_MODEL == "gemini-4-argon"
     assert settings.GEMINI_MODEL_NAME != "gemini-4-argon"
 
