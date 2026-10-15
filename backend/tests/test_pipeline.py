@@ -73,7 +73,7 @@ async def wait_terminal(pool, job_ids):
 
 
 async def create(pool, count, selected_agents=None):
-    uris = [f"gs://test-bucket/videos/{i:064x}_5fps.mp4" for i in range(count)]
+    uris = [f"gs://test-bucket/videos/{i:064x}_src.mp4" for i in range(count)]
     async with pool.acquire() as conn:
         job = await repo.create_evaluation(conn, "exam", uris, selected_agents)
     return job
@@ -338,9 +338,9 @@ async def test_unified_source_migration_stops_active_jobs_and_runs_once(pool):
     )
     await pool.execute(
         "INSERT INTO evaluation_videos(id,job_id,position,uri,status,verified,gaze_source_uri) VALUES "
-        "('active-video','inflight',0,'gs://bucket/a_1fps.mp4','queued',true,'gs://bucket/a_gaze_5fps.mp4'),"
-        "('failed-video','legacy-failed',0,'gs://bucket/c_1fps.mp4','failed',true,'gs://bucket/c_gaze_5fps.mp4'),"
-        "('done-video','complete',0,'gs://bucket/b_1fps.mp4','finished',true,'gs://bucket/b_gaze_5fps.mp4')"
+        "('active-video','inflight',0,'gs://bucket/a_1fps.mp4','queued',true,'gs://bucket/a_gaze_src.mp4'),"
+        "('failed-video','legacy-failed',0,'gs://bucket/c_1fps.mp4','failed',true,'gs://bucket/c_gaze_src.mp4'),"
+        "('done-video','complete',0,'gs://bucket/b_1fps.mp4','finished',true,'gs://bucket/b_gaze_src.mp4')"
     )
     await pool.execute(
         "UPDATE evaluation_videos SET error='original video error',gaze_error='original gaze error' "
@@ -638,3 +638,97 @@ async def test_gaze_compatibility_still_requires_preprocessing(pool, agent, stat
     assert await pool.fetchval(
         "SELECT status FROM evaluation_agent_runs WHERE video_id=$1 AND agent_name=$2", video_id, agent,
     ) == "pending"
+
+
+@pytest.fixture
+def fake_skill(monkeypatch):
+    from app.services import sop_skill_service
+
+    async def run(video_uri, video_id, generation, on_progress):
+        await on_progress(1, "thinking", {"used": {"crop_preview": 0, "overview": 0, "zoom": 0}})
+        return {"result": {"video_id": video_id, "steps": []}, "sequence_check": [],
+                "files": {"result": f"gs://test-bucket/sop_runs/{video_id}/g{generation}/result.json"},
+                "turns": 1, "usage": {}, "model": "claude-test"}
+
+    skill = AsyncMock(side_effect=run)
+    monkeypatch.setattr(sop_skill_service, "run_sop_skill", skill)
+    return skill
+
+
+async def test_sop_skill_pipeline_runs_only_the_skill(pool, fake_models, fake_skill, monkeypatch):
+    monkeypatch.setattr(settings, "MAX_ACTIVE_VIDEOS_PER_EVALUATION", 2)
+    cutting, scoring, gaze = fake_models
+    async with pool.acquire() as conn:
+        job = await repo.create_evaluation(
+            conn, "exam", [f"gs://test-bucket/videos/{i:064x}_src.mp4" for i in range(3)],
+            ["Agent_A"], pipeline=repo.PIPELINE_SOP_SKILL,
+        )
+    assert job["selected_agents"] == [] and job["pipeline"] == "sop_skill"
+    assert await pool.fetchval(
+        "SELECT count(*) FROM pgqueuer WHERE entrypoint=$1", repo.SOP_SKILL_ENTRYPOINT) == 2
+    async with workers(pool):
+        rows = await wait_terminal(pool, [job["id"]])
+    assert rows[0]["status"] == "finished"
+    result = json.loads(rows[0]["result"])
+    assert result["pipeline"] == "sop_skill" and result["items"] == []
+    assert [entry["video_uri"] for entry in result["sop_skill"]] == job["video_paths"]
+    assert all(entry["model"] == "claude-test" for entry in result["sop_skill"])
+    assert fake_skill.await_count == 3
+    assert cutting.await_count == scoring.await_count == gaze.call_count == 0
+    assert await pool.fetchval("SELECT count(*) FROM evaluation_agent_runs") == 0
+    progress = await pool.fetchrow("SELECT * FROM evaluation_progress WHERE job_id=$1", job["id"])
+    assert progress["completed_steps"] == progress["total_steps"] == 3
+    messages = [r["message"] for r in await pool.fetch(
+        "SELECT message FROM job_branches WHERE job_id=$1", job["id"])]
+    assert "done" in messages
+
+
+async def test_sop_skill_failure_then_retry_reruns_only_unfinished(pool, fake_models, fake_skill, monkeypatch):
+    monkeypatch.setattr(settings, "MAX_ACTIVE_VIDEOS_PER_EVALUATION", 1)  # video 0 finishes first
+    run = fake_skill.side_effect
+    calls = []
+
+    async def flaky(video_uri, video_id, generation, on_progress):
+        calls.append((video_uri, generation))
+        if video_uri.endswith(f"{1:064x}_src.mp4") and generation == 0:
+            raise RuntimeError("claude loop broke")
+        return await run(video_uri, video_id, generation, on_progress)
+
+    fake_skill.side_effect = flaky
+    async with pool.acquire() as conn:
+        job = await repo.create_evaluation(
+            conn, "exam", [f"gs://test-bucket/videos/{i:064x}_src.mp4" for i in range(2)],
+            pipeline=repo.PIPELINE_SOP_SKILL,
+        )
+    async with workers(pool):
+        rows = await wait_terminal(pool, [job["id"]])
+        assert rows[0]["status"] == "failed"
+        assert "claude loop broke" in json.loads(rows[0]["result"])["error"]
+        retried = await repo.retry_evaluation(pool, job["id"])
+        assert retried["pipeline"] == "sop_skill"
+        rows = await wait_terminal(pool, [job["id"]])
+    assert rows[0]["status"] == "finished"
+    result = json.loads(rows[0]["result"])
+    assert [e["files"]["result"].rsplit("/", 2)[1] for e in result["sop_skill"]] == ["g0", "g1"]
+    # The finished video is not run again after retry.
+    assert [g for _, g in calls] == [0, 0, 1]
+
+
+async def test_sop_skill_transient_claude_error_is_requeued(pool, fake_models, fake_skill, monkeypatch):
+    monkeypatch.setattr(settings, "GEMINI_QUEUE_RETRY_BASE_SECONDS", 0)
+    run = fake_skill.side_effect
+    overloaded = type("OverloadedError", (Exception,), {"status_code": 529})
+
+    async def once_overloaded(*args):
+        if fake_skill.await_count == 1:
+            raise overloaded("overloaded")
+        return await run(*args)
+
+    fake_skill.side_effect = once_overloaded
+    async with pool.acquire() as conn:
+        job = await repo.create_evaluation(conn, "exam", ["gs://test-bucket/videos/" + "a" * 64 + "_src.mp4"],
+                                           pipeline=repo.PIPELINE_SOP_SKILL)
+    async with workers(pool):
+        rows = await wait_terminal(pool, [job["id"]])
+    assert rows[0]["status"] == "finished"
+    assert fake_skill.await_count == 2

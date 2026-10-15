@@ -39,6 +39,20 @@ python sop-video-skill/scripts/schema_tools.py sop-video-skill/schema.json > out
 python sop-video-skill/scripts/schema_tools.py sop-video-skill/actions.schema.json > actions.json  # 動作 schema（自動嵌入 schema.json）
 ```
 
+sop-video-skill 執行迴圈（`backend/tests/test_sop_skill_service.py`）用 ffmpeg 產生 60 秒合成影片，以真實的 skill 腳本執行 crop／set_crop／overview／zoom／final，模型以腳本化假回覆取代；需要 ffmpeg 與 `opencv-python-headless`、`matplotlib`、`jsonschema`（已列在 `backend/requirements.txt`），不需資料庫與 Google 憑證：
+
+```bash
+pytest backend/tests/test_sop_skill_service.py backend/tests/test_sop_skill_claude.py -q
+```
+
+前端純函式測試使用 Node.js：
+
+```bash
+node frontend/csv-export.test.js
+node frontend/recovery.test.js
+node frontend/sop-result.test.js
+```
+
 ## 驗證範圍
 
 - 23 支影片只啟動 10 支；四個 Agent 都完成才補入下一支。
@@ -49,6 +63,8 @@ python sop-video-skill/scripts/schema_tools.py sop-video-skill/actions.schema.js
 - 無效 JSON 只額外嘗試一次，GCS 缺檔／模型最終失敗使父工作失敗，已失敗父工作不再送模型请求。
 - 將測試 worker 在切段／評分途中 SIGKILL，再啟動新程序；驗證 heartbeat 到期後恢復且結果／進度不重複。為縮短測試，probe worker 的 heartbeat timeout 是 1 秒，正式 worker 預設 30 秒。
 - 舊版未完成工作一次性 backfill、空影片 422、23 支影片的 REST API 相容性與上傳回歸。
+
+- SOP skill 模式：只派送 skill 任務（不呼叫 Time_cuting、Agent、Gazelle），活動窗口補位、結果依影片順序彙整；失敗後續跑只重跑未完成影片；Claude 429／529 重新派送；被退回的動作不扣預算、舊圖片不重送、`final` 不合格會回傳模型修正；結果檔下載端點只讀取本部署 bucket 的 `sop_runs/`。
 
 `tests/queue_probe.py` 只供測試子程序使用，啟動前檢查資料庫名稱，不會呼叫 Google。
 

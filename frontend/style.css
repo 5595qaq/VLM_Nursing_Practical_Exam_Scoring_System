@@ -428,3 +428,54 @@ input[type="file"] {
     overflow-x: auto;
     max-height: 400px;
 }
+
+/* sop-video-skill results */
+.button-link {
+    display: inline-block;
+    background-color: #3498db;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 4px;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.button-link:hover {
+    background-color: #2980b9;
+}
+
+.sop-summary {
+    color: #34495e;
+    margin: 0 0 12px;
+}
+
+.table-scroll {
+    overflow-x: auto;
+    margin-bottom: 16px;
+}
+
+.sop-table {
+    font-size: 14px;
+    margin-bottom: 0;
+}
+
+.sop-table th {
+    background-color: #f7f9fa;
+    white-space: nowrap;
+}
+
+.sop-table td:nth-child(n+4):nth-child(-n+6) {
+    white-space: nowrap;
+}
+
+.sop-step.detected td:first-child {
+    border-left: 4px solid #27ae60;
+}
+
+.sop-step.not_visually_determinable td:first-child {
+    border-left: 4px solid #f39c12;
+}
+
+.sop-step.not_performed td:first-child {
+    border-left: 4px solid #95a5a6;
+}

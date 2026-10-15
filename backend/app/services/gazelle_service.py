@@ -6,7 +6,7 @@ import tempfile
 from pathlib import Path
 
 from app.config import settings
-from app.services import agents, gcs_service
+from app.services import agents, gcs_service, video_service
 
 _model = None
 _transform = None
@@ -64,14 +64,14 @@ def infer_overlay(
     segment: dict[str, str],
     agent_name: str,
 ) -> dict[str, str]:
-    """Run Gazelle at 5 FPS. Missing/invalid frames remain explicit discontinuities."""
+    """Run Gazelle on 5 FPS samples of the segment. Missing/invalid frames remain explicit discontinuities."""
     import cv2
     import numpy as np
     import torch
     from PIL import Image
 
     if not source_uri:
-        raise ValueError("No 5 FPS video source was supplied")
+        raise ValueError("No video source was supplied")
     if not gcs_service.blob_exists_at_uri(source_uri):
         raise FileNotFoundError(f"Gaze source not found in GCS: {source_uri}")
 
@@ -90,19 +90,22 @@ def infer_overlay(
         silent_path = str(Path(tmp) / "overlay-silent.mp4")
         overlay_path = str(Path(tmp) / "overlay.mp4")
         metadata_path = str(Path(tmp) / "gaze.json")
+        sampled_path = str(Path(tmp) / "segment-5fps.mp4")
         gcs_service.download_to_filename(source_uri, source_path)
-        capture = cv2.VideoCapture(source_path)
-        capture.set(cv2.CAP_PROP_POS_MSEC, start_s * 1000)
+        # The source keeps its original frame rate; each sampled frame below is 200 ms apart.
+        video_service.sample_segment(source_path, sampled_path, start_s, end_s, video_service.GAZELLE_FPS)
+        capture = cv2.VideoCapture(sampled_path)
         width = int(capture.get(cv2.CAP_PROP_FRAME_WIDTH))
         height = int(capture.get(cv2.CAP_PROP_FRAME_HEIGHT))
         if width <= 0 or height <= 0:
             raise ValueError("Gaze source has no decodable video stream")
-        writer = cv2.VideoWriter(silent_path, cv2.VideoWriter_fourcc(*"mp4v"), 5.0, (width, height))
+        writer = cv2.VideoWriter(silent_path, cv2.VideoWriter_fourcc(*"mp4v"),
+                                 float(video_service.GAZELLE_FPS), (width, height))
         frames = []
         frame_index = 0
         try:
             while True:
-                timestamp_ms = start_s * 1000 + frame_index * 200
+                timestamp_ms = start_s * 1000 + frame_index * 1000 // video_service.GAZELLE_FPS
                 if timestamp_ms >= end_s * 1000:
                     break
                 ok, frame = capture.read()
@@ -147,7 +150,7 @@ def infer_overlay(
             "-c:a", "aac", "-shortest", overlay_path,
         ], check=True)
         metadata = {"agent_name": agent_name, "model_name": settings.GAZELLE_MODEL_NAME,
-                    "model_version": settings.GAZELLE_MODEL_VERSION, "fps": 5,
+                    "model_version": settings.GAZELLE_MODEL_VERSION, "fps": video_service.GAZELLE_FPS,
                     "segment": segment, "inout_threshold": settings.GAZELLE_INOUT_THRESHOLD,
                     "frames": frames}
         Path(metadata_path).write_text(json.dumps(metadata, ensure_ascii=False), encoding="utf-8")

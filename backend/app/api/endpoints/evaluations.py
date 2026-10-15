@@ -1,10 +1,14 @@
+import asyncio
+from typing import Literal
+
 from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect, Request
+from fastapi.responses import Response
 from sqlalchemy.orm import Session
 from app.db import get_db
 from app.schemas.evaluation import EvaluationCreate, EvaluationResponse
 from app.models.evaluation import EvaluationJob
 from app.ws_manager import manager
-from app.services import evaluation_queue
+from app.services import evaluation_queue, gcs_service
 
 router = APIRouter()
 
@@ -18,6 +22,35 @@ def get_evaluation(job_id: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Job not found")
     return job
 
+SOP_FILE_TYPES = {
+    "artifacts": ("application/zip", "zip"),
+    "result": ("application/json", "json"),
+    "transcript": ("application/json", "json"),
+}
+
+
+@router.get("/{job_id}/sop-skill/{position}/{kind}")
+async def download_sop_skill_file(job_id: str, position: int,
+                                  kind: Literal["artifacts", "result", "transcript"],
+                                  db: Session = Depends(get_db)):
+    """Stream one sop-video-skill run file (images zip, result, model transcript) from GCS."""
+    job = db.query(EvaluationJob).filter(EvaluationJob.id == job_id).first()
+    runs = (job.result or {}).get("sop_skill") if job else None
+    if not runs or not 0 <= position < len(runs):
+        raise HTTPException(status_code=404, detail="SOP skill result not found")
+    uri = (runs[position].get("files") or {}).get(kind)
+    if not uri:
+        raise HTTPException(status_code=404, detail=f"No {kind} file for this video")
+    bucket, object_name = gcs_service.parse_gcs_uri(uri)
+    if bucket != gcs_service.settings.GCS_BUCKET_NAME or not object_name.startswith("sop_runs/"):
+        raise HTTPException(status_code=404, detail="SOP skill file is outside this deployment")
+    data = await asyncio.to_thread(gcs_service.download_as_bytes, uri)
+    media_type, extension = SOP_FILE_TYPES[kind]
+    filename = f"sop_skill_{job_id[:8]}_{position + 1}_{kind}.{extension}"
+    return Response(data, media_type=media_type,
+                    headers={"Content-Disposition": f'attachment; filename="{filename}"'})
+
+
 @router.post("/", response_model=EvaluationResponse)
 async def create_evaluation(
     eval_in: EvaluationCreate,
@@ -27,6 +60,7 @@ async def create_evaluation(
         async with request.app.state.queue_pool.acquire() as connection:
             return await evaluation_queue.create_evaluation(
                 connection, eval_in.exam_topic, eval_in.video_paths, eval_in.selected_agents,
+                eval_in.pipeline,
             )
     except evaluation_queue.VideoSourceValidationError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
