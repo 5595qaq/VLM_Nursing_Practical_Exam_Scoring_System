@@ -43,7 +43,7 @@ def make_proxy(src, dst, fps=PROXY_FPS, width=PROXY_WIDTH, jobs=None, hwaccel=Fa
     side = dst + ".json"
     if os.path.exists(dst) and os.path.exists(side):
         try:
-            if json.load(open(side)) == sig:
+            if json.load(open(side, encoding="utf-8")) == sig:
                 return dst
         except Exception:
             pass
@@ -78,20 +78,32 @@ def make_proxy(src, dst, fps=PROXY_FPS, width=PROXY_WIDTH, jobs=None, hwaccel=Fa
     for p in os.listdir(tmpdir):
         os.remove(os.path.join(tmpdir, p))
     os.rmdir(tmpdir)
-    json.dump(sig, open(side, "w"))
+    json.dump(sig, open(side, "w", encoding="utf-8"))
     return dst
 
 
+# The container duration can extend past the last video frame (audio track, frame duration), so a
+# seek near the end may yield no frame; step back until one is decoded.
+GRAB_BACKOFF = (0.0, 0.1, 0.25, 0.5, 1.0, 2.0)
+
+
 def grab(path, t, width=None):
-    """Grab one frame at time t (seconds) as BGR ndarray. Uses ffmpeg input seeking."""
+    """Grab one frame at time t (seconds) as BGR ndarray. Uses ffmpeg input seeking.
+
+    If t is at or past the last frame, the closest earlier frame (up to 2 s back) is returned.
+    """
     vf = [] if width is None else ["-vf", f"scale={width}:-2"]
-    cmd = ["ffmpeg", "-v", "error", "-ss", f"{max(t, 0):.3f}", "-i", path, "-frames:v", "1",
-           *vf, "-f", "image2pipe", "-vcodec", "png", "-"]
-    buf = subprocess.check_output(cmd)
-    img = cv2.imdecode(np.frombuffer(buf, np.uint8), cv2.IMREAD_COLOR)
-    if img is None:
-        raise RuntimeError(f"cannot grab frame at {t}s from {path}")
-    return img
+    for back in GRAB_BACKOFF:
+        if back and t - back < 0:
+            break
+        cmd = ["ffmpeg", "-v", "error", "-ss", f"{max(t - back, 0):.3f}", "-i", path, "-frames:v", "1",
+               *vf, "-f", "image2pipe", "-vcodec", "png", "-"]
+        buf = subprocess.check_output(cmd)
+        if buf:
+            img = cv2.imdecode(np.frombuffer(buf, np.uint8), cv2.IMREAD_COLOR)
+            if img is not None:
+                return img
+    raise RuntimeError(f"cannot grab frame at {t}s from {path}")
 
 
 def crop_norm(img, box):

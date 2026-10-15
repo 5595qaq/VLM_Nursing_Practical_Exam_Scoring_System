@@ -36,7 +36,7 @@ def main():
     info.update({"original": os.path.abspath(a.video), "proxy": os.path.abspath(proxy),
                  "proxy_spec": {"width": PROXY_WIDTH, "fps": PROXY_FPS, "gop": PROXY_FPS},
                  "proxy_seconds": round(time.time() - t0, 1)})
-    json.dump(info, open(os.path.join(a.out, "probe.json"), "w"), ensure_ascii=False, indent=1)
+    json.dump(info, open(os.path.join(a.out, "probe.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     grid = os.path.join(a.out, "grid.jpg")
     subprocess.check_call([sys.executable, os.path.join(HERE, "grid_overlay.py"), proxy,
                            "--n", "6", "--out", grid])

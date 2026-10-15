@@ -20,6 +20,7 @@ Also reports whether each erroneous step was zoomed (pred["zoom_log"]).
 import argparse
 import csv
 import json
+import sys
 
 
 def mmss(s):
@@ -50,7 +51,10 @@ def load_gt(path):
             sid = int(r["步驟編號"])
             st, en = mmss(r["開始秒數"]), mmss(r["結束秒數"])
             status = gt_status(r["判定"])
-            if status == "detected" and st is None:
+            if status == "detected" and (st is None or en is None):
+                if st is not None or en is not None:
+                    print(f"warning: step {sid}: GT has only one of 開始秒數/結束秒數; "
+                          "treated as 無法判定", file=sys.stderr)
                 status = "not_visually_determinable"
             ptype = (r.get("問題類型") or "").strip()
             rows[sid] = {"status": status, "start": st, "end": en, "judgement": r["判定"],

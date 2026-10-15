@@ -134,8 +134,8 @@ def main():
     except json.JSONDecodeError as ex:
         print(json.dumps({"ok": False, "errors": [f"invalid JSON: {ex}"], "warnings": []}, ensure_ascii=False))
         sys.exit(1)
-    state = json.load(open(a.state)) if a.state and os.path.exists(a.state) else {}
-    dur = json.load(open(a.probe))["duration"] if a.probe else None
+    state = json.load(open(a.state, encoding="utf-8")) if a.state and os.path.exists(a.state) else {}
+    dur = json.load(open(a.probe, encoding="utf-8"))["duration"] if a.probe else None
     errs, warns = validate(act, state, dur)
     print(json.dumps({"ok": not errs, "errors": errs, "warnings": warns}, ensure_ascii=False))
     sys.exit(0 if not errs else 1)
