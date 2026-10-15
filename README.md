@@ -1,6 +1,6 @@
 # VLM+LLM Nursing Practical Exam Scoring System
 
-這是一個基於 VLM (視覺語言模型) 與 LLM 架構的護理術科評分系統。系統包含 JavaScript 前端與 FastAPI (Python) 後端。影片先上傳到 Google Cloud Storage (GCS)，後端透過 Vertex AI 呼叫 Gemini 模型對 `gs://` 路徑的影片進行解析與術科自動評分。
+這是一個基於 VLM (視覺語言模型) 與 LLM 架構的護理術科評分系統。系統包含 JavaScript 前端與 FastAPI (Python) 後端。影片先上傳到 Google Cloud Storage (GCS)，後端透過 Vertex AI 呼叫 Gemini 模型對 `gs://` 路徑的影片進行解析與術科自動評分；另有「只跑 SOP 步驟切分」模式，由 Claude 執行 `sop-video-skill/`。
 
 > 目前僅供組內測試使用，前端是設計給組員測試 prompt/影片評分效果的工具，尚未考慮一般使用者的多人權限管理。
 
@@ -9,20 +9,20 @@
 - **事件驅動架構 (Event-Driven)**：採用高擴充性的 Worker 排程概念，完全解耦 API 請求與耗時推論任務。
 - **即時進度監控**：前端透過 WebSocket 即時取得任務執行進度 (Uploading -> Processing -> Scoring)，並在頁面上呈現終端機風格的進度條與日誌。
 - **資料庫狀態持久化**：所有的任務執行狀態與最終判定結果會被記錄至 PostgreSQL 資料庫中。
-- **GCS 影片上傳與內容去重**：前端可直接選取本機影片；後端依原始內容的 SHA-256 將轉檔存為 `videos/{sha256}_5fps.mp4`，相同內容直接沿用，不同內容即使同名也不會互相覆蓋。手動貼入時只接受本系統先前產生、位於設定 bucket 的 normalized URI。
-- **單一 5 FPS 影片來源**：後端用 ffmpeg 將影片統一轉成 5 FPS（H.265）；Gemini 與 Gazelle 共用同一個 GCS 物件。
+- **GCS 影片上傳與內容去重**：前端可直接選取本機影片；後端依原始內容的 SHA-256 將轉檔存為 `videos/{sha256}_src.mp4`，相同內容直接沿用，不同內容即使同名也不會互相覆蓋。手動貼入時只接受本系統先前產生、位於設定 bucket 的 normalized URI。
+- **單一原檔影片來源**：後端用 ffmpeg 轉成 H.264（CRF 18、保留原始解析度與幀率、固定幀率、每 1 秒一個關鍵影格、保留音訊）；Gemini、Gazelle 與 sop-video-skill 共用同一個 GCS 物件。Gazelle 自行從片段抽 5 FPS，skill 自行產生 proxy，zoom 直接讀原檔。舊的 `videos/{sha256}_5fps.mp4` 已停止產生，新工作也不再接受，需用原始影片重新上傳。
 - **Vertex AI 認證**：後端統一使用 GCP service account 認證 Vertex AI／GCS，組員不需要各自準備或輸入 Gemini API Key。
 - **彈性結果格式**：多個 Agent 產出的評分 JSON 欄位尚未統一，前端以通用卡片＋原始 JSON 檢視的方式呈現，方便邊測 prompt 邊看結果。
 - **時間分段＋可選 Agent 評分**：`Time_cuting.txt` 先對完整影片找出四個重疊時間區段，再執行所選的 Agent_A ~ Agent_D；各 Agent 的 prompt 分別存放於 `backend/app/prompts/Agent_A.txt` ~ `Agent_D.txt`。評分表單可複選 Agent，預設全選；選到 Agent_A 或 Agent_D 時會先執行 Gazelle，兩者皆未選時才跳過 Gazelle。
 - **評分證據時間點**：Agent_A、Agent_B、Agent_D 的每個評分步驟都會輸出 `證據時間點`（`MM:SS-MM:SS`），指出最直接支持判定的影片區間；未觀察到的步驟則填該動作應出現的檢查區間。前端下載的 CSV 也會帶出此欄位。
 - **PostgreSQL 持久佇列**：PgQueuer 管理派送、去重與中斷恢復；每個評分工作最多 10 支活動影片，所有 worker 合計最多 5 個 Gemini 呼叫。
-- **SOP 影片步驟切分 skill（開發中）**：`sop-video-skill/` 是新的前處理方案，把影片切成 30 個 SOP 步驟各自的時間區段（只切分、不評分），詳見下方「SOP 影片步驟切分 skill」。目前尚未接入評分流程。
+- **SOP 影片步驟切分 skill（開發中）**：`sop-video-skill/` 是新的前處理方案，把影片切成 30 個 SOP 步驟各自的時間區段（只切分、不評分）。評分表單的「執行模式」選「只跑 SOP 步驟切分」即可執行，詳見下方「SOP 影片步驟切分 skill」。
 
 ## 系統運作流程與架構
 
 API 與 PgQueuer worker 分開執行，共用 PostgreSQL，流程如下：
 
-0. **[影片上傳]**：前端選取本機影片，轉成內容雜湊命名的 5 FPS 影片並上傳到 GCS，取得唯一的 `gs://` 路徑；也可以貼上本系統先前產生的 normalized URI。
+0. **[影片上傳]**：前端選取本機影片，轉成內容雜湊命名的 `_src.mp4` 影片並上傳到 GCS，取得唯一的 `gs://` 路徑；也可以貼上本系統先前產生的 normalized URI。
 1. **[呼叫 API]**：前端帶著 `gs://` 路徑發起評分請求說：「我要上傳評分任務喔！」
 2. **[建立工作]**：API 在同一交易寫入評分工作、全部影片、四個 Agent 狀態與前 10 支影片的切段任務，然後回覆 HTTP 200。超過 10 支的影片保存在資料庫等候。
 3. **[喚醒 worker]**：PgQueuer 使用 `LISTEN/NOTIFY` 與 polling fallback 派送 PostgreSQL 中的任務。
@@ -57,7 +57,7 @@ SDK 對 408、429、500、502、503、504 及其支援的暫時性網路錯誤�
 
 ### Gazelle gaze preprocessing
 
-上傳 API 只產生一支 `videos/{sha256}_5fps.mp4`。Gemini 時間切段及 Agent B、C 直接使用這支影片；獨立 GPU worker 會分別對 Agent A 與 Agent D 的時段執行 Gazelle，產生各自的紫色注視點影片與逐幀 JSON，再用對應的 overlay 啟動 Agent A／D。
+上傳 API 只產生一支 `videos/{sha256}_src.mp4`。Gemini 時間切段及 Agent B、C 直接使用這支影片；獨立 GPU worker 會分別對 Agent A 與 Agent D 的時段執行 Gazelle，先將該時段抽成 5 FPS，產生各自的紫色注視點影片與逐幀 JSON，再用對應的 overlay 啟動 Agent A／D。
 
 1. 下載 `gazelle_dinov2_vitb14_inout.pt` checkpoint，存成 `./models/gazelle.pt`（或設定 `GAZELLE_CHECKPOINT_PATH` 指向原檔名）。
 2. 將 `GAZELLE_REF` 設為部署驗證過的 Gazelle commit SHA；未設定時 Docker build 使用 `main`，僅適合開發。
@@ -93,6 +93,32 @@ python sop-video-skill/scripts/schema_tools.py sop-video-skill/schema.json > out
 
 測試位於 `tests/sop_skill/`，執行方式見 [TESTING.md](TESTING.md)。打包好的 `sop-video-skill*.zip` 已被 `.gitignore` 排除，請直接使用 `sop-video-skill/` 目錄。
 
+#### 執行模式：只跑 SOP 步驟切分
+
+評分表單的「執行模式」可選 **只跑 SOP 步驟切分**。此模式不執行 Time_cuting、Gazelle 與 Agent A–D，而是由 worker 依 `sop-video-skill/SKILL.md` 執行外部程式迴圈，透過 Vertex AI 呼叫 Claude（預設 `claude-opus-5-5`），輸出 30 個步驟各自的時間區段（`sop-video-skill/schema.json`，不評分）。
+
+1. worker 從 GCS 下載上傳時產生的 `_src.mp4` 原檔，執行 `prepare.py` 產生 proxy 與格線圖。
+2. 每回合 Claude 回覆一個動作 JSON（`crop_preview`／`set_crop`／`overview`／`zoom`／`final`）；worker 先用 `validate_action.py` 驗證，不合格就把錯誤回傳、不執行也不扣預算，合格才執行對應腳本並把新圖片送回。
+3. 每次請求只附「全片總覽圖＋動作能量圖＋最新一批圖片＋最新 draft＋動作紀錄＋剩餘預算」（SKILL.md 第 0 節），不重送舊的對話回合。
+4. `final` 通過 `schema.json` 與 `validate_result.py` 規則後，`video_id` 與 `meta.budget` 由 worker 依實際執行紀錄填入；`sequence_check.py` 的自動比對另存於 `sequence_check`，不寫進 result。
+5. 結果 JSON、模型對話紀錄（`transcript.json`）與全部中間圖片（`artifacts.zip`）上傳到 `gs://<bucket>/sop_runs/<video_id>/g<generation>/`。失敗的執行也會上傳對話紀錄，方便除錯。
+
+前端完成後顯示每支影片的 30 步表格與流程觀察，可下載「步驟切分 CSV」，以及每支影片的結果 JSON、圖片 ZIP、模型對話紀錄（後端 `GET /api/v1/evaluations/{job_id}/sop-skill/{影片序號}/{result|artifacts|transcript}` 代為從 GCS 讀取）。API 建立工作時傳 `"pipeline": "sop_skill"` 即為此模式（不可同時傳 `selected_agents`）；省略時為原本的 `"agents"` 模式。
+
+前置需求：GCP 專案需在 Vertex AI Model Garden 啟用對應的 Claude 模型，service account 需有呼叫權限。skill 目錄以唯讀方式掛載進 worker（`docker-compose.yml`）；修改 skill 後重啟 worker 即生效，不必重建映像。
+
+| 設定 | 預設 | 意義 |
+| --- | --- | --- |
+| `CLAUDE_MODEL_NAME` | `claude-opus-5-5` | Vertex AI 上的 Claude 模型 ID |
+| `CLAUDE_VERTEX_REGION` | `global` | Claude 呼叫的 Vertex AI region |
+| `CLAUDE_EFFORT` | `high` | `output_config.effort`（low／medium／high／xhigh／max） |
+| `CLAUDE_MAX_TOKENS` | 64000 | 單回合輸出上限（final 含 30 步 evidence，需較大） |
+| `CLAUDE_CALL_TIMEOUT_SECONDS` | 900 | 單回合呼叫的最長等待秒數 |
+| `SOP_SKILL_CONCURRENCY` | 2 | 所有 worker 同時執行的 skill 數（獨立於 Gemini 的 5 路上限） |
+| `SOP_SKILL_MAX_TURNS` | 60 | 每支影片的最多回合數（預算用滿約 42 回合） |
+
+Claude 回傳 429 或 529（overloaded）且 SDK 重試用盡時，該影片的 skill 任務會依 queue 層退避重新派送，並從頭重跑該影片；其他錯誤（模型拒答、連續 6 次不合格動作、超過回合上限）會讓工作失敗，可在前端「從失敗處繼續」只重跑未完成的影片。
+
 ### 核心模組架構
 
 1. **Frontend**: 純 HTML, CSS, 與 vanilla JavaScript。透過 Fetch API 下達評估任務，並透過 WebSocket 監聽伺服器事件更新 DOM。
@@ -124,6 +150,8 @@ gcloud config set project YOUR_PROJECT_ID
 gcloud services enable aiplatform.googleapis.com storage.googleapis.com
 gcloud config get-value project
 ```
+
+若要使用「只跑 SOP 步驟切分」模式，另需在 Vertex AI Model Garden 啟用 Claude 模型（見下方〈SOP 步驟切分〉）。
 
 ### 3. 建立 GCS bucket
 
@@ -209,6 +237,9 @@ GCP_LOCATION=global
 GCS_BUCKET_NAME=YOUR_BUCKET_NAME
 GEMINI_MODEL_NAME=gemini-3.1-pro-preview
 GCP_SA_KEY_PATH=./secrets/gcp-key.json
+# 選填：SOP 步驟切分模式使用的 Claude 模型與 region
+CLAUDE_MODEL_NAME=claude-opus-5-5
+CLAUDE_VERTEX_REGION=global
 ```
 
 可用以下指令確認目前 gcloud 登入帳號、專案與 bucket：
@@ -244,7 +275,7 @@ docker compose down
 
 若出現認證或 bucket 權限錯誤，先確認 `.env` 內的 project/bucket 是否正確，以及 `GCP_SA_KEY_PATH` 指向的 ADC 或金鑰 JSON 檔確實存在；修改 `.env` 後請重新執行 `docker compose up -d --build`。
 
-從舊版升級時先 `docker compose stop backend worker gazelle-worker`（舊版沒有對應 worker service 時可忽略），再 `docker compose up -d --build`。`init` 使用 PgQueuer 官方 install/upgrade 介面與 durable 預設建表；API、一般 worker 與 Gazelle worker 在初始化完成後才啟動。統一 5 FPS 來源的首次升級會把所有未完成或已失敗的舊格式工作標記為不可重試的 `retired`，並清除舊 queue 任務；需使用本系統產生的 5 FPS URI 重新提交。已完成工作的結果，以及已失敗工作的原始錯誤結果會保留。升級是向前遷移，不要同時執行新舊 worker，也不要刪除 PostgreSQL volume。
+從舊版升級時先 `docker compose stop backend worker gazelle-worker`（舊版沒有對應 worker service 時可忽略），再 `docker compose up -d --build`。`init` 使用 PgQueuer 官方 install/upgrade 介面與 durable 預設建表；API、一般 worker 與 Gazelle worker 在初始化完成後才啟動。統一 5 FPS 來源的首次升級會把所有未完成或已失敗的舊格式工作標記為不可重試的 `retired`，並清除舊 queue 任務；需用原始影片重新上傳後再提交。已完成工作的結果，以及已失敗工作的原始錯誤結果會保留。升級是向前遷移，不要同時執行新舊 worker，也不要刪除 PostgreSQL volume。
 
 從只有 Agent A overlay 的版本升級到 Agent A／D 各自產生 overlay 的版本時，`init` 會一次性檢查未完成或可重試工作。若尚未完成的 Agent 缺少可用的對應 overlay，工作會標記為可重試的 `failed`，並顯示需要重新產生 gaze 來源的訊息；點選「重試」即可重新執行受影響影片的 Gazelle 階段，再完成剩餘評分。已完成的切段與 Agent 評分會保留，進度會扣除失效的 gaze 階段；舊佇列或執行中的結果會被 generation 檢查忽略。已完成的工作、具有完整來源的工作，以及仍可使用舊 overlay 的 Agent A 工作不受此遷移影響。
 
@@ -337,7 +368,8 @@ my-awesome-project/
 │   ├── style.css
 │   ├── app.js
 │   ├── csv-export.js
-│   └── recovery.js
+│   ├── recovery.js
+│   └── sop-result.js
 ├── backend/
 │   ├── Dockerfile
 │   ├── Dockerfile.gazelle
@@ -366,6 +398,7 @@ my-awesome-project/
 │   │   │   ├── gcs_service.py
 │   │   │   ├── gemini_service.py
 │   │   │   ├── model_logging.py
+│   │   │   ├── sop_skill_service.py
 │   │   │   └── video_service.py
 │   │   ├── bootstrap.py
 │   │   ├── config.py

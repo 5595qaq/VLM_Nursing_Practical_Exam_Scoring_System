@@ -29,7 +29,7 @@
             <div class="form-group">
                 <label for="video-files">上傳考試影片</label>
                 <input type="file" id="video-files" multiple accept="video/*">
-                <p class="field-hint">可一次選擇多部影片；系統會統一轉為 5 FPS 後上傳。</p>
+                <p class="field-hint">可一次選擇多部影片；系統會以原始解析度與幀率轉成 H.264 後上傳（檔案較大，轉檔需數分鐘）。</p>
                 <button type="button" id="upload-btn">上傳影片</button>
                 <button type="button" id="clear-uploads-btn" class="clear-uploads-btn" hidden>清空已上傳清單</button>
                 <ul id="upload-status-list" class="log-box upload-status-list"></ul>
@@ -37,11 +37,20 @@
 
             <div class="form-group">
                 <label for="video-paths">或輸入既有的影片雲端路徑（選填）</label>
-                <textarea id="video-paths" rows="3" placeholder="每行一個 5 FPS gs:// 路徑，也可使用逗號分隔"></textarea>
-                <p class="field-hint">只能貼入本系統上傳功能先前產生的 videos/&lt;SHA-256&gt;_5fps.mp4 路徑。</p>
+                <textarea id="video-paths" rows="3" placeholder="每行一個 gs:// 路徑，也可使用逗號分隔"></textarea>
+                <p class="field-hint">只能貼入本系統上傳功能先前產生的 videos/&lt;SHA-256&gt;_src.mp4 路徑；舊的 _5fps.mp4 已停用，請重新上傳原始影片。</p>
             </div>
 
-            <fieldset class="agent-selection">
+            <fieldset class="agent-selection pipeline-selection">
+                <legend>執行模式</legend>
+                <div class="agent-options">
+                    <label><input type="radio" name="pipeline" value="agents" checked> 完整評分（Time_cuting＋Agent A–D）</label>
+                    <label><input type="radio" name="pipeline" value="sop_skill"> 只跑 SOP 步驟切分（sop-video-skill）</label>
+                </div>
+                <p class="field-hint" id="pipeline-hint" hidden>由 Claude 依 sop-video-skill 切出 30 個步驟的時間區段（不評分），可下載結果 JSON、圖片與對話紀錄。每支影片需數分鐘至數十分鐘。</p>
+            </fieldset>
+
+            <fieldset class="agent-selection" id="agent-selection">
                 <legend>選擇評分 Agent</legend>
                 <p class="field-hint">可選擇一個或多個 Agent；預設執行全部。</p>
                 <div class="agent-options">
@@ -69,6 +78,7 @@
             <div class="download-actions" aria-label="下載評分結果">
                 <button type="button" id="download-summary-btn" disabled>下載評分總表 CSV</button>
                 <button type="button" id="download-detail-btn" disabled>下載完整分析資料 CSV</button>
+                <button type="button" id="download-sop-csv-btn" hidden>下載步驟切分 CSV</button>
             </div>
             <div id="result-feed"></div>
 
@@ -80,6 +90,7 @@
     </div>
 
     <script src="csv-export.js"></script>
+    <script src="sop-result.js"></script>
     <script src="recovery.js"></script>
     <script src="app.js"></script>
 </body>

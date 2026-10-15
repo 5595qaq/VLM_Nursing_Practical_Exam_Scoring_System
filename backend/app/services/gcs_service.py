@@ -58,3 +58,15 @@ def download_to_filename(gcs_uri: str, filename: str) -> None:
 def upload_filename_if_needed(local_path: str, filename: str, content_type: str) -> tuple[str, str]:
     with open(local_path, "rb") as file_obj:
         return upload_if_needed(file_obj, filename, content_type)
+
+
+def upload_file(local_path: str, object_name: str, content_type: str) -> str:
+    """Upload (overwriting) a generated file to the configured bucket; returns its gs:// URI."""
+    blob = get_client().bucket(settings.GCS_BUCKET_NAME).blob(object_name)
+    blob.upload_from_filename(local_path, content_type=content_type)
+    return gcs_uri_for(object_name)
+
+
+def download_as_bytes(gcs_uri: str) -> bytes:
+    bucket_name, object_name = parse_gcs_uri(gcs_uri)
+    return get_client().bucket(bucket_name).blob(object_name).download_as_bytes()

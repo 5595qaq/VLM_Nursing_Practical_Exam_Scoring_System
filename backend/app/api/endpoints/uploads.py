@@ -14,7 +14,7 @@ UPLOAD_CHUNK_SIZE = 1024 * 1024
 
 
 async def _convert_and_upload(input_path: Path, source_hash: str):
-    target_filename = f"videos/{source_hash}_5fps.mp4"
+    target_filename = f"videos/{source_hash}{video_service.NORMALIZED_SUFFIX}"
     if await asyncio.to_thread(gcs_service.blob_exists, target_filename):
         return {
             "filename": target_filename,
@@ -22,9 +22,9 @@ async def _convert_and_upload(input_path: Path, source_hash: str):
             "status": "skipped_existing",
         }
 
-    converted_path = input_path.parent / f"{source_hash}_5fps.mp4"
+    converted_path = input_path.parent / f"{source_hash}{video_service.NORMALIZED_SUFFIX}"
     await asyncio.to_thread(
-        video_service.convert_to_5fps, str(input_path), str(converted_path),
+        video_service.normalize_source, str(input_path), str(converted_path),
     )
     with open(converted_path, "rb") as converted_file:
         gcs_uri, status = await asyncio.to_thread(

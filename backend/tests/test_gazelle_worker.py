@@ -10,7 +10,7 @@ async def test_gaze_worker_generates_agent_a_and_d_overlays(monkeypatch):
     queue_call = repo.ModelCall(evaluation_id="evaluation", video_id="video", action="gaze")
     job = type("Job", (), {"payload": queue_call.model_dump_json()})()
     video = {
-        "uri": "gs://bucket/source_5fps.mp4",
+        "uri": "gs://bucket/source_src.mp4",
         "gaze_agents": ["Agent_A", "Agent_D"],
         "segments": {
             "agent_A": {"start": "00:10", "end": "00:20"},
@@ -32,9 +32,9 @@ async def test_gaze_worker_generates_agent_a_and_d_overlays(monkeypatch):
         await gazelle_worker.process_gaze_call(job, pool)
 
     assert infer.call_args_list == [
-        call("video", "gs://bucket/source_5fps.mp4",
+        call("video", "gs://bucket/source_src.mp4",
              {"start": "00:10", "end": "00:20"}, "Agent_A"),
-        call("video", "gs://bucket/source_5fps.mp4",
+        call("video", "gs://bucket/source_src.mp4",
              {"start": "02:10", "end": "02:20"}, "Agent_D"),
     ]
     persist.assert_awaited_once_with(pool, queue_call, {"artifacts": {
@@ -53,7 +53,7 @@ async def test_gaze_worker_marks_parent_failed(monkeypatch):
     queue_call = repo.ModelCall(evaluation_id="evaluation", video_id="video", action="gaze")
     job = type("Job", (), {"payload": queue_call.model_dump_json()})()
     monkeypatch.setattr(repo, "prepare_call", AsyncMock(return_value={
-        "uri": "gs://bucket/source_5fps.mp4",
+        "uri": "gs://bucket/source_src.mp4",
         "gaze_agents": ["Agent_A"],
         "segments": {"agent_A": {"start": "00:10", "end": "00:20"}},
     }))
