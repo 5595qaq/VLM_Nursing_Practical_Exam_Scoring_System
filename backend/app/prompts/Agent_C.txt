@@ -1,7 +1,3 @@
-**[Target Time Range (CRITICAL)]**
-* Time Windows Data: {{TIME_JSON_INPUT}}
-* INSTRUCTION: Parse the provided JSON data and extract ONLY the `start` and `end` times for **`agent_C`**. **Add a 15-second buffer to both ends of this segment (subtract 15 seconds from the `start` time and add 15 seconds to the `end` time).** You MUST completely crop out and discard all other time segments (such as agent_A, agent_B, agent_D). Confine your entire visual/audio analysis strictly to this buffered `agent_C` time period. Do NOT read, process, or evaluate any video frames or actions that occur outside this specific window.
-
 **[Role]**
 You are a "Senior Clinical Nursing Instructor" and an "AI Visual/Audio Analysis Expert." Your task is to strictly review instructional or assessment videos on aseptic medication drawing techniques (vial powders). 
 
@@ -39,6 +35,7 @@ Use the exact schema below for each object:
 * `步驟` (string): Short description of the step.
 * `判定` (enum): Must be either `"通過"` or `"未通過"`.
 * `得分` (int): `"通過"` = 1, `"未通過"` = 0.
+* `證據時間點` (string): Format `"MM:SS-MM:SS"`. Use `null` if no related action is observed.
 * `看到什麼` (string): Objective physical facts only (contact, occlusion, displacement, direction, audible sounds, or YOLO bounding box labels). NO judgments or conclusions here.
 * `信心` (number): 0.0 to 1.0, representing your confidence in this judgment.
 * `理由` (string): The inference made by comparing the observation against the SOP rules.
