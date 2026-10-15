@@ -8,7 +8,7 @@ import asyncpg
 from pgqueuer import RetryRequested
 
 from app.config import settings
-from app.services import agents, evaluation_queue as repository, gcs_service
+from app.services import agents, evaluation_queue as repository, gcs_service, sop_skill_service
 from app.services.model_logging import context, emit
 
 logger = logging.getLogger("uvicorn.error.analysis_progress")
@@ -21,6 +21,8 @@ def _is_transient_model_error(exc):
     status = getattr(exc, "status", None)
     return (
         isinstance(exc, TimeoutError)
+        # Anthropic SDK errors (Claude on Vertex AI) after its own retries: rate limit / overloaded.
+        or getattr(exc, "status_code", None) in (429, 529)
         or code in (429, 499)
         or str(code) in ("429", "499")
         or status in ("RESOURCE_EXHAUSTED", "CANCELLED")
@@ -101,10 +103,32 @@ async def _segment_with_progress(pool, call, video_uri):
         )
 
 
+class _ObsoleteCall(Exception):
+    """The evaluation failed or was retried while this call was running."""
+
+
+async def _run_sop_skill(pool, call, video_uri):
+    """Run the skill loop, publishing one heartbeat per model turn."""
+    started = time.monotonic()
+
+    async def report(turn, phase, state):
+        used = state["used"]
+        message = (f"SOP_skill turn {turn} | {phase} | crop {used['crop_preview']} overview {used['overview']} "
+                   f"zoom {used['zoom']} | {int(time.monotonic() - started)}s | {video_uri}")
+        if not await repository.report_progress(pool, call, lambda _uri: message):
+            raise _ObsoleteCall()
+
+    try:
+        return await sop_skill_service.run_sop_skill(video_uri, call.video_id, call.generation, report)
+    except _ObsoleteCall:
+        return None
+
+
 async def process_model_call(job, pool):
     call = repository.ModelCall.model_validate_json(job.payload)
+    stage = "SOP_skill" if call.action == "sop_skill" else "Time_cuting"
     token = context.set({"queue_job_id": job.id, "evaluation_id": call.evaluation_id,
-                         "video_id": call.video_id, "agent": call.agent or "Time_cuting",
+                         "video_id": call.video_id, "agent": call.agent or stage,
                          "queue_attempt": job.attempts})
     started = time.monotonic()
     try:
@@ -112,13 +136,16 @@ async def process_model_call(job, pool):
         if video is None:
             emit("model_stage_skipped")
             return
-        if call.action == "segment":
+        if call.action in ("segment", "sop_skill"):
             if not video["verified"]:
                 if not await asyncio.to_thread(gcs_service.blob_exists_at_uri, video["uri"]):
                     raise FileNotFoundError(f"Video not found in GCS: {video['uri']}")
             if not await repository.mark_verified(pool, call):
                 return
-            result = await _segment_with_progress(pool, call, video["uri"])
+            if call.action == "sop_skill":
+                result = await _run_sop_skill(pool, call, video["uri"])
+            else:
+                result = await _segment_with_progress(pool, call, video["uri"])
             if result is None:
                 emit("model_stage_skipped")
                 return

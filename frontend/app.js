@@ -57,6 +57,22 @@ const fileInput = document.getElementById('video-files');
 const uploadStatusList = document.getElementById('upload-status-list');
 const clearUploadsBtn = document.getElementById('clear-uploads-btn');
 const retryBtn = document.getElementById('retry-btn');
+const agentSelection = document.getElementById('agent-selection');
+const pipelineHint = document.getElementById('pipeline-hint');
+
+function selectedPipeline() {
+    return document.querySelector('input[name="pipeline"]:checked')?.value || 'agents';
+}
+
+// sop_skill runs only sop-video-skill segmentation, so the Agent choice does not apply.
+function updatePipelineUi() {
+    const sopOnly = selectedPipeline() === 'sop_skill';
+    agentSelection.hidden = sopOnly;
+    pipelineHint.hidden = !sopOnly;
+}
+
+document.querySelectorAll('input[name="pipeline"]').forEach(input => input.addEventListener('change', updatePipelineUi));
+updatePipelineUi();
 
 function saveUploadedVideos() {
     try {
@@ -185,9 +201,10 @@ document.getElementById('evaluation-form').addEventListener('submit', async func
     const pastedPaths = rawPaths.split(/[\n,]/).map(p => p.trim()).filter(Boolean);
 
     const videoPaths = Array.from(new Set([...uploadedVideos.map(video => video.uri), ...pastedPaths]));
+    const pipeline = selectedPipeline();
     const selectedAgents = Array.from(document.querySelectorAll('input[name="selected-agent"]:checked'), input => input.value);
 
-    if (selectedAgents.length === 0) {
+    if (pipeline === 'agents' && selectedAgents.length === 0) {
         alert("請至少選擇一個評分 Agent。");
         return;
     }
@@ -200,8 +217,9 @@ document.getElementById('evaluation-form').addEventListener('submit', async func
     const payload = {
         exam_topic: EXAM_TOPIC,
         video_paths: videoPaths,
-        selected_agents: selectedAgents
+        pipeline
     };
+    if (pipeline === 'agents') payload.selected_agents = selectedAgents;
 
     // 2. Prepare UI
     const submitBtn = document.getElementById('submit-btn');
@@ -485,6 +503,9 @@ async function fetchAndRenderResult(jobId, appendLog) {
         currentEvaluationJob = job;
         renderResult(job.result);
         setDownloadButtonsEnabled(Array.isArray(job.result?.items) && job.result.items.length > 0);
+        const sopOnly = job.result?.pipeline === 'sop_skill';
+        sopCsvDownloadBtn.hidden = !sopOnly;
+        summaryDownloadBtn.hidden = detailDownloadBtn.hidden = sopOnly;
         return true;
     } catch (error) {
         appendLog(`錯誤：${error.message}`);
@@ -494,6 +515,12 @@ async function fetchAndRenderResult(jobId, appendLog) {
 
 const summaryDownloadBtn = document.getElementById('download-summary-btn');
 const detailDownloadBtn = document.getElementById('download-detail-btn');
+const sopCsvDownloadBtn = document.getElementById('download-sop-csv-btn');
+
+sopCsvDownloadBtn.addEventListener('click', () => {
+    if (!currentEvaluationJob) return;
+    downloadCsv(SopResult.buildStepsCsv(currentEvaluationJob, videoNames), makeCsvFilename('步驟切分'));
+});
 
 summaryDownloadBtn.addEventListener('click', () => {
     if (!currentEvaluationJob) return;
@@ -541,6 +568,11 @@ function renderResult(result) {
     const feed = document.getElementById('result-feed');
     feed.innerHTML = "";
 
+    if (result?.pipeline === 'sop_skill') {
+        renderSopSkillResult(feed, result, currentEvaluationJob?.id);
+        return;
+    }
+
     const items = (result && result.items) || [];
     if (items.length === 0) {
         feed.innerHTML = "<p>系統未傳回評分結果。</p>";
@@ -585,6 +617,103 @@ function renderResult(result) {
         videoEl.appendChild(groupEl);
         });
         feed.appendChild(videoEl);
+    });
+}
+
+function createTable(headers, rows, rowClass = () => '') {
+    const table = document.createElement('table');
+    table.className = 'sop-table';
+    const head = table.createTHead().insertRow();
+    headers.forEach(text => {
+        const th = document.createElement('th');
+        th.textContent = text;
+        head.appendChild(th);
+    });
+    const body = table.createTBody();
+    rows.forEach(({ cells, source }) => {
+        const tr = body.insertRow();
+        tr.className = rowClass(source);
+        cells.forEach(value => { tr.insertCell().textContent = value; });
+    });
+    const wrapper = document.createElement('div');
+    wrapper.className = 'table-scroll';
+    wrapper.appendChild(table);
+    return wrapper;
+}
+
+function renderSopSkillResult(feed, result, jobId) {
+    const runs = result.sop_skill || [];
+    if (runs.length === 0) {
+        feed.innerHTML = "<p>系統未傳回步驟切分結果。</p>";
+        return;
+    }
+    runs.forEach((run, position) => {
+        const section = document.createElement('section');
+        section.className = 'video-result-group';
+        const title = document.createElement('h3');
+        title.textContent = videoNames[run.video_uri] || CsvExport.videoName(run.video_uri) || '未知影片';
+        const details = document.createElement('details');
+        const summary = document.createElement('summary');
+        summary.textContent = '查看雲端路徑';
+        const code = document.createElement('code');
+        code.textContent = run.video_uri;
+        details.append(summary, code);
+        section.append(title, details);
+
+        const counts = SopResult.statusCounts(run.result);
+        const budget = run.result?.meta?.budget || {};
+        const info = document.createElement('p');
+        info.className = 'sop-summary';
+        info.textContent = `偵測到 ${counts.detected} 步、無法由畫面判定 ${counts.not_visually_determinable} 步、`
+            + `未執行 ${counts.not_performed} 步｜模型 ${run.model || '未知'}，${run.turns ?? '?'} 回合，`
+            + `overview ${budget.overview_calls ?? '?'} 次、zoom ${budget.zoom_calls ?? '?'} 次`;
+        section.appendChild(info);
+
+        const files = document.createElement('div');
+        files.className = 'download-actions';
+        [['result', '下載結果 JSON'], ['artifacts', '下載圖片與中間檔 ZIP'], ['transcript', '下載模型對話紀錄']]
+            .filter(([kind]) => run.files?.[kind])
+            .forEach(([kind, label]) => {
+                const link = document.createElement('a');
+                link.className = 'button-link';
+                link.href = SopResult.fileUrl(API_BASE, jobId, position, kind);
+                link.textContent = label;
+                files.appendChild(link);
+            });
+        section.appendChild(files);
+
+        const stepRows = SopResult.buildStepRows(run.result);
+        section.appendChild(createTable(
+            ['步驟', '名稱', '判定', '開始', '結束', '信心', '依據', '備註'],
+            stepRows.map(row => ({
+                source: row.status,
+                cells: [row.stepId, row.stepName, row.statusLabel, row.start, row.end, row.confidence, row.evidence, row.notes]
+            })),
+            status => `sop-step ${status || ''}`
+        ));
+
+        const observations = SopResult.buildObservationRows(run.result, run.sequence_check || []);
+        const obsTitle = document.createElement('h4');
+        obsTitle.textContent = `流程觀察（${observations.length} 項）`;
+        section.appendChild(obsTitle);
+        if (observations.length) {
+            section.appendChild(createTable(
+                ['類型', '時間', '相關步驟', '描述', '依據', '信心', '來源'],
+                observations.map(row => ({ cells: [row.type, row.span, row.steps, row.description, row.evidence, row.confidence, row.source] }))
+            ));
+        }
+
+        const spans = run.result?.unassigned_spans || [];
+        if (spans.length) {
+            const spanTitle = document.createElement('h4');
+            spanTitle.textContent = `非 SOP 時段（${spans.length} 段）`;
+            section.appendChild(spanTitle);
+            section.appendChild(createTable(
+                ['時間', '說明'],
+                spans.map(span => ({ cells: [SopResult.formatSpan(span.start, span.end), span.note || ''] }))
+            ));
+        }
+        feed.appendChild(section);
     });
 }
 
@@ -682,6 +811,23 @@ function localizeMessage(message = '') {
         };
         return `${phases[segmentProgress[1]]}（本支影片分段已等待 ${segmentProgress[2]} 秒；完成後才會增加工作數）：${segmentProgress[3]}`;
     }
+
+    const sopProgress = message.match(/^SOP_skill turn (\d+) \| (\w+) \| crop (\d+) overview (\d+) zoom (\d+) \| (\d+)s \| (.+)$/);
+    if (sopProgress) {
+        const [, turn, phase, crop, overview, zoom, seconds, uri] = sopProgress;
+        const phases = {
+            thinking: '等待 Claude 回覆',
+            crop_preview: '產生裁切預覽',
+            set_crop: '確定裁切，產生全片總覽圖與動作能量',
+            overview: '產生區間總覽圖',
+            zoom: '產生局部放大圖',
+            final: '輸出最終結果'
+        };
+        return `SOP 步驟切分第 ${turn} 回合：${phases[phase] || phase}（已用裁切預覽 ${crop}、overview ${overview}、zoom ${zoom}；已執行 ${seconds} 秒）：${uri}`;
+    }
+
+    const sopFinished = message.match(/^SOP_skill finished segmenting (.+)$/);
+    if (sopFinished) return `已完成 SOP 步驟切分：${sopFinished[1]}`;
 
     const segmented = message.match(/^Time_cuting finished segmenting (.+)$/);
     if (segmented) return `已完成影片分段：${segmented[1]}`;

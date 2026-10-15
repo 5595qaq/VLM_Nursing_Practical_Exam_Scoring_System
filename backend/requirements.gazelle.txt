@@ -1,7 +1,6 @@
 -r requirements.txt
-opencv-python-headless==4.10.0.84
+# opencv-python-headless and matplotlib come from requirements.txt.
 Pillow==10.4.0
 timm==1.0.9
-matplotlib==3.9.2
 scikit-learn==1.5.2
 # torch/torchvision are installed from the CUDA wheel index in Dockerfile.gazelle.
