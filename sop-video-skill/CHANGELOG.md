@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## 1.4.1
+
+修正 #51 審查找到的問題（腳本行為修正，schema 與 SKILL.md 規則不變）。
+
+- **影片結尾抓不到畫面（`_video.grab`）：** 容器長度常比最後一格畫面長（音軌、每格的時長），zoom／sheets 的時間點落在最後一格之後時，ffmpeg 沒有輸出畫面，原本會直接當掉。現在會往前退（最多 2 秒）改抓最接近的前一格；完全抓不到才丟 `RuntimeError`。
+- **`sequence_check.py --write`：** 寫回結果時不再帶 `"auto": true`（schema.json 沒有這個欄位，寫回後驗證不過）。來源仍可從 `evidence` 看出；`check()` 的回傳值保留 `auto`。
+- **`eval.py`：** 標準答案只有開始或只有結束時間的列，視為「無法判定」並印出警告，不再當掉。
+- **長度為 0 的時段（`validate_result.py`）：** `unassigned_spans` 與 observation 若有一方長度為 0，碰到邊界也算重疊；兩段都有長度時，只碰到邊界仍不算。
+- **檔案編碼：** `probe.json`、`state.json` 與 proxy 的 sidecar JSON 一律以 UTF-8 讀寫，Windows 上路徑含中文時不會失敗。
+
 ## 1.4
 
 `schema.json` 補齊限制，讓 jsonschema 能完整驗證最終結果（`scripts/validate_result.py`）。

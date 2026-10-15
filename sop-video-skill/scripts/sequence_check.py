@@ -2,7 +2,8 @@
 
 usage: python sequence_check.py result.json [--write]
   Prints auto-detected out_of_order and repeated pairs. With --write, appends any pair that the
-  model's own `observations` did not mention (tagged "auto": true) so nothing is silently dropped.
+  model's own `observations` did not mention so nothing is silently dropped (their `evidence`
+  names sequence_check.py; the "auto" tag of check() is removed because schema.json has no such field).
 
 Pairs that SOP allows to overlap (outer/inner steps, see sop_steps.md) are ignored:
   16 contains 15,17 ; 23 contains 24 ; 25/26/27 overlap.
@@ -63,7 +64,7 @@ def main():
         print(("  " if mentioned(x, obs) else "! ") + x["type"], x["steps"], x["description"])
     print(f"{len(auto)} auto findings, {len(missing)} not mentioned by model")
     if a.write and missing:
-        obs.extend(missing)
+        obs.extend({k: v for k, v in x.items() if k != "auto"} for x in missing)
         json.dump(res, open(a.result, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 
 

@@ -258,3 +258,28 @@ def test_cli_exit_codes(tmp_path, capsys):
     bad = tmp_path / "bad.json"
     bad.write_text(json.dumps(bad_result, ensure_ascii=False), encoding="utf-8")
     assert main(["validate_result.py", str(bad)]) == 1
+
+
+def test_zero_length_span_inside_observation_passes():
+    result = make_valid_result()
+    result["unassigned_spans"] = [{"start": 515.0, "end": 515.0, "note": "瞬間離開"}]
+    assert validate_result(result) == []
+
+
+def test_zero_length_span_on_observation_edge_passes():
+    result = make_valid_result()
+    result["unassigned_spans"] = [{"start": 530.0, "end": 530.0, "note": "瞬間離開"}]
+    assert validate_result(result) == []
+
+
+def test_zero_length_span_and_observation_at_same_time_pass():
+    result = make_valid_result()
+    result["unassigned_spans"] = [{"start": 515.0, "end": 515.0, "note": "瞬間離開"}]
+    result["observations"][0].update(start=515.0, end=515.0)
+    assert validate_result(result) == []
+
+
+def test_span_only_touching_observation_is_rejected():
+    result = make_valid_result()
+    result["unassigned_spans"] = [{"start": 530.0, "end": 540.0, "note": "整理桌面"}]
+    assert_rejected(result, "unassigned_spans[0]: needs an overlapping")

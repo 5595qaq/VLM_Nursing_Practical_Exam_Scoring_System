@@ -134,6 +134,9 @@ def _check_span(where: str, start: float, end: float, duration: float) -> list[s
 def _overlaps(span: dict, obs: dict) -> bool:
     if obs["start"] is None or obs["end"] is None:
         return False
+    if span["start"] == span["end"] or obs["start"] == obs["end"]:
+        # a zero-length span has no interior; touching (closed intervals) counts as overlap
+        return obs["start"] <= span["end"] and span["start"] <= obs["end"]
     return obs["start"] < span["end"] and span["start"] < obs["end"]
 
 
