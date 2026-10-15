@@ -29,6 +29,16 @@ pytest backend/tests/test_agents.py backend/tests/test_model_retries.py -q
 pytest backend/tests/test_worker_reliability.py -k in_memory -q
 ```
 
+SOP skill（`sop-video-skill/`）的結果驗證（`schema.json`、`sop-video-skill/scripts/`）不需要資料庫，測試在 `tests/sop_skill/`：
+
+```bash
+pip install -r tests/sop_skill/requirements.txt
+pytest tests/sop_skill -q
+python sop-video-skill/scripts/validate_result.py result.json   # 驗證一份 final 結果
+python sop-video-skill/scripts/schema_tools.py sop-video-skill/schema.json > out.json    # 產生 Structured Outputs 用的 schema
+python sop-video-skill/scripts/schema_tools.py sop-video-skill/actions.schema.json > actions.json  # 動作 schema（自動嵌入 schema.json）
+```
+
 ## 驗證範圍
 
 - 23 支影片只啟動 10 支；四個 Agent 都完成才補入下一支。

@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SOP video segmentation: one model action per turn",
+  "description": "外部程式在執行前用 scripts/validate_action.py 驗證（含本 schema 無法表達的幾何／預算／影片長度檢查）。驗證失敗：不執行、不扣預算，把 errors 回傳給模型重送。",
+  "$defs": {
+    "box": {
+      "type": "array",
+      "items": {"type": "number", "minimum": 0, "maximum": 1},
+      "minItems": 4,
+      "maxItems": 4,
+      "description": "[x0, y0, x1, y1] 正規化 0–1，x0<x1、y0<y1"
+    },
+    "draft": {"type": "string", "minLength": 1, "description": "工作草稿（SKILL.md 2.3）"},
+    "reason": {"type": "string", "minLength": 1}
+  },
+  "oneOf": [
+    {
+      "type": "object",
+      "required": ["action", "box", "round", "reason", "draft"],
+      "additionalProperties": false,
+      "properties": {
+        "action": {"const": "crop_preview"},
+        "box": {"$ref": "#/$defs/box", "description": "相對完整畫面"},
+        "round": {"type": "integer", "minimum": 1, "maximum": 5},
+        "reason": {"$ref": "#/$defs/reason"},
+        "draft": {"$ref": "#/$defs/draft"}
+      }
+    },
+    {
+      "type": "object",
+      "required": ["action", "box", "hands_box", "reason", "draft"],
+      "additionalProperties": false,
+      "properties": {
+        "action": {"const": "set_crop"},
+        "box": {"$ref": "#/$defs/box", "description": "context box，相對完整畫面"},
+        "hands_box": {"$ref": "#/$defs/box", "description": "相對完整畫面，須落在 box 內"},
+        "notes": {"type": "string"},
+        "reason": {"$ref": "#/$defs/reason"},
+        "draft": {"$ref": "#/$defs/draft"}
+      }
+    },
+    {
+      "type": "object",
+      "required": ["action", "start", "end", "reason", "draft"],
+      "additionalProperties": false,
+      "properties": {
+        "action": {"const": "overview"},
+        "start": {"type": "number", "minimum": 0},
+        "end": {"type": "number", "minimum": 0},
+        "n": {"type": "integer", "minimum": 3, "maximum": 9, "default": 9},
+        "box": {"enum": ["hands", "context"], "default": "hands"},
+        "reason": {"$ref": "#/$defs/reason"},
+        "draft": {"$ref": "#/$defs/draft"}
+      }
+    },
+    {
+      "type": "object",
+      "required": ["action", "times", "region", "for_steps", "reason", "draft"],
+      "additionalProperties": false,
+      "properties": {
+        "action": {"const": "zoom"},
+        "times": {"type": "array", "items": {"type": "number", "minimum": 0}, "minItems": 1, "maxItems": 4},
+        "region": {"$ref": "#/$defs/box", "description": "相對 context box；面積 ≤ 0.50、寬高各 ≤ 0.75"},
+        "for_steps": {"type": "array", "items": {"type": "integer", "minimum": 1, "maximum": 30}, "minItems": 1},
+        "reason": {"$ref": "#/$defs/reason"},
+        "draft": {"$ref": "#/$defs/draft"}
+      }
+    },
+    {
+      "type": "object",
+      "required": ["action", "result"],
+      "additionalProperties": false,
+      "properties": {
+        "action": {"const": "final"},
+        "result": {"$ref": "schema.json", "description": "最終結果，格式由 schema.json 定義"}
+      }
+    }
+  ]
+}

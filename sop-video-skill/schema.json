@@ -1,0 +1,309 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SOP video segmentation result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "video_id",
+    "meta",
+    "steps",
+    "unassigned_spans",
+    "observations",
+    "zoom_log"
+  ],
+  "properties": {
+    "video_id": {
+      "type": "string"
+    },
+    "meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "duration",
+        "crop"
+      ],
+      "properties": {
+        "duration": {
+          "type": "number",
+          "minimum": 0
+        },
+        "crop": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "box",
+            "hands_box"
+          ],
+          "properties": {
+            "box": {
+              "type": "array",
+              "items": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "minItems": 4,
+              "maxItems": 4
+            },
+            "hands_box": {
+              "type": "array",
+              "items": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "minItems": 4,
+              "maxItems": 4
+            },
+            "rounds": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "notes": {
+              "type": "string"
+            }
+          }
+        },
+        "budget": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "crop_rounds": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "overview_calls": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "zoom_calls": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "images_sent": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "est_input_tokens": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      }
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "step_id",
+          "start",
+          "end",
+          "confidence",
+          "evidence",
+          "status"
+        ],
+        "properties": {
+          "step_id": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 30
+          },
+          "start": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "end": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "evidence": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "detected",
+              "not_visually_determinable",
+              "not_performed"
+            ]
+          },
+          "frames": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "merged_with": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 30
+            }
+          },
+          "logical_window": {
+            "anyOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "minItems": 2,
+                "maxItems": 2
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "handoff": {
+            "type": "string",
+            "enum": [
+              "flick_detector"
+            ],
+            "description": "此步交給後續程式判定確切時間；start/end 為候選時段"
+          }
+        }
+      }
+    },
+    "unassigned_spans": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "start",
+          "end",
+          "note"
+        ],
+        "properties": {
+          "start": {
+            "type": "number"
+          },
+          "end": {
+            "type": "number"
+          },
+          "note": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "zoom_log": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "times",
+          "region",
+          "for_steps",
+          "finding"
+        ],
+        "properties": {
+          "times": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 1,
+            "maxItems": 4
+          },
+          "region": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "minItems": 4,
+            "maxItems": 4
+          },
+          "for_steps": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 30
+            }
+          },
+          "finding": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "observations": {
+      "type": "array",
+      "description": "主動描述的流程偏離：只描述，不評分",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "start",
+          "end",
+          "steps",
+          "description",
+          "evidence",
+          "confidence"
+        ],
+        "properties": {
+          "type": {
+            "enum": [
+              "out_of_order",
+              "repeated",
+              "extra_action",
+              "interrupted",
+              "skipped",
+              "left_work_area",
+              "other"
+            ]
+          },
+          "start": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "end": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "steps": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 30
+            }
+          },
+          "description": {
+            "type": "string"
+          },
+          "evidence": {
+            "type": "string"
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        }
+      }
+    }
+  }
+}
