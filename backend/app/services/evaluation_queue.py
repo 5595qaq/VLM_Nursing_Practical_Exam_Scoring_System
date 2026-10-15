@@ -23,7 +23,7 @@ SOP_SKILL_ENTRYPOINT = "sop_skill_run"
 PIPELINE_AGENTS = "agents"  # Time_cuting + selected Agent_A ~ Agent_D
 PIPELINE_SOP_SKILL = "sop_skill"  # sop-video-skill segmentation only
 TERMINAL = {"finished", "failed", "retired"}
-NORMALIZED_VIDEO_OBJECT = re.compile(r"^videos/[0-9a-f]{64}_5fps\.mp4$")
+NORMALIZED_VIDEO_OBJECT = re.compile(r"^videos/[0-9a-f]{64}_src\.mp4$")
 
 
 class ModelCall(BaseModel):
@@ -51,7 +51,7 @@ class VideoSourceValidationError(ValueError):
 
 
 async def validate_video_sources(video_paths):
-    """Accept only 5 FPS artifacts produced by this deployment's upload API."""
+    """Accept only normalized sources produced by this deployment's upload API."""
     async def exists(video_uri):
         try:
             bucket_name, object_name = gcs_service.parse_gcs_uri(video_uri)
@@ -61,11 +61,12 @@ async def validate_video_sources(video_paths):
             present = await asyncio.to_thread(gcs_service.blob_exists_at_uri, video_uri)
         except (TypeError, ValueError) as exc:
             raise VideoSourceValidationError(
-                "Video source must be a normalized 5 FPS artifact produced by this system: "
+                "Video source must be a normalized video produced by this system's upload "
+                "(videos/<sha256>_src.mp4): "
                 f"{video_uri}"
             ) from exc
         if not present:
-            raise VideoSourceValidationError(f"5 FPS video source does not exist: {video_uri}")
+            raise VideoSourceValidationError(f"Video source does not exist: {video_uri}")
 
     await asyncio.gather(*(exists(uri) for uri in video_paths))
 

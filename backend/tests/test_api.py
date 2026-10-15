@@ -5,7 +5,7 @@ from app.services import gcs_service
 
 
 def normalized_uri(index=1, bucket="test-bucket"):
-    return f"gs://{bucket}/videos/{index:064x}_5fps.mp4"
+    return f"gs://{bucket}/videos/{index:064x}_src.mp4"
 
 
 def test_create_evaluation(client, db_session):
@@ -109,7 +109,7 @@ def test_create_rejects_missing_video_source(client, monkeypatch, db_session):
 
     assert response.status_code == 422
     assert response.json()["detail"] == \
-        f"5 FPS video source does not exist: {normalized_uri()}"
+        f"Video source does not exist: {normalized_uri()}"
     assert db_session.query(EvaluationJob).count() == 0
 
 
@@ -128,7 +128,8 @@ def test_create_uses_the_single_existing_video_source(client, monkeypatch, db_se
 
 @pytest.mark.parametrize("uri", [
     "gs://test-bucket/videos/legacy_1fps.mp4",
-    "gs://test-bucket/videos/not-a-hash_5fps.mp4",
+    f"gs://test-bucket/videos/{1:064x}_5fps.mp4",  # retired 5 FPS uploads
+    "gs://test-bucket/videos/not-a-hash_src.mp4",
     normalized_uri(bucket="other-bucket"),
 ])
 def test_create_rejects_video_sources_not_normalized_by_this_system(client, uri):
@@ -138,7 +139,8 @@ def test_create_rejects_video_sources_not_normalized_by_this_system(client, uri)
 
     assert response.status_code == 422
     assert response.json()["detail"] == (
-        "Video source must be a normalized 5 FPS artifact produced by this system: " + uri
+        "Video source must be a normalized video produced by this system's upload "
+        "(videos/<sha256>_src.mp4): " + uri
     )
 
 
