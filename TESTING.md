@@ -45,6 +45,12 @@ sop-video-skill 執行迴圈（`backend/tests/test_sop_skill_service.py`）用 f
 pytest backend/tests/test_sop_skill_service.py backend/tests/test_sop_skill_gemini.py backend/tests/test_sop_skill_claude.py -q
 ```
 
+Token 用量記錄（`backend/tests/test_usage.py`）包含不需資料庫的單元測試（token 欄位換算、成本估計、單價設定檢查），以及需要 PostgreSQL 的整合測試（pipeline 每次回應寫一列、API 與 CSV）：
+
+```bash
+pytest backend/tests/test_usage.py -q
+```
+
 前端純函式測試使用 Node.js：
 
 ```bash
@@ -65,6 +71,7 @@ node frontend/sop-result.test.js
 - 舊版未完成工作一次性 backfill、空影片 422、23 支影片的 REST API 相容性與上傳回歸。
 
 - SOP skill 模式：只派送 skill 任務（不呼叫 Time_cuting、Agent、Gazelle），活動窗口補位、結果依影片順序彙整；失敗後續跑只重跑未完成影片；Gemini 429／499 與 Claude 429／529 重新派送；Gemini 呼叫的請求格式（system instruction、圖片、JSON 回覆）與 finish reason 對應（MAX_TOKENS → 截斷重送、SAFETY 等 → 拒答）；被退回的動作不扣預算、舊圖片不重送、`final` 不合格會回傳模型修正；結果檔下載端點只讀取本部署 bucket 的 `sop_runs/`。
+- Token 用量：每次模型回應（含 JSON 重送）都會寫入 `model_usage`，並帶有正確的階段與影片；工作被刪除時跳過寫入、不影響評分；`/usage` 與 `/usage.csv` 的合計與成本估計。
 
 `tests/queue_probe.py` 只供測試子程序使用，啟動前檢查資料庫名稱，不會呼叫 Google。
 

@@ -1,3 +1,4 @@
+import json
 import os
 from pathlib import Path
 
@@ -7,6 +8,21 @@ def _integer(name: str, default: int, minimum: int = 1) -> int:
     if value < minimum:
         raise ValueError(f"{name} must be >= {minimum}")
     return value
+
+
+def _model_prices() -> dict:
+    """MODEL_PRICES_JSON: USD per 1M tokens per model, e.g.
+    {"gemini-4-argon": {"input": 2.5, "cached_input": 0.25, "output": 15}}."""
+    raw = os.getenv("MODEL_PRICES_JSON", "").strip()
+    if not raw:
+        return {}
+    prices = json.loads(raw)
+    if not isinstance(prices, dict) or not all(
+        isinstance(price, dict) and all(isinstance(v, (int, float)) and v >= 0 for v in price.values())
+        for price in prices.values()
+    ):
+        raise ValueError("MODEL_PRICES_JSON must map model names to {price field: USD per 1M tokens}")
+    return prices
 
 
 class Settings:
@@ -41,6 +57,8 @@ class Settings:
     SOP_SKILL_DIR = os.getenv(
         "SOP_SKILL_DIR", str(Path(__file__).resolve().parents[2] / "sop-video-skill"),
     )
+    # Token usage is always recorded (model_usage table); prices only add a cost estimate.
+    MODEL_PRICES = _model_prices()
     SOP_SKILL_CONCURRENCY = _integer("SOP_SKILL_CONCURRENCY", 2)
     SOP_SKILL_MAX_TURNS = _integer("SOP_SKILL_MAX_TURNS", 60)
 

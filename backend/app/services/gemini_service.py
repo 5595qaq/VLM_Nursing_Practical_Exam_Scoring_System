@@ -8,7 +8,7 @@ import asyncpg
 from pgqueuer import RetryRequested
 
 from app.config import settings
-from app.services import agents, evaluation_queue as repository, gcs_service, sop_skill_service
+from app.services import agents, evaluation_queue as repository, gcs_service, sop_skill_service, usage
 from app.services.model_logging import context, emit
 
 logger = logging.getLogger("uvicorn.error.analysis_progress")
@@ -130,6 +130,11 @@ async def process_model_call(job, pool):
     token = context.set({"queue_job_id": job.id, "evaluation_id": call.evaluation_id,
                          "video_id": call.video_id, "agent": call.agent or stage,
                          "queue_attempt": job.attempts})
+
+    async def save_usage(row):
+        await repository.record_usage(pool, {**row, "generation": call.generation})
+
+    usage_token = usage.recorder.set(save_usage)
     started = time.monotonic()
     try:
         video = await repository.prepare_call(pool, call)
@@ -191,4 +196,5 @@ async def process_model_call(job, pool):
             raise RetryRequested(delay=timedelta(seconds=30), reason="Persist failure after model error") from db_exc
         raise
     finally:
+        usage.recorder.reset(usage_token)
         context.reset(token)

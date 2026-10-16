@@ -506,6 +506,9 @@ async function fetchAndRenderResult(jobId, appendLog) {
         const sopOnly = job.result?.pipeline === 'sop_skill';
         sopCsvDownloadBtn.hidden = !sopOnly;
         summaryDownloadBtn.hidden = detailDownloadBtn.hidden = sopOnly;
+        // Tokens of every model response (incl. retries), with cost when prices are configured.
+        usageDownloadLink.href = `${API_BASE}/api/v1/evaluations/${jobId}/usage.csv`;
+        usageDownloadLink.hidden = false;
         return true;
     } catch (error) {
         appendLog(`錯誤：${error.message}`);
@@ -516,6 +519,7 @@ async function fetchAndRenderResult(jobId, appendLog) {
 const summaryDownloadBtn = document.getElementById('download-summary-btn');
 const detailDownloadBtn = document.getElementById('download-detail-btn');
 const sopCsvDownloadBtn = document.getElementById('download-sop-csv-btn');
+const usageDownloadLink = document.getElementById('download-usage-link');
 
 sopCsvDownloadBtn.addEventListener('click', () => {
     if (!currentEvaluationJob) return;
