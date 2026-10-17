@@ -151,8 +151,26 @@ async def test_invalid_final_is_returned_to_model(video, tmp_path):
                                               {"action": "final", "result": valid_result()}])
     outcome = await skill.run_skill_loop(video, "VIDEO-2", tmp_path, model)
     assert outcome["turns"] == 5
-    assert "missing step_id [30]" in texts(model.requests[3][1])
-    assert "找不到動作 JSON" in texts(model.requests[4][1])
+    retry = texts(model.requests[3][1])
+    assert "missing step_id [30]" in retry
+    # The rejected final comes back verbatim so the model fixes it instead of rewriting it.
+    assert "只修改上面列出的錯誤" in retry
+    rejected = json.loads(retry.split("```json\n")[-1].split("\n```")[0])
+    assert rejected["action"] == "final" and len(rejected["result"]["steps"]) == 29
+    assert rejected["result"]["video_id"] == "VIDEO-2"
+    unparsable = texts(model.requests[4][1])
+    assert "找不到動作 JSON" in unparsable
+    assert "被退回的動作原文" not in unparsable  # nothing parsed, nothing to echo
+
+
+async def test_rejected_action_is_echoed_with_its_draft(video, tmp_path):
+    model = ScriptedModel(HAPPY_PATH[:3] + [{"action": "final", "result": valid_result()}])
+    await skill.run_skill_loop(video, "VIDEO-4", tmp_path, model)
+    rejected = texts(model.requests[1][1])
+    assert "crop not confirmed yet" in rejected
+    assert '"action": "zoom"' in rejected and '"draft": "d0"' in rejected
+    # Once an action is accepted the echo is gone.
+    assert "被退回的動作原文" not in texts(model.requests[2][1])
 
 
 async def test_truncated_reply_is_rejected_not_parsed(video, tmp_path):

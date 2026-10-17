@@ -6,8 +6,9 @@ row. Failed HTTP attempts return no usage and are not recorded.
 
 Columns use one meaning across providers:
 - input_tokens: input billed at the normal input price (cached tokens excluded)
-- cached_input_tokens: input read from the provider cache (Gemini implicit cache, Claude cache read)
-- cache_write_tokens: input written to the cache (Claude only; billed above the input price)
+- cached_input_tokens: input read from the provider cache (Gemini implicit/explicit cache, Claude cache read)
+- cache_write_tokens: input written to the cache (Claude cache write; the SOP skill's Gemini
+  explicit cache creation, recorded as its own row)
 - output_tokens: everything billed at the output price, thinking included
 - thinking_tokens: the thinking part of output_tokens (reported by Gemini only)
 """

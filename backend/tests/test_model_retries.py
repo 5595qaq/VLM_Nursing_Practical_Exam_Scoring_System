@@ -71,7 +71,7 @@ async def test_transient_retries_use_sdk_backoff(sdk_client, status, caplog):
 async def test_sop_skill_attempt_logs_name_the_skill_model(sdk_client, caplog):
     mock_http(sdk_client, [200])
     with caplog.at_level("INFO", logger="app.gemini"):
-        await sop_skill_service.gemini_call("SYSTEM", [{"type": "text", "text": "turn"}])
+        await sop_skill_service.GeminiCall()("SYSTEM", [{"type": "text", "text": "turn"}])
     (log,) = attempt_logs(caplog)
     assert log["model"] == settings.SOP_SKILL_GEMINI_MODEL == "gemini-4-argon"
     assert settings.GEMINI_MODEL_NAME != "gemini-4-argon"

@@ -99,8 +99,8 @@ python sop-video-skill/scripts/schema_tools.py sop-video-skill/schema.json > out
 評分表單的「執行模式」可選 **只跑 SOP 步驟切分**。此模式不執行 Time_cuting、Gazelle 與 Agent A–D，而是由 worker 依 `sop-video-skill/SKILL.md` 執行外部程式迴圈，透過 Vertex AI 呼叫 Gemini（預設 `gemini-4-argon`；設定 `SOP_SKILL_PROVIDER=claude` 可改用 Vertex AI 上的 Claude），輸出 30 個步驟各自的時間區段（`sop-video-skill/schema.json`，不評分）。
 
 1. worker 從 GCS 下載上傳時產生的 `_src.mp4` 原檔，執行 `prepare.py` 產生 proxy 與格線圖。
-2. 每回合模型回覆一個動作 JSON（`crop_preview`／`set_crop`／`overview`／`zoom`／`final`）；worker 先用 `validate_action.py` 驗證，不合格就把錯誤回傳、不執行也不扣預算，合格才執行對應腳本並把新圖片送回。
-3. 每次請求只附「全片總覽圖＋動作能量圖＋最新一批圖片＋最新 draft＋動作紀錄＋剩餘預算」（SKILL.md 第 0 節），不重送舊的對話回合。
+2. 每回合模型回覆一個動作 JSON（`crop_preview`／`set_crop`／`overview`／`zoom`／`final`）；worker 先用 `validate_action.py` 驗證，不合格就把錯誤和被退回的動作原文回傳（要求模型只修正錯誤的地方）、不執行也不扣預算，合格才執行對應腳本並把新圖片送回。
+3. 每次請求只附「全片總覽圖＋動作能量圖＋最新一批圖片＋最新 draft＋動作紀錄＋剩餘預算」（SKILL.md 第 0 節），不重送舊的對話回合。使用 Gemini 時，每回合都相同的 system prompt 與固定圖片（`set_crop` 前是格線圖，之後是總覽圖與動作能量圖）會放進 Vertex AI 的明確快取（context cache），固定圖片改變時重建，執行結束時刪除；建立快取失敗時改為整份直接送出，不影響結果。
 4. `final` 通過 `schema.json` 與 `validate_result.py` 規則後，`video_id` 與 `meta.budget` 由 worker 依實際執行紀錄填入；`sequence_check.py` 的自動比對另存於 `sequence_check`，不寫進 result。
 5. 結果 JSON、模型對話紀錄（`transcript.json`）與全部中間圖片（`artifacts.zip`）上傳到 `gs://<bucket>/sop_runs/<video_id>/g<generation>/`。失敗的執行也會上傳對話紀錄，方便除錯。
 
@@ -114,6 +114,7 @@ python sop-video-skill/scripts/schema_tools.py sop-video-skill/schema.json > out
 | `SOP_SKILL_GEMINI_MODEL` | `gemini-4-argon` | Gemini 模型 ID（region 沿用 `GCP_LOCATION`） |
 | `SOP_SKILL_GEMINI_THINKING_LEVEL` | （空） | 選填：Gemini 的 `thinking_level`（例如 `low`、`high`），空白表示使用模型預設 |
 | `SOP_SKILL_GEMINI_MAX_OUTPUT_TOKENS` | 0 | 選填：單回合輸出上限，0 表示使用模型預設 |
+| `SOP_SKILL_GEMINI_CACHE_TTL_SECONDS` | 3600 | Gemini 明確快取的存活秒數（到期前 2 分鐘會重建）；0 表示停用，只靠 Gemini 的隱式快取 |
 | `CLAUDE_MODEL_NAME` | `claude-opus-5-5` | `SOP_SKILL_PROVIDER=claude` 時的 Claude 模型 ID |
 | `CLAUDE_VERTEX_REGION` | `global` | `SOP_SKILL_PROVIDER=claude` 時的 Vertex AI region |
 | `CLAUDE_EFFORT` | `high` | `output_config.effort`（low／medium／high／xhigh／max） |
@@ -131,8 +132,8 @@ Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499，或 Claude 回傳 429／529（o
 | 欄位 | 意義 |
 | --- | --- |
 | `input_tokens` | 以一般輸入單價計費的輸入 token（不含快取命中） |
-| `cached_input_tokens` | 從快取讀取的輸入 token（Gemini 隱式快取、Claude cache read） |
-| `cache_write_tokens` | 寫入快取的輸入 token（只有 Claude 有） |
+| `cached_input_tokens` | 從快取讀取的輸入 token（Gemini 隱式或明確快取、Claude cache read） |
+| `cache_write_tokens` | 寫入快取的輸入 token（Claude cache write；SOP skill 建立 Gemini 明確快取時另記一列） |
 | `output_tokens` | 以輸出單價計費的 token，包含思考 token |
 | `thinking_tokens` | `output_tokens` 中屬於思考的部分（只有 Gemini 會回報） |
 
@@ -147,7 +148,7 @@ Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499，或 Claude 回傳 429／529（o
 MODEL_PRICES_JSON='{"gemini-3.1-pro-preview": {"input": 2.0, "cached_input": 0.2, "output": 12.0}, "gemini-4-argon": {"input": 1.0, "output": 5.0}}'
 ```
 
-上面的數字只是格式示範，請依 [Vertex AI 定價頁](https://cloud.google.com/vertex-ai/generative-ai/pricing) 填入實際單價。`cached_input`、`cache_write` 沒有填時，會沿用 `input` 的單價。沒有設定單價的模型，估計成本欄位留空，API 會列在 `unpriced_models`。單價在查詢時才套用，修改後重啟 backend，舊工作也會用新單價重新計算。Gemini 部分模型的輸入超過一定長度時會改用較高的單價，這裡沒有區分，需要精算時請以 GCP 帳單為準。
+上面的數字只是格式示範，請依 [Vertex AI 定價頁](https://cloud.google.com/vertex-ai/generative-ai/pricing) 填入實際單價。`cached_input`、`cache_write` 沒有填時，會沿用 `input` 的單價。沒有設定單價的模型，估計成本欄位留空，API 會列在 `unpriced_models`。單價在查詢時才套用，修改後重啟 backend，舊工作也會用新單價重新計算。Gemini 部分模型的輸入超過一定長度時會改用較高的單價，這裡沒有區分，需要精算時請以 GCP 帳單為準。Gemini 明確快取另有依存放時間計費的儲存費，這裡沒有計入（快取在每支影片跑完後即刪除）。
 
 ### 核心模組架構
 
