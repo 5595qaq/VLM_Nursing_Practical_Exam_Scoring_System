@@ -41,10 +41,12 @@ def response(finish="STOP", parts=None, block_reason=None):
 
 
 PNG = b"\x89PNG fake bytes"
+IMAGE = {"type": "image", "source": {"type": "base64", "media_type": "image/jpeg",
+                                     "data": base64.standard_b64encode(PNG).decode("ascii")}}
+# Shape of build_content: pinned blocks up to the cache breakpoint, then the per-turn part.
 CONTENT = [
-    {"type": "text", "text": "圖 P1", "cache_control": {"type": "ephemeral"}},
-    {"type": "image", "source": {"type": "base64", "media_type": "image/jpeg",
-                                 "data": base64.standard_b64encode(PNG).decode("ascii")}},
+    {"type": "text", "text": "圖 P1"},
+    {**IMAGE, "cache_control": {"type": "ephemeral"}},
     {"type": "text", "text": "請輸出下一個動作 JSON"},
 ]
 
@@ -77,11 +79,34 @@ async def test_gemini_call_request_and_reply(monkeypatch):
     assert config.system_instruction == "SYSTEM"
     assert config.response_mime_type == "application/json"
     assert config.thinking_config is None and config.max_output_tokens is None
-    (turn,) = call["contents"]
-    assert turn.role == "user"
-    text0, image, text1 = turn.parts
-    assert text0.text == "圖 P1" and text1.text == "請輸出下一個動作 JSON"
+    # The pinned prefix ends a turn (a fixed model ack follows it), so implicit caching can hit.
+    pinned, ack, turn = call["contents"]
+    assert [pinned.role, ack.role, turn.role] == ["user", "model", "user"]
+    text0, image = pinned.parts
+    assert text0.text == "圖 P1"
     assert image.inline_data.data == PNG and image.inline_data.mime_type == "image/jpeg"
+    assert [part.text for part in ack.parts] == [skill.GEMINI_PINNED_ACK]
+    assert [part.text for part in turn.parts] == ["請輸出下一個動作 JSON"]
+
+
+@pytest.mark.parametrize("content", [
+    [{"type": "text", "text": "turn"}, IMAGE],  # no breakpoint
+    [{"type": "text", "text": "turn"}, {**IMAGE, "cache_control": {"type": "ephemeral"}}],  # nothing after it
+])
+async def test_without_a_pinned_prefix_and_a_turn_part_one_user_turn_is_sent(monkeypatch, content):
+    models = fake_client(monkeypatch, response())
+    await skill.gemini_call("SYSTEM", content)
+    (turn,) = models.calls[0]["contents"]
+    assert turn.role == "user" and len(turn.parts) == 2
+
+
+async def test_ack_turn_is_identical_every_turn(monkeypatch):
+    models = fake_client(monkeypatch, response())
+    await skill.gemini_call("SYSTEM", CONTENT)
+    await skill.gemini_call("SYSTEM", CONTENT[:2] + [{"type": "text", "text": "下一回合"}])
+    first, second = (call["contents"] for call in models.calls)
+    assert first[:2] == second[:2]  # same pinned turn + ack: the cacheable prefix
+    assert first[2] != second[2]
 
 
 async def test_optional_thinking_level_and_output_cap(monkeypatch):

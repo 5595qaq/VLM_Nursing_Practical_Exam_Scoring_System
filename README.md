@@ -100,7 +100,7 @@ python sop-video-skill/scripts/schema_tools.py sop-video-skill/schema.json > out
 
 1. worker 從 GCS 下載上傳時產生的 `_src.mp4` 原檔，執行 `prepare.py` 產生 proxy 與格線圖。
 2. 每回合模型回覆一個動作 JSON（`crop_preview`／`set_crop`／`overview`／`zoom`／`final`）；worker 先用 `validate_action.py` 驗證，不合格就把錯誤和被退回的動作原文回傳（要求模型只修正錯誤的地方）、不執行也不扣預算，合格才執行對應腳本並把新圖片送回。
-3. 每次請求只附「全片總覽圖＋動作能量圖＋最新一批圖片＋最新 draft＋動作紀錄＋剩餘預算」（SKILL.md 第 0 節），不重送舊的對話回合。每回合不變的 system prompt 與固定圖片（`set_crop` 前是格線圖，之後是總覽圖與動作能量圖）一律放在最前面、逐位元組相同，會變的部分放在最後，讓 Gemini 的隱式快取有機會命中（`gemini-4-argon` 不支援明確快取；隱式快取是否命中由 Google 決定，不保證）。
+3. 每次請求只附「全片總覽圖＋動作能量圖＋最新一批圖片＋最新 draft＋動作紀錄＋剩餘預算」（SKILL.md 第 0 節），不重送舊的對話回合。每回合不變的 system prompt 與固定圖片（`set_crop` 前是格線圖，之後是總覽圖與動作能量圖）一律放在最前面、逐位元組相同，會變的部分放在最後。送 Gemini 時，固定內容自成一個 user 回合，後面接一句固定的 model 回覆（「已收到固定圖片…」），再接本回合的 user 內容：實測 `gemini-4-argon` 的隱式快取只在前綴剛好結束一個回合時命中，固定內容與本回合內容放在同一個（或兩個連續的）user 回合時完全不命中。`gemini-4-argon` 不支援明確快取；隱式快取是否命中仍由 Google 決定，不保證。
 4. `final` 通過 `schema.json` 與 `validate_result.py` 規則後，`video_id` 與 `meta.budget` 由 worker 依實際執行紀錄填入；`sequence_check.py` 的自動比對另存於 `sequence_check`，不寫進 result。
 5. 結果 JSON、模型對話紀錄（`transcript.json`）與全部中間圖片（`artifacts.zip`）上傳到 `gs://<bucket>/sop_runs/<video_id>/g<generation>/`。失敗的執行也會上傳對話紀錄，方便除錯。
 
