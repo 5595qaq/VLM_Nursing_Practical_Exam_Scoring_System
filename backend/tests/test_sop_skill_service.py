@@ -76,6 +76,11 @@ def texts(content):
     return "\n".join(block["text"] for block in content if block["type"] == "text")
 
 
+def pinned_prefix(content):
+    end = next(i for i, block in enumerate(content) if block.get("cache_control"))
+    return content[:end + 1]
+
+
 HAPPY_PATH = [
     {"action": "zoom", "times": [10.0], "region": [0.1, 0.1, 0.5, 0.5], "for_steps": [6],
      "reason": "太早 zoom", "draft": "d0"},
@@ -136,6 +141,12 @@ async def test_loop_runs_real_scripts_and_returns_validated_result(video, tmp_pa
     # Pinned images come first and carry the cache breakpoint.
     pinned_end = next(i for i, block in enumerate(after_zoom) if block.get("cache_control"))
     assert len(images(after_zoom[:pinned_end + 1])) == global_sheets + 1
+    # Gemini only has implicit caching: it can only hit if every turn after set_crop starts with
+    # the byte-identical pinned prefix, with nothing per-turn (budget, draft, log) inside it.
+    prefixes = {json.dumps(pinned_prefix(c), ensure_ascii=False) for c in (after_crop, after_overview, after_zoom)}
+    assert len(prefixes) == 1
+    assert "剩餘預算" not in prefixes.pop()
+    assert pinned_prefix(first) == pinned_prefix(rejected) == pinned_prefix(after_preview)  # grid phase
 
     transcript = json.loads((tmp_path / "transcript.json").read_text(encoding="utf-8"))
     assert [entry["action"] for entry in transcript] == [h["action"] for h in HAPPY_PATH]

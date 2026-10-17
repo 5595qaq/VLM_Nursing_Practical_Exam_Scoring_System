@@ -49,8 +49,6 @@ class Settings:
     # Optional; unset leaves the model defaults.
     SOP_SKILL_GEMINI_THINKING_LEVEL = os.getenv("SOP_SKILL_GEMINI_THINKING_LEVEL", "").strip().lower() or None
     SOP_SKILL_GEMINI_MAX_OUTPUT_TOKENS = _integer("SOP_SKILL_GEMINI_MAX_OUTPUT_TOKENS", 0, 0) or None
-    # Explicit context cache for the system prompt + pinned images; 0 disables it.
-    SOP_SKILL_GEMINI_CACHE_TTL_SECONDS = _integer("SOP_SKILL_GEMINI_CACHE_TTL_SECONDS", 3600, 0)
     CLAUDE_MODEL_NAME = os.getenv("CLAUDE_MODEL_NAME", "claude-opus-5-5")
     CLAUDE_VERTEX_REGION = os.getenv("CLAUDE_VERTEX_REGION", "global")
     CLAUDE_EFFORT = os.getenv("CLAUDE_EFFORT", "high")

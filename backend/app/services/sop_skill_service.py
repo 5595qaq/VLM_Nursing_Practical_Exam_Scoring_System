@@ -13,10 +13,8 @@ or thinking blocks are replayed, so trimming old images never edits conversation
 """
 import asyncio
 import base64
-import hashlib
 import importlib
 import json
-import logging
 import os
 import shutil
 import subprocess
@@ -36,8 +34,6 @@ BUDGET_LIMITS = {"crop_preview": 5, "overview": 20, "zoom": 15}
 MAX_REQUEST_IMAGE_BYTES = 30_000_000  # SKILL.md section 0: <= 30 MB of images per request
 MAX_CONSECUTIVE_REJECTS = 6
 GLOBAL_SHEET_STEP_SECONDS = 8
-
-logger = logging.getLogger("app.gemini")
 
 
 class SkillRunError(RuntimeError):
@@ -481,108 +477,25 @@ def _name(value) -> str | None:
     return getattr(value, "name", None) or (str(value) if value is not None else None)
 
 
-def _split_pinned(content: list[dict]) -> tuple[list[dict], list[dict]]:
-    """Blocks up to the cache_control breakpoint (set by build_content) and the rest."""
-    end = max((i for i, block in enumerate(content) if block.get("cache_control")), default=-1)
-    return content[:end + 1], content[end + 1:]
+async def gemini_call(system: str, content: list[dict]) -> ModelReply:
+    """One request to Gemini on Vertex AI through the shared client (SDK retries + attempt logging)."""
+    from google.genai import types
+    config = {"system_instruction": system, "response_mime_type": "application/json"}
+    if settings.SOP_SKILL_GEMINI_THINKING_LEVEL:
+        config["thinking_config"] = types.ThinkingConfig(thinking_level=settings.SOP_SKILL_GEMINI_THINKING_LEVEL)
+    if settings.SOP_SKILL_GEMINI_MAX_OUTPUT_TOKENS:
+        config["max_output_tokens"] = settings.SOP_SKILL_GEMINI_MAX_OUTPUT_TOKENS
+    token = attempt_state.set({"attempt": 0})
+    try:
+        async with asyncio.timeout(settings.GEMINI_CALL_TIMEOUT_SECONDS):
+            response = await agents.get_client().aio.models.generate_content(
+                model=settings.SOP_SKILL_GEMINI_MODEL,
+                contents=[types.Content(role="user", parts=_gemini_parts(content))],
+                config=types.GenerateContentConfig(**config),
+            )
+    finally:
+        attempt_state.reset(token)
 
-
-class GeminiCall:
-    """The Gemini model call for one skill run.
-
-    The system prompt and the pinned blocks are identical on every turn until set_crop changes
-    the pinned images, but Gemini's implicit cache rarely hit on them (1 of 19 turns in a real
-    run). So they go into an explicit Vertex AI context cache, created when that prefix changes
-    and deleted by aclose(). If creating the cache fails, the turn sends everything inline.
-    """
-
-    # Recreate a cache this long before its TTL ends, so a turn never references an expired one.
-    EXPIRY_MARGIN_SECONDS = 120
-
-    def __init__(self):
-        self.cache_name: str | None = None
-        self.cache_key: str | None = None  # prefix the current cache holds, or failed to hold
-        self.cache_expires = 0.0
-
-    async def _create_cache(self, system: str, pinned: list[dict]) -> None:
-        from google.genai import types
-        ttl = settings.SOP_SKILL_GEMINI_CACHE_TTL_SECONDS
-        token = attempt_state.set({"attempt": 0})
-        try:
-            async with asyncio.timeout(settings.GEMINI_CALL_TIMEOUT_SECONDS):
-                cache = await agents.get_client().aio.caches.create(
-                    model=settings.SOP_SKILL_GEMINI_MODEL,
-                    config=types.CreateCachedContentConfig(
-                        system_instruction=system,
-                        contents=[types.Content(role="user", parts=_gemini_parts(pinned))],
-                        ttl=f"{ttl}s", display_name="sop-video-skill pinned prefix",
-                    ),
-                )
-        except Exception as exc:  # noqa: BLE001 - caching only saves cost; the turn still runs
-            logger.warning(json.dumps({"event": "sop_skill_cache_not_created", "error": type(exc).__name__,
-                                       "detail": str(exc)[:300]}))
-            return
-        finally:
-            attempt_state.reset(token)
-        self.cache_name = cache.name
-        self.cache_expires = time.monotonic() + ttl
-        written = getattr(getattr(cache, "usage_metadata", None), "total_token_count", 0)
-        await usage.record("gemini", settings.SOP_SKILL_GEMINI_MODEL,
-                           {**dict.fromkeys(usage.COUNT_FIELDS, 0), "cache_write_tokens": int(written or 0)})
-
-    async def _cache_for(self, system: str, pinned: list[dict]) -> str | None:
-        if not settings.SOP_SKILL_GEMINI_CACHE_TTL_SECONDS or not pinned:
-            return None
-        key = hashlib.sha256(json.dumps([system, pinned], sort_keys=True).encode("utf-8")).hexdigest()
-        if key == self.cache_key:
-            if self.cache_name is None:
-                return None  # creating this prefix's cache already failed; don't retry every turn
-            if time.monotonic() < self.cache_expires - self.EXPIRY_MARGIN_SECONDS:
-                return self.cache_name
-        await self.aclose()
-        self.cache_key = key
-        await self._create_cache(system, pinned)
-        return self.cache_name
-
-    async def aclose(self) -> None:
-        """Delete the current cache (storage is billed while it lives). Never raises."""
-        name, self.cache_name = self.cache_name, None
-        if name is None:
-            return
-        try:
-            await agents.get_client().aio.caches.delete(name=name)
-        except Exception as exc:  # noqa: BLE001 - an undeleted cache only expires at its TTL
-            logger.warning(json.dumps({"event": "sop_skill_cache_not_deleted", "error": type(exc).__name__}))
-
-    async def __call__(self, system: str, content: list[dict]) -> ModelReply:
-        """One request through the shared client (SDK retries + attempt logging)."""
-        from google.genai import types
-        pinned, rest = _split_pinned(content)
-        cache_name = await self._cache_for(system, pinned)
-        config = {"response_mime_type": "application/json"}
-        if cache_name:
-            config["cached_content"] = cache_name  # holds the system prompt and the pinned blocks
-        else:
-            config["system_instruction"] = system
-            rest = content
-        if settings.SOP_SKILL_GEMINI_THINKING_LEVEL:
-            config["thinking_config"] = types.ThinkingConfig(thinking_level=settings.SOP_SKILL_GEMINI_THINKING_LEVEL)
-        if settings.SOP_SKILL_GEMINI_MAX_OUTPUT_TOKENS:
-            config["max_output_tokens"] = settings.SOP_SKILL_GEMINI_MAX_OUTPUT_TOKENS
-        token = attempt_state.set({"attempt": 0})
-        try:
-            async with asyncio.timeout(settings.GEMINI_CALL_TIMEOUT_SECONDS):
-                response = await agents.get_client().aio.models.generate_content(
-                    model=settings.SOP_SKILL_GEMINI_MODEL,
-                    contents=[types.Content(role="user", parts=_gemini_parts(rest))],
-                    config=types.GenerateContentConfig(**config),
-                )
-        finally:
-            attempt_state.reset(token)
-        return await _gemini_reply(response)
-
-
-async def _gemini_reply(response) -> ModelReply:
     counts = usage.gemini_counts(getattr(response, "usage_metadata", None))
     await usage.record("gemini", settings.SOP_SKILL_GEMINI_MODEL, counts)
     input_tokens = counts["input_tokens"] + counts["cached_input_tokens"]
@@ -604,8 +517,7 @@ def model_name() -> str:
 
 
 def default_model_call() -> ModelCall:
-    """A fresh caller per run: GeminiCall holds that run's context cache."""
-    return GeminiCall() if settings.SOP_SKILL_PROVIDER == "gemini" else claude_call
+    return gemini_call if settings.SOP_SKILL_PROVIDER == "gemini" else claude_call
 
 
 def artifact_prefix(video_id: str, generation: int) -> str:
@@ -637,12 +549,10 @@ async def run_sop_skill(video_uri: str, video_id: str, generation: int,
         workdir.mkdir()
         video = root / "source.mp4"
         await asyncio.to_thread(gcs_service.download_to_filename, video_uri, str(video))
-        call = model_call or default_model_call()
         try:
-            outcome = await run_skill_loop(video, video_id, workdir, call, on_progress)
+            outcome = await run_skill_loop(video, video_id, workdir, model_call or default_model_call(),
+                                          on_progress)
         finally:
-            if model_call is None and isinstance(call, GeminiCall):
-                await call.aclose()
             prefix = artifact_prefix(video_id, generation)
             try:
                 files = await asyncio.to_thread(_upload_artifacts, workdir, prefix)
