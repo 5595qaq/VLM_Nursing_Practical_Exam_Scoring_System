@@ -349,6 +349,12 @@ async def run_skill_loop(video_path: Path, video_id: str, workdir: Path, model_c
             # Rejected actions are not executed and use no budget; the latest images stay.
             feedback = ("上一個動作被 validate_action.py 退回（不執行、不扣預算），請修正後重送：\n"
                         + "\n".join(f"- {e}" for e in errors))
+            if isinstance(action, dict):
+                # Without its own rejected reply the model rewrites from the old draft, and a
+                # retried final drifts in places the errors never mentioned.
+                feedback += ("\n\n被退回的動作原文如下。只修改上面列出的錯誤，其餘內容（draft、evidence 等）"
+                             "照原樣保留；若錯誤表示這個動作現在不能執行，改送其他動作。\n```json\n"
+                             + json.dumps(action, ensure_ascii=False) + "\n```")
             continue
         rejects = 0
         name = action["action"]
@@ -467,6 +473,28 @@ def _gemini_parts(content: list[dict]):
     return parts
 
 
+# Fixed model turn that closes the pinned prefix (see _gemini_contents).
+GEMINI_PINNED_ACK = "已收到固定圖片，等待本回合的外部程式回報。"
+
+
+def _gemini_contents(content: list[dict]):
+    """build_content blocks -> Gemini contents, split at the cache_control breakpoint.
+
+    Vertex AI implicit caching only hit when the pinned prefix ended a turn: with the per-turn
+    part in the same user turn (or in a second, consecutive user turn) the identical ~13k-token
+    prefix was never cached, while user(pinned) + model(ack) + user(turn) hit on every repeat
+    (probe on gemini-4-argon, 2026-10-17). So the pinned blocks get a turn of their own.
+    """
+    from google.genai import types
+    end = max((i for i, block in enumerate(content) if block.get("cache_control")), default=-1)
+    pinned, rest = content[:end + 1], content[end + 1:]
+    if not pinned or not rest:
+        return [types.Content(role="user", parts=_gemini_parts(content))]
+    return [types.Content(role="user", parts=_gemini_parts(pinned)),
+            types.Content(role="model", parts=[types.Part.from_text(text=GEMINI_PINNED_ACK)]),
+            types.Content(role="user", parts=_gemini_parts(rest))]
+
+
 def _name(value) -> str | None:
     return getattr(value, "name", None) or (str(value) if value is not None else None)
 
@@ -484,7 +512,7 @@ async def gemini_call(system: str, content: list[dict]) -> ModelReply:
         async with asyncio.timeout(settings.GEMINI_CALL_TIMEOUT_SECONDS):
             response = await agents.get_client().aio.models.generate_content(
                 model=settings.SOP_SKILL_GEMINI_MODEL,
-                contents=[types.Content(role="user", parts=_gemini_parts(content))],
+                contents=_gemini_contents(content),
                 config=types.GenerateContentConfig(**config),
             )
     finally:

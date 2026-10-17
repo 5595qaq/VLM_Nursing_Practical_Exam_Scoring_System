@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.4.3
+
+動作被 `validate_action.py` 退回時，外部程式除了 `errors`，也會附上被退回的動作原文；SKILL.md 第 0 節要求模型只修改錯誤指出的地方再重送。原本模型只拿到錯誤訊息和舊的 draft，重送的 `final` 等於重新產生一份，連沒被指出的步驟與 observations 也會改變。動作格式與 schema 不變。
+
 ## 1.4.2
 
 後端預設改由 Vertex AI 上的 Gemini（`gemini-4-argon`）執行本 skill；設定 `SOP_SKILL_PROVIDER=claude` 可改回 Claude。skill 的規則、動作格式與 schema 都不變。

@@ -76,6 +76,11 @@ def texts(content):
     return "\n".join(block["text"] for block in content if block["type"] == "text")
 
 
+def pinned_prefix(content):
+    end = next(i for i, block in enumerate(content) if block.get("cache_control"))
+    return content[:end + 1]
+
+
 HAPPY_PATH = [
     {"action": "zoom", "times": [10.0], "region": [0.1, 0.1, 0.5, 0.5], "for_steps": [6],
      "reason": "太早 zoom", "draft": "d0"},
@@ -136,6 +141,12 @@ async def test_loop_runs_real_scripts_and_returns_validated_result(video, tmp_pa
     # Pinned images come first and carry the cache breakpoint.
     pinned_end = next(i for i, block in enumerate(after_zoom) if block.get("cache_control"))
     assert len(images(after_zoom[:pinned_end + 1])) == global_sheets + 1
+    # Gemini only has implicit caching: it can only hit if every turn after set_crop starts with
+    # the byte-identical pinned prefix, with nothing per-turn (budget, draft, log) inside it.
+    prefixes = {json.dumps(pinned_prefix(c), ensure_ascii=False) for c in (after_crop, after_overview, after_zoom)}
+    assert len(prefixes) == 1
+    assert "剩餘預算" not in prefixes.pop()
+    assert pinned_prefix(first) == pinned_prefix(rejected) == pinned_prefix(after_preview)  # grid phase
 
     transcript = json.loads((tmp_path / "transcript.json").read_text(encoding="utf-8"))
     assert [entry["action"] for entry in transcript] == [h["action"] for h in HAPPY_PATH]
@@ -151,8 +162,26 @@ async def test_invalid_final_is_returned_to_model(video, tmp_path):
                                               {"action": "final", "result": valid_result()}])
     outcome = await skill.run_skill_loop(video, "VIDEO-2", tmp_path, model)
     assert outcome["turns"] == 5
-    assert "missing step_id [30]" in texts(model.requests[3][1])
-    assert "找不到動作 JSON" in texts(model.requests[4][1])
+    retry = texts(model.requests[3][1])
+    assert "missing step_id [30]" in retry
+    # The rejected final comes back verbatim so the model fixes it instead of rewriting it.
+    assert "只修改上面列出的錯誤" in retry
+    rejected = json.loads(retry.split("```json\n")[-1].split("\n```")[0])
+    assert rejected["action"] == "final" and len(rejected["result"]["steps"]) == 29
+    assert rejected["result"]["video_id"] == "VIDEO-2"
+    unparsable = texts(model.requests[4][1])
+    assert "找不到動作 JSON" in unparsable
+    assert "被退回的動作原文" not in unparsable  # nothing parsed, nothing to echo
+
+
+async def test_rejected_action_is_echoed_with_its_draft(video, tmp_path):
+    model = ScriptedModel(HAPPY_PATH[:3] + [{"action": "final", "result": valid_result()}])
+    await skill.run_skill_loop(video, "VIDEO-4", tmp_path, model)
+    rejected = texts(model.requests[1][1])
+    assert "crop not confirmed yet" in rejected
+    assert '"action": "zoom"' in rejected and '"draft": "d0"' in rejected
+    # Once an action is accepted the echo is gone.
+    assert "被退回的動作原文" not in texts(model.requests[2][1])
 
 
 async def test_truncated_reply_is_rejected_not_parsed(video, tmp_path):

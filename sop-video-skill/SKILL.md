@@ -25,7 +25,7 @@ version: 1.3
 {"action": "final", "result": { ...符合 schema.json... }}
 ```
 
-- 動作格式定義在 `actions.schema.json`。外部程式執行前會用 `scripts/validate_action.py` 檢查；**不合格的動作不執行、不扣預算**，會把 `errors` 回傳給你，請修正後重送同一個動作。
+- 動作格式定義在 `actions.schema.json`。外部程式執行前會用 `scripts/validate_action.py` 檢查；**不合格的動作不執行、不扣預算**，會把 `errors` 和被退回的動作原文回傳給你。請只修改錯誤指出的地方、其餘內容照原樣保留後重送（`final` 也一樣，不要重寫沒被指出的步驟或 observations）；若錯誤表示這個動作現在不能執行，改送其他動作。
 - 座標一律**正規化 0–1**，`(x0,y0)` 左上、`(x1,y1)` 右下。
 - `crop_preview.box`、`set_crop.box`、`set_crop.hands_box` 相對**完整畫面**；`zoom.region` 相對 **context box**（外部程式會換算回原始解析度）。
 - 時間一律用**秒（浮點數）**。圖片上的時間戳格式為 `mm:ss.s`。
