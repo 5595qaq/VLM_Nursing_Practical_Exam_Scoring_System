@@ -1,0 +1,116 @@
+{
+  "version": "1.0",
+  "description": "無菌抽藥技術－vial 粉劑 30 步評分標準。category：program＝由切分結果以程式判定；visual＝評分 agent 看畫面（audio=true 時連聲音一起聽）；not_visible＝影片看不到，固定輸出「無法判定」且不影響步驟判定。key=true 的標準錯誤時整步判「錯誤」。",
+  "steps": [
+    {"step_id": 1, "text": "洗手。", "criteria": [
+      {"id": "1a", "text": "洗手至少 15 秒", "category": "program", "key": true, "rule": {"type": "min_duration", "seconds": 15}},
+      {"id": "1b", "text": "內、外、夾、弓、大、立、腕七個動作都有做到", "category": "visual", "key": true, "window_steps": [1], "sample_interval": 0.5}
+    ]},
+    {"step_id": 2, "text": "看給藥紀錄單取出所需的藥物。(1讀)", "criteria": [
+      {"id": "2a", "text": "目光注視給藥紀錄單累計至少 10 秒", "category": "visual", "key": false, "window_steps": [2]},
+      {"id": "2b", "text": "明顯用手指指出給藥紀錄單", "category": "visual", "key": false, "window_steps": [2]},
+      {"id": "2c", "text": "取出的是紀錄單上所需的藥物", "category": "not_visible", "reason": "資訊不足", "note": "鏡頭看不到藥瓶標籤與紀錄單內容"}
+    ]},
+    {"step_id": 3, "text": "檢查藥物有無變質、過期等。", "criteria": [
+      {"id": "3a", "text": "學生有拿起藥物檢視（舉到眼前、轉動看標籤或粉末）", "category": "visual", "key": true, "window_steps": [3]},
+      {"id": "3b", "text": "確實檢查出藥物有無變質、過期", "category": "not_visible", "reason": "資訊不足", "note": "影片限制，無法得知學生的檢查是否正確；本步驟暫以是否有看藥物為標準"}
+    ]},
+    {"step_id": 4, "text": "看給藥治療紀錄單確認藥物。(2讀)", "criteria": [
+      {"id": "4a", "text": "目光注視給藥紀錄單累計至少 10 秒", "category": "visual", "key": false, "window_steps": [4]},
+      {"id": "4b", "text": "明顯用手指指出給藥紀錄單", "category": "visual", "key": false, "window_steps": [4]},
+      {"id": "4c", "text": "確認的藥物與紀錄單相符", "category": "not_visible", "reason": "資訊不足", "note": "鏡頭看不到藥瓶標籤與紀錄單內容"}
+    ]},
+    {"step_id": 5, "text": "將vial瓶口打開。", "criteria": [
+      {"id": "5a", "text": "將 vial 瓶口打開", "category": "program", "key": true, "rule": {"type": "detected"}}
+    ]},
+    {"step_id": 6, "text": "以酒精棉片消毒瓶口。", "criteria": [
+      {"id": "6a", "text": "以酒精棉片消毒 vial 瓶口", "category": "program", "key": true, "rule": {"type": "detected"}}
+    ]},
+    {"step_id": 7, "text": "將稀釋液瓶口消毒。", "criteria": [
+      {"id": "7a", "text": "消毒稀釋液瓶口", "category": "program", "key": true, "rule": {"type": "detected"}}
+    ]},
+    {"step_id": 8, "text": "將稀釋液瓶口打開。", "criteria": [
+      {"id": "8a", "text": "打開稀釋液瓶口", "category": "program", "key": true, "rule": {"type": "detected"}}
+    ]},
+    {"step_id": 9, "text": "撕開空針包裝袋。", "criteria": [
+      {"id": "9a", "text": "撕開空針包裝袋", "category": "program", "key": true, "rule": {"type": "detected"}}
+    ]},
+    {"step_id": 10, "text": "固定針頭與針心，取出空針。", "criteria": [
+      {"id": "10a", "text": "取出空針", "category": "program", "key": true, "rule": {"type": "detected"}},
+      {"id": "10b", "text": "取出時固定針頭與針心（握住針頭蓋與針筒接合處）", "category": "visual", "key": false, "window_steps": [10]}
+    ]},
+    {"step_id": 11, "text": "將瓶口上酒精棉片移除。", "removed": true, "criteria": []},
+    {"step_id": 12, "text": "以左手中指及食指夾住稀釋液瓶。", "criteria": [
+      {"id": "12a", "text": "以左手中指及食指夾住稀釋液瓶", "category": "visual", "key": true, "window_steps": [12]}
+    ]},
+    {"step_id": 13, "text": "右手將針頭斜面朝下插入稀釋液瓶中，左手其餘手指固定針筒。", "criteria": [
+      {"id": "13a", "text": "右手將針頭插入稀釋液瓶，左手其餘手指固定針筒", "category": "visual", "key": true, "window_steps": [13]},
+      {"id": "13b", "text": "針頭斜面朝下", "category": "not_visible", "reason": "資訊不足", "note": "解析度不足，看不到針頭斜面方向"}
+    ]},
+    {"step_id": 14, "text": "右手持針心尾端環狀處，勿碰觸針心，抽出稀釋液至所需量之刻度。", "criteria": [
+      {"id": "14a", "text": "右手持針心尾端環狀處，未碰觸針心", "category": "visual", "key": true, "window_steps": [14]},
+      {"id": "14b", "text": "抽出稀釋液至所需量之刻度", "category": "not_visible", "reason": "資訊不足", "note": "看不清針筒刻度"}
+    ]},
+    {"step_id": 15, "text": "酒棉墊在針心和針頭交接處。", "criteria": [
+      {"id": "15a", "text": "酒精棉片墊在針心與針頭交接處", "category": "program", "key": true, "rule": {"type": "detected"}},
+      {"id": "15b", "text": "先墊酒精棉片才彈針", "category": "visual", "key": false, "window_steps": [15, 16, 17], "audio": true}
+    ]},
+    {"step_id": 16, "text": "針心往後抽。", "criteria": [
+      {"id": "16a", "text": "針心往後抽", "category": "program", "key": true, "rule": {"type": "detected"}}
+    ]},
+    {"step_id": 17, "text": "手指輕彈空針，排出空針內空氣。", "criteria": [
+      {"id": "17a", "text": "手指輕彈空針並排出空氣（聽到彈擊聲且看到手指彈針筒）", "category": "visual", "key": true, "window_steps": [15, 16, 17], "audio": true}
+    ]},
+    {"step_id": 18, "text": "用持毛筆方式將稀釋液插入vial中心並打入稀釋液。", "criteria": [
+      {"id": "18a", "text": "將稀釋液打入 vial", "category": "program", "key": true, "rule": {"type": "detected"}},
+      {"id": "18b", "text": "以持毛筆方式持針", "category": "visual", "key": false, "window_steps": [18]},
+      {"id": "18c", "text": "針頭插入 vial 中心", "category": "visual", "key": false, "window_steps": [18]}
+    ]},
+    {"step_id": 19, "text": "抽出針頭，單手套上針頭套(或針座)。", "criteria": [
+      {"id": "19a", "text": "抽出針頭並套回針頭套", "category": "program", "key": true, "rule": {"type": "detected"}},
+      {"id": "19b", "text": "單手套回（另一手未扶針頭套）", "category": "visual", "key": false, "window_steps": [19]}
+    ]},
+    {"step_id": 20, "text": "用雙手旋轉Vial瓶，讓稀釋液和粉劑融合。", "criteria": [
+      {"id": "20a", "text": "雙手旋轉 vial 讓稀釋液與粉劑融合", "category": "program", "key": true, "rule": {"type": "detected"}}
+    ]},
+    {"step_id": 21, "text": "空針拔蓋後，抽取空氣。", "criteria": [
+      {"id": "21a", "text": "空針拔蓋後抽取空氣", "category": "program", "key": true, "rule": {"type": "detected"}}
+    ]},
+    {"step_id": 22, "text": "用持毛筆方式將空針插入vial中心打入空氣。", "criteria": [
+      {"id": "22a", "text": "將空氣打入 vial", "category": "program", "key": true, "rule": {"type": "detected"}},
+      {"id": "22b", "text": "以持毛筆方式持針", "category": "visual", "key": false, "window_steps": [22]},
+      {"id": "22c", "text": "針頭插入 vial 中心", "category": "visual", "key": false, "window_steps": [22]}
+    ]},
+    {"step_id": 23, "text": "將Vial舉起，空針朝上，瓶口朝下。", "criteria": [
+      {"id": "23a", "text": "將 vial 舉起倒置，空針朝上、瓶口朝下", "category": "program", "key": true, "rule": {"type": "detected"}}
+    ]},
+    {"step_id": 24, "text": "右手持針心尾端環狀處，勿碰觸針心，抽出藥液至所需藥量之刻度。", "criteria": [
+      {"id": "24a", "text": "右手持針心尾端環狀處，未碰觸針心", "category": "visual", "key": true, "window_steps": [24]},
+      {"id": "24b", "text": "抽出藥液至所需藥量之刻度", "category": "not_visible", "reason": "資訊不足", "note": "看不清針筒刻度"}
+    ]},
+    {"step_id": 25, "text": "備用酒精棉片墊針柄。", "criteria": [
+      {"id": "25a", "text": "酒精棉片墊在針柄", "category": "program", "key": true, "rule": {"type": "detected"}},
+      {"id": "25b", "text": "先墊酒精棉片才彈針", "category": "visual", "key": false, "window_steps": [25, 26, 27], "audio": true}
+    ]},
+    {"step_id": 26, "text": "將針筒垂直拿起，針頭向上，針心往後抽。", "criteria": [
+      {"id": "26a", "text": "針心往後抽", "category": "program", "key": true, "rule": {"type": "detected"}},
+      {"id": "26b", "text": "針筒垂直、針頭向上", "category": "visual", "key": false, "window_steps": [26]}
+    ]},
+    {"step_id": 27, "text": "手指輕彈空針，排出空針內空氣。", "criteria": [
+      {"id": "27a", "text": "手指輕彈空針並排出空氣（聽到彈擊聲且看到手指彈針筒）", "category": "visual", "key": true, "window_steps": [25, 26, 27], "audio": true}
+    ]},
+    {"step_id": 28, "text": "單手套上針頭套(或針座)。", "criteria": [
+      {"id": "28a", "text": "套回針頭套", "category": "program", "key": true, "rule": {"type": "detected"}},
+      {"id": "28b", "text": "單手套回（另一手未扶針頭套）", "category": "visual", "key": false, "window_steps": [28]}
+    ]},
+    {"step_id": 29, "text": "看給藥治療紀錄單丟棄藥物空瓶。(3讀)", "criteria": [
+      {"id": "29a", "text": "目光注視給藥紀錄單累計至少 10 秒", "category": "visual", "key": false, "window_steps": [29]},
+      {"id": "29b", "text": "明顯用手指指出給藥紀錄單", "category": "visual", "key": false, "window_steps": [29]},
+      {"id": "29c", "text": "丟棄藥物空瓶", "category": "visual", "key": false, "window_steps": [29]}
+    ]},
+    {"step_id": 30, "text": "抽藥後之空針由針心處放入空針包裝或放在針架。", "criteria": [
+      {"id": "30a", "text": "空針放入空針包裝或針架（放在桌上或丟棄由評分 agent 依畫面判部分正確或錯誤）", "category": "visual", "key": false, "window_steps": [30]},
+      {"id": "30b", "text": "由針心處或針柄處放入空針包裝（兩種都給分）", "category": "visual", "key": false, "window_steps": [30]}
+    ]}
+  ]
+}

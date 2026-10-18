@@ -43,6 +43,12 @@ jobs:
         pip install -r tests/sop_skill/requirements.txt
         pytest tests/sop_skill/ -v
 
+    # 5b. SOP 評分的 rubric／程式判定／結果驗證測試（不需要資料庫）
+    - name: Run SOP grading script tests
+      run: |
+        pip install -r tests/sop_grading/requirements.txt
+        pytest tests/sop_grading/ -v
+
     # 6. 執行測試！
     - name: Run Pytest
       env:
