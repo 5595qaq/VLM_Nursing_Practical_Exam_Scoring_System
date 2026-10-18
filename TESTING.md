@@ -46,7 +46,17 @@ pip install -r tests/sop_grading/requirements.txt
 pytest tests/sop_grading -q
 python sop-video-grading/scripts/rules.py segmentation.json -o grading.json   # 由切分結果產生評分結果（visual 標準為待判定）
 python sop-video-grading/scripts/validate_grading.py grading.json --final     # 驗證最終評分結果
+python sop-video-grading/scripts/eval_grading.py --labels 標註表.csv grading.json  # 與人工標註比對
+python sop-video-grading/scripts/labels_to_segmentation.py --labels 標註表.csv --video-id VID_0083 --duration 424 -o seg.json  # 用標註時間組出切分結果
 ```
+
+`tests/sop_grading/test_clip.py` 需要 ffmpeg／ffprobe（沒有時自動略過）。評分 agent 迴圈（`backend/tests/test_sop_grading_service.py`）用 ffmpeg 產生 60 秒帶聲音的合成影片，以真實腳本執行 overview／zoom／clip／final，模型以假回覆取代，不需資料庫與 Google 憑證：
+
+```bash
+pytest backend/tests/test_sop_grading_service.py -q
+```
+
+真實影片的評分要呼叫 Vertex AI（會計費），用 `python -m app.sop_grading_cli` 在 worker 容器內逐支執行，再以 `eval_grading.py` 比對人工標註，見 README「SOP 評分」。
 
 sop-video-skill 執行迴圈（`backend/tests/test_sop_skill_service.py`）用 ffmpeg 產生 60 秒合成影片，以真實的 skill 腳本執行 crop／set_crop／overview／zoom／final，模型以腳本化假回覆取代；需要 ffmpeg 與 `opencv-python-headless`、`matplotlib`、`jsonschema`（已列在 `backend/requirements.txt`），不需資料庫與 Google 憑證：
 

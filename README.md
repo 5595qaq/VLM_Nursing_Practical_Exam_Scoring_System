@@ -18,7 +18,7 @@
 - **評分證據時間點**：Agent_A、Agent_B、Agent_D 的每個評分步驟都會輸出 `證據時間點`（`MM:SS-MM:SS`），指出最直接支持判定的影片區間；未觀察到的步驟則填該動作應出現的檢查區間。前端下載的 CSV 也會帶出此欄位。
 - **PostgreSQL 持久佇列**：PgQueuer 管理派送、去重與中斷恢復；每個評分工作最多 10 支活動影片，所有 worker 合計最多 5 個 Gemini 呼叫。
 - **SOP 影片步驟切分 skill（開發中）**：`sop-video-skill/` 是新的前處理方案，把影片切成 30 個 SOP 步驟各自的時間區段（只切分、不評分）。評分表單的「執行模式」選「只跑 SOP 步驟切分」即可執行，詳見下方「SOP 影片步驟切分 skill」。
-- **SOP 評分（開發中）**：`sop-video-grading/` 讀取切分結果，對 30 步逐條判定「正確／錯誤／部分正確／無法判定」並附說明。目前完成第 1 階段（評分標準與程式判定），看畫面的評分 agent 尚未加入，也尚未接上後端，詳見下方「SOP 評分」。
+- **SOP 評分（開發中）**：`sop-video-grading/` 讀取切分結果，對 30 步逐條判定「正確／錯誤／部分正確／無法判定」並附說明。看畫面的標準由評分 agent（Gemini，可聽影片聲音）判定；目前以命令列在本機逐支測試，尚未接上評分佇列與前端，詳見下方「SOP 評分」。
 
 ## 系統運作流程與架構
 
@@ -122,6 +122,7 @@ python sop-video-skill/scripts/schema_tools.py sop-video-skill/schema.json > out
 | `CLAUDE_CALL_TIMEOUT_SECONDS` | 900 | 單回合呼叫的最長等待秒數 |
 | `SOP_SKILL_CONCURRENCY` | 2 | 所有 worker 同時執行的 skill 數。skill 一次只送一個請求，但不計入 Agent A–D 的 5 路 Gemini 上限，兩者同時跑時 Gemini 最多會有 5＋2 個請求 |
 | `SOP_SKILL_MAX_TURNS` | 60 | 每支影片的最多回合數（預算用滿約 42 回合） |
+| `SOP_GRADING_DIR` | repo 內的 `sop-video-grading/`（容器內 `/sop-video-grading`） | 評分 agent 的 skill 目錄（SKILL.md、rubric、腳本） |
 
 Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499，或 Claude 回傳 429／529（overloaded），且 SDK 重試用盡時，該影片的 skill 任務會依 queue 層退避重新派送，並從頭重跑該影片；其他錯誤（模型拒答、連續 6 次不合格動作、超過回合上限）會讓工作失敗，可在前端「從失敗處繼續」只重跑未完成的影片。
 
@@ -146,9 +147,33 @@ Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499，或 Claude 回傳 429／529（o
 | `scripts/rubric.py` | 讀取並檢查 rubric、彙整步驟判定 |
 | `scripts/rules.py` | 由切分結果判定 `program` 標準，並為 `visual` 標準算出要看的影片區間（先標為待判定） |
 | `scripts/validate_grading.py` | 驗證評分結果；`--final` 另外拒絕還在待判定的標準 |
+| `SKILL.md` | 評分 agent 的 system prompt（看畫面的標準怎麼判、說明怎麼寫） |
+| `actions.schema.json` | 評分 agent 的動作格式（`overview`、`zoom`、`clip`、`final`），由 `scripts/validate_grading_action.py` 檢查 |
+| `scripts/clip.py` | 從原檔剪出帶聲音的片段（裁到 context box），給彈針與洗手七個動作用 |
+| `scripts/eval_grading.py` | 與人工標註表比對：每步的人工／模型判定與說明、一致率、錯誤召回、誤報（另外列出有看畫面標準的步驟） |
+| `scripts/labels_to_segmentation.py` | 用人工標註表的開始／結束秒數組出切分結果，調整評分 agent 時可跳過切分 skill |
 | `CHANGELOG.md` | 各版本的修改紀錄 |
 
-步驟定義沿用 `sop-video-skill/references/sop_steps.md`。目前只完成第 1 階段，看畫面的評分 agent（SKILL.md、`clip` 帶聲音片段）與後端串接在後續階段加入：
+步驟定義沿用 `sop-video-skill/references/sop_steps.md`。
+
+評分 agent（`backend/app/services/sop_grading_service.py`）把待判定的標準依 `window_steps` 分組（例如 15b 與 17a 共用步驟 15–17 的區間），每組跑一段短對話：外部程式先附上區間的 3×3 影格，需要聲音或每 0.5 秒一格時改附 2 fps 的帶聲音片段；模型可再要求 `overview`／`zoom`／`clip`（每組各 3／3／2 次），最後以 `final` 判定該組的每一條標準。片段帶聲音只有 Gemini 支援，所以評分一律使用 Gemini（`SOP_SKILL_GEMINI_MODEL`）。
+
+在本機逐支測試（轉檔 → 切分 → 評分；需要 Vertex AI 憑證，會計費）：
+
+```bash
+docker compose run --rm -v /path/to/videos:/data:ro -v /path/to/runs:/work worker   python -m app.sop_grading_cli /data/影片.mp4 --video-id VID_0083 --out /work/VID_0083
+# 加 --labels 時改用標註表的時間當切分結果，不跑 sop-video-skill（較快、較省）
+docker compose run --rm ... worker python -m app.sop_grading_cli ... --labels /labels.csv
+# 只重評某幾步（其餘沿用上次的 grading.json）
+docker compose run --rm ... worker python -m app.sop_grading_cli ... --steps 15,17
+python sop-video-grading/scripts/eval_grading.py --labels 標註表.csv runs/VID_0083/grading.json
+```
+
+`--out` 目錄會留下轉檔後的 `source.mp4`、`segmentation.json`、`grading.json` 與每組的對話紀錄；已有 `segmentation.json` 時不會重新切分。
+
+用 `--labels` 時只取標註表的時間，不複製判定與說明（評分 agent 會看到切分依據，不能讓它看到答案）；沒有時間的步驟給前後步驟之間的區間，由評分 agent 自己判斷有沒有做。裁切框不在標註表裡，預設為整個畫面。此時「有沒有做」這類程式判定的標準等於照抄標註時間，所以評估評分 agent 時要看 `eval_grading.py` 的「看畫面的步驟（V）」那一行。
+
+程式判定與驗證也可以單獨執行：
 
 ```bash
 python sop-video-grading/scripts/rules.py segmentation.json -o grading.json
@@ -461,6 +486,7 @@ my-awesome-project/
 │   │   │   ├── gcs_service.py
 │   │   │   ├── gemini_service.py
 │   │   │   ├── model_logging.py
+│   │   │   ├── sop_grading_service.py
 │   │   │   ├── sop_skill_service.py
 │   │   │   ├── usage.py
 │   │   │   └── video_service.py
@@ -469,6 +495,7 @@ my-awesome-project/
 │   │   ├── db.py
 │   │   ├── gazelle_worker.py
 │   │   ├── main.py
+│   │   ├── sop_grading_cli.py
 │   │   ├── worker.py
 │   │   └── ws_manager.py
 │   └── tests/
@@ -481,9 +508,11 @@ my-awesome-project/
 │   │   └── sop_steps.md
 │   └── scripts/
 ├── sop-video-grading/
+│   ├── SKILL.md
 │   ├── CHANGELOG.md
 │   ├── rubric.json
 │   ├── schema.json
+│   ├── actions.schema.json
 │   └── scripts/
 ├── tests/
 │   ├── sop_skill/

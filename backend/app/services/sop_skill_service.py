@@ -460,7 +460,11 @@ _GEMINI_REFUSALS = {"SAFETY", "BLOCKLIST", "PROHIBITED_CONTENT", "SPII", "IMAGE_
 
 
 def _gemini_parts(content: list[dict]):
-    """Claude-style content blocks (built by build_content) -> Gemini parts, same order."""
+    """Claude-style content blocks (built by build_content) -> Gemini parts, same order.
+
+    sop_grading_service also sends {"type": "video", "path", "fps"} blocks (clips with audio);
+    only Gemini accepts them.
+    """
     from google.genai import types
     parts = []
     for block in content:
@@ -470,6 +474,10 @@ def _gemini_parts(content: list[dict]):
             source = block["source"]
             parts.append(types.Part.from_bytes(data=base64.standard_b64decode(source["data"]),
                                                mime_type=source["media_type"]))
+        elif block["type"] == "video":
+            parts.append(types.Part(
+                inline_data=types.Blob(data=Path(block["path"]).read_bytes(), mime_type="video/mp4"),
+                video_metadata=types.VideoMetadata(fps=block["fps"])))
     return parts
 
 

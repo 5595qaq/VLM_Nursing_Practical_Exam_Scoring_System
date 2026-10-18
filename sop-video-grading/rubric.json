@@ -1,5 +1,5 @@
 {
-  "version": "1.0",
+  "version": "1.1",
   "description": "無菌抽藥技術－vial 粉劑 30 步評分標準。category：program＝由切分結果以程式判定；visual＝評分 agent 看畫面（audio=true 時連聲音一起聽）；not_visible＝影片看不到，固定輸出「無法判定」且不影響步驟判定。key=true 的標準錯誤時整步判「錯誤」。",
   "steps": [
     {"step_id": 1, "text": "洗手。", "criteria": [
@@ -104,12 +104,12 @@
       {"id": "28b", "text": "單手套回（另一手未扶針頭套）", "category": "visual", "key": false, "window_steps": [28]}
     ]},
     {"step_id": 29, "text": "看給藥治療紀錄單丟棄藥物空瓶。(3讀)", "criteria": [
-      {"id": "29a", "text": "目光注視給藥紀錄單累計至少 10 秒", "category": "visual", "key": false, "window_steps": [29]},
+      {"id": "29a", "text": "目光注視給藥紀錄單累計至少 10 秒", "category": "visual", "key": true, "window_steps": [29]},
       {"id": "29b", "text": "明顯用手指指出給藥紀錄單", "category": "visual", "key": false, "window_steps": [29]},
       {"id": "29c", "text": "丟棄藥物空瓶", "category": "visual", "key": false, "window_steps": [29]}
     ]},
     {"step_id": 30, "text": "抽藥後之空針由針心處放入空針包裝或放在針架。", "criteria": [
-      {"id": "30a", "text": "空針放入空針包裝或針架（放在桌上或丟棄由評分 agent 依畫面判部分正確或錯誤）", "category": "visual", "key": false, "window_steps": [30]},
+      {"id": "30a", "text": "空針放入空針包裝或針架（放在桌上或丟棄為錯誤）", "category": "visual", "key": true, "window_steps": [30]},
       {"id": "30b", "text": "由針心處或針柄處放入空針包裝（兩種都給分）", "category": "visual", "key": false, "window_steps": [30]}
     ]}
   ]

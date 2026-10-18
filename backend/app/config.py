@@ -57,6 +57,9 @@ class Settings:
     SOP_SKILL_DIR = os.getenv(
         "SOP_SKILL_DIR", str(Path(__file__).resolve().parents[2] / "sop-video-skill"),
     )
+    SOP_GRADING_DIR = os.getenv(
+        "SOP_GRADING_DIR", str(Path(__file__).resolve().parents[2] / "sop-video-grading"),
+    )
     # Token usage is always recorded (model_usage table); prices only add a cost estimate.
     MODEL_PRICES = _model_prices()
     SOP_SKILL_CONCURRENCY = _integer("SOP_SKILL_CONCURRENCY", 2)
