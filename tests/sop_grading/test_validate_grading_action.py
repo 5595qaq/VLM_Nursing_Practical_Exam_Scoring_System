@@ -32,6 +32,7 @@ def assert_rejected(action, expected, used=FRESH):
     {"action": "overview", "start": 150, "end": 170, "n": 9, "box": "context", "reason": "看頭部"},
     {"action": "zoom", "times": [150, 152.5], "region": [0.2, 0.3, 0.6, 0.7], "reason": "看手指"},
     {"action": "clip", "start": 140, "end": 185, "fps": 2, "reason": "聽彈針"},
+    {"action": "burst", "start": 150, "end": 151.5, "n": 9, "region": [0.2, 0.3, 0.6, 0.7], "reason": "看彈針動作"},
 ])
 def test_valid_actions_pass(action):
     assert validate(action, TASK, FRESH, DURATION) == []
@@ -70,6 +71,25 @@ def test_zoom_region_too_large():
 def test_zoom_times_distinct():
     assert_rejected({"action": "zoom", "times": [150, 150], "region": [0.2, 0.2, 0.5, 0.5], "reason": "x"},
                     "distinct")
+
+
+@pytest.mark.parametrize("start, end, expected", [
+    (150, 150.2, "burst span 0.2s outside 0.3-3s"), (150, 154, "burst span 4.0s"),
+    (125, 126, "must stay within 138-190")])
+def test_burst_span_and_window(start, end, expected):
+    assert_rejected({"action": "burst", "start": start, "end": end, "region": [0.2, 0.2, 0.5, 0.5], "reason": "x"},
+                    expected)
+
+
+def test_burst_region_and_n():
+    assert_rejected({"action": "burst", "start": 150, "end": 151, "region": [0, 0, 0.9, 0.9], "reason": "x"},
+                    "burst region too large")
+    assert_rejected({"action": "burst", "start": 150, "end": 151, "n": 20, "region": [0.2, 0.2, 0.5, 0.5],
+                     "reason": "x"}, "schema")
+
+
+def test_final_accepts_burst_evidence():
+    assert validate(final(evidence=["burst@150-151.5 #3"]), TASK, FRESH, DURATION) == []
 
 
 def test_budget_exhausted():

@@ -20,11 +20,12 @@ from validate_grading import check_criterion
 
 SCHEMA_PATH = Path(__file__).resolve().parent.parent / "actions.schema.json"
 
-BUDGET = {"overview": 3, "zoom": 3, "clip": 2}
+BUDGET = {"overview": 3, "zoom": 3, "burst": 3, "clip": 2}
 WINDOW_SLACK = 10.0  # seconds the agent may look outside the task window
 OVERVIEW_SPAN = (2.0, 60.0)
 CLIP_SPAN = (1.0, 60.0)
 ZOOM_MAX_AREA, ZOOM_MAX_SIDE = 0.50, 0.75
+BURST_SPAN = (0.3, 3.0)
 
 
 def validate(action, task: dict, used: dict, duration: float,
@@ -35,7 +36,7 @@ def validate(action, task: dict, used: dict, duration: float,
     name = action.get("action")
     branch = next((s for s in schema["oneOf"] if s["properties"]["action"]["const"] == name), None)
     if branch is None:
-        return [f"unknown action {name!r}; use overview, zoom, clip or final"]
+        return [f"unknown action {name!r}; use overview, zoom, burst, clip or final"]
     errors = [f"schema: {'/'.join(map(str, e.path)) or '(root)'}: {e.message}"
               for e in Draft202012Validator(branch).iter_errors(action)]
     if errors:
@@ -48,9 +49,9 @@ def validate(action, task: dict, used: dict, duration: float,
         errors.append(f"budget for {name} exhausted ({BUDGET[name]}); send final with what you have")
     lo = max(0.0, task["window"][0] - WINDOW_SLACK)
     hi = min(duration, task["window"][1] + WINDOW_SLACK)
-    if name in ("overview", "clip"):
+    if name in ("overview", "clip", "burst"):
         start, end = action["start"], action["end"]
-        low, high = OVERVIEW_SPAN if name == "overview" else CLIP_SPAN
+        low, high = {"overview": OVERVIEW_SPAN, "clip": CLIP_SPAN, "burst": BURST_SPAN}[name]
         if end <= start:
             errors.append(f"{name} end must be > start")
         elif not low <= end - start <= high:
@@ -58,16 +59,17 @@ def validate(action, task: dict, used: dict, duration: float,
         if start < lo or end > hi:
             errors.append(f"{name} [{start:g}, {end:g}] must stay within {lo:g}-{hi:g}s "
                           f"(task window ±{WINDOW_SLACK:g}s)")
-    else:
+    if name == "zoom":
         if any(not lo <= t <= hi for t in action["times"]):
             errors.append(f"zoom times must stay within {lo:g}-{hi:g}s (task window ±{WINDOW_SLACK:g}s)")
         if len(set(action["times"])) != len(action["times"]):
             errors.append("zoom times must be distinct")
+    if name in ("zoom", "burst"):
         x0, y0, x1, y1 = action["region"]
         if not (x0 < x1 and y0 < y1):
-            errors.append("zoom region needs x0<x1 and y0<y1")
+            errors.append(f"{name} region needs x0<x1 and y0<y1")
         elif (x1 - x0) * (y1 - y0) > ZOOM_MAX_AREA or max(x1 - x0, y1 - y0) > ZOOM_MAX_SIDE:
-            errors.append(f"zoom region too large (area <= {ZOOM_MAX_AREA}, each side <= {ZOOM_MAX_SIDE} "
+            errors.append(f"{name} region too large (area <= {ZOOM_MAX_AREA}, each side <= {ZOOM_MAX_SIDE} "
                           "of the context box)")
     return errors
 

@@ -29,6 +29,19 @@
     {
       "type": "object",
       "additionalProperties": false,
+      "required": ["action", "start", "end", "region", "reason"],
+      "properties": {
+        "action": {"const": "burst"},
+        "start": {"type": "number", "minimum": 0},
+        "end": {"type": "number", "minimum": 0},
+        "n": {"type": "integer", "minimum": 3, "maximum": 12},
+        "region": {"type": "array", "items": {"type": "number", "minimum": 0, "maximum": 1}, "minItems": 4, "maxItems": 4},
+        "reason": {"type": "string"}
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
       "required": ["action", "start", "end", "reason"],
       "properties": {
         "action": {"const": "clip"},

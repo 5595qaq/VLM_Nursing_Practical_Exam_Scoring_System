@@ -72,6 +72,10 @@ class FakeModel:
         return ModelReply(json.dumps(action, ensure_ascii=False), "end_turn", 100, 10)
 
 
+def peaks_line(content):
+    return next(line for line in content[0]["text"].splitlines() if line.startswith("動作峰值"))
+
+
 def requests_for(model, cid):
     return [c for c in model.requests if cid in CRITERION.findall(c[0]["text"])]
 
@@ -117,6 +121,27 @@ async def test_extra_material_actions_run(video, tmp_path):
     last = requests_for(model, "12a")[-1]
     assert "zoom@21.8/22.5" in last[0]["text"] and "clip@20-25" in last[0]["text"]
     assert [b["fps"] for b in last if b["type"] == "video"] == [3]
+
+
+async def test_motion_peaks_are_listed_and_burst_runs(video, tmp_path):
+    model = FakeModel({"12a": [
+        {"action": "burst", "start": 21.0, "end": 22.5, "n": 6, "region": [0.2, 0.2, 0.6, 0.6], "reason": "看夾瓶瞬間"},
+    ]})
+    outcome = await grading.run_grading(video, segmentation(), tmp_path, model, steps={12})
+    first, last = requests_for(model, "12a")
+    assert not peaks_line(first).endswith("（無）")  # testsrc moves every frame
+    assert "burst@21-22.5（原始解析度，6 格，每 0.30 s）" in last[0]["text"]
+    assert "burst 剩 2/3" in last[0]["text"]
+    assert outcome["failed_tasks"] == [] and list(tmp_path.glob("*burst_21-22.5.jpg"))
+
+
+async def test_motion_peak_failure_does_not_stop_grading(video, tmp_path, monkeypatch):
+    def broken(self, *args):
+        raise grading.SkillRunError("motion_peaks.py failed")
+    monkeypatch.setattr(grading.GradingRunner, "motion_peaks", broken)
+    model = FakeModel()
+    outcome = await grading.run_grading(video, segmentation(), tmp_path, model, steps={12})
+    assert outcome["failed_tasks"] == [] and peaks_line(model.requests[0]).endswith("（無）")
 
 
 async def test_steps_filter_keeps_previous_grades(video, tmp_path):

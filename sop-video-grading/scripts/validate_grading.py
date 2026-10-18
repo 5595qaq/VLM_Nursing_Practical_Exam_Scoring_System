@@ -25,7 +25,7 @@ from rubric import (CORRECT, NOT_APPLICABLE, PARTIAL, PENDING, STEP_COUNT, UNDET
 SCHEMA_PATH = Path(__file__).resolve().parent.parent / "schema.json"
 
 ALLOWED_SOURCES = {"program": {"rule"}, "visual": {"vlm", "rule"}, "not_visible": {"fixed"}}
-EVIDENCE_PREFIXES = ("global #", "ov@", "zoom@", "clip@", "seg:step ")
+EVIDENCE_PREFIXES = ("global #", "ov@", "zoom@", "burst@", "clip@", "seg:step ")
 TIMESTAMP = re.compile(r"\d{2}:\d{2}")
 
 
