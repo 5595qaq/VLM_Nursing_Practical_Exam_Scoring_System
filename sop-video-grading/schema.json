@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SOP 影片評分結果",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["video_id", "rubric_version", "steps"],
+  "properties": {
+    "video_id": {"type": "string"},
+    "rubric_version": {"type": "string"},
+    "steps": {
+      "type": "array",
+      "minItems": 30,
+      "maxItems": 30,
+      "items": {"$ref": "#/$defs/step"}
+    }
+  },
+  "$defs": {
+    "verdict": {
+      "enum": ["正確", "錯誤", "部分正確", "無法判定", "不適用", "待判定"],
+      "description": "不適用只給已移除的步驟 11；待判定＝visual 標準尚未由評分 agent 看過（最終結果不得出現）"
+    },
+    "reason": {
+      "anyOf": [
+        {"enum": ["藥單看不見", "畫面被遮擋", "資訊不足", "影片已結束", "動作時間少於0.5秒", "無音軌", "切分未定位"]},
+        {"type": "null"}
+      ],
+      "description": "無法判定的原因；其他判定一律為 null"
+    },
+    "step": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["step_id", "verdict", "explanation", "confidence", "criteria"],
+      "properties": {
+        "step_id": {"type": "integer", "minimum": 1, "maximum": 30},
+        "verdict": {"$ref": "#/$defs/verdict"},
+        "explanation": {"type": "string", "minLength": 8, "description": "由各標準的說明組成，說明判定理由"},
+        "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+        "criteria": {"type": "array", "items": {"$ref": "#/$defs/criterion"}}
+      }
+    },
+    "criterion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["criterion_id", "verdict", "source", "explanation", "evidence", "confidence", "reason", "window"],
+      "properties": {
+        "criterion_id": {"type": "string"},
+        "verdict": {"$ref": "#/$defs/verdict"},
+        "source": {"enum": ["rule", "vlm", "fixed"], "description": "rule＝程式依切分結果判定；vlm＝評分 agent 看畫面；fixed＝看不到，固定輸出"},
+        "explanation": {"type": "string", "minLength": 8, "description": "看到／聽到什麼、哪條標準沒做到；正確與部分正確必須含 mm:ss 時間點"},
+        "evidence": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "description": "影格或片段引用：global #k、ov@a-b #k、zoom@t、clip@a-b、seg:step N"
+        },
+        "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+        "reason": {"$ref": "#/$defs/reason"},
+        "window": {
+          "anyOf": [
+            {"type": "array", "items": {"type": "number", "minimum": 0}, "minItems": 2, "maxItems": 2},
+            {"type": "null"}
+          ],
+          "description": "visual 標準要看的影片區間（秒），由切分結果推得；其他為 null"
+        }
+      }
+    }
+  }
+}

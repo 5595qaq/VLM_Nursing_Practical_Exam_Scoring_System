@@ -39,6 +39,15 @@ python sop-video-skill/scripts/schema_tools.py sop-video-skill/schema.json > out
 python sop-video-skill/scripts/schema_tools.py sop-video-skill/actions.schema.json > actions.json  # 動作 schema（自動嵌入 schema.json）
 ```
 
+SOP 評分（`sop-video-grading/`）的評分標準、程式判定與結果驗證也不需要資料庫，測試在 `tests/sop_grading/`。測試會先用 sop-video-skill 的 `validate_result.py` 確認輸入的切分結果合法，再檢查 `rules.py` 的判定與 `validate_grading.py` 的每條規則：
+
+```bash
+pip install -r tests/sop_grading/requirements.txt
+pytest tests/sop_grading -q
+python sop-video-grading/scripts/rules.py segmentation.json -o grading.json   # 由切分結果產生評分結果（visual 標準為待判定）
+python sop-video-grading/scripts/validate_grading.py grading.json --final     # 驗證最終評分結果
+```
+
 sop-video-skill 執行迴圈（`backend/tests/test_sop_skill_service.py`）用 ffmpeg 產生 60 秒合成影片，以真實的 skill 腳本執行 crop／set_crop／overview／zoom／final，模型以腳本化假回覆取代；需要 ffmpeg 與 `opencv-python-headless`、`matplotlib`、`jsonschema`（已列在 `backend/requirements.txt`），不需資料庫與 Google 憑證：
 
 ```bash

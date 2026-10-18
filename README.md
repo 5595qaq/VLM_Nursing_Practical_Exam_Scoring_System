@@ -18,6 +18,7 @@
 - **評分證據時間點**：Agent_A、Agent_B、Agent_D 的每個評分步驟都會輸出 `證據時間點`（`MM:SS-MM:SS`），指出最直接支持判定的影片區間；未觀察到的步驟則填該動作應出現的檢查區間。前端下載的 CSV 也會帶出此欄位。
 - **PostgreSQL 持久佇列**：PgQueuer 管理派送、去重與中斷恢復；每個評分工作最多 10 支活動影片，所有 worker 合計最多 5 個 Gemini 呼叫。
 - **SOP 影片步驟切分 skill（開發中）**：`sop-video-skill/` 是新的前處理方案，把影片切成 30 個 SOP 步驟各自的時間區段（只切分、不評分）。評分表單的「執行模式」選「只跑 SOP 步驟切分」即可執行，詳見下方「SOP 影片步驟切分 skill」。
+- **SOP 評分（開發中）**：`sop-video-grading/` 讀取切分結果，對 30 步逐條判定「正確／錯誤／部分正確／無法判定」並附說明。目前完成第 1 階段（評分標準與程式判定），看畫面的評分 agent 尚未加入，也尚未接上後端，詳見下方「SOP 評分」。
 
 ## 系統運作流程與架構
 
@@ -123,6 +124,39 @@ python sop-video-skill/scripts/schema_tools.py sop-video-skill/schema.json > out
 | `SOP_SKILL_MAX_TURNS` | 60 | 每支影片的最多回合數（預算用滿約 42 回合） |
 
 Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499，或 Claude 回傳 429／529（overloaded），且 SDK 重試用盡時，該影片的 skill 任務會依 queue 層退避重新派送，並從頭重跑該影片；其他錯誤（模型拒答、連續 6 次不合格動作、超過回合上限）會讓工作失敗，可在前端「從失敗處繼續」只重跑未完成的影片。
+
+### SOP 評分（開發中）
+
+`sop-video-grading/` 以 sop-video-skill 的切分結果為輸入，依 `rubric.json` 對每一步輸出判定（正確／錯誤／部分正確／無法判定；已移除的步驟 11 為不適用）與說明。說明是評分的重點：每條標準都要寫看到什麼、哪條標準沒做到，並引用時間點與影格。
+
+每條評分標準分成三類：
+
+| 類別 | 判定方式 | 例子 |
+| --- | --- | --- |
+| `program` | 由切分結果以程式判定 | 步驟有沒有做、洗手是否 ≥ 15 秒 |
+| `visual` | 評分 agent 看畫面（彈針連聲音一起聽） | 洗手七個動作（每 0.5 秒一格）、注視藥單 ≥ 10 秒、持毛筆姿勢、單手回套、彈針 |
+| `not_visible` | 影片看不到，固定輸出「無法判定」，不影響步驟判定 | 藥物是否正確、針頭斜面、刻度 |
+
+步驟判定由程式從各條標準彙整：`key` 標準錯誤 → 錯誤；有標準判部分正確，或有錯誤也有正確 → 部分正確；有無法判定 → 無法判定；其餘 → 正確。
+
+| 檔案 | 用途 |
+| --- | --- |
+| `rubric.json` | 30 步的評分標準、類別與 `key` |
+| `schema.json` | 評分結果格式 |
+| `scripts/rubric.py` | 讀取並檢查 rubric、彙整步驟判定 |
+| `scripts/rules.py` | 由切分結果判定 `program` 標準，並為 `visual` 標準算出要看的影片區間（先標為待判定） |
+| `scripts/validate_grading.py` | 驗證評分結果；`--final` 另外拒絕還在待判定的標準 |
+| `CHANGELOG.md` | 各版本的修改紀錄 |
+
+步驟定義沿用 `sop-video-skill/references/sop_steps.md`。目前只完成第 1 階段，看畫面的評分 agent（SKILL.md、`clip` 帶聲音片段）與後端串接在後續階段加入：
+
+```bash
+python sop-video-grading/scripts/rules.py segmentation.json -o grading.json
+python sop-video-grading/scripts/validate_grading.py grading.json          # 允許待判定
+python sop-video-grading/scripts/validate_grading.py grading.json --final  # 最終結果
+```
+
+人工標註表（`*影片標記表*.csv`／`.xlsx`）含學生姓名，已被 `.gitignore` 排除，只放在本機。
 
 ### Token 用量與成本
 
@@ -372,7 +406,7 @@ docker compose down
 
 | Workflow | 觸發 | 內容 |
 | --- | --- | --- |
-| `python-ci.yml` | push 或 PR 到 `main`、`release/**` | 先跑 `tests/sop_skill/`，再以 PostgreSQL 跑後端 pytest |
+| `python-ci.yml` | push 或 PR 到 `main`、`release/**` | 先跑 `tests/sop_skill/`、`tests/sop_grading/`，再以 PostgreSQL 跑後端 pytest |
 | `claude-code-review.yml` | PR 開啟、推送新提交、重新開啟或轉為可審查 | Claude 以 code-review 外掛審查 PR，結果以行內留言貼回（草稿與 fork 的 PR 不審查） |
 | `claude.yml` | issue／PR 留言、review 或新 issue 中提到 `@claude` | Claude 回應並可推送提交；只有具寫入權限的人能觸發 |
 
@@ -446,7 +480,13 @@ my-awesome-project/
 │   ├── references/
 │   │   └── sop_steps.md
 │   └── scripts/
+├── sop-video-grading/
+│   ├── CHANGELOG.md
+│   ├── rubric.json
+│   ├── schema.json
+│   └── scripts/
 ├── tests/
-│   └── sop_skill/
+│   ├── sop_skill/
+│   └── sop_grading/
 └── README.md
 ```
