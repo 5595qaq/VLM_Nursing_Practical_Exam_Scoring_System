@@ -92,6 +92,14 @@ def test_final_accepts_burst_evidence():
     assert validate(final(evidence=["burst@150-151.5 #3"]), TASK, FRESH, DURATION) == []
 
 
+def test_final_accepts_review_flag():
+    action = final(verdict="部分正確", needs_review=True, review_reason="學生彈針兩輪，有一輪沒聽到聲音",
+                   explanation="02:31–02:35 第一輪聽到彈擊聲並看到手指彈針筒；02:40 第二輪只推針心、沒有彈。")
+    assert validate(action, TASK, FRESH, DURATION) == []
+    del action["criteria"][1]["review_reason"]
+    assert_rejected(action, "review_reason is required")
+
+
 def test_budget_exhausted():
     used = {**FRESH, "clip": BUDGET["clip"]}
     assert_rejected({"action": "clip", "start": 150, "end": 160, "reason": "x"}, "budget for clip", used)

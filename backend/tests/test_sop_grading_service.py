@@ -154,6 +154,15 @@ async def test_steps_filter_keeps_previous_grades(video, tmp_path):
     assert steps[12]["verdict"] == "正確" and second["validation_errors"] == []
 
 
+async def test_review_flag_reaches_the_result(video, tmp_path):
+    flagged = final_for([{"type": "text", "text": "  19b（步驟 19）\nov@1-2"}], "部分正確")
+    flagged["criteria"][0].update(needs_review=True, review_reason="學生回套兩次，有一次用雙手")
+    outcome = await grading.run_grading(video, segmentation(), tmp_path, FakeModel({"19b": [flagged]}), steps={19})
+    step = next(s for s in outcome["result"]["steps"] if s["step_id"] == 19)
+    assert step["needs_review"] is True and "需人工複核：學生回套兩次" in step["explanation"]
+    assert not [e for e in outcome["validation_errors"] if "(step 19)" in e]  # other steps stay 待判定
+
+
 async def test_task_failure_is_reported_not_raised(video, tmp_path):
     bad = {"action": "dance"}
     model = FakeModel({"12a": [bad] * grading.MAX_CONSECUTIVE_REJECTS})

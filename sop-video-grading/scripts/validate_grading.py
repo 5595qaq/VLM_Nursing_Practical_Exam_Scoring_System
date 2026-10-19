@@ -89,6 +89,8 @@ def _check_step(where: str, step: dict, spec: dict, final: bool) -> list[str]:
     expected = aggregate(spec, {c["criterion_id"]: c["verdict"] for c in step["criteria"]})
     if step["verdict"] != expected:
         errors.append(f"{where}: verdict {step['verdict']} does not match its criteria (expected {expected})")
+    if step.get("needs_review", False) != any(c.get("needs_review") for c in step["criteria"]):
+        errors.append(f"{where}: needs_review must be true exactly when a criterion needs review")
     return errors
 
 
@@ -129,6 +131,16 @@ def check_criterion(where: str, c: dict, rule: dict, final: bool) -> list[str]:
     needs_time = verdict in (CORRECT, PARTIAL) or (verdict == WRONG and source == "vlm")
     if needs_time and not TIMESTAMP.search(c["explanation"]):
         errors.append(f"{where}: explanation for {verdict} must cite a time point (mm:ss)")
+
+    if c.get("needs_review"):
+        if source != "vlm":
+            errors.append(f"{where}: needs_review is only for criteria graded by the grading agent")
+        if not c.get("review_reason"):
+            errors.append(f"{where}: review_reason is required when needs_review is true")
+        if len(TIMESTAMP.findall(c["explanation"])) < 2:
+            errors.append(f"{where}: needs_review explanation must list each attempt with its time (≥ 2 mm:ss)")
+    elif "review_reason" in c:
+        errors.append(f"{where}: review_reason is only for needs_review true")
     return errors
 
 

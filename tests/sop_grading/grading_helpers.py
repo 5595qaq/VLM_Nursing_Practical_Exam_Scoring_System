@@ -60,3 +60,18 @@ def fill_visual(result: dict, verdict: str = "正確") -> dict:
                          explanation=f"{fmt_time(start)}–{fmt_time(end)} 片段中看到該動作完成。")
         result["steps"][i] = build_step(rubric[step["step_id"]], step["criteria"])
     return result
+
+
+def flag_review(result: dict, cid: str, reason: str = "學生插針 3 次，有對有錯") -> dict:
+    """Mark one graded visual criterion as needing human review, then rebuild its step entry."""
+    from rubric import load_rubric
+    from rules import build_step
+
+    c = criterion(result, cid)
+    c.update(verdict="部分正確", needs_review=True, review_reason=reason,
+             explanation="02:57 第一次插針三指握外管、垂直向下，符合；03:20 第二次改抓活塞柄插入，不符合。")
+    sid = int(cid.rstrip("abcdefghijklmnopqrstuvwxyz"))
+    spec = next(s for s in load_rubric()["steps"] if s["step_id"] == sid)
+    i = next(i for i, s in enumerate(result["steps"]) if s["step_id"] == sid)
+    result["steps"][i] = build_step(spec, result["steps"][i]["criteria"])
+    return result

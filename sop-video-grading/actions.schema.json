@@ -75,7 +75,9 @@
                   {"enum": ["藥單看不見", "畫面被遮擋", "資訊不足", "影片已結束", "動作時間少於0.5秒", "無音軌"]},
                   {"type": "null"}
                 ]
-              }
+              },
+              "needs_review": {"type": "boolean"},
+              "review_reason": {"type": "string", "minLength": 4}
             }
           }
         }

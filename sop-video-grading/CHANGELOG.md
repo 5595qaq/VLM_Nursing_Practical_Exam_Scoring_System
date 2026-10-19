@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## 0.6（rubric 1.3）
+
+- **需人工複核標記：** 學生重複做同一個動作、有對有錯時（VID_0089 的 18 插針 3 次），評分 agent 判部分正確，並加上 `needs_review: true` 與 `review_reason`，說明依時間逐次寫出每一次的動作。
+  - `actions.schema.json`、`schema.json`：標準可帶 `needs_review`／`review_reason`；步驟可帶 `needs_review`。
+  - `validate_grading.py`：只有評分 agent 判的標準能標記；標記時必須有原因，說明至少有兩個時間點；步驟的標記要和它的標準一致。
+  - `rules.build_step`：把標記帶到步驟，說明末尾加「需人工複核：…」。
+  - `eval_grading.py`：模型判定旁加「（需人工複核）」，摘要列出需人工複核的步驟數。
+- **SKILL.md 遮擋規則：** 要看另一隻手的標準（單手回套、左手固定針筒），判正確前必須在關鍵時刻清楚看到那隻手並寫出位置；被乾洗手液瓶等擋住時判無法判定（畫面被遮擋），不可推測。（VID_0134 的 28 原本推測左手沒碰而判正確）
+
 ## 0.5（rubric 1.3）
 
 依使用者複查第二輪實驗的爭議案例調整（2026-10-20）：

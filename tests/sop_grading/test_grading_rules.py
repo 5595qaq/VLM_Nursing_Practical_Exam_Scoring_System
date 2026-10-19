@@ -2,7 +2,7 @@
 
 import json
 
-from grading_helpers import criterion, make_segmentation, result_step, seg_step
+from grading_helpers import criterion, fill_visual, flag_review, make_segmentation, result_step, seg_step
 from rules import grade_from_segmentation, main
 from validate_grading import validate_grading
 from validate_result import validate_result as validate_segmentation
@@ -104,6 +104,14 @@ def test_removed_step_is_not_applicable(segmentation):
 def test_step_explanation_lists_every_criterion(segmentation):
     text = result_step(grade_from_segmentation(segmentation), 13)["explanation"]
     assert text.startswith("13a「") and "；13b「針頭斜面朝下」無法判定" in text
+
+
+def test_review_flag_reaches_step_and_explanation(segmentation):
+    result = flag_review(fill_visual(grade_from_segmentation(segmentation)), "18b")
+    step = result_step(result, 18)
+    assert step["verdict"] == "部分正確" and step["needs_review"] is True
+    assert "（需人工複核：學生插針 3 次，有對有錯）" in step["explanation"]
+    assert "needs_review" not in result_step(result, 19)
 
 
 def test_cli_writes_output(tmp_path):

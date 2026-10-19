@@ -46,9 +46,13 @@ def build_step(step: dict, criteria: list[dict]) -> dict:
     scored = [c for c, r in zip(criteria, step["criteria"]) if r["category"] != "not_visible"]
     explanation = "；".join(
         f"{c['criterion_id']}「{texts[c['criterion_id']]}」{c['verdict']}：{c['explanation'].rstrip('。')}"
+        + (f"（需人工複核：{c['review_reason'].rstrip('。')}）" if c.get("needs_review") else "")
         for c in criteria) + "。"
-    return {"step_id": step["step_id"], "verdict": verdict, "explanation": explanation,
-            "confidence": min(c["confidence"] for c in scored), "criteria": criteria}
+    out = {"step_id": step["step_id"], "verdict": verdict, "explanation": explanation,
+           "confidence": min(c["confidence"] for c in scored), "criteria": criteria}
+    if any(c.get("needs_review") for c in criteria):
+        out["needs_review"] = True
+    return out
 
 
 def _status(entries: list[dict]) -> str:

@@ -8,7 +8,7 @@ import json
 
 import pytest
 
-from grading_helpers import criterion, fill_visual, make_segmentation, result_step
+from grading_helpers import criterion, fill_visual, flag_review, make_segmentation, result_step
 from rules import grade_from_segmentation
 from validate_grading import main, validate_grading
 
@@ -177,6 +177,45 @@ def test_pending_on_program_criterion_is_rejected():
     criterion(result, "5a")["verdict"] = "待判定"
     result_step(result, 5)["verdict"] = "待判定"
     assert_rejected(result, "only a visual criterion")
+
+
+# --- needs_review (human review of repeated attempts) -------------------------
+
+def test_flagged_criterion_passes_final():
+    result = flag_review(graded(), "18b")
+    assert result_step(result, 18)["needs_review"] is True
+    assert validate_grading(result, final=True) == []
+
+
+def test_flag_needs_a_reason():
+    result = flag_review(graded(), "18b")
+    del criterion(result, "18b")["review_reason"]
+    assert_rejected(result, "review_reason is required")
+
+
+def test_flag_needs_each_attempt_timed():
+    result = flag_review(graded(), "18b")
+    criterion(result, "18b")["explanation"] = "02:57 插針時有符合，之後又做了一次但不符合。"
+    assert_rejected(result, "list each attempt with its time")
+
+
+def test_reason_without_flag_is_rejected():
+    result = graded()
+    criterion(result, "18b")["review_reason"] = "學生插針 3 次"
+    assert_rejected(result, "only for needs_review true")
+
+
+def test_flag_only_on_agent_criteria():
+    result = graded()
+    criterion(result, "5a").update(needs_review=True, review_reason="重複做了兩次")
+    result_step(result, 5)["needs_review"] = True
+    assert_rejected(result, "only for criteria graded by the grading agent")
+
+
+def test_step_flag_must_match_criteria():
+    result = flag_review(graded(), "18b")
+    del result_step(result, 18)["needs_review"]
+    assert_rejected(result, "needs_review must be true exactly when")
 
 
 @pytest.mark.parametrize("final, code", [(False, 0), (True, 1)])
