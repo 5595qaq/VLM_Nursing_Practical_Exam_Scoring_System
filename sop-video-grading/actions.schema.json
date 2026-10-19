@@ -76,6 +76,7 @@
                   {"type": "null"}
                 ]
               },
+              "span": {"type": "array", "items": {"type": "number", "minimum": 0}, "minItems": 2, "maxItems": 2},
               "needs_review": {"type": "boolean"},
               "review_reason": {"type": "string", "minLength": 4}
             }

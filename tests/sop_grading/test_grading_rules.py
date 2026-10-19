@@ -25,25 +25,39 @@ def test_detected_program_criterion_is_correct_and_cites_span(segmentation):
     assert c["evidence"] == ["seg:step 5"] and c["confidence"] == 0.8
 
 
-def test_washing_long_enough(segmentation):
+def test_washing_is_timed_by_the_grading_agent(segmentation):
+    # rubric 1.5: 1a is measured on the 0.5 s clip (span), not from the segmentation boundaries
     c = criterion(grade_from_segmentation(segmentation), "1a")
-    assert c["verdict"] == "正確" and "共 18.0 秒" in c["explanation"]
+    assert c["verdict"] == "待判定" and c["source"] == "vlm" and c["window"] == [0.0, 20.0]
 
 
 def test_washing_too_short_makes_step_wrong(segmentation):
-    seg_step(segmentation, 1).update(start=5.0, end=18.0)
-    result = grade_from_segmentation(segmentation)
-    assert criterion(result, "1a")["verdict"] == "錯誤"
-    assert "共 13.0 秒，不足 15 秒" in criterion(result, "1a")["explanation"]
-    assert result_step(result, 1)["verdict"] == "錯誤"  # key criterion, even with 1b pending
+    result = fill_visual(grade_from_segmentation(segmentation), "正確")
+    step = result_step(result, 1)
+    for c in step["criteria"]:
+        if c["criterion_id"] == "1a":
+            c.update(verdict="錯誤", span=[2.0, 14.0], explanation="00:02 開始互搓，00:14 雙手分開，共 12 秒。")
+    from rubric import load_rubric
+    from rules import build_step
+    assert build_step(load_rubric()["steps"][0], step["criteria"])["verdict"] == "錯誤"  # key, even with 1b 正確
 
 
-def test_repeated_washing_durations_are_added(segmentation):
-    seg_step(segmentation, 1).update(start=0.0, end=8.0)
-    segmentation["steps"].append({"step_id": 1, "start": 9.0, "end": 17.0, "confidence": 0.6,
-                                  "status": "detected", "evidence": "ov@0-20 #8"})
-    c = criterion(grade_from_segmentation(segmentation), "1a")
-    assert c["verdict"] == "正確" and "00:00–00:08、00:09–00:17" in c["explanation"]
+
+def test_missing_motion_with_enough_time_is_partial(segmentation):
+    # rubric 1.5: 1b is not key; washing >= 15 s with a motion missing is 部分正確 (user, 2026-10-21)
+    step = result_step(fill_visual(grade_from_segmentation(segmentation), "正確"), 1)
+    for c in step["criteria"]:
+        if c["criterion_id"] == "1b":
+            c["verdict"] = "錯誤"
+    from rubric import load_rubric
+    from rules import build_step
+    assert build_step(load_rubric()["steps"][0], step["criteria"])["verdict"] == "部分正確"
+
+
+def test_no_washing_is_wrong(segmentation):
+    seg_step(segmentation, 1).update(start=None, end=None, status="not_performed", evidence="未見洗手")
+    step = result_step(grade_from_segmentation(segmentation), 1)
+    assert step["verdict"] == "錯誤" and {c["verdict"] for c in step["criteria"]} == {"錯誤"}
 
 
 def test_not_performed_step_is_wrong_for_program_and_visual_criteria(segmentation):

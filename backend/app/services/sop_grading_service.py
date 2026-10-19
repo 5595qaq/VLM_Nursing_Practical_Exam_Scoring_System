@@ -85,6 +85,7 @@ def build_tasks(result: dict, rubric: dict, steps: set[int] | None = None) -> li
             group["criteria"].append({"criterion_id": c["criterion_id"], "step_id": spec["step_id"],
                                       "text": spec["text"], "window": c["window"],
                                       "audio": spec.get("audio", False),
+                                      "min_seconds": spec.get("min_seconds"),
                                       "dense": spec.get("sample_interval") is not None})
     tasks = list(groups.values())
     for task in tasks:
@@ -211,6 +212,8 @@ def build_task_content(task: dict, video_id: str, duration: float, state: TaskSt
         "要判定的標準（final 必須剛好包含這幾條）：",
         *(f"  {c['criterion_id']}（步驟 {c['step_id']}）：{c['text']}；window={c['window']}"
           + ("；要聽聲音" if c["audio"] else "") + ("；要每 0.5 秒一格" if c["dense"] else "")
+          + (f"；要計時：final 填 span=[開始, 結束]（影片秒數），滿 {c['min_seconds']:g} 秒才是正確"
+             if c.get("min_seconds") else "")
           for c in task["criteria"]),
         "切分結果（相關步驟）：",
         *_segment_lines(task, segmentation),

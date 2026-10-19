@@ -12,7 +12,7 @@ RUBRIC_PATH = Path(__file__).resolve().parent.parent / "rubric.json"
 STEP_COUNT = 30
 CATEGORIES = {"program", "visual", "not_visible"}
 SOURCE_FOR = {"program": "rule", "visual": "vlm", "not_visible": "fixed"}
-RULE_TYPES = {"detected", "min_duration"}
+RULE_TYPES = {"detected"}
 
 CORRECT, WRONG, PARTIAL = "正確", "錯誤", "部分正確"
 UNDETERMINED, NOT_APPLICABLE, PENDING = "無法判定", "不適用", "待判定"
@@ -52,6 +52,8 @@ def check_rubric(rubric: dict) -> list[str]:
                 errors.append(f"criterion {cid}: unknown category {cat!r}")
             if cat == "program" and c.get("rule", {}).get("type") not in RULE_TYPES:
                 errors.append(f"criterion {cid}: program criterion needs rule.type in {sorted(RULE_TYPES)}")
+            if "min_seconds" in c and (cat != "visual" or not isinstance(c["min_seconds"], (int, float))):
+                errors.append(f"criterion {cid}: min_seconds needs a visual criterion and a number")
             if cat == "visual" and not c.get("window_steps"):
                 errors.append(f"criterion {cid}: visual criterion needs window_steps")
             if cat == "not_visible" and (c.get("key") or not c.get("reason")):

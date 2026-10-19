@@ -132,6 +132,8 @@ def check_criterion(where: str, c: dict, rule: dict, final: bool) -> list[str]:
     if needs_time and not TIMESTAMP.search(c["explanation"]):
         errors.append(f"{where}: explanation for {verdict} must cite a time point (mm:ss)")
 
+    errors += _check_span(where, c, rule)
+
     if c.get("needs_review"):
         if source != "vlm":
             errors.append(f"{where}: needs_review is only for criteria graded by the grading agent")
@@ -141,6 +143,38 @@ def check_criterion(where: str, c: dict, rule: dict, final: bool) -> list[str]:
             errors.append(f"{where}: needs_review explanation must list each attempt with its time (≥ 2 mm:ss)")
     elif "review_reason" in c:
         errors.append(f"{where}: review_reason is only for needs_review true")
+    return errors
+
+
+SPAN_SLACK = 10.0  # seconds a measured span may reach outside the criterion window
+
+
+def _check_span(where: str, c: dict, rule: dict) -> list[str]:
+    """Timed criteria (min_seconds, e.g. 1a washing >= 15 s): the grading agent measures the action
+    and the verdict must follow from the measured span, so the threshold is applied by code."""
+    need = rule.get("min_seconds")
+    span = c.get("span")
+    if not need:
+        return [f"{where}: span is only for criteria with min_seconds"] if span is not None else []
+    if c["source"] != "vlm" or c["verdict"] not in (CORRECT, WRONG, PARTIAL):
+        return []
+    if c["verdict"] == PARTIAL:
+        return [f"{where}: a timed criterion is {CORRECT} or {WRONG}, not {PARTIAL}"]
+    if span is None:
+        return [f"{where}: {c['verdict']} needs span [start, end] (video seconds of the measured action)"]
+    start, end = span
+    if end <= start:
+        return [f"{where}: span end must be after start"]
+    errors = []
+    lasted = end - start
+    expected = CORRECT if lasted >= need else WRONG
+    if c["verdict"] != expected:
+        errors.append(f"{where}: span {start:g}-{end:g} lasts {lasted:.1f} s, so the verdict must be "
+                      f"{expected} (needs >= {need:g} s)")
+    window = c.get("window")
+    if window and (start < window[0] - SPAN_SLACK or end > window[1] + SPAN_SLACK):
+        errors.append(f"{where}: span {start:g}-{end:g} is outside the window {window[0]:g}-{window[1]:g} "
+                      f"(±{SPAN_SLACK:g} s)")
     return errors
 
 

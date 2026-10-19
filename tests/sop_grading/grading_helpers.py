@@ -48,16 +48,20 @@ def criterion(result: dict, cid: str) -> dict:
 
 def fill_visual(result: dict, verdict: str = "正確") -> dict:
     """Pretend the grading agent graded every 待判定 criterion, then rebuild the step entries."""
-    from rubric import fmt_time, load_rubric
+    from rubric import criteria_by_id, fmt_time, load_rubric
     from rules import build_step
 
     rubric = {s["step_id"]: s for s in load_rubric()["steps"]}
+    specs = criteria_by_id(load_rubric())
     for i, step in enumerate(result["steps"]):
         for c in step["criteria"]:
             if c["verdict"] == "待判定":
                 start, end = c["window"]
                 c.update(verdict=verdict, confidence=0.7, evidence=[f"clip@{start:g}-{end:g}"],
                          explanation=f"{fmt_time(start)}–{fmt_time(end)} 片段中看到該動作完成。")
+                need = specs[c["criterion_id"]].get("min_seconds")
+                if need and verdict in ("正確", "錯誤"):  # timed criterion: a span that matches the verdict
+                    c["span"] = [start, start + need + 1] if verdict == "正確" else [start, start + need - 3]
         result["steps"][i] = build_step(rubric[step["step_id"]], step["criteria"])
     return result
 

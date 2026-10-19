@@ -15,7 +15,8 @@ def test_rubric_json_is_valid():
 
 def test_rubric_classification_matches_the_plan():
     by_id = criteria_by_id(load_rubric())
-    assert by_id["1a"]["rule"] == {"type": "min_duration", "seconds": 15}
+    assert by_id["1a"]["category"] == "visual" and by_id["1a"]["min_seconds"] == 15  # timed on the clip (rubric 1.5)
+    assert by_id["1a"]["key"] is True and by_id["1b"]["key"] is False
     assert by_id["1b"]["category"] == "visual" and by_id["1b"]["sample_interval"] == 0.5
     for cid in ("2a", "4a", "29a"):  # gaze >= 10 s is judged from frames
         assert by_id[cid]["category"] == "visual"

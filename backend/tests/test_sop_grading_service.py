@@ -52,9 +52,12 @@ def segmentation():
 def final_for(content, verdict="正確"):
     text = content[0]["text"]
     ref = re.search(r"(clip@[\d.]+-[\d.]+|ov@[\d.]+-[\d.]+)", "\n".join(b.get("text", "") for b in content)).group(1)
-    return {"action": "final", "criteria": [
-        {"criterion_id": cid, "verdict": verdict, "confidence": 0.7, "reason": None, "evidence": [ref],
-         "explanation": "00:05–00:08 看到動作完成，符合標準。"} for cid in CRITERION.findall(text)]}
+    criteria = [{"criterion_id": cid, "verdict": verdict, "confidence": 0.7, "reason": None, "evidence": [ref],
+                 "explanation": "00:05–00:08 看到動作完成，符合標準。"} for cid in CRITERION.findall(text)]
+    for c in criteria:  # timed criterion (1a washing): a measured span that matches the verdict
+        if c["criterion_id"] == "1a":
+            c["span"] = [0.0, 16.0] if verdict == "正確" else [0.0, 10.0]
+    return {"action": "final", "criteria": criteria}
 
 
 class FakeModel:
@@ -89,6 +92,18 @@ async def test_grading_grades_every_visual_criterion(video, tmp_path):
     assert "15-16-17" in outcome["tasks"] and "25-26-27" in outcome["tasks"]
     assert outcome["usage"]["input_tokens"] == 100 * len(model.requests)
     assert (tmp_path / "grading.json").exists() and (tmp_path / "transcript_task_15-16-17.json").exists()
+
+
+async def test_washing_task_asks_for_a_timed_span(video, tmp_path):
+    no_span = {"action": "final", "criteria": [
+        {"criterion_id": cid, "verdict": "正確", "confidence": 0.7, "reason": None, "evidence": ["clip@0-18"],
+         "explanation": "00:01–00:16 看到雙手互搓。"} for cid in ("1a", "1b")]}
+    model = FakeModel({"1a": [no_span]})
+    outcome = await grading.run_grading(video, segmentation(), tmp_path, model, steps={1})
+    first, retry = requests_for(model, "1a")
+    assert "要計時：final 填 span" in first[0]["text"] and "needs span" in retry[0]["text"]
+    wash = next(c for s in outcome["result"]["steps"] for c in s["criteria"] if c["criterion_id"] == "1a")
+    assert wash["verdict"] == "正確" and wash["span"] == [0.0, 16.0] and outcome["failed_tasks"] == []
 
 
 async def test_audio_and_washing_tasks_open_with_a_clip(video, tmp_path):

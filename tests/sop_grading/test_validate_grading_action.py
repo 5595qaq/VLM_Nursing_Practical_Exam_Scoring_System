@@ -155,3 +155,50 @@ def test_flick_only_sound_or_motion():
     action = final(verdict="無法判定", reason="只有聲音或動作", needs_review=True, review_reason="聽到連續響聲但看不清手指",
                    explanation="02:42–02:44 有連續 6 聲響聲，但雙手被乾洗手液瓶擋住。")
     assert validate(action, {**TASK, "audio": SOUND}, FRESH, DURATION) == []
+
+
+WASH = {"window": [38.6, 57.4], "criteria": [{"criterion_id": "1a", "window": [38.6, 57.4]},
+                                            {"criterion_id": "1b", "window": [38.6, 57.4]}]}
+
+
+def wash_final(verdict="錯誤", span=(42.3, 54.2), **changes) -> dict:
+    a = {"criterion_id": "1a", "verdict": verdict, "confidence": 0.8, "reason": None, "evidence": ["clip@38.6-57.4"],
+         "explanation": "00:42.3 開始互搓，00:54.2 雙手分開，共約 11.9 秒。"}
+    if span is not None:
+        a["span"] = list(span)
+    a.update(changes)
+    b = {"criterion_id": "1b", "verdict": "正確", "confidence": 0.8, "reason": None, "evidence": ["clip@38.6-57.4"],
+         "explanation": "00:42–00:54 七個動作都有做到。"}
+    return {"action": "final", "criteria": [a, b]}
+
+
+def test_washing_span_decides_the_verdict():
+    assert validate(wash_final(), WASH, FRESH, DURATION) == []
+    assert validate(wash_final("正確", (40.0, 56.0)), WASH, FRESH, DURATION) == []
+    errors = validate(wash_final("正確"), WASH, FRESH, DURATION)
+    assert any("lasts 11.9 s, so the verdict must be 錯誤" in e for e in errors), errors
+
+
+@pytest.mark.parametrize("changes, expected", [
+    ({"span": None}, "needs span"),
+    ({"span": [54.2, 42.3]}, "end must be after start"),
+    ({"span": [10.0, 20.0]}, "outside the window"),
+    ({"verdict": "部分正確"}, "not 部分正確"),
+])
+def test_washing_span_errors(changes, expected):
+    action = wash_final()
+    a = action["criteria"][0]
+    a.update({k: v for k, v in changes.items() if v is not None})
+    if changes.get("span", 0) is None:
+        del a["span"]
+    errors = validate(action, WASH, FRESH, DURATION)
+    assert any(expected in e for e in errors), errors
+
+
+def test_span_only_on_timed_criteria():
+    assert_rejected(final(span=[150, 160]), "span is only for criteria with min_seconds")
+
+
+def test_washing_undetermined_needs_no_span():
+    action = wash_final("無法判定", None, reason="畫面被遮擋", explanation="00:50–00:54 雙手出框，看不到何時分開。")
+    assert validate(action, WASH, FRESH, DURATION) == []
