@@ -1,5 +1,5 @@
 {
-  "version": "1.2",
+  "version": "1.3",
   "description": "無菌抽藥技術－vial 粉劑 30 步評分標準。category：program＝由切分結果以程式判定；visual＝評分 agent 看畫面（audio=true 時連聲音一起聽）；not_visible＝影片看不到，固定輸出「無法判定」且不影響步驟判定。key=true 的標準錯誤時整步判「錯誤」。",
   "steps": [
     {"step_id": 1, "text": "洗手。", "criteria": [
@@ -63,7 +63,7 @@
     ]},
     {"step_id": 18, "text": "用持毛筆方式將稀釋液插入vial中心並打入稀釋液。", "criteria": [
       {"id": "18a", "text": "將稀釋液打入 vial", "category": "program", "key": true, "rule": {"type": "detected"}},
-      {"id": "18b", "text": "以持毛筆方式持針（只看握針手勢，vial 可拿在手上）", "category": "visual", "key": false, "window_steps": [18]},
+      {"id": "18b", "text": "以持毛筆方式持針：拇指與食指、中指握住針筒外管，針筒垂直向下插入，手指不碰觸針頭、針座及活塞柄內側（只判插針那一刻，vial 可拿在手上）", "category": "visual", "key": false, "window_steps": [18]},
       {"id": "18c", "text": "針頭插入 vial 中心", "category": "visual", "key": false, "window_steps": [18]}
     ]},
     {"step_id": 19, "text": "抽出針頭，單手套上針頭套(或針座)。", "criteria": [
@@ -78,7 +78,7 @@
     ]},
     {"step_id": 22, "text": "用持毛筆方式將空針插入vial中心打入空氣。", "criteria": [
       {"id": "22a", "text": "將空氣打入 vial", "category": "program", "key": true, "rule": {"type": "detected"}},
-      {"id": "22b", "text": "以持毛筆方式持針（只看握針手勢，vial 可拿在手上）", "category": "visual", "key": false, "window_steps": [22]},
+      {"id": "22b", "text": "以持毛筆方式持針：拇指與食指、中指握住針筒外管，針筒垂直向下插入，手指不碰觸針頭、針座及活塞柄內側（只判插針那一刻，vial 可拿在手上）", "category": "visual", "key": false, "window_steps": [22]},
       {"id": "22c", "text": "針頭插入 vial 中心", "category": "visual", "key": false, "window_steps": [22]}
     ]},
     {"step_id": 23, "text": "將Vial舉起，空針朝上，瓶口朝下。", "criteria": [
