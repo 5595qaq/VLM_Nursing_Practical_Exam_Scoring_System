@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SOP 評分 agent 每回合的動作",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["action", "start", "end", "reason"],
+      "properties": {
+        "action": {"const": "overview"},
+        "start": {"type": "number", "minimum": 0},
+        "end": {"type": "number", "minimum": 0},
+        "n": {"type": "integer", "minimum": 3, "maximum": 9},
+        "box": {"enum": ["hands", "context"]},
+        "reason": {"type": "string"}
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["action", "times", "region", "reason"],
+      "properties": {
+        "action": {"const": "zoom"},
+        "times": {"type": "array", "items": {"type": "number", "minimum": 0}, "minItems": 1, "maxItems": 4},
+        "region": {"type": "array", "items": {"type": "number", "minimum": 0, "maximum": 1}, "minItems": 4, "maxItems": 4},
+        "reason": {"type": "string"}
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["action", "start", "end", "reason"],
+      "properties": {
+        "action": {"const": "clip"},
+        "start": {"type": "number", "minimum": 0},
+        "end": {"type": "number", "minimum": 0},
+        "fps": {"type": "number", "minimum": 1, "maximum": 5},
+        "reason": {"type": "string"}
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["action", "criteria"],
+      "properties": {
+        "action": {"const": "final"},
+        "criteria": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["criterion_id", "verdict", "explanation", "evidence", "confidence", "reason"],
+            "properties": {
+              "criterion_id": {"type": "string"},
+              "verdict": {"enum": ["正確", "錯誤", "部分正確", "無法判定"]},
+              "explanation": {"type": "string", "minLength": 8},
+              "evidence": {"type": "array", "items": {"type": "string", "minLength": 1}},
+              "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+              "reason": {
+                "anyOf": [
+                  {"enum": ["藥單看不見", "畫面被遮擋", "資訊不足", "影片已結束", "動作時間少於0.5秒", "無音軌"]},
+                  {"type": "null"}
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

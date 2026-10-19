@@ -109,20 +109,23 @@ def test_removed_step_aggregates_to_not_applicable():
     assert aggregate({"step_id": 11, "removed": True, "criteria": []}, {}) == NOT_APPLICABLE
 
 
-def test_partial_when_29_looked_but_did_not_discard():
+def test_step29_needs_the_record_sheet():
     step29 = load_rubric()["steps"][28]
+    # looked at the empty vial and discarded it, but never looked at the record sheet
+    assert aggregate(step29, {"29a": WRONG, "29b": WRONG, "29c": CORRECT}) == WRONG
     assert aggregate(step29, {"29a": CORRECT, "29b": CORRECT, "29c": WRONG}) == PARTIAL
     assert aggregate(step29, {"29a": UNDETERMINED, "29b": UNDETERMINED, "29c": WRONG}) == WRONG
 
 
 @pytest.mark.parametrize("v30a, v30b, expected", [
-    ("錯誤", "正確", PARTIAL),     # placed on the table but held by the plunger end
-    ("部分正確", "正確", PARTIAL),  # the agent itself judged 30a partially correct
-    ("錯誤", "錯誤", WRONG),
+    ("錯誤", "正確", WRONG),        # placed on the table: wrong even if held by the plunger end
+    ("部分正確", "正確", PARTIAL),  # put on the table first, then into the package
+    ("正確", "錯誤", PARTIAL),      # into the package but held by the needle
+    ("正確", "正確", CORRECT),
 ])
-def test_step30_is_decided_by_frames_not_a_key_rule(v30a, v30b, expected):
+def test_step30_table_is_wrong(v30a, v30b, expected):
     step30 = load_rubric()["steps"][29]
-    assert not any(c["key"] for c in step30["criteria"])
+    assert [c["key"] for c in step30["criteria"]] == [True, False]
     assert aggregate(step30, {"30a": v30a, "30b": v30b}) == expected
 
 

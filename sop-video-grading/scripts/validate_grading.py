@@ -84,7 +84,7 @@ def _check_step(where: str, step: dict, spec: dict, final: bool) -> list[str]:
         return errors
 
     for c, rule in zip(step["criteria"], spec["criteria"]):
-        errors.extend(_check_criterion(f"{where} criterion {c['criterion_id']}", c, rule, final))
+        errors.extend(check_criterion(f"{where} criterion {c['criterion_id']}", c, rule, final))
 
     expected = aggregate(spec, {c["criterion_id"]: c["verdict"] for c in step["criteria"]})
     if step["verdict"] != expected:
@@ -92,7 +92,7 @@ def _check_step(where: str, step: dict, spec: dict, final: bool) -> list[str]:
     return errors
 
 
-def _check_criterion(where: str, c: dict, rule: dict, final: bool) -> list[str]:
+def check_criterion(where: str, c: dict, rule: dict, final: bool) -> list[str]:
     errors = []
     category, verdict, source = rule["category"], c["verdict"], c["source"]
 
