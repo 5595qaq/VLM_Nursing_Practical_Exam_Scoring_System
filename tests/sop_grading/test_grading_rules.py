@@ -102,8 +102,8 @@ def test_removed_step_is_not_applicable(segmentation):
 
 
 def test_step_explanation_lists_every_criterion(segmentation):
-    text = result_step(grade_from_segmentation(segmentation), 13)["explanation"]
-    assert text.startswith("13a「") and "；13b「針頭斜面朝下」無法判定" in text
+    text = result_step(grade_from_segmentation(segmentation), 14)["explanation"]
+    assert text.startswith("14a「") and "；14b「抽出稀釋液至所需量之刻度」無法判定" in text
 
 
 def test_review_flag_reaches_step_and_explanation(segmentation):

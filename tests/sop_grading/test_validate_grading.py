@@ -86,7 +86,7 @@ def test_source_must_match_category():
 
 def test_not_visible_must_be_undetermined():
     result = graded()
-    criterion(result, "13b").update(verdict="正確", reason=None)
+    criterion(result, "14b").update(verdict="正確", reason=None)
     assert_rejected(result, "not_visible criterion must be 無法判定")
 
 

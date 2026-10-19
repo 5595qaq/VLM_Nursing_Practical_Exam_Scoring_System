@@ -163,6 +163,38 @@ async def test_review_flag_reaches_the_result(video, tmp_path):
     assert not [e for e in outcome["validation_errors"] if "(step 19)" in e]  # other steps stay 待判定
 
 
+async def test_flick_task_lists_audio_peaks(video, tmp_path):
+    model = FakeModel()
+    await grading.run_grading(video, segmentation(), tmp_path, model, steps={17})
+    text = requests_for(model, "17a")[0][0]["text"]
+    assert "聲音峰值" in text and "連續響聲" in text
+
+
+async def test_video_without_sound_cannot_fail_the_flick(tmp_path):
+    mute = tmp_path / "mute.mp4"
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", f"testsrc=size=640x360:rate=5:duration={DURATION:g}",
+                    "-c:v", "libx264", "-pix_fmt", "yuv420p", str(mute)], check=True)
+
+    class Mute(FakeModel):
+        async def __call__(self, system, content):
+            self.requests.append(content)
+            action = final_for(content)
+            if "被退回" in content[0]["text"]:  # second try: follow the error
+                for c in action["criteria"]:
+                    if c["criterion_id"] == "17a":
+                        c.update(verdict="無法判定", reason="無音軌",
+                                 explanation="影片沒有聲音；00:05–00:08 畫面上沒有看到手指彈針筒。")
+            return ModelReply(json.dumps(action, ensure_ascii=False), "end_turn", 100, 10)
+
+    model = Mute()
+    outcome = await grading.run_grading(mute, segmentation(), tmp_path / "w", model, steps={17})
+    first, retry = requests_for(model, "17a")
+    assert "影片沒有音軌" in first[0]["text"] and "no usable audio" in retry[0]["text"]
+    assert outcome["failed_tasks"] == []
+    flick = next(c for s in outcome["result"]["steps"] for c in s["criteria"] if c["criterion_id"] == "17a")
+    assert flick["verdict"] == "無法判定" and flick["reason"] == "無音軌"
+
+
 async def test_task_failure_is_reported_not_raised(video, tmp_path):
     bad = {"action": "dance"}
     model = FakeModel({"12a": [bad] * grading.MAX_CONSECUTIVE_REJECTS})

@@ -125,3 +125,33 @@ def test_final_needs_evidence():
 
 def test_final_cannot_use_split_reason():
     assert_rejected(final(verdict="無法判定", reason="切分未定位"), "schema")
+
+
+WRONG = {"verdict": "錯誤", "explanation": "02:28–02:59 只推針心排氣，沒有看到手指彈針筒，也沒有連續彈擊聲。"}
+SOUND = {"has_audio": True, "silent": False, "max_db": -35.0, "floor_db": -62.0, "peaks": [], "runs": []}
+
+
+def test_flick_wrong_needs_a_burst_first():
+    assert_rejected(final(**WRONG), "use burst")
+    assert validate(final(**WRONG), TASK, {**FRESH, "burst": 1}, DURATION) == []
+
+
+@pytest.mark.parametrize("audio", [
+    {**SOUND, "has_audio": False, "silent": True, "max_db": None, "floor_db": None},
+    {**SOUND, "silent": True, "max_db": -80.0},
+])
+def test_flick_without_sound_must_be_undetermined(audio):
+    task = {**TASK, "audio": audio}
+    used = {**FRESH, "burst": 1}
+    for changes in ({}, WRONG, {"verdict": "無法判定", "reason": "畫面被遮擋"}):
+        errors = validate(final(**changes), task, used, DURATION)
+        assert any("no usable audio" in e for e in errors), (changes, errors)
+    ok = final(verdict="無法判定", reason="無音軌", needs_review=True, review_reason="影片沒有聲音，但看到手指彈針筒",
+               explanation="影片沒有聲音；02:31–02:35 看到右手食指彈針筒。")
+    assert validate(ok, task, FRESH, DURATION) == []
+
+
+def test_flick_only_sound_or_motion():
+    action = final(verdict="無法判定", reason="只有聲音或動作", needs_review=True, review_reason="聽到連續響聲但看不清手指",
+                   explanation="02:42–02:44 有連續 6 聲響聲，但雙手被乾洗手液瓶擋住。")
+    assert validate(action, {**TASK, "audio": SOUND}, FRESH, DURATION) == []

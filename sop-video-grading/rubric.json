@@ -1,5 +1,5 @@
 {
-  "version": "1.3",
+  "version": "1.4",
   "description": "無菌抽藥技術－vial 粉劑 30 步評分標準。category：program＝由切分結果以程式判定；visual＝評分 agent 看畫面（audio=true 時連聲音一起聽）；not_visible＝影片看不到，固定輸出「無法判定」且不影響步驟判定。key=true 的標準錯誤時整步判「錯誤」。",
   "steps": [
     {"step_id": 1, "text": "洗手。", "criteria": [
@@ -45,7 +45,7 @@
     ]},
     {"step_id": 13, "text": "右手將針頭斜面朝下插入稀釋液瓶中，左手其餘手指固定針筒。", "criteria": [
       {"id": "13a", "text": "右手將針頭插入稀釋液瓶，左手其餘手指固定針筒", "category": "visual", "key": true, "window_steps": [13]},
-      {"id": "13b", "text": "針頭斜面朝下", "category": "not_visible", "reason": "資訊不足", "note": "解析度不足，看不到針頭斜面方向"}
+      {"id": "13b", "text": "針頭斜面朝下（斜面看不清，以插針時針頭朝下判斷）", "category": "visual", "key": false, "window_steps": [13], "note": "使用者確認（2026-10-21）：插針那一刻針頭比針筒尾端低（由上往下或斜向下插入）算正確；針筒水平或針頭朝上算錯誤"}
     ]},
     {"step_id": 14, "text": "右手持針心尾端環狀處，勿碰觸針心，抽出稀釋液至所需量之刻度。", "criteria": [
       {"id": "14a", "text": "右手持針心尾端環狀處，未碰觸外露的針心推桿（手指在外筒或翼緣上不算碰觸）", "category": "visual", "key": true, "window_steps": [14]},

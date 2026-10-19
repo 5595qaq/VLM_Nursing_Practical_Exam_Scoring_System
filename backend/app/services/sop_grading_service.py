@@ -7,7 +7,9 @@ program supplies an opening overview sheet or an audio clip, the model may ask f
 overview / zoom / clip material, and ends with a final action grading exactly the task's criteria.
 
 Clips carry audio (flicking the syringe is judged by ear), which only Gemini accepts, so this
-loop always uses gemini_call regardless of SOP_SKILL_PROVIDER.
+loop always uses gemini_call regardless of SOP_SKILL_PROVIDER. Tasks with an audio criterion also
+get the window's short sharp sounds (audio_peaks.py) listed next to the motion peaks; a video with no
+usable audio is announced so the agent does not mark the flick wrong for silence.
 """
 import asyncio
 import importlib
@@ -132,6 +134,13 @@ class GradingRunner(ScriptRunner):
                                    "--box", ",".join(map(str, box)), "--top", MOTION_TOP)
         return json.loads(out.strip().splitlines()[-1])["peaks"]
 
+    def audio_peaks(self, start: float, end: float) -> dict:
+        """Short sharp sounds (flick clicks) in the window, so the agent knows where to burst."""
+        if end - start > MOTION_MAX_SPAN:
+            end = start + MOTION_MAX_SPAN
+        return json.loads(self._grading_script("audio_peaks.py", "--start", start, "--end", end)
+                          .strip().splitlines()[-1])
+
     def burst(self, start: float, end: float, n: int, region, context_box) -> Material:
         out = self._next(f"burst_{start:g}-{end:g}.jpg")
         info = json.loads(self._grading_script(
@@ -172,6 +181,25 @@ def _segment_lines(task: dict, segmentation: dict) -> list[str]:
     return lines
 
 
+def _audio_line(task: dict) -> list[str]:
+    if not any(c["audio"] for c in task["criteria"]):
+        return []
+    audio = task.get("audio")
+    if audio is None:
+        return ["聲音峰值：（程式沒有算出來，請自己聽 clip）"]
+    if not audio["has_audio"]:
+        return ["聲音：影片沒有音軌（拍攝設備沒錄到聲音，不代表學生沒做）。17a／27a 只能判無法判定（無音軌），"
+                "explanation 寫出畫面上有沒有看到手指彈針筒。"]
+    if audio["silent"]:
+        return [f"聲音：音軌幾乎沒有聲音（最大 {audio['max_db']:g} dB），視同沒有錄到聲音（不代表學生沒做）。"
+                "17a／27a 只能判無法判定（無音軌），explanation 寫出畫面上有沒有看到手指彈針筒。"]
+    peaks = "、".join(_fmt_t(p["t"]) for p in audio["peaks"]) or "（無）"
+    runs = "、".join(f"{_fmt_t(r['start'])}–{_fmt_t(r['end'])}（{r['n']} 聲）" for r in audio["runs"]) or "（無）"
+    return [f"聲音峰值（程式在高頻段找出的短促響聲，比背景 {audio['floor_db']:g} dB 高 6 dB 以上；放下器材也會有響聲，"
+            f"仍要看到手指彈針筒）：{peaks}",
+            f"連續響聲（彈針通常是連續好幾聲）：{runs}；請在這些時間附近用 burst 確認手指有沒有彈針筒。"]
+
+
 def build_task_content(task: dict, video_id: str, duration: float, state: TaskState,
                        materials: list[Material], feedback: str, segmentation: dict) -> list[dict]:
     limits = load_grading_module("validate_grading_action").BUDGET
@@ -189,6 +217,7 @@ def build_task_content(task: dict, video_id: str, duration: float, state: TaskSt
         "動作峰值（程式依 hands_box 內的畫面變化算出，只表示這些時間手有明顯動作，不代表是哪個動作；"
         "短動作請用 burst 或相鄰時間點的 zoom 在峰值附近確認）："
         + ("、".join(f"{_fmt_t(p['t'])}" for p in task.get("peaks", [])) or "（無）"),
+        *_audio_line(task),
         f"剩餘預算：{budget}",
         "已執行動作：" + ("；".join(state.log) if state.log else "（無）"),
         "",
@@ -219,6 +248,11 @@ async def _opening(task: dict, runner: GradingRunner, boxes: dict) -> tuple[list
         task["peaks"] = await asyncio.to_thread(runner.motion_peaks, start, end, boxes["hands"])
     except SkillRunError:
         task["peaks"] = []  # hints only; grading goes on without them
+    if any(c["audio"] for c in task["criteria"]):
+        try:
+            task["audio"] = await asyncio.to_thread(runner.audio_peaks, start, end)
+        except SkillRunError:
+            task["audio"] = None  # the agent still hears the clip
     if task["needs_clip"] and end - start <= OPENING_CLIP_MAX_SECONDS:
         material, _ = await asyncio.to_thread(runner.clip, start, end, boxes["context"])
         return [material], "開場：M1 是整個任務區間的帶聲音片段（2 fps）。足夠判斷就直接送 final。"

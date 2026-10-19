@@ -6,7 +6,8 @@ output): {"criteria": [{"criterion_id": "17a", "window": [148.0, 180.0]}, ...], 
 Checks actions.schema.json plus rules the schema cannot express: times near the task window,
 span limits, remaining budget, and for final: exactly the task's criteria, each passing the same
 per-criterion rules as validate_grading.py (reason for 無法判定, mm:ss in the explanation,
-frame/clip evidence).
+frame/clip evidence). For the flick (17a/27a): 錯誤 only after at least one burst in this task, and
+無法判定（無音軌） when the task's audio_peaks result says there is no usable audio (task["audio"]).
 
 A rejected action is NOT executed and does NOT consume budget.
 """
@@ -26,6 +27,7 @@ OVERVIEW_SPAN = (2.0, 60.0)
 CLIP_SPAN = (1.0, 60.0)
 ZOOM_MAX_AREA, ZOOM_MAX_SIDE = 0.50, 0.75
 BURST_SPAN = (0.3, 3.0)
+FLICK = {"17a", "27a"}  # need sound and the fingers seen together
 
 
 def validate(action, task: dict, used: dict, duration: float,
@@ -43,7 +45,7 @@ def validate(action, task: dict, used: dict, duration: float,
         return errors
 
     if name == "final":
-        return _check_final(action, task, rubric or load_rubric())
+        return _check_final(action, task, used, rubric or load_rubric())
 
     if used.get(name, 0) >= BUDGET[name]:
         errors.append(f"budget for {name} exhausted ({BUDGET[name]}); send final with what you have")
@@ -74,7 +76,7 @@ def validate(action, task: dict, used: dict, duration: float,
     return errors
 
 
-def _check_final(action: dict, task: dict, rubric: dict) -> list[str]:
+def _check_final(action: dict, task: dict, used: dict, rubric: dict) -> list[str]:
     errors = []
     windows = {c["criterion_id"]: c["window"] for c in task["criteria"]}
     got = [c["criterion_id"] for c in action["criteria"]]
@@ -85,4 +87,17 @@ def _check_final(action: dict, task: dict, rubric: dict) -> list[str]:
         cid = c["criterion_id"]
         full = {**c, "source": "vlm", "window": windows[cid]}
         errors += check_criterion(f"criterion {cid}", full, specs[cid], final=True)
+        if cid in FLICK:
+            errors += _check_flick(cid, c, task.get("audio"), used)
     return errors
+
+
+def _check_flick(cid: str, c: dict, audio: dict | None, used: dict) -> list[str]:
+    no_sound = audio is not None and (not audio["has_audio"] or audio["silent"])
+    if no_sound and (c["verdict"] != "無法判定" or c["reason"] != "無音軌"):
+        return [f"criterion {cid}: the video has no usable audio, so {cid} must be 無法判定 with reason 無音軌; "
+                "say in the explanation whether the fingers were seen flicking"]
+    if c["verdict"] == "錯誤" and used.get("burst", 0) == 0:
+        return [f"criterion {cid}: before marking 錯誤, use burst near the sound runs / motion peaks to check "
+                "whether the fingers flick (a 2 fps clip can miss a flick)"]
+    return []

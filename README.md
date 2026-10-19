@@ -136,7 +136,7 @@ Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499，或 Claude 回傳 429／529（o
 | --- | --- | --- |
 | `program` | 由切分結果以程式判定 | 步驟有沒有做、洗手是否 ≥ 15 秒 |
 | `visual` | 評分 agent 看畫面（彈針連聲音一起聽） | 洗手七個動作（每 0.5 秒一格）、注視藥單 ≥ 10 秒、持毛筆姿勢、單手回套、彈針 |
-| `not_visible` | 影片看不到，固定輸出「無法判定」，不影響步驟判定 | 藥物是否正確、針頭斜面、刻度 |
+| `not_visible` | 影片看不到，固定輸出「無法判定」，不影響步驟判定 | 藥物是否正確、刻度（針頭斜面改看針筒方向，見 13b） |
 
 步驟判定由程式從各條標準彙整：`key` 標準錯誤 → 錯誤；有標準判部分正確，或有錯誤也有正確 → 部分正確；有無法判定 → 無法判定；其餘 → 正確。
 
@@ -153,6 +153,7 @@ Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499，或 Claude 回傳 429／529（o
 | `actions.schema.json` | 評分 agent 的動作格式（`overview`、`zoom`、`burst`、`clip`、`final`），由 `scripts/validate_grading_action.py` 檢查 |
 | `scripts/clip.py` | 從原檔剪出帶聲音的片段（裁到 context box），給彈針與洗手七個動作用 |
 | `scripts/motion_peaks.py` | 以每秒 15 格分析任務區間內 hands_box 的畫面變化，找出手有明顯動作的時間點（不呼叫模型） |
+| `scripts/audio_peaks.py` | 找出任務區間內短促的響聲與連續響聲（彈針聲），並判斷影片有沒有可用的聲音（不呼叫模型） |
 | `scripts/burst.py` | 在 0.3–3 秒內平均取 3–12 張原始解析度的局部畫面，看不到 1 秒的短動作 |
 | `scripts/eval_grading.py` | 與人工標註表比對：每步的人工／模型判定與說明、一致率、錯誤召回、誤報（另外列出有看畫面標準的步驟） |
 | `scripts/labels_to_segmentation.py` | 用人工標註表的開始／結束秒數組出切分結果，調整評分 agent 時可跳過切分 skill |

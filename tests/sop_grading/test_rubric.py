@@ -21,8 +21,10 @@ def test_rubric_classification_matches_the_plan():
         assert by_id[cid]["category"] == "visual"
     for cid in ("17a", "27a", "15b", "25b"):  # flicking is judged with audio
         assert by_id[cid]["audio"] is True
-    for cid in ("2c", "3b", "13b", "14b", "24b"):
+    for cid in ("2c", "3b", "14b", "24b"):
         assert by_id[cid]["category"] == "not_visible"
+    # needle direction stands in for the bevel, which the camera cannot resolve (rubric 1.4)
+    assert by_id["13b"]["category"] == "visual" and by_id["13b"]["key"] is False and by_id["13b"]["window_steps"] == [13]
 
 
 def test_removed_step_has_no_criteria():
@@ -60,7 +62,7 @@ def test_visual_criterion_needs_window_steps():
 
 def test_not_visible_criterion_cannot_be_key():
     assert any("cannot be key" in e
-               for e in broken(lambda r: r["steps"][12]["criteria"][1].update(key=True)))
+               for e in broken(lambda r: r["steps"][13]["criteria"][1].update(key=True)))  # 14b
 
 
 def test_step_needs_a_scored_criterion():
