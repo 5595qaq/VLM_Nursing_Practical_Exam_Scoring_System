@@ -177,24 +177,30 @@ async def process_model_call(job, pool):
     except (asyncpg.PostgresConnectionError, asyncpg.CannotConnectNowError, ConnectionError) as exc:
         raise RetryRequested(delay=timedelta(seconds=30), reason=type(exc).__name__) from exc
     except Exception as exc:
+        failure = exc
         if _is_transient_model_error(exc):
-            delay_seconds = _queue_retry_delay(job.attempts)
-            emit(
-                "model_stage_requeued",
-                error=type(exc).__name__,
-                status_code=getattr(exc, "code", None),
-                retry_delay_seconds=delay_seconds,
-            )
-            raise RetryRequested(
-                delay=timedelta(seconds=delay_seconds),
-                reason="Transient Vertex AI failure after request retries",
-            ) from exc
+            if job.attempts + 1 < settings.GEMINI_QUEUE_MAX_ATTEMPTS:
+                delay_seconds = _queue_retry_delay(job.attempts)
+                emit(
+                    "model_stage_requeued",
+                    error=type(exc).__name__,
+                    status_code=getattr(exc, "code", None),
+                    retry_delay_seconds=delay_seconds,
+                )
+                raise RetryRequested(
+                    delay=timedelta(seconds=delay_seconds),
+                    reason="Transient Vertex AI failure after request retries",
+                ) from exc
+            # Quota exhausted or a call that always times out: stop requeueing and fail the job.
+            failure = RuntimeError(f"{type(exc).__name__} persisted after {job.attempts + 1} queue attempts: {exc}")
         emit("model_stage_failed", error=type(exc).__name__, status_code=getattr(exc, "code", None))
         try:
-            await repository.fail_job(pool, call, exc)
+            await repository.fail_job(pool, call, failure)
         except (asyncpg.PostgresConnectionError, asyncpg.CannotConnectNowError, OSError) as db_exc:
             raise RetryRequested(delay=timedelta(seconds=30), reason="Persist failure after model error") from db_exc
-        raise
+        if failure is exc:
+            raise
+        raise failure from exc
     finally:
         usage.recorder.reset(usage_token)
         context.reset(token)

@@ -50,6 +50,34 @@ let activeWebSocket = null;
 let reconnectTimer = null;
 let reconnectAttempt = 0;
 const ACTIVE_JOB_KEY = 'vlm-active-evaluation-job';
+// The job this tab is following. localStorage is shared by every tab, so the stored key only says
+// which job to restore after a reload; this tab never clears or retries a job it is not following.
+let currentJobId = null;
+
+function rememberJob(jobId) {
+    currentJobId = jobId;
+    try {
+        localStorage.setItem(ACTIVE_JOB_KEY, jobId);
+    } catch (error) {
+        // Storage blocked or full: the job still runs, it just cannot be restored after a reload.
+    }
+}
+
+function forgetJob(jobId) {
+    try {
+        if (localStorage.getItem(ACTIVE_JOB_KEY) === jobId) localStorage.removeItem(ACTIVE_JOB_KEY);
+    } catch (error) {
+        // Nothing stored to clear.
+    }
+}
+
+function storedJobId() {
+    try {
+        return localStorage.getItem(ACTIVE_JOB_KEY);
+    } catch (error) {
+        return null;
+    }
+}
 const WEBSOCKET_HEALTHY_MS = 30000;
 
 const uploadBtn = document.getElementById('upload-btn');
@@ -260,7 +288,7 @@ document.getElementById('evaluation-form').addEventListener('submit', async func
 
         const data = await response.json();
         const jobId = data.id;
-        localStorage.setItem(ACTIVE_JOB_KEY, jobId);
+        rememberJob(jobId);
         appendProgressLog(`評分工作已建立（編號：${jobId}），正在連線以取得即時進度…`);
 
         connectWebSocket(jobId, submitBtn);
@@ -334,7 +362,7 @@ function connectWebSocket(jobId, submitBtn) {
             progressBar.style.width = "100%";
             progressBar.style.backgroundColor = "#2ecc71";
             const rendered = await fetchAndRenderResult(jobId, appendProgressLog);
-            if (rendered) localStorage.removeItem(ACTIVE_JOB_KEY);
+            if (rendered) forgetJob(jobId);
             cleanup(ws, submitBtn);
             return;
         }
@@ -371,7 +399,7 @@ function cleanup(ws, submitBtn) {
 
 function showRetiredEvaluation(message, submitBtn, ws = null) {
     if (ws) ws._terminalHandled = true;
-    localStorage.removeItem(ACTIVE_JOB_KEY);
+    forgetJob(currentJobId);
     document.getElementById('job-status').innerText = '舊格式工作已停用';
     document.getElementById('progress-fill').style.backgroundColor = '#e67e22';
     retryBtn.classList.add('hidden');
@@ -395,14 +423,14 @@ async function fetchEvaluation(jobId) {
 }
 
 function handleMissingEvaluation(jobId, submitBtn, ws = null) {
-    if (localStorage.getItem(ACTIVE_JOB_KEY) !== jobId) {
+    if (jobId !== currentJobId) {  // a stale connection for a job this tab already left
         if (ws) {
             ws._intentionalClose = true;
             ws.close();
         }
         return true;
     }
-    localStorage.removeItem(ACTIVE_JOB_KEY);
+    forgetJob(jobId);
     reconnectAttempt = 0;
     retryBtn.classList.add('hidden');
     document.getElementById('job-status').innerText = '找不到先前工作';
@@ -423,7 +451,7 @@ async function handleRecoveryAction(jobId, job, submitBtn, ws = null) {
 
     if (action === 'render') {
         const rendered = await fetchAndRenderResult(jobId, appendProgressLog);
-        if (rendered) localStorage.removeItem(ACTIVE_JOB_KEY);
+        if (rendered) forgetJob(jobId);
     } else if (action === 'retired') {
         showRetiredEvaluation(job.result?.error, submitBtn, ws);
         return true;
@@ -456,7 +484,7 @@ async function recoverConnection(jobId, submitBtn) {
 }
 
 retryBtn.addEventListener('click', async () => {
-    const jobId = localStorage.getItem(ACTIVE_JOB_KEY);
+    const jobId = currentJobId;
     if (!jobId) return;
     retryBtn.disabled = true;
     try {
@@ -481,8 +509,9 @@ retryBtn.addEventListener('click', async () => {
 });
 
 async function restoreActiveEvaluation() {
-    const jobId = localStorage.getItem(ACTIVE_JOB_KEY);
+    const jobId = storedJobId();
     if (!jobId) return;
+    currentJobId = jobId;
     const submitBtn = document.getElementById('submit-btn');
     document.getElementById('progress-container').classList.remove('hidden');
     submitBtn.disabled = true;
