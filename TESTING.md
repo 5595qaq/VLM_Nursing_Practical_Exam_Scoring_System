@@ -94,6 +94,15 @@ node frontend/sop-result.test.js
 
 `tests/queue_probe.py` 只供測試子程序使用，啟動前檢查資料庫名稱，不會呼叫 Google。
 
+## 壓力測試（locust）
+
+`locustfile.py` 對 `POST /api/v1/evaluations/` 送出建立評分工作的請求。每個請求都是真的工作，worker 會呼叫 Gemini（會計費），所以只對測試部署執行。`LOCUST_VIDEO_URI` 必須是該部署上傳 API 產生的 `gs://<GCS_BUCKET_NAME>/videos/<sha256>_src.mp4`：
+
+```bash
+pip install locust
+LOCUST_VIDEO_URI=gs://bucket/videos/<sha256>_src.mp4 locust -H http://localhost:8000
+```
+
 ## 首次真實模型驗收
 
 自動測試通過後，可由使用者提交 10 支代表性影片，查看 `docker compose logs -f worker` 的 429 比率與耗時，再決定是否調整 5 路設定。真實模型容量、延遲及計費不由 mock 測試保證。增加 worker 不會增加全域上限，改動設定需同時重啟所有 worker。
