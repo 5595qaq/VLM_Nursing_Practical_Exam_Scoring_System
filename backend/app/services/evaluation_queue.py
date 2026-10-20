@@ -329,19 +329,32 @@ async def report_progress(pool, call, make_message):
         return True
 
 
-async def save_grading_partial(pool, call, partial):
-    """Keep the criteria a failed grading attempt did grade, so the next attempt only regrades the rest."""
+def _keeps_late_result(job, call):
+    """A grading of the current generation that ends after another video failed the job is still kept:
+    "resume from failure" would otherwise pay for it again. Retired jobs and stale generations are not."""
+    return (job is not None and call.generation == job["generation"]
+            and (job["status"] not in TERMINAL or job["status"] == "failed"))
+
+
+async def save_grading_partial(pool, call, partial, files=None):
+    """Keep the criteria a failed grading attempt did grade (and its artifacts.zip), so the next attempt
+    only regrades the rest. partial=None clears an earlier one whose grades turned out invalid."""
     async with pool.acquire() as conn, conn.transaction():
         job = await lock_job(conn, call.evaluation_id)
-        if not job or job["status"] in TERMINAL or call.generation != job["generation"]:
+        if not _keeps_late_result(job, call):
             return
+        value = None if partial is None else json.dumps({"result": partial, "files": files or {}})
         await conn.execute("UPDATE evaluation_videos SET grading_partial=$2::json WHERE id=$1 AND job_id=$3",
-                           call.video_id, json.dumps(partial), call.evaluation_id)
+                           call.video_id, value, call.evaluation_id)
 
 
 async def persist_result(pool, call, result):
     async with pool.acquire() as conn, conn.transaction():
         job = await lock_job(conn, call.evaluation_id)
+        if call.action == "sop_grading" and job is not None and job["status"] == "failed":
+            if _keeps_late_result(job, call):
+                await _persist_late_grading(conn, call, result)
+            return
         if not job or job["status"] in TERMINAL or call.generation != job["generation"]:
             return
         video = await conn.fetchrow("SELECT * FROM evaluation_videos WHERE id=$1", call.video_id)
@@ -440,6 +453,16 @@ async def persist_result(pool, call, result):
                      message, f"{progress['completed_steps']}/{progress['total_steps']}")
         if complete:
             await finalize(conn, call.evaluation_id)
+
+
+async def _persist_late_grading(conn, call, result):
+    """Save a grading that finished after the job failed, as finished work for "resume from failure"."""
+    updated = await conn.execute(
+        "UPDATE evaluation_videos SET grading_result=$2::json,status='finished',error=NULL "
+        "WHERE id=$1 AND grading_result IS NULL", call.video_id, json.dumps(result))
+    if updated != "UPDATE 0":
+        await conn.execute("UPDATE evaluation_progress SET completed_steps=completed_steps+1 WHERE job_id=$1",
+                           call.evaluation_id)
 
 
 USAGE_COLUMNS = ("job_id", "video_id", "generation", "stage", "queue_attempt", "provider", "model",

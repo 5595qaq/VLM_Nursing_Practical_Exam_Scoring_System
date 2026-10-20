@@ -135,19 +135,31 @@ async def _run_sop_grading(pool, call, video):
 
     async def report(done, total, key):
         message = f"SOP_grading task {done}/{total} | {key} | {int(time.monotonic() - started)}s | {video_uri}"
-        if not await repository.report_progress(pool, call, lambda _uri: message):
+        try:
+            current = await repository.report_progress(pool, call, lambda _uri: message)
+        except (asyncpg.PostgresConnectionError, asyncpg.CannotConnectNowError, OSError) as exc:
+            # A heartbeat is not worth stopping 15 minutes of grading for; the result write retries.
+            logger.warning("Grading heartbeat failed evaluation=%s video=%s: %s", call.evaluation_id, video_uri, exc)
+            return
+        if not current:
             raise _ObsoleteCall()
 
+    partial = video["grading_partial"] or {}
+    if "steps" in partial:  # saved by the first version: the result itself, without files
+        partial = {"result": partial}
     try:
         return await sop_grading_service.run_sop_grading(
             video_uri, call.video_id, call.generation, video["sop_result"]["result"], report,
-            previous=video["grading_partial"],
+            previous=partial.get("result"), previous_artifacts=(partial.get("files") or {}).get("artifacts"),
         )
     except _ObsoleteCall:
         return None
     except sop_grading_service.GradingIncomplete as exc:
-        # Saved before the queue retries (429) or the job fails, so either retry resumes from here.
-        await repository.save_grading_partial(pool, call, exc.partial)
+        # Saved before the queue retries (429) or the job fails, so either retry resumes from here. A run
+        # stopped because the job failed meanwhile keeps its grades too; a retried job (new generation) not.
+        await repository.save_grading_partial(pool, call, exc.partial, exc.files)
+        if any(isinstance(error, _ObsoleteCall) for error in exc.errors):
+            return None
         raise
 
 

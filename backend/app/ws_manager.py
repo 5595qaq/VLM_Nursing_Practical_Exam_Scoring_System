@@ -34,6 +34,12 @@ class ConnectionManager:
                     await asyncio.wait_for(connection.send_json(message), SEND_TIMEOUT_SECONDS)
                 except Exception:
                     self.disconnect(connection, job_id)
+                    # Close it too: a socket that is only dropped from the list stays open, so the
+                    # browser never reconnects and waits for updates that no longer come.
+                    try:
+                        await asyncio.wait_for(connection.close(code=1011), SEND_TIMEOUT_SECONDS)
+                    except Exception:
+                        pass
 
             # Copy the list: send() may remove connections while we iterate.
             await asyncio.gather(*(send(c) for c in self.active_connections[job_id][:]))

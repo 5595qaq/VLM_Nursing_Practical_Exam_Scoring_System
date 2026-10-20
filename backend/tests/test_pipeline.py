@@ -759,7 +759,8 @@ PARTIAL = {"video_id": "v", "steps": [{"step_id": 3, "verdict": "待判定", "cr
 def fake_grading(monkeypatch):
     from app.services import sop_grading_service
 
-    async def run(video_uri, video_id, generation, segmentation, on_progress, previous=None):
+    async def run(video_uri, video_id, generation, segmentation, on_progress, previous=None,
+                  previous_artifacts=None):
         assert segmentation == {"video_id": video_id, "steps": []}
         await on_progress(1, 2, "1")
         return {"result": {"video_id": video_id, "steps": [{"step_id": 1, "verdict": "正確"}]},
@@ -803,7 +804,8 @@ async def test_sop_grading_failure_then_retry_regrades_without_resegmenting(
     run = fake_grading.side_effect
     calls = []
 
-    async def flaky(video_uri, video_id, generation, segmentation, on_progress, previous=None):
+    async def flaky(video_uri, video_id, generation, segmentation, on_progress, previous=None,
+                    previous_artifacts=None):
         calls.append((generation, previous))
         if generation == 0:
             raise GradingIncomplete("grading incomplete: 15-16-17: boom", PARTIAL, [ValueError("bad action")])
@@ -834,10 +836,12 @@ async def test_sop_grading_quota_error_is_requeued_and_resumes(
     quota = type("ClientError", (Exception,), {"code": 429})
     calls = []
 
-    async def once_exhausted(video_uri, video_id, generation, segmentation, on_progress, previous=None):
-        calls.append((generation, previous))
+    async def once_exhausted(video_uri, video_id, generation, segmentation, on_progress, previous=None,
+                             previous_artifacts=None):
+        calls.append((generation, previous, previous_artifacts))
         if len(calls) == 1:
-            raise GradingIncomplete("grading incomplete: 3: 429", PARTIAL, [quota("429 RESOURCE_EXHAUSTED")])
+            raise GradingIncomplete("grading incomplete: 3: 429", PARTIAL, [quota("429 RESOURCE_EXHAUSTED")],
+                                    {"artifacts": "gs://test-bucket/sop_runs/a.zip"})
         return await run(video_uri, video_id, generation, segmentation, on_progress)
 
     fake_grading.side_effect = once_exhausted
@@ -847,6 +851,53 @@ async def test_sop_grading_quota_error_is_requeued_and_resumes(
     async with workers(pool):
         rows = await wait_terminal(pool, [job["id"]])
     assert rows[0]["status"] == "finished"  # requeued by the queue, no manual retry
-    assert calls == [(0, None), (0, PARTIAL)]
+    assert calls == [(0, None, None), (0, PARTIAL, "gs://test-bucket/sop_runs/a.zip")]
     assert fake_skill.await_count == 1
 
+
+async def test_grading_that_ends_after_another_video_failed_is_kept(
+        pool, fake_models, fake_skill, fake_grading, monkeypatch):
+    run = fake_grading.side_effect
+    second_started = asyncio.Event()
+    calls = []
+
+    async def one_fails(video_uri, video_id, generation, segmentation, on_progress, previous=None,
+                        previous_artifacts=None):
+        calls.append((video_uri[-12:], generation))
+        if generation == 0 and video_uri.endswith(f"{0:064x}_src.mp4"):
+            # Fail only once video 1 is grading too, or its call would just be skipped as obsolete.
+            await asyncio.wait_for(second_started.wait(), 10)
+            raise RuntimeError("broken grading")
+        if generation == 0:
+            second_started.set()
+            for _ in range(200):  # finish only after video 0 failed the job
+                if await pool.fetchval("SELECT status FROM evaluation_jobs WHERE id=$1", job["id"]) == "failed":
+                    break
+                await asyncio.sleep(0.05)
+
+        async def no_heartbeat(*_args):
+            pass  # the real heartbeat stops a run once the job failed; this test is about one that ends
+
+        return await run(video_uri, video_id, generation, segmentation,
+                         on_progress if generation else no_heartbeat)
+
+    fake_grading.side_effect = one_fails
+    async with pool.acquire() as conn:
+        job = await repo.create_evaluation(
+            conn, "exam", [f"gs://test-bucket/videos/{i:064x}_src.mp4" for i in range(2)],
+            pipeline=repo.PIPELINE_SOP_GRADING,
+        )
+    async with workers(pool):
+        rows = await wait_terminal(pool, [job["id"]])
+        assert rows[0]["status"] == "failed"
+        for _ in range(100):  # wait for the late grading of video 1 to be written
+            if await pool.fetchval("SELECT count(*) FROM evaluation_videos WHERE job_id=$1 "
+                                   "AND grading_result IS NOT NULL", job["id"]):
+                break
+            await asyncio.sleep(0.05)
+        await repo.retry_evaluation(pool, job["id"])
+        rows = await wait_terminal(pool, [job["id"]])
+    assert rows[0]["status"] == "finished"
+    assert sorted(g for _, g in calls) == [0, 0, 1]  # only the failed video is graded again
+    progress = await pool.fetchrow("SELECT * FROM evaluation_progress WHERE job_id=$1", job["id"])
+    assert progress["completed_steps"] == progress["total_steps"] == 4
