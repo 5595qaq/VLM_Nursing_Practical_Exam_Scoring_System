@@ -1,5 +1,5 @@
 {
-  "version": "1.5",
+  "version": "1.6",
   "description": "無菌抽藥技術－vial 粉劑 30 步評分標準。category：program＝由切分結果以程式判定；visual＝評分 agent 看畫面（audio=true 時連聲音一起聽）；not_visible＝影片看不到，固定輸出「無法判定」且不影響步驟判定。key=true 的標準錯誤時整步判「錯誤」。",
   "steps": [
     {"step_id": 1, "text": "洗手。", "criteria": [
@@ -56,7 +56,7 @@
       {"id": "15b", "text": "先墊酒精棉片才彈針", "category": "visual", "key": false, "window_steps": [15, 16, 17], "audio": true}
     ]},
     {"step_id": 16, "text": "針心往後抽。", "criteria": [
-      {"id": "16a", "text": "針心往後抽", "category": "program", "key": true, "rule": {"type": "detected"}}
+      {"id": "16a", "text": "針心往後抽（外露的推桿變長）", "category": "visual", "key": true, "window_steps": [15, 16, 17], "note": "使用者確認（2026-10-21）：針頭朝上時把針心（活塞推桿）往外拉，有往外拉就算正確，不要求拉多少；原本只看切分有沒有定位到步驟"}
     ]},
     {"step_id": 17, "text": "手指輕彈空針，排出空針內空氣。", "criteria": [
       {"id": "17a", "text": "手指輕彈空針並排出空氣（聽到彈擊聲且看到手指彈針筒）", "category": "visual", "key": true, "window_steps": [15, 16, 17], "audio": true}
@@ -93,7 +93,7 @@
       {"id": "25b", "text": "先墊酒精棉片才彈針", "category": "visual", "key": false, "window_steps": [25, 26, 27], "audio": true}
     ]},
     {"step_id": 26, "text": "將針筒垂直拿起，針頭向上，針心往後抽。", "criteria": [
-      {"id": "26a", "text": "針心往後抽", "category": "program", "key": true, "rule": {"type": "detected"}},
+      {"id": "26a", "text": "針心往後抽（外露的推桿變長）", "category": "visual", "key": true, "window_steps": [26], "note": "使用者確認（2026-10-21）：同 16a"},
       {"id": "26b", "text": "針筒垂直、針頭向上", "category": "visual", "key": false, "window_steps": [26]}
     ]},
     {"step_id": 27, "text": "手指輕彈空針，排出空針內空氣。", "criteria": [

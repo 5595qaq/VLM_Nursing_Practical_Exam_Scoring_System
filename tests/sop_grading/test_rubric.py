@@ -26,6 +26,11 @@ def test_rubric_classification_matches_the_plan():
         assert by_id[cid]["category"] == "not_visible"
     # needle direction stands in for the bevel, which the camera cannot resolve (rubric 1.4)
     assert by_id["13b"]["category"] == "visual" and by_id["13b"]["key"] is False and by_id["13b"]["window_steps"] == [13]
+    # pulling the plunger back is checked on the frames, not inferred from the step being located (rubric 1.6)
+    assert by_id["16a"]["category"] == "visual" and by_id["16a"]["key"] is True
+    assert by_id["16a"]["window_steps"] == [15, 16, 17]  # same task as 15b + 17a
+    assert by_id["26a"]["category"] == "visual" and by_id["26a"]["key"] is True
+    assert by_id["26a"]["window_steps"] == by_id["26b"]["window_steps"] == [26]
 
 
 def test_removed_step_has_no_criteria():
