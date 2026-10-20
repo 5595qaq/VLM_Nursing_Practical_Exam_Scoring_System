@@ -222,13 +222,19 @@ class LoopState:
                         for key in BUDGET_LIMITS)
 
 
-def _fill_run_facts(action: dict, video_id: str, state: LoopState) -> None:
-    """The external program, not the model, knows the video id and the budget actually used."""
+def _fill_run_facts(action: dict, video_id: str, state: LoopState, duration: float | None = None) -> None:
+    """The external program, not the model, knows the video id, its duration, the confirmed crop
+    and the budget actually used."""
     result = action.get("result") if action.get("action") == "final" else None
     if not isinstance(result, dict):
         return
     result["video_id"] = video_id
     if isinstance(result.get("meta"), dict):
+        if duration:
+            result["meta"]["duration"] = round(duration, 3)
+        crop = result["meta"].get("crop")
+        if isinstance(crop, dict) and state.box and state.hands_box:
+            crop.update(box=state.box, hands_box=state.hands_box)
         result["meta"]["budget"] = {
             "crop_rounds": state.used["crop_preview"],
             "overview_calls": state.used["overview"],
@@ -335,7 +341,7 @@ async def run_skill_loop(video_path: Path, video_id: str, workdir: Path, model_c
             if reply.stop_reason == "max_tokens":
                 raise ValueError("回覆超過 max_tokens 被截斷；請精簡 draft／evidence 後重送")
             action = parse_action(reply.text)
-            _fill_run_facts(action, video_id, state)
+            _fill_run_facts(action, video_id, state, duration)
             errors, warnings = validate_action.validate(action, state.validator_state(), duration)
         except ValueError as exc:
             errors, warnings, action = [str(exc)], [], None
