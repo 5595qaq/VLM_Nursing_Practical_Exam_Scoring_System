@@ -1,5 +1,5 @@
 {
-  "version": "1.6",
+  "version": "1.7",
   "description": "無菌抽藥技術－vial 粉劑 30 步評分標準。category：program＝由切分結果以程式判定；visual＝評分 agent 看畫面（audio=true 時連聲音一起聽）；not_visible＝影片看不到，固定輸出「無法判定」且不影響步驟判定。key=true 的標準錯誤時整步判「錯誤」。",
   "steps": [
     {"step_id": 1, "text": "洗手。", "criteria": [
@@ -59,7 +59,8 @@
       {"id": "16a", "text": "針心往後抽（外露的推桿變長）", "category": "visual", "key": true, "window_steps": [15, 16, 17], "note": "使用者確認（2026-10-21）：針頭朝上時把針心（活塞推桿）往外拉，有往外拉就算正確，不要求拉多少；原本只看切分有沒有定位到步驟"}
     ]},
     {"step_id": 17, "text": "手指輕彈空針，排出空針內空氣。", "criteria": [
-      {"id": "17a", "text": "手指輕彈空針並排出空氣（聽到彈擊聲且看到手指彈針筒）", "category": "visual", "key": true, "window_steps": [15, 16, 17], "audio": true}
+      {"id": "17a", "text": "手指輕彈空針（聽到彈擊聲且看到手指彈針筒）", "category": "visual", "key": true, "window_steps": [15, 16, 17], "audio": true},
+      {"id": "17b", "text": "推針心排出空針內空氣（外露的推桿變短）", "category": "visual", "key": false, "window_steps": [15, 16, 17], "note": "使用者要求（2026-10-21）：原本 17a／27a 只檢查彈針，沒有人看排氣；VID_0106 步驟 17 人工標「彈針但沒有排出空氣」為部分正確，所以排氣設為非關鍵標準"}
     ]},
     {"step_id": 18, "text": "用持毛筆方式將稀釋液插入vial中心並打入稀釋液。", "criteria": [
       {"id": "18a", "text": "將稀釋液打入 vial", "category": "program", "key": true, "rule": {"type": "detected"}},
@@ -97,7 +98,8 @@
       {"id": "26b", "text": "針筒垂直、針頭向上", "category": "visual", "key": false, "window_steps": [26]}
     ]},
     {"step_id": 27, "text": "手指輕彈空針，排出空針內空氣。", "criteria": [
-      {"id": "27a", "text": "手指輕彈空針並排出空氣（聽到彈擊聲且看到手指彈針筒）", "category": "visual", "key": true, "window_steps": [25, 26, 27], "audio": true}
+      {"id": "27a", "text": "手指輕彈空針（聽到彈擊聲且看到手指彈針筒）", "category": "visual", "key": true, "window_steps": [25, 26, 27], "audio": true},
+      {"id": "27b", "text": "推針心排出空針內空氣（外露的推桿變短）", "category": "visual", "key": false, "window_steps": [25, 26, 27], "note": "同 17b"}
     ]},
     {"step_id": 28, "text": "單手套上針頭套(或針座)。", "criteria": [
       {"id": "28a", "text": "套回針頭套", "category": "program", "key": true, "rule": {"type": "detected"}},
