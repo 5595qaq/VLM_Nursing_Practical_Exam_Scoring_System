@@ -31,6 +31,10 @@ def test_rubric_classification_matches_the_plan():
     assert by_id["16a"]["window_steps"] == [15, 16, 17]  # same task as 15b + 17a
     assert by_id["26a"]["category"] == "visual" and by_id["26a"]["key"] is True
     assert by_id["26a"]["window_steps"] == by_id["26b"]["window_steps"] == [26]
+    # pushing the air out is its own non-key criterion, in the same task as the flick (rubric 1.7)
+    for flick, expel in (("17a", "17b"), ("27a", "27b")):
+        assert by_id[flick]["key"] is True and by_id[expel]["key"] is False
+        assert by_id[expel]["category"] == "visual" and by_id[expel]["window_steps"] == by_id[flick]["window_steps"]
 
 
 def test_removed_step_has_no_criteria():

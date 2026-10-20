@@ -136,6 +136,18 @@ def test_flick_wrong_needs_a_burst_first():
     assert validate(final(**WRONG), TASK, {**FRESH, "burst": 1}, DURATION) == []
 
 
+def test_pull_back_wrong_needs_a_burst_first():
+    # VID_0074: the pull at 02:13.0–02:13.5 lasted half a second and looked like changing grip
+    task = {"window": [148.0, 180.0], "criteria": [{"criterion_id": "16a", "window": [148.0, 180.0]}]}
+    action = {"action": "final", "criteria": [
+        {"criterion_id": "16a", "verdict": "錯誤", "confidence": 0.8, "reason": None,
+         "explanation": "02:28–02:35 手只握外管，沒有碰尾端圓盤。", "evidence": ["clip@148-180"]}]}
+    assert any("use burst" in e for e in validate(action, task, FRESH, DURATION))
+    assert validate(action, task, {**FRESH, "burst": 1}, DURATION) == []
+    action["criteria"][0].update(verdict="正確", explanation="02:30 右手捏住尾端圓盤往下拉。")
+    assert validate(action, task, FRESH, DURATION) == []  # 正確 needs no burst
+
+
 @pytest.mark.parametrize("audio", [
     {**SOUND, "has_audio": False, "silent": True, "max_db": None, "floor_db": None},
     {**SOUND, "silent": True, "max_db": -80.0},
