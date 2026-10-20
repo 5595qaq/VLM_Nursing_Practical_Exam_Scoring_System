@@ -2,10 +2,13 @@
 
 No Google calls and no database. Needs ffmpeg plus the skill script dependencies.
 """
+import io
 import json
 import re
 import shutil
 import subprocess
+import zipfile
+from pathlib import Path
 
 import pytest
 
@@ -303,3 +306,98 @@ def test_long_windows_are_analysed_in_pieces(tmp_path, monkeypatch):
     assert [c[1:] for c in calls if c[0] == "audio_peaks.py"] == [(0, 180), (180, 360), (360, 400)]
     # The flick at the end of the window (399 s) is no longer cut off at 180 s.
     assert audio["runs"][-1]["start"] == 399 and audio["max_db"] == -20.0 and audio["end"] == 400
+
+
+def fake_gcs(monkeypatch, video, uploads):
+    def download(uri, filename):
+        assert uri == "gs://test-bucket/videos/x_src.mp4"
+        shutil.copy(video, filename)
+
+    def upload(local, object_name, content_type):
+        uploads[object_name] = (Path(local).read_bytes(), content_type)
+        return f"gs://test-bucket/{object_name}"
+
+    monkeypatch.setattr(grading.gcs_service, "download_to_filename", download)
+    monkeypatch.setattr(grading.gcs_service, "upload_file", upload)
+
+
+async def test_run_sop_grading_downloads_grades_and_uploads(video, monkeypatch):
+    uploads, progress = {}, []
+
+    async def on_progress(done, total, key):
+        progress.append((done, total, key))
+
+    fake_gcs(monkeypatch, video, uploads)
+    outcome = await grading.run_sop_grading("gs://test-bucket/videos/x_src.mp4", "vid-9", 2, segmentation(),
+                                            on_progress, FakeModel())
+    assert outcome["files"] == {
+        "artifacts": "gs://test-bucket/sop_runs/vid-9/g2/grading/artifacts.zip",
+        "result": "gs://test-bucket/sop_runs/vid-9/g2/grading/grading.json",
+    }
+    assert json.loads(uploads["sop_runs/vid-9/g2/grading/grading.json"][0]) == outcome["result"]
+    names = zipfile.ZipFile(io.BytesIO(uploads["sop_runs/vid-9/g2/grading/artifacts.zip"][0])).namelist()
+    assert "transcript_task_15-16-17.json" in names and not any(n.endswith(".mp4") for n in names)
+    assert [d for d, _, _ in progress] == list(range(1, len(outcome["tasks"]) + 1))
+    assert {t for _, t, _ in progress} == {len(outcome["tasks"])}
+    assert sorted(k for _, _, k in progress) == sorted(outcome["tasks"])
+    assert outcome["criterion_texts"]["1a"].startswith("洗手")
+
+
+async def test_run_sop_grading_uploads_then_raises_on_failed_tasks(video, monkeypatch):
+    uploads = {}
+    fake_gcs(monkeypatch, video, uploads)
+    model = FakeModel({"12a": [{"action": "dance"}] * grading.MAX_CONSECUTIVE_REJECTS})
+    with pytest.raises(skill.SkillRunError, match="grading incomplete: 12: "):
+        await grading.run_sop_grading("gs://test-bucket/videos/x_src.mp4", "vid", 0, segmentation(),
+                                      model_call=model)
+    assert "sop_runs/vid/g0/grading/artifacts.zip" in uploads
+
+
+async def test_progress_callback_error_stops_the_run(video, tmp_path):
+    class Stop(Exception):
+        pass
+
+    async def on_progress(done, total, key):
+        raise Stop()
+
+    with pytest.raises(Stop):
+        await grading.run_grading(video, segmentation(), tmp_path, FakeModel(), on_progress=on_progress)
+    assert not (tmp_path / "grading.json").exists()
+
+
+async def test_failed_grading_keeps_partial_and_resume_regrades_only_the_rest(video, monkeypatch):
+    uploads = {}
+    fake_gcs(monkeypatch, video, uploads)
+    quota = RuntimeError("429 RESOURCE_EXHAUSTED")
+
+    class Exhausted(FakeModel):
+        async def __call__(self, system, content):
+            if "12a" in CRITERION.findall(content[0]["text"]):
+                raise quota
+            return await super().__call__(system, content)
+
+    with pytest.raises(grading.GradingIncomplete) as failed:
+        await grading.run_sop_grading("gs://test-bucket/videos/x_src.mp4", "vid", 0, segmentation(),
+                                      model_call=Exhausted())
+    assert failed.value.errors == [quota]
+    partial = failed.value.partial
+    verdicts = {c["criterion_id"]: c["verdict"] for s in partial["steps"] for c in s["criteria"]}
+    assert verdicts["12a"] == "待判定" and verdicts["1a"] == "正確"
+
+    model = FakeModel()
+    outcome = await grading.run_sop_grading("gs://test-bucket/videos/x_src.mp4", "vid", 1, segmentation(),
+                                            model_call=model, previous=partial)
+    assert outcome["tasks"] == ["12"]  # only the failed group goes back to the model
+    assert all(CRITERION.findall(c[0]["text"]) == ["12a"] for c in model.requests)
+    assert "task_exceptions" not in outcome
+    steps = {s["step_id"]: s for s in outcome["result"]["steps"]}
+    assert steps[12]["verdict"] == "正確" and steps[1]["verdict"] == "正確"
+
+
+async def test_resume_from_a_fully_graded_invalid_result_regrades_everything(video, monkeypatch):
+    fake_gcs(monkeypatch, video, {})
+    first = await grading.run_grading(video, segmentation(), Path(video.parent / "first"), FakeModel())
+    model = FakeModel()
+    outcome = await grading.run_sop_grading("gs://test-bucket/videos/x_src.mp4", "vid", 1, segmentation(),
+                                            model_call=model, previous=first["result"])
+    assert outcome["tasks"] == first["tasks"]

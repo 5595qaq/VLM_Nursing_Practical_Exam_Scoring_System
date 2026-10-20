@@ -46,8 +46,10 @@
                 <div class="agent-options">
                     <label><input type="radio" name="pipeline" value="agents" checked> 完整評分（Time_cuting＋Agent A–D）</label>
                     <label><input type="radio" name="pipeline" value="sop_skill"> 只跑 SOP 步驟切分（sop-video-skill）</label>
+                    <label><input type="radio" name="pipeline" value="sop_grading"> SOP 步驟切分＋評分（sop-video-skill → sop-video-grading）</label>
                 </div>
-                <p class="field-hint" id="pipeline-hint" hidden>由 Gemini（預設 gemini-4-argon）依 sop-video-skill 切出 30 個步驟的時間區段（不評分），可下載結果 JSON、圖片與對話紀錄。每支影片需數分鐘至數十分鐘。</p>
+                <p class="field-hint" id="grading-hint" data-pipeline="sop_grading" hidden>先切出 30 個步驟，再由 Gemini 依 sop-video-grading 評分表逐步判定（正確／部分正確／錯誤／無法判定），每步附說明與評分項目。每支影片約 15 分鐘；評分失敗時按「從失敗處繼續」只會重跑評分。</p>
+                <p class="field-hint" id="pipeline-hint" data-pipeline="sop_skill" hidden>由 Gemini（預設 gemini-4-argon）依 sop-video-skill 切出 30 個步驟的時間區段（不評分），可下載結果 JSON、圖片與對話紀錄。每支影片需數分鐘至數十分鐘。</p>
             </fieldset>
 
             <fieldset class="agent-selection" id="agent-selection">
@@ -78,6 +80,7 @@
             <div class="download-actions" aria-label="下載評分結果">
                 <button type="button" id="download-summary-btn" disabled>下載評分總表 CSV</button>
                 <button type="button" id="download-detail-btn" disabled>下載完整分析資料 CSV</button>
+                <button type="button" id="download-grading-csv-btn" hidden>下載 SOP 評分 CSV</button>
                 <button type="button" id="download-sop-csv-btn" hidden>下載步驟切分 CSV</button>
                 <a id="download-usage-link" class="button-link" hidden>下載 token 用量 CSV</a>
             </div>
@@ -92,6 +95,7 @@
 
     <script src="csv-export.js"></script>
     <script src="sop-result.js"></script>
+    <script src="sop-grading.js"></script>
     <script src="recovery.js"></script>
     <script src="app.js"></script>
 </body>

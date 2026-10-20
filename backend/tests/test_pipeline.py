@@ -10,6 +10,7 @@ from pgqueuer import PgQueuer
 
 from app.db import asyncpg_dsn
 from app.services import agents, evaluation_queue as repo, gemini_service
+from app.services.sop_grading_service import GradingIncomplete
 from app.worker import register
 from app.gazelle_worker import register as register_gazelle
 from app.config import settings
@@ -749,3 +750,103 @@ async def test_sop_skill_transient_claude_error_is_requeued(pool, fake_models, f
         rows = await wait_terminal(pool, [job["id"]])
     assert rows[0]["status"] == "finished"
     assert fake_skill.await_count == 2
+
+
+PARTIAL = {"video_id": "v", "steps": [{"step_id": 3, "verdict": "待判定", "criteria": []}]}
+
+
+@pytest.fixture
+def fake_grading(monkeypatch):
+    from app.services import sop_grading_service
+
+    async def run(video_uri, video_id, generation, segmentation, on_progress, previous=None):
+        assert segmentation == {"video_id": video_id, "steps": []}
+        await on_progress(1, 2, "1")
+        return {"result": {"video_id": video_id, "steps": [{"step_id": 1, "verdict": "正確"}]},
+                "tasks": ["1", "15+17"], "failed_tasks": [], "validation_errors": [], "usage": {},
+                "files": {"result": f"gs://test-bucket/sop_runs/{video_id}/g{generation}/grading/grading.json"},
+                "model": "gemini-test", "criterion_texts": {}}
+
+    grading = AsyncMock(side_effect=run)
+    monkeypatch.setattr(sop_grading_service, "run_sop_grading", grading)
+    return grading
+
+
+async def test_sop_grading_pipeline_segments_then_grades(pool, fake_models, fake_skill, fake_grading, monkeypatch):
+    monkeypatch.setattr(settings, "MAX_ACTIVE_VIDEOS_PER_EVALUATION", 1)
+    cutting, scoring, gaze = fake_models
+    async with pool.acquire() as conn:
+        job = await repo.create_evaluation(
+            conn, "exam", [f"gs://test-bucket/videos/{i:064x}_src.mp4" for i in range(2)],
+            pipeline=repo.PIPELINE_SOP_GRADING,
+        )
+    assert job["selected_agents"] == [] and job["pipeline"] == "sop_grading"
+    async with workers(pool):
+        rows = await wait_terminal(pool, [job["id"]])
+    assert rows[0]["status"] == "finished"
+    result = json.loads(rows[0]["result"])
+    assert result["pipeline"] == "sop_grading" and result["items"] == []
+    assert [e["video_uri"] for e in result["sop_skill"]] == job["video_paths"]
+    assert [e["video_uri"] for e in result["sop_grading"]] == job["video_paths"]
+    assert all(e["result"]["steps"][0]["verdict"] == "正確" for e in result["sop_grading"])
+    assert fake_skill.await_count == fake_grading.await_count == 2
+    assert cutting.await_count == scoring.await_count == gaze.call_count == 0
+    progress = await pool.fetchrow("SELECT * FROM evaluation_progress WHERE job_id=$1", job["id"])
+    assert progress["completed_steps"] == progress["total_steps"] == 4
+    messages = [r["message"] for r in await pool.fetch(
+        "SELECT message FROM job_branches WHERE job_id=$1", job["id"])]
+    assert "done" in messages
+
+
+async def test_sop_grading_failure_then_retry_regrades_without_resegmenting(
+        pool, fake_models, fake_skill, fake_grading, monkeypatch):
+    run = fake_grading.side_effect
+    calls = []
+
+    async def flaky(video_uri, video_id, generation, segmentation, on_progress, previous=None):
+        calls.append((generation, previous))
+        if generation == 0:
+            raise GradingIncomplete("grading incomplete: 15-16-17: boom", PARTIAL, [ValueError("bad action")])
+        return await run(video_uri, video_id, generation, segmentation, on_progress)
+
+    fake_grading.side_effect = flaky
+    async with pool.acquire() as conn:
+        job = await repo.create_evaluation(conn, "exam", ["gs://test-bucket/videos/" + "b" * 64 + "_src.mp4"],
+                                           pipeline=repo.PIPELINE_SOP_GRADING)
+    async with workers(pool):
+        rows = await wait_terminal(pool, [job["id"]])
+        assert rows[0]["status"] == "failed"
+        assert "grading incomplete" in json.loads(rows[0]["result"])["error"]
+        await repo.retry_evaluation(pool, job["id"])
+        rows = await wait_terminal(pool, [job["id"]])
+    assert rows[0]["status"] == "finished"
+    assert calls == [(0, None), (1, PARTIAL)]  # the retry resumes from the grades already made
+    assert fake_skill.await_count == 1  # the stored segmentation is reused
+    result = json.loads(rows[0]["result"])
+    assert result["sop_grading"][0]["files"]["result"].split("/")[-3] == "g1"
+
+
+
+async def test_sop_grading_quota_error_is_requeued_and_resumes(
+        pool, fake_models, fake_skill, fake_grading, monkeypatch):
+    monkeypatch.setattr(settings, "GEMINI_QUEUE_RETRY_BASE_SECONDS", 0)
+    run = fake_grading.side_effect
+    quota = type("ClientError", (Exception,), {"code": 429})
+    calls = []
+
+    async def once_exhausted(video_uri, video_id, generation, segmentation, on_progress, previous=None):
+        calls.append((generation, previous))
+        if len(calls) == 1:
+            raise GradingIncomplete("grading incomplete: 3: 429", PARTIAL, [quota("429 RESOURCE_EXHAUSTED")])
+        return await run(video_uri, video_id, generation, segmentation, on_progress)
+
+    fake_grading.side_effect = once_exhausted
+    async with pool.acquire() as conn:
+        job = await repo.create_evaluation(conn, "exam", ["gs://test-bucket/videos/" + "c" * 64 + "_src.mp4"],
+                                           pipeline=repo.PIPELINE_SOP_GRADING)
+    async with workers(pool):
+        rows = await wait_terminal(pool, [job["id"]])
+    assert rows[0]["status"] == "finished"  # requeued by the queue, no manual retry
+    assert calls == [(0, None), (0, PARTIAL)]
+    assert fake_skill.await_count == 1
+

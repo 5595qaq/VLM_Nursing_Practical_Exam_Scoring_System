@@ -16,12 +16,16 @@ import importlib
 import json
 import subprocess
 import sys
+import tempfile
 import threading
 import time
+import zipfile
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Awaitable, Callable
 
 from app.config import settings
+from app.services import gcs_service, sop_skill_service
 from app.services.sop_skill_service import (Image, ModelCall, ScriptRunner, SkillRunError, _fmt_box,
                                             _fmt_t, _image_block, _strip_frontmatter, gemini_call,
                                             parse_action, skill_dir)
@@ -34,6 +38,8 @@ CLIP_FPS = 2.0  # 0.5 s per frame: enough for the seven washing motions
 MOTION_TOP = 8  # motion peaks listed per task
 MOTION_MAX_SPAN = 180.0
 OPENING_CLIP_MAX_SECONDS = 60.0
+
+GradingProgress = Callable[[int, int, str], Awaitable[None]]  # (tasks done, task count, task key)
 
 
 def grading_dir() -> Path:
@@ -382,18 +388,26 @@ async def run_task(task: dict, video_id: str, runner: GradingRunner, boxes: dict
 
 async def run_grading(video_path: Path, segmentation: dict, workdir: Path, model_call: ModelCall | None = None,
                       probe_dir: Path | None = None, steps: set[int] | None = None,
-                      previous: dict | None = None) -> dict:
+                      previous: dict | None = None, on_progress: GradingProgress | None = None,
+                      resume: bool = False) -> dict:
     """Grade one video. With `steps`, only those steps' visual criteria go to the model; the other
-    visual criteria are copied from `previous` (an earlier grading result) when given."""
+    visual criteria are copied from `previous` (an earlier grading result) when given. With `resume`,
+    every criterion `previous` already graded is kept and only its 待判定 criteria go to the model.
+    on_progress(done, total, task_key) is awaited after each task; an exception it raises stops the run.
+    The result's `task_exceptions` holds each failed task's exception (not JSON; for the caller only)."""
     rubric_mod, rules, validate = (load_grading_module(n) for n in ("rubric", "rules", "validate_grading"))
     rubric = rubric_mod.load_rubric()
     model_call = model_call or gemini_call
     result = rules.grade_from_segmentation(segmentation, rubric)
     old = {c["criterion_id"]: c for s in previous["steps"] for c in s["criteria"]} if previous else {}
-    if old and steps:
+    if old and (steps or resume):
         for step in result["steps"]:
-            if step["step_id"] not in steps:
+            if steps and step["step_id"] not in steps:
                 step["criteria"] = [old.get(c["criterion_id"], c) if c["verdict"] == "待判定" else c
+                                    for c in step["criteria"]]
+            elif resume:
+                step["criteria"] = [old[c["criterion_id"]] if c["verdict"] == "待判定"
+                                    and old.get(c["criterion_id"], c)["verdict"] != "待判定" else c
                                     for c in step["criteria"]]
     tasks = build_tasks(result, rubric, steps)
 
@@ -416,9 +430,19 @@ async def run_grading(video_path: Path, segmentation: dict, workdir: Path, model
                                              model_call, system, workdir, state)
                 return task, criteria, state, None
             except Exception as exc:  # noqa: BLE001 - see comment above
-                return task, [], state, f"{type(exc).__name__}: {exc}"[:500]
+                return task, [], state, exc
 
-    outcomes = await asyncio.gather(*(one(t) for t in tasks))
+    pending = [asyncio.create_task(one(t)) for t in tasks]
+    try:
+        for done, finished in enumerate(asyncio.as_completed(pending), 1):
+            task = (await finished)[0]
+            if on_progress:
+                await on_progress(done, len(tasks), task["key"])
+    finally:
+        for item in pending:
+            item.cancel()
+        await asyncio.gather(*pending, return_exceptions=True)
+    outcomes = [item.result() for item in pending]
     graded = {c["criterion_id"]: c for _, criteria, _, _ in outcomes for c in criteria}
     specs = {s["step_id"]: s for s in rubric["steps"]}
     for i, step in enumerate(result["steps"]):
@@ -429,10 +453,76 @@ async def run_grading(video_path: Path, segmentation: dict, workdir: Path, model
                     for c in step["criteria"]]
         result["steps"][i] = rules.build_step(specs[step["step_id"]], criteria)
 
-    failed = [{"task": t["key"], "error": err} for t, _, _, err in outcomes if err]
+    failed = [{"task": t["key"], "error": f"{type(exc).__name__}: {exc}"[:500]} for t, _, _, exc in outcomes if exc]
     errors = validate.validate_grading(result, rubric, final=not failed)
     usage = {"input_tokens": sum(s.input_tokens for _, _, s, _ in outcomes if s),
              "output_tokens": sum(s.output_tokens for _, _, s, _ in outcomes if s)}
     (workdir / "grading.json").write_text(json.dumps(result, ensure_ascii=False, indent=1), encoding="utf-8")
     return {"result": result, "tasks": [t["key"] for t in tasks], "failed_tasks": failed,
-            "validation_errors": errors, "usage": usage}
+            "validation_errors": errors, "usage": usage,
+            "task_exceptions": [exc for _, _, _, exc in outcomes if exc]}
+
+
+class GradingIncomplete(SkillRunError):
+    """Some tasks failed or the result is invalid. `partial` keeps the criteria that were graded so a
+    later attempt (run_sop_grading previous=...) only regrades the rest; `errors` are the failed tasks'
+    exceptions, so the queue can tell a quota error (429) worth retrying from a broken task."""
+
+    def __init__(self, message: str, partial: dict, errors: list[BaseException]):
+        super().__init__(message)
+        self.partial = partial
+        self.errors = errors
+
+
+def artifact_prefix(video_id: str, generation: int) -> str:
+    return f"{sop_skill_service.artifact_prefix(video_id, generation)}/grading"
+
+
+def _upload_artifacts(workdir: Path, prefix: str) -> dict:
+    archive = workdir.parent / "artifacts.zip"
+    with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED) as zf:
+        for item in sorted(workdir.iterdir()):
+            # Clips and the proxy are cut again from the source video; keep the archive small.
+            if item.is_file() and not item.name.endswith(".mp4"):
+                zf.write(item, item.name)
+    uploads = {"artifacts": (archive, "artifacts.zip", "application/zip")}
+    if (workdir / "grading.json").exists():
+        uploads["result"] = (workdir / "grading.json", "grading.json", "application/json")
+    return {kind: gcs_service.upload_file(str(local), f"{prefix}/{name}", content_type)
+            for kind, (local, name, content_type) in uploads.items()}
+
+
+async def run_sop_grading(video_uri: str, video_id: str, generation: int, segmentation: dict,
+                          on_progress: GradingProgress | None = None,
+                          model_call: ModelCall | None = None, previous: dict | None = None) -> dict:
+    """Download the video, grade it against `segmentation`, upload grading.json and the task transcripts.
+
+    `previous` is the partial result of an earlier attempt: its graded criteria are kept and only the
+    rest go to the model. A run with failed tasks or an invalid result raises GradingIncomplete after
+    the upload; the segmentation is kept either way."""
+    if previous and not any(c["verdict"] == "待判定" for s in previous["steps"] for c in s["criteria"]):
+        previous = None  # it failed validation with everything graded: resuming would repeat it
+    with tempfile.TemporaryDirectory(prefix="sop_grading_") as tmp:
+        root = Path(tmp)
+        workdir = root / "run"
+        workdir.mkdir()
+        video = root / "source.mp4"
+        await asyncio.to_thread(gcs_service.download_to_filename, video_uri, str(video))
+        try:
+            outcome = await run_grading(video, segmentation, workdir, model_call, on_progress=on_progress,
+                                        previous=previous, resume=previous is not None)
+        finally:
+            try:
+                files = await asyncio.to_thread(_upload_artifacts, workdir, artifact_prefix(video_id, generation))
+            except Exception:
+                files = None
+        if files is None:
+            raise SkillRunError("failed to upload sop-video-grading artifacts to GCS")
+    exceptions = outcome.pop("task_exceptions")
+    if outcome["failed_tasks"] or outcome["validation_errors"]:
+        problems = [f"{f['task']}: {f['error']}" for f in outcome["failed_tasks"]] + outcome["validation_errors"]
+        raise GradingIncomplete("grading incomplete: " + "; ".join(problems)[:1000], outcome["result"], exceptions)
+    rubric = load_grading_module("rubric").load_rubric()
+    # The result carries criterion ids only; the frontend shows each criterion's rubric text next to it.
+    texts = {c["id"]: c["text"] for step in rubric["steps"] for c in step["criteria"]}
+    return {**outcome, "files": files, "model": settings.SOP_SKILL_GEMINI_MODEL, "criterion_texts": texts}

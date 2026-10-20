@@ -49,6 +49,8 @@ class EvaluationVideo(Base):
     gaze_status = Column(String, nullable=False, default="pending", server_default="pending")
     gaze_error = Column(String, nullable=True)
     sop_result = Column(JSON, nullable=True)
+    grading_result = Column(JSON, nullable=True)  # sop-video-grading outcome (sop_grading pipeline)
+    grading_partial = Column(JSON, nullable=True)  # graded criteria of a failed attempt, resumed next time
 
 
 class EvaluationAgentRun(Base):

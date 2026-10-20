@@ -483,3 +483,60 @@ input[type="file"] {
 .sop-step.not_performed td:first-child {
     border-left: 4px solid #95a5a6;
 }
+
+.grading-steps {
+    margin-bottom: 16px;
+}
+
+.grading-step {
+    border: 1px solid #e1e5e8;
+    border-left: 4px solid #95a5a6;
+    border-radius: 4px;
+    margin-bottom: 6px;
+    padding: 6px 10px;
+}
+
+.grading-step > summary {
+    cursor: pointer;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.grading-explanation {
+    margin: 8px 0;
+    color: #34495e;
+}
+
+.grade-badge,
+.review-badge {
+    border-radius: 3px;
+    color: #fff;
+    font-size: 13px;
+    padding: 1px 6px;
+    white-space: nowrap;
+    background-color: #95a5a6;
+}
+
+.review-badge {
+    background-color: #8e44ad;
+}
+
+.grading-step.grade-correct { border-left-color: #27ae60; }
+.grading-step.grade-partial { border-left-color: #e67e22; }
+.grading-step.grade-wrong { border-left-color: #c0392b; }
+.grade-correct .grade-badge { background-color: #27ae60; }
+.grade-partial .grade-badge { background-color: #e67e22; }
+.grade-wrong .grade-badge { background-color: #c0392b; }
+
+.grade-row.grade-correct td:first-child { border-left: 4px solid #27ae60; }
+.grade-row.grade-partial td:first-child { border-left: 4px solid #e67e22; }
+.grade-row.grade-wrong td:first-child { border-left: 4px solid #c0392b; }
+.grade-row.grade-undetermined td:first-child,
+.grade-row.grade-not-applicable td:first-child { border-left: 4px solid #95a5a6; }
+
+/* Criterion tables carry long explanations in columns 4-6, unlike the segmentation table. */
+.grading-step .sop-table td {
+    white-space: normal;
+}

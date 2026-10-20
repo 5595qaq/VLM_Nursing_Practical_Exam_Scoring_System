@@ -177,16 +177,17 @@ def test_retry_retired_job_returns_409(client, db_session):
     assert response.json()["detail"] == "Only failed evaluations can be retried"
 
 
-def test_create_sop_skill_evaluation(client, db_session):
+@pytest.mark.parametrize("pipeline", ["sop_skill", "sop_grading"])
+def test_create_sop_skill_evaluation(client, db_session, pipeline):
     response = client.post("/api/v1/evaluations/", json={
-        "exam_topic": "exam", "video_paths": [normalized_uri()], "pipeline": "sop_skill",
+        "exam_topic": "exam", "video_paths": [normalized_uri()], "pipeline": pipeline,
     })
     assert response.status_code == 200
     data = response.json()
-    assert data["pipeline"] == "sop_skill"
+    assert data["pipeline"] == pipeline
     assert data["selected_agents"] == []
     job = db_session.get(EvaluationJob, data["id"])
-    assert job.pipeline == "sop_skill" and job.selected_agents == []
+    assert job.pipeline == pipeline and job.selected_agents == []
     gaze = db_session.query(JobBranch).filter_by(job_id=data["id"], branch_name="GAZE_PROCESSING").one()
     assert gaze.status == "completed"
 
@@ -201,6 +202,7 @@ def test_default_pipeline_is_agents(client, db_session):
 
 @pytest.mark.parametrize("payload", [
     {"pipeline": "sop_skill", "selected_agents": ["Agent_A"]},
+    {"pipeline": "sop_grading", "selected_agents": ["Agent_B"]},
     {"pipeline": "time_cutting"},
 ])
 def test_reject_invalid_pipeline_requests(client, payload):
@@ -246,3 +248,43 @@ def test_download_sop_skill_file_not_found(client, db_session, monkeypatch, path
 def test_download_sop_skill_rejects_unknown_kind(client, db_session):
     sop_job(db_session, {})
     assert client.get("/api/v1/evaluations/sop-job-1/sop-skill/0/proxy").status_code == 422
+
+
+
+def grading_job(db_session, files):
+    job = EvaluationJob(id="grade-job-1", exam_topic="exam", status="finished", pipeline="sop_grading",
+                        selected_agents=[], result={"pipeline": "sop_grading", "items": [],
+                                                    "sop_skill": [{"video_uri": normalized_uri(), "files": {}}],
+                                                    "sop_grading": [{"video_uri": normalized_uri(), "files": files}]})
+    db_session.add(job)
+    db_session.commit()
+    return job
+
+
+def test_download_sop_grading_file(client, db_session, monkeypatch):
+    uri = "gs://test-bucket/sop_runs/v/g0/grading/grading.json"
+    grading_job(db_session, {"result": uri})
+    monkeypatch.setattr(gcs_service, "download_as_bytes", lambda value: b"json:" + value.encode())
+    response = client.get("/api/v1/evaluations/grade-job-1/sop-grading/0/result")
+    assert response.status_code == 200
+    assert response.content == b"json:" + uri.encode()
+    assert response.headers["content-type"] == "application/json"
+    assert 'filename="sop_grading_grade-jo_1_result.json"' in response.headers["content-disposition"]
+
+
+@pytest.mark.parametrize("path, files", [
+    ("grade-job-1/sop-grading/1/result", {"result": "gs://test-bucket/sop_runs/g.json"}),
+    ("grade-job-1/sop-grading/0/artifacts", {"result": "gs://test-bucket/sop_runs/g.json"}),
+    ("grade-job-1/sop-grading/0/result", {"result": "gs://test-bucket/videos/secret.mp4"}),
+    ("sop-job-1/sop-grading/0/result", {"result": "gs://test-bucket/sop_runs/g.json"}),
+])
+def test_download_sop_grading_file_not_found(client, db_session, monkeypatch, path, files):
+    grading_job(db_session, files)
+    sop_job(db_session, {"result": "gs://test-bucket/sop_runs/r.json"})  # segmentation only: no sop_grading
+    monkeypatch.setattr(gcs_service, "download_as_bytes", lambda _uri: pytest.fail("must not download"))
+    assert client.get(f"/api/v1/evaluations/{path}").status_code == 404
+
+
+def test_download_sop_grading_rejects_transcript(client, db_session):
+    grading_job(db_session, {})
+    assert client.get("/api/v1/evaluations/grade-job-1/sop-grading/0/transcript").status_code == 422

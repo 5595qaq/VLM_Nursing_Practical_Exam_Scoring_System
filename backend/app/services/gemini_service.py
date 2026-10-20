@@ -8,7 +8,8 @@ import asyncpg
 from pgqueuer import RetryRequested
 
 from app.config import settings
-from app.services import agents, evaluation_queue as repository, gcs_service, sop_skill_service, usage
+from app.services import (agents, evaluation_queue as repository, gcs_service, sop_grading_service,
+                          sop_skill_service, usage)
 from app.services.model_logging import context, emit
 
 logger = logging.getLogger("uvicorn.error.analysis_progress")
@@ -17,6 +18,9 @@ SEGMENT_PROGRESS_INTERVAL_SECONDS = 15
 
 def _is_transient_model_error(exc):
     """Recognize errors that are safe to retry as a fresh queue execution."""
+    if isinstance(exc, sop_grading_service.GradingIncomplete):
+        # Retry only when every failed grading task hit a quota/timeout error (not an invalid result).
+        return bool(exc.errors) and all(_is_transient_model_error(e) for e in exc.errors)
     code = getattr(exc, "code", None)
     status = getattr(exc, "status", None)
     return (
@@ -124,9 +128,35 @@ async def _run_sop_skill(pool, call, video_uri):
         return None
 
 
+async def _run_sop_grading(pool, call, video):
+    """Grade the stored segmentation, publishing one heartbeat per finished grading task."""
+    started = time.monotonic()
+    video_uri = video["uri"]
+
+    async def report(done, total, key):
+        message = f"SOP_grading task {done}/{total} | {key} | {int(time.monotonic() - started)}s | {video_uri}"
+        if not await repository.report_progress(pool, call, lambda _uri: message):
+            raise _ObsoleteCall()
+
+    try:
+        return await sop_grading_service.run_sop_grading(
+            video_uri, call.video_id, call.generation, video["sop_result"]["result"], report,
+            previous=video["grading_partial"],
+        )
+    except _ObsoleteCall:
+        return None
+    except sop_grading_service.GradingIncomplete as exc:
+        # Saved before the queue retries (429) or the job fails, so either retry resumes from here.
+        await repository.save_grading_partial(pool, call, exc.partial)
+        raise
+
+
+STAGES = {"sop_skill": "SOP_skill", "sop_grading": "SOP_grading"}
+
+
 async def process_model_call(job, pool):
     call = repository.ModelCall.model_validate_json(job.payload)
-    stage = "SOP_skill" if call.action == "sop_skill" else "Time_cuting"
+    stage = STAGES.get(call.action, "Time_cuting")
     token = context.set({"queue_job_id": job.id, "evaluation_id": call.evaluation_id,
                          "video_id": call.video_id, "agent": call.agent or stage,
                          "queue_attempt": job.attempts})
@@ -151,6 +181,12 @@ async def process_model_call(job, pool):
                 result = await _run_sop_skill(pool, call, video["uri"])
             else:
                 result = await _segment_with_progress(pool, call, video["uri"])
+            if result is None:
+                emit("model_stage_skipped")
+                return
+        elif call.action == "sop_grading":
+            # The video was verified before its segmentation; grading reuses it.
+            result = await _run_sop_grading(pool, call, video)
             if result is None:
                 emit("model_stage_skipped")
                 return
