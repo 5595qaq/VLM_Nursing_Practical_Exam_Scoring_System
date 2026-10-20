@@ -6,7 +6,8 @@ output): {"criteria": [{"criterion_id": "17a", "window": [148.0, 180.0]}, ...], 
 Checks actions.schema.json plus rules the schema cannot express: times near the task window,
 span limits, remaining budget, and for final: exactly the task's criteria, each passing the same
 per-criterion rules as validate_grading.py (reason for 無法判定, mm:ss in the explanation,
-frame/clip evidence).
+frame/clip evidence). For the flick (17a/27a): 錯誤 only after at least one burst in this task, and
+無法判定（無音軌） when the task's audio_peaks result says there is no usable audio (task["audio"]).
 
 A rejected action is NOT executed and does NOT consume budget.
 """
@@ -20,11 +21,13 @@ from validate_grading import check_criterion
 
 SCHEMA_PATH = Path(__file__).resolve().parent.parent / "actions.schema.json"
 
-BUDGET = {"overview": 3, "zoom": 3, "clip": 2}
+BUDGET = {"overview": 3, "zoom": 3, "burst": 3, "clip": 2}
 WINDOW_SLACK = 10.0  # seconds the agent may look outside the task window
 OVERVIEW_SPAN = (2.0, 60.0)
 CLIP_SPAN = (1.0, 60.0)
 ZOOM_MAX_AREA, ZOOM_MAX_SIDE = 0.50, 0.75
+BURST_SPAN = (0.3, 3.0)
+FLICK = {"17a", "27a"}  # need sound and the fingers seen together
 
 
 def validate(action, task: dict, used: dict, duration: float,
@@ -35,22 +38,22 @@ def validate(action, task: dict, used: dict, duration: float,
     name = action.get("action")
     branch = next((s for s in schema["oneOf"] if s["properties"]["action"]["const"] == name), None)
     if branch is None:
-        return [f"unknown action {name!r}; use overview, zoom, clip or final"]
+        return [f"unknown action {name!r}; use overview, zoom, burst, clip or final"]
     errors = [f"schema: {'/'.join(map(str, e.path)) or '(root)'}: {e.message}"
               for e in Draft202012Validator(branch).iter_errors(action)]
     if errors:
         return errors
 
     if name == "final":
-        return _check_final(action, task, rubric or load_rubric())
+        return _check_final(action, task, used, rubric or load_rubric())
 
     if used.get(name, 0) >= BUDGET[name]:
         errors.append(f"budget for {name} exhausted ({BUDGET[name]}); send final with what you have")
     lo = max(0.0, task["window"][0] - WINDOW_SLACK)
     hi = min(duration, task["window"][1] + WINDOW_SLACK)
-    if name in ("overview", "clip"):
+    if name in ("overview", "clip", "burst"):
         start, end = action["start"], action["end"]
-        low, high = OVERVIEW_SPAN if name == "overview" else CLIP_SPAN
+        low, high = {"overview": OVERVIEW_SPAN, "clip": CLIP_SPAN, "burst": BURST_SPAN}[name]
         if end <= start:
             errors.append(f"{name} end must be > start")
         elif not low <= end - start <= high:
@@ -58,21 +61,22 @@ def validate(action, task: dict, used: dict, duration: float,
         if start < lo or end > hi:
             errors.append(f"{name} [{start:g}, {end:g}] must stay within {lo:g}-{hi:g}s "
                           f"(task window ±{WINDOW_SLACK:g}s)")
-    else:
+    if name == "zoom":
         if any(not lo <= t <= hi for t in action["times"]):
             errors.append(f"zoom times must stay within {lo:g}-{hi:g}s (task window ±{WINDOW_SLACK:g}s)")
         if len(set(action["times"])) != len(action["times"]):
             errors.append("zoom times must be distinct")
+    if name in ("zoom", "burst"):
         x0, y0, x1, y1 = action["region"]
         if not (x0 < x1 and y0 < y1):
-            errors.append("zoom region needs x0<x1 and y0<y1")
+            errors.append(f"{name} region needs x0<x1 and y0<y1")
         elif (x1 - x0) * (y1 - y0) > ZOOM_MAX_AREA or max(x1 - x0, y1 - y0) > ZOOM_MAX_SIDE:
-            errors.append(f"zoom region too large (area <= {ZOOM_MAX_AREA}, each side <= {ZOOM_MAX_SIDE} "
+            errors.append(f"{name} region too large (area <= {ZOOM_MAX_AREA}, each side <= {ZOOM_MAX_SIDE} "
                           "of the context box)")
     return errors
 
 
-def _check_final(action: dict, task: dict, rubric: dict) -> list[str]:
+def _check_final(action: dict, task: dict, used: dict, rubric: dict) -> list[str]:
     errors = []
     windows = {c["criterion_id"]: c["window"] for c in task["criteria"]}
     got = [c["criterion_id"] for c in action["criteria"]]
@@ -83,4 +87,17 @@ def _check_final(action: dict, task: dict, rubric: dict) -> list[str]:
         cid = c["criterion_id"]
         full = {**c, "source": "vlm", "window": windows[cid]}
         errors += check_criterion(f"criterion {cid}", full, specs[cid], final=True)
+        if cid in FLICK:
+            errors += _check_flick(cid, c, task.get("audio"), used)
     return errors
+
+
+def _check_flick(cid: str, c: dict, audio: dict | None, used: dict) -> list[str]:
+    no_sound = audio is not None and (not audio["has_audio"] or audio["silent"])
+    if no_sound and (c["verdict"] != "無法判定" or c["reason"] != "無音軌"):
+        return [f"criterion {cid}: the video has no usable audio, so {cid} must be 無法判定 with reason 無音軌; "
+                "say in the explanation whether the fingers were seen flicking"]
+    if c["verdict"] == "錯誤" and used.get("burst", 0) == 0:
+        return [f"criterion {cid}: before marking 錯誤, use burst near the sound runs / motion peaks to check "
+                "whether the fingers flick (a 2 fps clip can miss a flick)"]
+    return []

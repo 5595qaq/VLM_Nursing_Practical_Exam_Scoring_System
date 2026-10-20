@@ -1,10 +1,10 @@
 {
-  "version": "1.1",
+  "version": "1.5",
   "description": "無菌抽藥技術－vial 粉劑 30 步評分標準。category：program＝由切分結果以程式判定；visual＝評分 agent 看畫面（audio=true 時連聲音一起聽）；not_visible＝影片看不到，固定輸出「無法判定」且不影響步驟判定。key=true 的標準錯誤時整步判「錯誤」。",
   "steps": [
     {"step_id": 1, "text": "洗手。", "criteria": [
-      {"id": "1a", "text": "洗手至少 15 秒", "category": "program", "key": true, "rule": {"type": "min_duration", "seconds": 15}},
-      {"id": "1b", "text": "內、外、夾、弓、大、立、腕七個動作都有做到", "category": "visual", "key": true, "window_steps": [1], "sample_interval": 0.5}
+      {"id": "1a", "text": "洗手至少 15 秒（從雙手開始互搓到雙手分開）", "category": "visual", "key": true, "window_steps": [1], "sample_interval": 0.5, "min_seconds": 15, "note": "使用者確認（2026-10-21）：由評分 agent 在 0.5 秒一格的片段上量開始互搓與雙手分開的時間（按壓洗手液不算），回傳 span，程式檢查是否滿 15 秒；不再用切分邊界計時（切分會把邊界貼到伸手拿洗手液等動作，多算 1–2 秒）"},
+      {"id": "1b", "text": "內、外、夾、弓、大、立、腕七個動作都有做到", "category": "visual", "key": false, "window_steps": [1], "sample_interval": 0.5, "note": "使用者確認（2026-10-21）：洗手滿 15 秒、只缺某個動作 → 整步部分正確；不足 15 秒一律錯誤（1a 是關鍵標準）"}
     ]},
     {"step_id": 2, "text": "看給藥紀錄單取出所需的藥物。(1讀)", "criteria": [
       {"id": "2a", "text": "目光注視給藥紀錄單累計至少 10 秒", "category": "visual", "key": false, "window_steps": [2]},
@@ -45,10 +45,10 @@
     ]},
     {"step_id": 13, "text": "右手將針頭斜面朝下插入稀釋液瓶中，左手其餘手指固定針筒。", "criteria": [
       {"id": "13a", "text": "右手將針頭插入稀釋液瓶，左手其餘手指固定針筒", "category": "visual", "key": true, "window_steps": [13]},
-      {"id": "13b", "text": "針頭斜面朝下", "category": "not_visible", "reason": "資訊不足", "note": "解析度不足，看不到針頭斜面方向"}
+      {"id": "13b", "text": "針頭斜面朝下（斜面看不清，以插針時針頭朝下判斷）", "category": "visual", "key": false, "window_steps": [13], "note": "使用者確認（2026-10-21）：插針那一刻針頭比針筒尾端低（由上往下或斜向下插入）算正確；針筒水平或針頭朝上算錯誤"}
     ]},
     {"step_id": 14, "text": "右手持針心尾端環狀處，勿碰觸針心，抽出稀釋液至所需量之刻度。", "criteria": [
-      {"id": "14a", "text": "右手持針心尾端環狀處，未碰觸針心", "category": "visual", "key": true, "window_steps": [14]},
+      {"id": "14a", "text": "右手持針心尾端環狀處，未碰觸外露的針心推桿（手指在外筒或翼緣上不算碰觸）", "category": "visual", "key": true, "window_steps": [14]},
       {"id": "14b", "text": "抽出稀釋液至所需量之刻度", "category": "not_visible", "reason": "資訊不足", "note": "看不清針筒刻度"}
     ]},
     {"step_id": 15, "text": "酒棉墊在針心和針頭交接處。", "criteria": [
@@ -63,7 +63,7 @@
     ]},
     {"step_id": 18, "text": "用持毛筆方式將稀釋液插入vial中心並打入稀釋液。", "criteria": [
       {"id": "18a", "text": "將稀釋液打入 vial", "category": "program", "key": true, "rule": {"type": "detected"}},
-      {"id": "18b", "text": "以持毛筆方式持針", "category": "visual", "key": false, "window_steps": [18]},
+      {"id": "18b", "text": "以持毛筆方式持針：拇指與食指、中指握住針筒外管，針筒垂直向下插入，手指不碰觸針頭、針座及活塞柄內側（只判插針那一刻，vial 可拿在手上）", "category": "visual", "key": false, "window_steps": [18]},
       {"id": "18c", "text": "針頭插入 vial 中心", "category": "visual", "key": false, "window_steps": [18]}
     ]},
     {"step_id": 19, "text": "抽出針頭，單手套上針頭套(或針座)。", "criteria": [
@@ -78,14 +78,14 @@
     ]},
     {"step_id": 22, "text": "用持毛筆方式將空針插入vial中心打入空氣。", "criteria": [
       {"id": "22a", "text": "將空氣打入 vial", "category": "program", "key": true, "rule": {"type": "detected"}},
-      {"id": "22b", "text": "以持毛筆方式持針", "category": "visual", "key": false, "window_steps": [22]},
+      {"id": "22b", "text": "以持毛筆方式持針：拇指與食指、中指握住針筒外管，針筒垂直向下插入，手指不碰觸針頭、針座及活塞柄內側（只判插針那一刻，vial 可拿在手上）", "category": "visual", "key": false, "window_steps": [22]},
       {"id": "22c", "text": "針頭插入 vial 中心", "category": "visual", "key": false, "window_steps": [22]}
     ]},
     {"step_id": 23, "text": "將Vial舉起，空針朝上，瓶口朝下。", "criteria": [
       {"id": "23a", "text": "將 vial 舉起倒置，空針朝上、瓶口朝下", "category": "program", "key": true, "rule": {"type": "detected"}}
     ]},
     {"step_id": 24, "text": "右手持針心尾端環狀處，勿碰觸針心，抽出藥液至所需藥量之刻度。", "criteria": [
-      {"id": "24a", "text": "右手持針心尾端環狀處，未碰觸針心", "category": "visual", "key": true, "window_steps": [24]},
+      {"id": "24a", "text": "右手持針心尾端環狀處，未碰觸外露的針心推桿（手指在外筒或翼緣上不算碰觸）", "category": "visual", "key": true, "window_steps": [24]},
       {"id": "24b", "text": "抽出藥液至所需藥量之刻度", "category": "not_visible", "reason": "資訊不足", "note": "看不清針筒刻度"}
     ]},
     {"step_id": 25, "text": "備用酒精棉片墊針柄。", "criteria": [

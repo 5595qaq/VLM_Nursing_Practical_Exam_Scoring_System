@@ -134,11 +134,13 @@ Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499，或 Claude 回傳 429／529（o
 
 | 類別 | 判定方式 | 例子 |
 | --- | --- | --- |
-| `program` | 由切分結果以程式判定 | 步驟有沒有做、洗手是否 ≥ 15 秒 |
-| `visual` | 評分 agent 看畫面（彈針連聲音一起聽） | 洗手七個動作（每 0.5 秒一格）、注視藥單 ≥ 10 秒、持毛筆姿勢、單手回套、彈針 |
-| `not_visible` | 影片看不到，固定輸出「無法判定」，不影響步驟判定 | 藥物是否正確、針頭斜面、刻度 |
+| `program` | 由切分結果以程式判定 | 步驟有沒有做 |
+| `visual` | 評分 agent 看畫面（彈針連聲音一起聽） | 洗手是否 ≥ 15 秒（評分 agent 量時間、程式檢查秒數）、洗手七個動作（每 0.5 秒一格）、注視藥單 ≥ 10 秒、持毛筆姿勢、單手回套、彈針 |
+| `not_visible` | 影片看不到，固定輸出「無法判定」，不影響步驟判定 | 藥物是否正確、刻度（針頭斜面改看針筒方向，見 13b） |
 
 步驟判定由程式從各條標準彙整：`key` 標準錯誤 → 錯誤；有標準判部分正確，或有錯誤也有正確 → 部分正確；有無法判定 → 無法判定；其餘 → 正確。
+
+學生重複做同一個動作、有對有錯時（例如插針 3 次），評分 agent 判部分正確，並把該標準標記 `needs_review` 與 `review_reason`；說明依時間逐次寫出每一次的動作。標記會帶到整步（`needs_review: true`，說明末尾加「需人工複核：…」），`eval_grading.py` 會另外列出這些步驟，交由人工複核。
 
 | 檔案 | 用途 |
 | --- | --- |
@@ -148,15 +150,19 @@ Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499，或 Claude 回傳 429／529（o
 | `scripts/rules.py` | 由切分結果判定 `program` 標準，並為 `visual` 標準算出要看的影片區間（先標為待判定） |
 | `scripts/validate_grading.py` | 驗證評分結果；`--final` 另外拒絕還在待判定的標準 |
 | `SKILL.md` | 評分 agent 的 system prompt（看畫面的標準怎麼判、說明怎麼寫） |
-| `actions.schema.json` | 評分 agent 的動作格式（`overview`、`zoom`、`clip`、`final`），由 `scripts/validate_grading_action.py` 檢查 |
+| `actions.schema.json` | 評分 agent 的動作格式（`overview`、`zoom`、`burst`、`clip`、`final`），由 `scripts/validate_grading_action.py` 檢查 |
 | `scripts/clip.py` | 從原檔剪出帶聲音的片段（裁到 context box），給彈針與洗手七個動作用 |
+| `scripts/motion_peaks.py` | 以每秒 15 格分析任務區間內 hands_box 的畫面變化，找出手有明顯動作的時間點（不呼叫模型） |
+| `scripts/audio_peaks.py` | 找出任務區間內短促的響聲與連續響聲（彈針聲），並判斷影片有沒有可用的聲音（不呼叫模型） |
+| `scripts/burst.py` | 在 0.3–3 秒內平均取 3–12 張原始解析度的局部畫面，看不到 1 秒的短動作 |
 | `scripts/eval_grading.py` | 與人工標註表比對：每步的人工／模型判定與說明、一致率、錯誤召回、誤報（另外列出有看畫面標準的步驟） |
 | `scripts/labels_to_segmentation.py` | 用人工標註表的開始／結束秒數組出切分結果，調整評分 agent 時可跳過切分 skill |
 | `CHANGELOG.md` | 各版本的修改紀錄 |
+| `EXPERIMENTS.md` | 調整評分 agent 的對照實驗、結論、已確認的標準定義與待辦 |
 
 步驟定義沿用 `sop-video-skill/references/sop_steps.md`。
 
-評分 agent（`backend/app/services/sop_grading_service.py`）把待判定的標準依 `window_steps` 分組（例如 15b 與 17a 共用步驟 15–17 的區間），每組跑一段短對話：外部程式先附上區間的 3×3 影格，需要聲音或每 0.5 秒一格時改附 2 fps 的帶聲音片段；模型可再要求 `overview`／`zoom`／`clip`（每組各 3／3／2 次），最後以 `final` 判定該組的每一條標準。片段帶聲音只有 Gemini 支援，所以評分一律使用 Gemini（`SOP_SKILL_GEMINI_MODEL`）。
+評分 agent（`backend/app/services/sop_grading_service.py`）把待判定的標準依 `window_steps` 分組（例如 15b 與 17a 共用步驟 15–17 的區間），每組跑一段短對話：外部程式先附上區間的 3×3 影格，需要聲音或每 0.5 秒一格時改附 2 fps 的帶聲音片段；任務說明會列出程式算出的動作峰值，告訴模型短動作可能在哪裡；模型可再要求 `overview`／`zoom`／`burst`／`clip`（每組各 3／3／3／2 次），最後以 `final` 判定該組的每一條標準。開場影格每 2–4 秒才一張，不到 1 秒的短動作（彈針、墊棉片、碰觸的瞬間）可能落在兩格之間，所以 SKILL.md 要求在峰值附近用 `burst` 確認；持續的持握姿勢（持毛筆、夾瓶、持針心尾端、單手回套）則在手穩定持握的時間點用 overview 或 zoom 看，判錯誤前要在兩個以上時間點都看到同樣的問題（依據見 `sop-video-grading/EXPERIMENTS.md`）。片段帶聲音只有 Gemini 支援，所以評分一律使用 Gemini（`SOP_SKILL_GEMINI_MODEL`）。
 
 在本機逐支測試（轉檔 → 切分 → 評分；需要 Vertex AI 憑證，會計費）：
 
@@ -510,6 +516,7 @@ my-awesome-project/
 ├── sop-video-grading/
 │   ├── SKILL.md
 │   ├── CHANGELOG.md
+│   ├── EXPERIMENTS.md
 │   ├── rubric.json
 │   ├── schema.json
 │   ├── actions.schema.json

@@ -7,7 +7,9 @@ program supplies an opening overview sheet or an audio clip, the model may ask f
 overview / zoom / clip material, and ends with a final action grading exactly the task's criteria.
 
 Clips carry audio (flicking the syringe is judged by ear), which only Gemini accepts, so this
-loop always uses gemini_call regardless of SOP_SKILL_PROVIDER.
+loop always uses gemini_call regardless of SOP_SKILL_PROVIDER. Tasks with an audio criterion also
+get the window's short sharp sounds (audio_peaks.py) listed next to the motion peaks; a video with no
+usable audio is announced so the agent does not mark the flick wrong for silence.
 """
 import asyncio
 import importlib
@@ -29,6 +31,8 @@ MAX_TASK_TURNS = 8
 MAX_CONSECUTIVE_REJECTS = 4
 MAX_TASK_BYTES = 18_000_000  # inline images + clips per request
 CLIP_FPS = 2.0  # 0.5 s per frame: enough for the seven washing motions
+MOTION_TOP = 8  # motion peaks listed per task
+MOTION_MAX_SPAN = 180.0
 OPENING_CLIP_MAX_SECONDS = 60.0
 
 
@@ -81,6 +85,7 @@ def build_tasks(result: dict, rubric: dict, steps: set[int] | None = None) -> li
             group["criteria"].append({"criterion_id": c["criterion_id"], "step_id": spec["step_id"],
                                       "text": spec["text"], "window": c["window"],
                                       "audio": spec.get("audio", False),
+                                      "min_seconds": spec.get("min_seconds"),
                                       "dense": spec.get("sample_interval") is not None})
     tasks = list(groups.values())
     for task in tasks:
@@ -114,15 +119,44 @@ class GradingRunner(ScriptRunner):
                 return
         self.prepare()
 
-    def clip(self, start: float, end: float, box) -> tuple[Material, dict]:
-        out = self._next(f"clip_{start:g}-{end:g}.mp4")
-        cmd = [sys.executable, str(grading_dir() / "scripts" / "clip.py"), str(self.video),
-               "--start", f"{start}", "--end", f"{end}", "--box", ",".join(map(str, box)), "--out", str(out)]
+    def _grading_script(self, script: str, *args) -> str:
+        cmd = [sys.executable, str(grading_dir() / "scripts" / script), str(self.video), *map(str, args)]
         done = subprocess.run(cmd, cwd=self.workdir, capture_output=True, text=True,
                               encoding="utf-8", errors="replace")
         if done.returncode != 0:
-            raise SkillRunError(f"clip.py failed ({done.returncode}): {done.stderr.strip()[-800:]}")
-        info = json.loads(done.stdout)
+            raise SkillRunError(f"{script} failed ({done.returncode}): {done.stderr.strip()[-800:]}")
+        return done.stdout
+
+    def motion_peaks(self, start: float, end: float, box) -> list[dict]:
+        """Short bursts of hand movement in the window, so the agent knows where to zoom/burst."""
+        if end - start > MOTION_MAX_SPAN:
+            end = start + MOTION_MAX_SPAN
+        out = self._grading_script("motion_peaks.py", "--start", start, "--end", end,
+                                   "--box", ",".join(map(str, box)), "--top", MOTION_TOP)
+        return json.loads(out.strip().splitlines()[-1])["peaks"]
+
+    def audio_peaks(self, start: float, end: float) -> dict:
+        """Short sharp sounds (flick clicks) in the window, so the agent knows where to burst."""
+        if end - start > MOTION_MAX_SPAN:
+            end = start + MOTION_MAX_SPAN
+        return json.loads(self._grading_script("audio_peaks.py", "--start", start, "--end", end)
+                          .strip().splitlines()[-1])
+
+    def burst(self, start: float, end: float, n: int, region, context_box) -> Material:
+        out = self._next(f"burst_{start:g}-{end:g}.jpg")
+        info = json.loads(self._grading_script(
+            "burst.py", "--start", start, "--end", end, "--n", n, "--box", ",".join(map(str, region)),
+            "--rel-to-crop", ",".join(map(str, context_box)), "--out", out).strip().splitlines()[-1])
+        times = info["times"]
+        step = (times[-1] - times[0]) / (len(times) - 1)
+        cells = "、".join(f"#{i}={_fmt_t(x)}" for i, x in enumerate(times))
+        return Material(out, f"burst@{start:g}-{end:g}（原始解析度，{len(times)} 格，每 {step:.2f} s）{cells} "
+                             f"region={_fmt_box(region)}")
+
+    def clip(self, start: float, end: float, box) -> tuple[Material, dict]:
+        out = self._next(f"clip_{start:g}-{end:g}.mp4")
+        info = json.loads(self._grading_script("clip.py", "--start", start, "--end", end,
+                                               "--box", ",".join(map(str, box)), "--out", out))
         self.has_audio = info["has_audio"]
         sound = "有聲音" if info["has_audio"] else "無音軌（原始影片沒有錄音）"
         label = (f"clip@{info['start']:g}-{info['end']:g}（context box，{sound}；"
@@ -132,7 +166,7 @@ class GradingRunner(ScriptRunner):
 
 @dataclass
 class TaskState:
-    used: dict = field(default_factory=lambda: {"overview": 0, "zoom": 0, "clip": 0})
+    used: dict = field(default_factory=lambda: {"overview": 0, "zoom": 0, "burst": 0, "clip": 0})
     log: list[str] = field(default_factory=list)
     input_tokens: int = 0
     output_tokens: int = 0
@@ -148,6 +182,25 @@ def _segment_lines(task: dict, segmentation: dict) -> list[str]:
     return lines
 
 
+def _audio_line(task: dict) -> list[str]:
+    if not any(c["audio"] for c in task["criteria"]):
+        return []
+    audio = task.get("audio")
+    if audio is None:
+        return ["聲音峰值：（程式沒有算出來，請自己聽 clip）"]
+    if not audio["has_audio"]:
+        return ["聲音：影片沒有音軌（拍攝設備沒錄到聲音，不代表學生沒做）。17a／27a 只能判無法判定（無音軌），"
+                "explanation 寫出畫面上有沒有看到手指彈針筒。"]
+    if audio["silent"]:
+        return [f"聲音：音軌幾乎沒有聲音（最大 {audio['max_db']:g} dB），視同沒有錄到聲音（不代表學生沒做）。"
+                "17a／27a 只能判無法判定（無音軌），explanation 寫出畫面上有沒有看到手指彈針筒。"]
+    peaks = "、".join(_fmt_t(p["t"]) for p in audio["peaks"]) or "（無）"
+    runs = "、".join(f"{_fmt_t(r['start'])}–{_fmt_t(r['end'])}（{r['n']} 聲）" for r in audio["runs"]) or "（無）"
+    return [f"聲音峰值（程式在高頻段找出的短促響聲，比背景 {audio['floor_db']:g} dB 高 6 dB 以上；放下器材也會有響聲，"
+            f"仍要看到手指彈針筒）：{peaks}",
+            f"連續響聲（彈針通常是連續好幾聲）：{runs}；請在這些時間附近用 burst 確認手指有沒有彈針筒。"]
+
+
 def build_task_content(task: dict, video_id: str, duration: float, state: TaskState,
                        materials: list[Material], feedback: str, segmentation: dict) -> list[dict]:
     limits = load_grading_module("validate_grading_action").BUDGET
@@ -159,9 +212,15 @@ def build_task_content(task: dict, video_id: str, duration: float, state: TaskSt
         "要判定的標準（final 必須剛好包含這幾條）：",
         *(f"  {c['criterion_id']}（步驟 {c['step_id']}）：{c['text']}；window={c['window']}"
           + ("；要聽聲音" if c["audio"] else "") + ("；要每 0.5 秒一格" if c["dense"] else "")
+          + (f"；要計時：final 填 span=[開始, 結束]（影片秒數），滿 {c['min_seconds']:g} 秒才是正確"
+             if c.get("min_seconds") else "")
           for c in task["criteria"]),
         "切分結果（相關步驟）：",
         *_segment_lines(task, segmentation),
+        "動作峰值（程式依 hands_box 內的畫面變化算出，只表示這些時間手有明顯動作，不代表是哪個動作；"
+        "短動作請用 burst 或相鄰時間點的 zoom 在峰值附近確認）："
+        + ("、".join(f"{_fmt_t(p['t'])}" for p in task.get("peaks", [])) or "（無）"),
+        *_audio_line(task),
         f"剩餘預算：{budget}",
         "已執行動作：" + ("；".join(state.log) if state.log else "（無）"),
         "",
@@ -188,6 +247,15 @@ def _trim(materials: list[Material]) -> list[Material]:
 
 async def _opening(task: dict, runner: GradingRunner, boxes: dict) -> tuple[list[Material], str]:
     start, end = task["window"]
+    try:
+        task["peaks"] = await asyncio.to_thread(runner.motion_peaks, start, end, boxes["hands"])
+    except SkillRunError:
+        task["peaks"] = []  # hints only; grading goes on without them
+    if any(c["audio"] for c in task["criteria"]):
+        try:
+            task["audio"] = await asyncio.to_thread(runner.audio_peaks, start, end)
+        except SkillRunError:
+            task["audio"] = None  # the agent still hears the clip
     if task["needs_clip"] and end - start <= OPENING_CLIP_MAX_SECONDS:
         material, _ = await asyncio.to_thread(runner.clip, start, end, boxes["context"])
         return [material], "開場：M1 是整個任務區間的帶聲音片段（2 fps）。足夠判斷就直接送 final。"
@@ -259,6 +327,13 @@ async def run_task(task: dict, video_id: str, runner: GradingRunner, boxes: dict
             materials += [Material(i.path, i.label) for i in images]
             state.log.append(f"zoom times={action['times']} region={_fmt_box(action['region'])}")
             feedback = "zoom 已完成（引用格式 zoom@秒數）。"
+        elif name == "burst":
+            n = action.get("n", 9)
+            material = await asyncio.to_thread(runner.burst, action["start"], action["end"], n,
+                                               action["region"], boxes["context"])
+            materials.append(material)
+            state.log.append(f"burst {action['start']:g}-{action['end']:g} n={n} region={_fmt_box(action['region'])}")
+            feedback = f"burst 已完成（引用格式 burst@{action['start']:g}-{action['end']:g} #k）。"
         else:
             material, info = await asyncio.to_thread(runner.clip, action["start"], action["end"], boxes["context"])
             material.fps = action.get("fps", CLIP_FPS)

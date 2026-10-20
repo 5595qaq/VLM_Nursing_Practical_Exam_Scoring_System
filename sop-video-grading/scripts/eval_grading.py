@@ -61,7 +61,8 @@ def compare(grading: dict, labels: dict[int, dict]) -> list[dict]:
         rows.append({"step_id": step["step_id"], "kind": "V" if step["step_id"] in visual else "P",
                      "human": human["verdict"], "human_why": human["why"],
                      "model": step["verdict"], "model_why": step["explanation"],
-                     "match": human["verdict"] == step["verdict"]})
+                     "match": human["verdict"] == step["verdict"],
+                     "review": bool(step.get("needs_review"))})
     return rows
 
 
@@ -74,6 +75,7 @@ def summarize(rows: list[dict]) -> dict:
         "error_recall": f"{sum(r['model'] in FAULTS for r in faults)}/{len(faults)}",
         "false_alarms": f"{sum(r['model'] in FAULTS for r in correct)}/{len(correct)}",
         "confusion": dict(Counter(f"{r['human']}→{r['model']}" for r in rows if not r["match"])),
+        "needs_review": [r["step_id"] for r in rows if r.get("review")],
     }
 
 
@@ -83,8 +85,11 @@ def _short(text: str, limit: int = 140) -> str:
 
 
 def _line(s: dict) -> str:
-    return (f"一致 {s['agreement']}/{s['compared']}；錯誤召回 {s['error_recall']}；誤報 {s['false_alarms']}；"
+    line = (f"一致 {s['agreement']}/{s['compared']}；錯誤召回 {s['error_recall']}；誤報 {s['false_alarms']}；"
             f"不一致：{s['confusion'] or '無'}")
+    if s["needs_review"]:
+        line += f"；需人工複核 {len(s['needs_review'])} 步"
+    return line
 
 
 def _totals(rows: list[dict]) -> str:
@@ -96,7 +101,8 @@ def render(video_id: str, rows: list[dict]) -> str:
     out = [f"## {video_id}", "", "| 步驟 | 類型 | 人工 | 模型 | 一致 | 人工說明 | 模型說明 |",
            "|---|---|---|---|---|---|---|"]
     for r in rows:
-        out.append(f"| {r['step_id']} | {r['kind']} | {r['human']} | {r['model']} | {'✓' if r['match'] else '✗'} | "
+        model = r["model"] + ("（需人工複核）" if r.get("review") else "")
+        out.append(f"| {r['step_id']} | {r['kind']} | {r['human']} | {model} | {'✓' if r['match'] else '✗'} | "
                    f"{_short(r['human_why'], 60)} | {_short(r['model_why'])} |")
     out += ["", _totals(rows), ""]
     return "\n".join(out)

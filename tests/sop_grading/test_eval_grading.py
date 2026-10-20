@@ -3,8 +3,8 @@
 import csv
 import json
 
-from eval_grading import compare, load_labels, main, summarize
-from grading_helpers import fill_visual, make_segmentation
+from eval_grading import compare, load_labels, main, render, summarize
+from grading_helpers import fill_visual, flag_review, make_segmentation
 from rules import grade_from_segmentation
 
 HEADER = ["影片相對路徑", "步驟編號", "SOP步驟（原文）", "判定", "問題說明／觀察證據", "問題類型", "開始秒數",
@@ -47,6 +47,14 @@ def test_compare_and_summary():
     s = summarize(rows)
     assert s["agreement"] == 1 and s["error_recall"] == "0/2" and s["false_alarms"] == "0/1"
     assert s["confusion"] == {"錯誤→正確": 1, "部分正確→正確": 1}
+
+
+def test_review_flag_is_reported():
+    grading = flag_review(fill_visual(grade_from_segmentation(make_segmentation())), "18b")
+    rows = compare(grading, {18: {"verdict": "正確", "why": ""}, 19: {"verdict": "正確", "why": ""}})
+    assert summarize(rows)["needs_review"] == [18]
+    text = render("VID_0001", rows)
+    assert "| 18 | V | 正確 | 部分正確（需人工複核） | ✗ |" in text and "需人工複核 1 步" in text
 
 
 def test_cli_prints_report(tmp_path, capsys):

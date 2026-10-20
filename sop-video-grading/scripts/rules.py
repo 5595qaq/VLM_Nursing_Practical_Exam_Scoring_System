@@ -46,9 +46,13 @@ def build_step(step: dict, criteria: list[dict]) -> dict:
     scored = [c for c, r in zip(criteria, step["criteria"]) if r["category"] != "not_visible"]
     explanation = "；".join(
         f"{c['criterion_id']}「{texts[c['criterion_id']]}」{c['verdict']}：{c['explanation'].rstrip('。')}"
+        + (f"（需人工複核：{c['review_reason'].rstrip('。')}）" if c.get("needs_review") else "")
         for c in criteria) + "。"
-    return {"step_id": step["step_id"], "verdict": verdict, "explanation": explanation,
-            "confidence": min(c["confidence"] for c in scored), "criteria": criteria}
+    out = {"step_id": step["step_id"], "verdict": verdict, "explanation": explanation,
+           "confidence": min(c["confidence"] for c in scored), "criteria": criteria}
+    if any(c.get("needs_review") for c in criteria):
+        out["needs_review"] = True
+    return out
 
 
 def _status(entries: list[dict]) -> str:
@@ -100,15 +104,6 @@ def _grade(c: dict, sid: int, entries: dict[int, list[dict]], duration: float, m
                               evidence=seg_ref, reason="切分未定位")
         found = _detected(own)
         conf = max(e["confidence"] for e in found)
-        rule = c["rule"]
-        if rule["type"] == "min_duration":
-            total = sum(e["end"] - e["start"] for e in found)
-            ok = total >= rule["seconds"]
-            return _criterion(
-                c, CORRECT if ok else WRONG,
-                f"步驟 {sid} 於 {_spans_text(found)}，共 {total:.1f} 秒，"
-                f"{'達到' if ok else '不足'} {rule['seconds']} 秒（{_seg_evidence(found)}）。",
-                evidence=seg_ref, confidence=conf)
         return _criterion(c, CORRECT, f"切分結果：步驟 {sid} 於 {_spans_text(found)}（{_seg_evidence(found)}）。",
                           evidence=seg_ref, confidence=conf)
 

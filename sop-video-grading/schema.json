@@ -21,7 +21,7 @@
     },
     "reason": {
       "anyOf": [
-        {"enum": ["藥單看不見", "畫面被遮擋", "資訊不足", "影片已結束", "動作時間少於0.5秒", "無音軌", "切分未定位"]},
+        {"enum": ["藥單看不見", "畫面被遮擋", "資訊不足", "影片已結束", "動作時間少於0.5秒", "無音軌", "只有聲音或動作", "切分未定位"]},
         {"type": "null"}
       ],
       "description": "無法判定的原因；其他判定一律為 null"
@@ -35,7 +35,8 @@
         "verdict": {"$ref": "#/$defs/verdict"},
         "explanation": {"type": "string", "minLength": 8, "description": "由各標準的說明組成，說明判定理由"},
         "confidence": {"type": "number", "minimum": 0, "maximum": 1},
-        "criteria": {"type": "array", "items": {"$ref": "#/$defs/criterion"}}
+        "criteria": {"type": "array", "items": {"$ref": "#/$defs/criterion"}},
+        "needs_review": {"type": "boolean", "description": "有任何標準標記需人工複核時為 true（沒有時省略）"}
       }
     },
     "criterion": {
@@ -50,17 +51,21 @@
         "evidence": {
           "type": "array",
           "items": {"type": "string", "minLength": 1},
-          "description": "影格或片段引用：global #k、ov@a-b #k、zoom@t、clip@a-b、seg:step N"
+          "description": "影格或片段引用：global #k、ov@a-b #k、zoom@t、burst@a-b #k、clip@a-b、seg:step N"
         },
         "confidence": {"type": "number", "minimum": 0, "maximum": 1},
         "reason": {"$ref": "#/$defs/reason"},
+        "span": {"type": "array", "items": {"type": "number", "minimum": 0}, "minItems": 2, "maxItems": 2,
+                 "description": "有 min_seconds 的標準（1a 洗手）：評分 agent 量到的動作開始與結束（影片秒數），程式據此檢查是否滿秒數"},
         "window": {
           "anyOf": [
             {"type": "array", "items": {"type": "number", "minimum": 0}, "minItems": 2, "maxItems": 2},
             {"type": "null"}
           ],
           "description": "visual 標準要看的影片區間（秒），由切分結果推得；其他為 null"
-        }
+        },
+        "needs_review": {"type": "boolean", "description": "評分 agent 認為需要人工複核（例如同一動作做了多次、有對有錯）；只用在 vlm 標準，沒有時省略"},
+        "review_reason": {"type": "string", "minLength": 4, "description": "需人工複核的原因，needs_review 為 true 時必填"}
       }
     }
   }

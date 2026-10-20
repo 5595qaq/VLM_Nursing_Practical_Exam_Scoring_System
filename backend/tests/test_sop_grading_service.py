@@ -52,9 +52,12 @@ def segmentation():
 def final_for(content, verdict="正確"):
     text = content[0]["text"]
     ref = re.search(r"(clip@[\d.]+-[\d.]+|ov@[\d.]+-[\d.]+)", "\n".join(b.get("text", "") for b in content)).group(1)
-    return {"action": "final", "criteria": [
-        {"criterion_id": cid, "verdict": verdict, "confidence": 0.7, "reason": None, "evidence": [ref],
-         "explanation": "00:05–00:08 看到動作完成，符合標準。"} for cid in CRITERION.findall(text)]}
+    criteria = [{"criterion_id": cid, "verdict": verdict, "confidence": 0.7, "reason": None, "evidence": [ref],
+                 "explanation": "00:05–00:08 看到動作完成，符合標準。"} for cid in CRITERION.findall(text)]
+    for c in criteria:  # timed criterion (1a washing): a measured span that matches the verdict
+        if c["criterion_id"] == "1a":
+            c["span"] = [0.0, 16.0] if verdict == "正確" else [0.0, 10.0]
+    return {"action": "final", "criteria": criteria}
 
 
 class FakeModel:
@@ -72,6 +75,10 @@ class FakeModel:
         return ModelReply(json.dumps(action, ensure_ascii=False), "end_turn", 100, 10)
 
 
+def peaks_line(content):
+    return next(line for line in content[0]["text"].splitlines() if line.startswith("動作峰值"))
+
+
 def requests_for(model, cid):
     return [c for c in model.requests if cid in CRITERION.findall(c[0]["text"])]
 
@@ -85,6 +92,18 @@ async def test_grading_grades_every_visual_criterion(video, tmp_path):
     assert "15-16-17" in outcome["tasks"] and "25-26-27" in outcome["tasks"]
     assert outcome["usage"]["input_tokens"] == 100 * len(model.requests)
     assert (tmp_path / "grading.json").exists() and (tmp_path / "transcript_task_15-16-17.json").exists()
+
+
+async def test_washing_task_asks_for_a_timed_span(video, tmp_path):
+    no_span = {"action": "final", "criteria": [
+        {"criterion_id": cid, "verdict": "正確", "confidence": 0.7, "reason": None, "evidence": ["clip@0-18"],
+         "explanation": "00:01–00:16 看到雙手互搓。"} for cid in ("1a", "1b")]}
+    model = FakeModel({"1a": [no_span]})
+    outcome = await grading.run_grading(video, segmentation(), tmp_path, model, steps={1})
+    first, retry = requests_for(model, "1a")
+    assert "要計時：final 填 span" in first[0]["text"] and "needs span" in retry[0]["text"]
+    wash = next(c for s in outcome["result"]["steps"] for c in s["criteria"] if c["criterion_id"] == "1a")
+    assert wash["verdict"] == "正確" and wash["span"] == [0.0, 16.0] and outcome["failed_tasks"] == []
 
 
 async def test_audio_and_washing_tasks_open_with_a_clip(video, tmp_path):
@@ -119,6 +138,27 @@ async def test_extra_material_actions_run(video, tmp_path):
     assert [b["fps"] for b in last if b["type"] == "video"] == [3]
 
 
+async def test_motion_peaks_are_listed_and_burst_runs(video, tmp_path):
+    model = FakeModel({"12a": [
+        {"action": "burst", "start": 21.0, "end": 22.5, "n": 6, "region": [0.2, 0.2, 0.6, 0.6], "reason": "看夾瓶瞬間"},
+    ]})
+    outcome = await grading.run_grading(video, segmentation(), tmp_path, model, steps={12})
+    first, last = requests_for(model, "12a")
+    assert not peaks_line(first).endswith("（無）")  # testsrc moves every frame
+    assert "burst@21-22.5（原始解析度，6 格，每 0.30 s）" in last[0]["text"]
+    assert "burst 剩 2/3" in last[0]["text"]
+    assert outcome["failed_tasks"] == [] and list(tmp_path.glob("*burst_21-22.5.jpg"))
+
+
+async def test_motion_peak_failure_does_not_stop_grading(video, tmp_path, monkeypatch):
+    def broken(self, *args):
+        raise grading.SkillRunError("motion_peaks.py failed")
+    monkeypatch.setattr(grading.GradingRunner, "motion_peaks", broken)
+    model = FakeModel()
+    outcome = await grading.run_grading(video, segmentation(), tmp_path, model, steps={12})
+    assert outcome["failed_tasks"] == [] and peaks_line(model.requests[0]).endswith("（無）")
+
+
 async def test_steps_filter_keeps_previous_grades(video, tmp_path):
     first = await grading.run_grading(video, segmentation(), tmp_path / "a", FakeModel())
     model = FakeModel({"19b": [final_for([{"type": "text", "text": "  19b（步驟 19）\nov@1-2"}], "錯誤")]})
@@ -127,6 +167,47 @@ async def test_steps_filter_keeps_previous_grades(video, tmp_path):
     steps = {s["step_id"]: s for s in second["result"]["steps"]}
     assert second["tasks"] == ["19"] and steps[19]["verdict"] == "部分正確"
     assert steps[12]["verdict"] == "正確" and second["validation_errors"] == []
+
+
+async def test_review_flag_reaches_the_result(video, tmp_path):
+    flagged = final_for([{"type": "text", "text": "  19b（步驟 19）\nov@1-2"}], "部分正確")
+    flagged["criteria"][0].update(needs_review=True, review_reason="學生回套兩次，有一次用雙手")
+    outcome = await grading.run_grading(video, segmentation(), tmp_path, FakeModel({"19b": [flagged]}), steps={19})
+    step = next(s for s in outcome["result"]["steps"] if s["step_id"] == 19)
+    assert step["needs_review"] is True and "需人工複核：學生回套兩次" in step["explanation"]
+    assert not [e for e in outcome["validation_errors"] if "(step 19)" in e]  # other steps stay 待判定
+
+
+async def test_flick_task_lists_audio_peaks(video, tmp_path):
+    model = FakeModel()
+    await grading.run_grading(video, segmentation(), tmp_path, model, steps={17})
+    text = requests_for(model, "17a")[0][0]["text"]
+    assert "聲音峰值" in text and "連續響聲" in text
+
+
+async def test_video_without_sound_cannot_fail_the_flick(tmp_path):
+    mute = tmp_path / "mute.mp4"
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", f"testsrc=size=640x360:rate=5:duration={DURATION:g}",
+                    "-c:v", "libx264", "-pix_fmt", "yuv420p", str(mute)], check=True)
+
+    class Mute(FakeModel):
+        async def __call__(self, system, content):
+            self.requests.append(content)
+            action = final_for(content)
+            if "被退回" in content[0]["text"]:  # second try: follow the error
+                for c in action["criteria"]:
+                    if c["criterion_id"] == "17a":
+                        c.update(verdict="無法判定", reason="無音軌",
+                                 explanation="影片沒有聲音；00:05–00:08 畫面上沒有看到手指彈針筒。")
+            return ModelReply(json.dumps(action, ensure_ascii=False), "end_turn", 100, 10)
+
+    model = Mute()
+    outcome = await grading.run_grading(mute, segmentation(), tmp_path / "w", model, steps={17})
+    first, retry = requests_for(model, "17a")
+    assert "影片沒有音軌" in first[0]["text"] and "no usable audio" in retry[0]["text"]
+    assert outcome["failed_tasks"] == []
+    flick = next(c for s in outcome["result"]["steps"] for c in s["criteria"] if c["criterion_id"] == "17a")
+    assert flick["verdict"] == "無法判定" and flick["reason"] == "無音軌"
 
 
 async def test_task_failure_is_reported_not_raised(video, tmp_path):
