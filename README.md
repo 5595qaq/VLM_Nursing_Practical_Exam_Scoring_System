@@ -201,7 +201,8 @@ Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499，或 Claude 回傳 429／529（o
 在本機逐支測試（轉檔 → 切分 → 評分；需要 Vertex AI 憑證，會計費）：
 
 ```bash
-docker compose run --rm -e SOP_RUN_BY=你的名字 -e GIT_COMMIT=$(git rev-parse HEAD) \
+docker compose run --rm --build -e SOP_RUN_BY=你的名字 \
+  -e GIT_COMMIT=$(git rev-parse HEAD)$(git diff --quiet HEAD -- || echo -dirty) \
   -v /path/to/videos:/data:ro -v /path/to/work:/work worker \
   python -m app.sop_grading_cli /data/影片.mp4 --video-id VID_0083 --out /work/VID_0083
 # 加 --labels 時改用標註表的時間當切分結果，不跑 sop-video-skill（較快、較省）
@@ -212,16 +213,17 @@ python sop-video-grading/scripts/eval_grading.py --labels 標註表.csv sop-vide
 python sop-video-grading/scripts/run_record.py   # 列出所有評分紀錄（影片、版本、評過的步驟、誰、哪天）
 ```
 
-PowerShell 用 `-e GIT_COMMIT=$(git rev-parse HEAD)` 同樣可行；也可以改用 `--by`、`--commit` 參數。
+PowerShell 的 commit 寫法：`-e GIT_COMMIT=$(git rev-parse HEAD)$(if (git status --porcelain --untracked-files=no) { '-dirty' })`；也可以改用 `--by`、`--commit` 參數。`--build` 讓容器跑的是目前的後端程式（映像檔不會自動更新，舊映像檔會和紀錄的 commit 不符）。
 
-`--out` 目錄會留下轉檔後的 `source.mp4`、`segmentation.json`、`grading.json` 與每組的對話紀錄；已有 `segmentation.json` 時不會重新切分。
+`--out` 目錄會留下轉檔後的 `source.mp4`、`segmentation.json`、`grading.json` 與每組的對話紀錄；已有 `segmentation.json` 時不會重新切分（寫評分紀錄時例外，見下方）。
 
-**評分紀錄（`sop-video-grading/runs/`，要 commit）**：影片ID 是標記表的 `VID_xxxx` 時，每次執行都會記錄到 `runs/<影片ID>/rubric<版本>_skill<SKILL.md 版本>_<模型>/`，讓多人共用、避免重複付費：
+**評分紀錄（`sop-video-grading/runs/`，要 commit）**：影片ID 是標記表的 `VID_xxxx` 時，每次執行都會記錄到 `runs/<影片ID>/rubric<版本>_skill<SKILL.md 版本>_<模型>_seg-<切分來源>/`，讓多人共用、避免重複付費。切分來源是 `skill<sop-video-skill 版本>`，或用 `--labels` 時的 `labels-<標記表時間的雜湊>`（標記表時間一改就是新的紀錄）：
 
-- `record.json`：版本、原始影片的 SHA-256，以及每次執行的執行者、日期、commit、評過的步驟（失敗任務的步驟不算）、`failed_tasks`、切分來源與 token 用量。
-- `segmentation.json`、`grading.json`：最新一次的切分與評分結果。
-- `run1/`、`run2/`…：該次的評分對話（`grading/transcript_task_*.json`、`probe.json`）；該次有跑切分時另含 `seg/transcript.json`、`motion.json`、`probe.json`。
+- `record.json`：版本、原始影片的 SHA-256，以及每次執行的執行者、日期、commit、該次影片的 SHA-256、評過的步驟（失敗任務的步驟不算）、`failed_tasks`、切分來源與 token 用量。
+- `segmentation.json`：這份紀錄固定使用的切分（第一次執行決定）；`grading.json`：最新的評分結果，之後的 `--steps` 都以它為基底。
+- `run1/`、`run2/`…：該次寫出的評分對話（`grading/transcript_task_*.json`、`probe.json`，只收這次執行寫出的檔案）；該次有跑切分時另含 `seg/transcript.json`、`motion.json`、`probe.json`。
 - 不存圖片與影片片段：對話紀錄列出每張 overview／zoom／burst／clip 的時間、張數與區域，`segmentation.json` 有裁切框，用原始影片（以 SHA-256 確認）在紀錄的 commit 上可以重新產生。
+- 在 Linux 上，容器以 root 寫入的紀錄會改成 `runs/` 資料夾擁有者的檔案，不需要 sudo 就能 commit。
 
 **人工核對頁面**：把需要人工確認的步驟做成本機網頁，邊看影片邊點同意／不同意（只需要 Python 標準函式庫，不用進容器）：
 
@@ -232,10 +234,18 @@ python sop-video-grading/scripts/review_page.py sop-video-grading/runs/VID_0083/
 
 - 列入的項目：模型判定和標記表不同、或模型標了需人工複核的步驟（`--all` 改為所有有標記的步驟）；`--items` 加入 Claude 提出的建議判定或標準修改（格式見 `review_page.py` 開頭）。
 - 頁面播放每個人自己電腦上的原始影片（`--video-root` 依標記表的相對路徑找檔，也可用 `--video VID_0083=路徑`；找不到時在頁面裡選檔），說明裡的時間點一下就跳過去，可慢放、逐 0.2 秒前後、放大手部區域；不複製任何影格。
-- 每項可選「同意建議／同意標記表／改判（選正確判定）／待老師確認」並寫備註，進度存在瀏覽器；完成後「匯出 CSV」交回。
+- 每項可選「同意建議／同意標記表／改判（選正確判定）／待老師確認」並寫備註，進度存在瀏覽器；完成後「匯出 CSV」交回。決定綁定當時看到的建議、模型與標記表判定：重新產生頁面後只要其中一個變了，那一項就回到待核對。
+- 同一支影片可以放兩個版本的紀錄一起比較，每個版本各自一項（卡片與 CSV 標出版本）；同一個版本給兩次會報錯。
 - 預設輸出到 `sop-video-grading/review/`（已被 `.gitignore` 忽略：頁面含影片路徑，可能有學生姓名），不要 commit 頁面與匯出的 CSV。
 
-呼叫模型前會先檢查：要跑的步驟已經用相同 rubric、SKILL.md 與模型評過，或影片檔和紀錄的 SHA-256 不同時拒絕執行（確定要重跑加 `--force`）；沒有填執行者或 commit、紀錄資料夾無法寫入時也會停止。`--out` 沒有 `segmentation.json`（或 `--steps` 時沒有 `grading.json`）而紀錄裡有時，直接沿用紀錄，不重新切分。其他影片ID（可能含學生姓名）不寫紀錄。worker 容器只有 `sop-video-grading/runs` 可寫，其餘 skill 目錄維持唯讀。
+呼叫模型前會先檢查（任何一項不過就停止，不花錢）：
+
+- 要跑的步驟已經用相同版本（含切分來源）評過 → 拒絕，確定要重跑加 `--force`。
+- 影片檔和紀錄的 SHA-256 不同 → 拒絕，`--force` 才跑（該次會記下自己的 SHA-256）。
+- commit 結尾是 `-dirty`（有未 commit 的修改，紀錄無法重現）→ 拒絕，`--allow-dirty` 才跑。
+- 沒有填執行者或 commit、紀錄資料夾無法寫入。執行者、commit 這類檢查在計算影片 SHA-256 之前。
+
+一份紀錄只評一份切分：紀錄已存在時，`--out` 的 `segmentation.json` 換成紀錄的，`--steps` 以紀錄的 `grading.json` 為基底（不用本機舊檔）。紀錄還不存在時，`--labels` 會重建 `segmentation.json`（舊檔改名為 `segmentation.prev.json`）；不是這個 CLI 以同一個切分來源產生的 `segmentation.json`（例如舊的工作資料夾）會讓執行停止，請換一個 `--out`。其他影片ID（可能含學生姓名）不寫紀錄。worker 容器只有 `sop-video-grading/runs` 可寫，其餘 skill 目錄維持唯讀。
 
 用 `--labels` 時只取標註表的時間，不複製判定與說明（評分 agent 會看到切分依據，不能讓它看到答案）；沒有時間的步驟給前後步驟之間的區間，由評分 agent 自己判斷有沒有做。裁切框不在標註表裡，預設為整個畫面。此時「有沒有做」這類程式判定的標準等於照抄標註時間，所以評估評分 agent 時要看 `eval_grading.py` 的「看畫面的步驟（V）」那一行。
 

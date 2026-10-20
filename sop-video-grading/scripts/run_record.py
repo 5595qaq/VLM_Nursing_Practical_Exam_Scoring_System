@@ -3,13 +3,15 @@
 usage: python run_record.py [RUNS_DIR]   list every record (video, versions, graded steps, who, when)
 
 sop_grading_cli writes one folder per video and version, committed to Git:
-  sop-video-grading/runs/VID_0083/rubric1.7_skill0.11_gemini-4-argon/
+  sop-video-grading/runs/VID_0083/rubric1.7_skill0.11_gemini-4-argon_seg-skill1.4.5/
     record.json        versions, the source video's SHA-256, one entry per run (see add_run)
-    segmentation.json  the segmentation the latest run graded
-    grading.json       the latest grading result
+    segmentation.json  the segmentation every run of this record graded (fixed by the first run)
+    grading.json       the latest grading result (later runs regrade on top of it)
     run1/ run2/ ...    that run's model conversations: grading/transcript_task_*.json, probe.json,
                        and seg/transcript.json, motion.json when the run also segmented the video
-The version is rubric.json's version + SKILL.md's version + the grading model.
+The version is rubric.json's version + SKILL.md's version + the grading model + the segmentation source:
+seg-skill<sop-video-skill version>, or seg-labels-<hash of the label sheet's times for the video>, so
+editing the label times starts a new record.
 Images and clips are not kept: the transcripts list every image (overview / zoom / burst with its times,
 frame count and region) and segmentation.json has the crop boxes, so they can be made again from the
 original video (checked by its SHA-256) at the recorded commit.
@@ -17,6 +19,7 @@ Only label-sheet ids (VID_0001) are recorded: other ids may contain a student's 
 """
 import hashlib
 import json
+import os
 import re
 import shutil
 import sys
@@ -44,9 +47,16 @@ def file_sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def labels_tag(rows: list) -> str:
+    """Segmentation tag for label times: changes whenever the video's label rows change."""
+    text = json.dumps(rows, ensure_ascii=False, sort_keys=True)
+    return "labels-" + hashlib.sha256(text.encode("utf-8")).hexdigest()[:8]
+
+
 def record_dir(runs_dir: Path, video_id: str, versions: dict) -> Path:
     model = re.sub(r"[^A-Za-z0-9._-]", "_", versions["model"])
-    return runs_dir / video_id / f"rubric{versions['rubric']}_skill{versions['skill']}_{model}"
+    return runs_dir / video_id / (f"rubric{versions['rubric']}_skill{versions['skill']}_{model}"
+                                  f"_seg-{versions['segmentation']}")
 
 
 def load(folder: Path) -> dict | None:
@@ -72,17 +82,34 @@ def add_run(record: dict | None, video_id: str, versions: dict, video_sha256: st
             failed_tasks: list[dict], by: str, date: str, commit: str, segmentation: str,
             usage: dict) -> dict:
     """Append one run. Its "steps" are the steps graded in it, minus the steps of failed tasks
-    (those can be rerun without --force)."""
+    (those can be rerun without --force). Each run keeps the SHA-256 of the video it used, which can
+    differ from the record's after --force."""
     record = record or {"video_id": video_id, "versions": versions, "video_sha256": video_sha256, "runs": []}
     ran = (set(steps) if steps else set(ALL_STEPS)) - failed_steps(failed_tasks)
     record["runs"].append({"run": len(record["runs"]) + 1, "by": by, "date": date, "commit": commit,
-                           "steps": sorted(ran), "failed_tasks": failed_tasks,
+                           "video_sha256": video_sha256, "steps": sorted(ran), "failed_tasks": failed_tasks,
                            "segmentation": segmentation, "usage": usage})
     return record
 
 
+def _owner(path: Path) -> tuple[int, int]:
+    info = path.stat()
+    return info.st_uid, info.st_gid
+
+
+def _give_to_owner(paths: list[Path], runs_dir: Path) -> None:
+    """A root container writing into a bind mount leaves root-owned files on Linux hosts; hand them to
+    whoever owns the runs folder so they can be committed and edited without sudo."""
+    if not hasattr(os, "geteuid") or os.geteuid() != 0:
+        return
+    owner = _owner(runs_dir)
+    for path in paths:
+        if _owner(path) != owner:
+            os.chown(path, *owner)
+
+
 def save(folder: Path, record: dict, segmentation: dict, grading: dict, files: dict[str, Path]) -> Path:
-    """Write the record, the latest segmentation and grading, and copy `files` (path inside the run
+    """Write the record, the segmentation and latest grading, and copy `files` (path inside the run
     folder -> source) into run<N>/. Returns the run folder."""
     run = folder / f"run{record['runs'][-1]['run']}"
     for name, source in files.items():
@@ -91,6 +118,9 @@ def save(folder: Path, record: dict, segmentation: dict, grading: dict, files: d
     folder.mkdir(parents=True, exist_ok=True)
     for name, data in ((RECORD, record), ("segmentation.json", segmentation), ("grading.json", grading)):
         (folder / name).write_text(json.dumps(data, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    runs_dir = folder.parent.parent
+    written = [folder.parent, folder, *(p for p in folder.rglob("*"))]
+    _give_to_owner(written, runs_dir)
     return run
 
 
@@ -99,7 +129,8 @@ def summary(record: dict) -> str:
     steps = graded_steps(record)
     covered = "全部" if steps >= set(ALL_STEPS) else ",".join(map(str, sorted(steps))) or "無"
     who = "、".join(f"{r['by']} {r['date']}" for r in record["runs"])
-    return f"{record['video_id']}  rubric {v['rubric']}  SKILL {v['skill']}  {v['model']}  步驟 {covered}  （{who}）"
+    return (f"{record['video_id']}  rubric {v['rubric']}  SKILL {v['skill']}  {v['model']}  "
+            f"切分 {v['segmentation']}  步驟 {covered}  （{who}）")
 
 
 def main(argv: list[str]) -> int:

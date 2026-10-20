@@ -2,9 +2,9 @@
 
 ## 未發布（評分 agent 服務端修正，SKILL／rubric 版本不變）
 
-- 新增 `scripts/review_page.py`：產生本機人工核對頁面（輸出到 gitignored 的 `review/`），列出模型與標記表不同或需人工複核的步驟，以及 Claude 的建議判定與標準修改；播放每個人本機的原始影片（`--video-root` 依標記表相對路徑找檔），點說明裡的時間跳轉、可慢放與放大手部，逐項選同意建議／同意標記表／改判／待老師確認並匯出 CSV。
-- 新增評分紀錄 `runs/` 與 `scripts/run_record.py`：`sop_grading_cli` 每次執行 `VID_xxxx` 影片後，把版本（rubric、SKILL.md、模型）、原始影片 SHA-256、執行者、commit、評過的步驟、切分與評分結果，以及這次的對話紀錄寫進 `runs/<影片ID>/<版本>/`，commit 後多人共用。不存圖片與影片片段（可由對話紀錄與原始影片重新產生）。
-- `sop_grading_cli`：呼叫模型前檢查重複（同版本已評過的步驟要加 `--force`）、影片 SHA-256、執行者（`--by`／`SOP_RUN_BY`）與 commit（`--commit`／`GIT_COMMIT`）；本機沒有切分或評分結果時沿用紀錄。`docker-compose.yml` 讓 worker 可寫入 `sop-video-grading/runs`。
+- 新增 `scripts/review_page.py`：產生本機人工核對頁面（輸出到 gitignored 的 `review/`），列出模型與標記表不同或需人工複核的步驟，以及 Claude 的建議判定與標準修改；播放每個人本機的原始影片（`--video-root` 依標記表相對路徑找檔），點說明裡的時間跳轉、可慢放與放大手部，逐項選同意建議／同意標記表／改判／待老師確認並匯出 CSV。項目以「影片＋版本＋步驟」區分，決定綁定當時的建議、模型與標記表判定，重新產生頁面後有變就回到待核對。
+- 新增評分紀錄 `runs/` 與 `scripts/run_record.py`：`sop_grading_cli` 每次執行 `VID_xxxx` 影片後，把版本（rubric、SKILL.md、模型、切分來源 `seg-skill<版本>`／`seg-labels-<標記表時間雜湊>`）、原始影片 SHA-256（每次執行也各記一份）、執行者、commit、評過的步驟、切分與評分結果，以及這次寫出的對話紀錄寫進 `runs/<影片ID>/<版本>/`，commit 後多人共用。不存圖片與影片片段（可由對話紀錄與原始影片重新產生）。Linux 上 root 寫出的檔案改回 `runs/` 擁有者。
+- `sop_grading_cli`：呼叫模型前檢查重複（同版本已評過的步驟要加 `--force`）、影片 SHA-256（`--force`）、未 commit 的修改（commit 結尾 `-dirty`，`--allow-dirty`）、執行者（`--by`／`SOP_RUN_BY`）與 commit（`--commit`／`GIT_COMMIT`）。一份紀錄只評一份切分：有紀錄時切分與 `--steps` 的基底都用紀錄的，`--labels` 重建切分，來源不明的本機切分會停止執行。`docker-compose.yml` 讓 worker 可寫入 `sop-video-grading/runs`（附 `.gitkeep`）。
 
 - `sop_grading_service.py`：腳本以 `REJECTED`（exit 2）拒絕 overview／zoom／burst／clip 時，改成像驗證錯誤一樣退回給模型重送（不扣預算），不再讓整組任務失敗。
 - `sop_grading_service.py`：音軌在任務區間內沒有任何聲音樣本（`max_db` 為 null）時，任務說明改寫「沒有讀到聲音樣本」，不再因格式化 None 而讓 15b+17a／27a 任務失敗。

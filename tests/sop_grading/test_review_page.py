@@ -54,6 +54,24 @@ def test_build_items_lists_disputed_and_flagged_steps():
     assert [i["step"] for i in rp.build_items(grading, seg, labels, load_rubric(), include_all=True)] == [1, 5, 18]
 
 
+def test_two_versions_of_one_video_stay_separate():
+    seg = make_segmentation()
+    grading = fill_visual(grade_from_segmentation(seg))
+    labels = {1: {"verdict": "錯誤", "why": ""}}
+    old = rp.build_items(grading, seg, labels, load_rubric(), run="rubric1.6")
+    new = rp.build_items(grading, seg, labels, load_rubric(), run="rubric1.7")
+    assert [i["key"] for i in old + new] == ["VID_0001--rubric1.6--1", "VID_0001--rubric1.7--1"]
+    items = rp.merge_proposals(old + new, [{"video_id": "VID_0001", "step": 1, "proposal": "錯誤"}], load_rubric())
+    assert len(items) == 2 and all(i["proposal_src"] == "Claude" for i in items)  # both versions get it
+
+
+def test_the_same_version_twice_is_refused(tmp_path, run):
+    labels = write_labels(tmp_path / "l.csv", [label(1, "錯誤")])
+    with pytest.raises(SystemExit, match="項目重複"):
+        rp.main(["review_page.py", str(run), str(run / "grading.json"), "--labels", str(labels),
+                 "-o", str(tmp_path / "p.html")])
+
+
 def test_repeated_steps_list_every_span():
     seg = make_segmentation()
     seg["steps"].append({**seg["steps"][18], "start": 300.0, "end": 304.0})
@@ -72,7 +90,7 @@ def test_merge_proposals():
         {"type": "standard", "id": "19b", "title": "雙手回套", "before": "部分正確", "after": "錯誤", "why": "老師"},
     ], rubric)
     assert (items[0]["proposal"], items[0]["proposal_src"]) == ("錯誤", "Claude")
-    assert items[1]["key"] == "VID_0002-29" and items[1]["name"].startswith("看給藥治療紀錄單")
+    assert items[1]["key"] == "VID_0002--Claude--29" and items[1]["name"].startswith("看給藥治療紀錄單")
     assert items[2] == {"type": "standard", "key": "standard-19b", "id": "19b", "title": "雙手回套",
                         "before": "部分正確", "after": "錯誤", "why": "老師"}
     with pytest.raises(ValueError, match="建議判定"):

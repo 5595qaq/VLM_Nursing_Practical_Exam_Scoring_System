@@ -37,7 +37,7 @@
    - 參考答案與標記表不一致時，記下兩者與理由，標成「待人工核對」，不要自行認定標記表錯。
 2. **執行評分**：用 `backend/app/sop_grading_cli.py` 評分，只重評受影響的步驟時用 `--steps`。評分會呼叫付費模型，跑超過少數幾支影片或整份重評前先問使用者。
    - 不得把標記表或參考答案的判定、說明放進評分 agent 的輸入；`labels_to_segmentation.py` 只能帶時間。
-   - 執行時帶 `SOP_RUN_BY` 與 `GIT_COMMIT`，跑完把 `sop-video-grading/runs/` 的新紀錄一起 commit。規則有改就先遞增 rubric 或 SKILL.md 版本再跑，否則會被當成重複而拒絕；不要用 `--force` 繞過，除非是刻意重測穩定性。
+   - 執行時帶 `SOP_RUN_BY` 與 `GIT_COMMIT`（用 README 的寫法，有未 commit 的修改會帶 `-dirty`），跑完把 `sop-video-grading/runs/` 的新紀錄一起 commit。規則有改就先遞增 rubric 或 SKILL.md 版本並 commit 再跑，否則會被當成重複或 dirty 而拒絕；不要用 `--force`、`--allow-dirty` 繞過，除非是刻意重測穩定性並在紀錄中說明。
 3. **比對**：用 `sop-video-grading/scripts/eval_grading.py` 比對評分結果與標記表，再逐一比對與參考答案不一致的步驟。
 4. **歸因**：每個不一致先判斷原因，再決定改什麼：
    - 評分 agent 看錯、漏看 → 改 SKILL.md 的作法（取樣、放大、聲音等）。

@@ -51,7 +51,8 @@ def step_spans(segmentation: dict | None, step_id: int) -> list[list[float]]:
 
 
 def build_items(grading: dict, segmentation: dict | None, labels: dict[int, dict], rubric: dict,
-                include_all: bool = False) -> list[dict]:
+                include_all: bool = False, run: str = "") -> list[dict]:
+    """`run` names the version (the record folder), so two versions of one video stay separate items."""
     names = {s["step_id"]: s["text"] for s in rubric["steps"]}
     texts = {c["id"]: c["text"] for s in rubric["steps"] for c in s["criteria"]}
     vid = grading["video_id"]
@@ -63,7 +64,8 @@ def build_items(grading: dict, segmentation: dict | None, labels: dict[int, dict
         if not (differs or review or (include_all and label)):
             continue
         items.append({
-            "type": "step", "key": f"{vid}-{sid}", "video_id": vid, "step": sid, "name": names.get(sid, ""),
+            "type": "step", "key": f"{vid}--{run}--{sid}", "run": run, "video_id": vid, "step": sid,
+            "name": names.get(sid, ""),
             "label": label, "model": step["verdict"], "review": review,
             "criteria": [{"id": c["criterion_id"], "text": texts.get(c["criterion_id"], ""), "verdict": c["verdict"],
                           "explanation": c["explanation"], "review_reason": c.get("review_reason", "")}
@@ -74,9 +76,9 @@ def build_items(grading: dict, segmentation: dict | None, labels: dict[int, dict
 
 
 def merge_proposals(items: list[dict], extra: list[dict], rubric: dict) -> list[dict]:
-    """Claude's step proposals replace the model's proposal (or add the step); standards are appended."""
+    """Claude's step proposals replace the model's proposal on every version of that video and step
+    (or add the step); standards are appended."""
     names = {s["step_id"]: s["text"] for s in rubric["steps"]}
-    by_key = {i["key"]: i for i in items}
     for e in extra:
         if e.get("type") == "standard":
             items.append({"type": "standard", "key": f"standard-{e['id']}", **{k: e.get(k, "") for k in
@@ -84,15 +86,14 @@ def merge_proposals(items: list[dict], extra: list[dict], rubric: dict) -> list[
             continue
         if e["proposal"] not in VERDICTS:
             raise ValueError(f"{e['video_id']} 步驟 {e['step']}：建議判定必須是 {'/'.join(VERDICTS)}")
-        key = f"{e['video_id']}-{e['step']}"
-        item = by_key.get(key)
-        if item is None:
-            item = {"type": "step", "key": key, "video_id": e["video_id"], "step": e["step"],
-                    "name": names.get(e["step"], ""), "label": None, "model": None, "review": False,
-                    "criteria": [], "spans": []}
-            items.append(item)
-            by_key[key] = item
-        item.update(proposal=e["proposal"], proposal_src="Claude", why=e.get("why", ""))
+        matches = [i for i in items if i["type"] == "step" and (i["video_id"], i["step"]) == (e["video_id"], e["step"])]
+        if not matches:
+            matches = [{"type": "step", "key": f"{e['video_id']}--Claude--{e['step']}", "run": "",
+                        "video_id": e["video_id"], "step": e["step"], "name": names.get(e["step"], ""),
+                        "label": None, "model": None, "review": False, "criteria": [], "spans": []}]
+            items.append(matches[0])
+        for item in matches:
+            item.update(proposal=e["proposal"], proposal_src="Claude", why=e.get("why", ""))
     return items
 
 
@@ -147,7 +148,7 @@ def main(argv: list[str]) -> int:
     for run in a.runs:
         grading, seg, folder = load_run(run)
         vid = grading["video_id"]
-        items += build_items(grading, seg, labels.get(vid, {}), rubric, a.all)
+        items += build_items(grading, seg, labels.get(vid, {}), rubric, a.all, run=folder.name)
         if vid in given:
             path = Path(given[vid])
         else:
@@ -156,6 +157,9 @@ def main(argv: list[str]) -> int:
                        "hands": seg["meta"]["crop"]["hands_box"] if seg else None}
     if a.items:
         items = merge_proposals(items, json.loads(a.items.read_text(encoding="utf-8")), rubric)
+    keys = [i["key"] for i in items]
+    if len(keys) != len(set(keys)):
+        raise SystemExit("同一支影片的同一個版本給了兩次（項目重複）：" + "、".join(sorted({k for k in keys if keys.count(k) > 1})))
     data = {"title": f"SOP 評分人工核對 {today}", "key": f"{out.name}", "rubric": rubric["version"],
             "items": items, "videos": videos}
     out.write_text(render(data), encoding="utf-8")
@@ -235,6 +239,12 @@ const KEY = "sop-review:" + D.key;
 let S = {decisions: {}, who: ""};
 try { S = Object.assign(S, JSON.parse(localStorage.getItem(KEY) || "{}")); } catch (e) {}
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
+const byKey = Object.fromEntries(D.items.map(it => [it.key, it]));
+// A decision belongs to what the reviewer saw: when a rebuilt page shows another proposal, model or label
+// verdict (or standard text), the old decision no longer applies and the item is to be reviewed again.
+const dk = it => [it.key, it.proposal, it.model, (it.label || {}).verdict, it.before, it.after].join("|");
+const got = it => S.decisions[dk(it)] || {};
+const dec = key => { const k = dk(byKey[key]); return S.decisions[k] = S.decisions[k] || {}; };
 const $ = id => document.getElementById(id);
 const v = $("v"), picked = {};
 let current = null, zoomed = false;
@@ -286,7 +296,7 @@ $("file").addEventListener("change", e => {
 });
 
 function decisionButtons(it) {
-  const d = S.decisions[it.key] || {};
+  const d = got(it);
   const b = (val, text) => `<button data-k="${esc(it.key)}" data-dec="${esc(val)}" class="${d.decision === val ? "on" : ""}">${esc(text)}</button>`;
   if (it.type === "standard") return b("同意", "同意") + b("不同意", "不同意") + b("待老師確認", "待老師確認");
   let h = b("同意建議", `同意建議（${it.proposal}）`);
@@ -297,7 +307,7 @@ function decisionButtons(it) {
   return h;
 }
 function card(it) {
-  const d = S.decisions[it.key] || {};
+  const d = got(it);
   let h = `<div class="item${d.decision ? " done" : ""}" id="i-${esc(it.key)}" data-vid="${esc(it.video_id || "")}">`;
   if (it.type === "standard") {
     h += `<div class="ih"><h2>標準 ${esc(it.id)}：${esc(it.title)}</h2></div>` +
@@ -305,7 +315,8 @@ function card(it) {
       `<div class="lbl">修改後</div><div class="pre">${esc(it.after)}</div>` +
       (it.why ? `<div class="why">${esc(it.why)}</div>` : "");
   } else {
-    h += `<div class="ih"><h2>${esc(it.video_id)} 步驟 ${it.step}</h2><span class="ct">${esc(it.name)}</span></div>` +
+    h += `<div class="ih"><h2>${esc(it.video_id)} 步驟 ${it.step}</h2><span class="ct">${esc(it.name)}</span>` +
+      `${it.run ? `<span class="lbl">${esc(it.run)}</span>` : ""}</div>` +
       `<div class="pills">${pill(it.label && it.label.verdict, "標記表")}${pill(it.model, "模型")}` +
       `${it.review ? '<span class="pill p部分正確">模型要求人工複核</span>' : ""}${pill(it.proposal, "建議（" + it.proposal_src + "）")}</div>`;
     if (it.spans.length) h += `<div class="spans"><span class="lbl">切分時間</span>` +
@@ -320,12 +331,12 @@ function card(it) {
   return h;
 }
 function progress() {
-  const done = D.items.filter(it => (S.decisions[it.key] || {}).decision).length;
+  const done = D.items.filter(it => got(it).decision).length;
   $("prog").textContent = `已核對 ${done}/${D.items.length}　rubric ${D.rubric}`;
 }
 function render() {
   const f = $("filter").value;
-  const shown = D.items.filter(it => f === "all" || (f === "done") === !!(S.decisions[it.key] || {}).decision);
+  const shown = D.items.filter(it => f === "all" || (f === "done") === !!got(it).decision);
   $("items").innerHTML = shown.map(card).join("") || '<p class="help">沒有項目。</p>';
   progress();
 }
@@ -334,7 +345,7 @@ function render() {
 function refresh(key) {
   const el = document.getElementById("i-" + key);
   const active = el.classList.contains("active");
-  el.outerHTML = card(D.items.find(it => it.key === key));
+  el.outerHTML = card(byKey[key]);
   if (active) document.getElementById("i-" + key).classList.add("active");
   progress();
 }
@@ -347,7 +358,7 @@ $("items").addEventListener("click", e => {
   if (t) { jump(t.dataset.vid, Number(t.dataset.t)); return; }
   const btn = e.target.closest("button[data-dec]");
   if (btn) {
-    const d = S.decisions[btn.dataset.k] = S.decisions[btn.dataset.k] || {};
+    const d = dec(btn.dataset.k);
     d.decision = d.decision === btn.dataset.dec ? "" : btn.dataset.dec;
     if (d.decision !== "改判") delete d.verdict;
     d.at = new Date().toISOString(); save(); refresh(btn.dataset.k); return;
@@ -360,11 +371,11 @@ $("items").addEventListener("click", e => {
 });
 $("items").addEventListener("change", e => {
   if (!e.target.classList.contains("fix")) return;
-  S.decisions[e.target.dataset.k].verdict = e.target.value; save();
+  dec(e.target.dataset.k).verdict = e.target.value; save();
 });
 $("items").addEventListener("input", e => {
   if (e.target.tagName !== "TEXTAREA") return;
-  const d = S.decisions[e.target.dataset.k] = S.decisions[e.target.dataset.k] || {};
+  const d = dec(e.target.dataset.k);
   d.note = e.target.value; save();
 });
 $("play").addEventListener("click", () => v.paused ? v.play() : v.pause());
@@ -386,13 +397,13 @@ document.addEventListener("keydown", e => {
 });
 $("export").addEventListener("click", () => {
   const q = x => `"${String(x ?? "").replace(/"/g, '""')}"`;
-  const rows = [["類型", "影片ID", "步驟", "標準", "標記表", "模型", "建議", "建議來源", "決定", "正確判定", "備註", "核對者", "核對時間"]];
+  const rows = [["類型", "影片ID", "版本", "步驟", "標準", "標記表", "模型", "建議", "建議來源", "決定", "正確判定", "備註", "核對者", "核對時間"]];
   for (const it of D.items) {
-    const d = S.decisions[it.key] || {};
+    const d = got(it);
     const verdict = d.decision === "同意建議" ? it.proposal : d.decision === "同意標記表" ? (it.label || {}).verdict : d.verdict;
     rows.push(it.type === "standard"
-      ? ["標準", "", "", it.id, "", "", it.after, "Claude", d.decision, "", d.note, S.who, d.at]
-      : ["步驟", it.video_id, it.step, "", (it.label || {}).verdict, it.model, it.proposal, it.proposal_src,
+      ? ["標準", "", "", "", it.id, "", "", it.after, "Claude", d.decision, "", d.note, S.who, d.at]
+      : ["步驟", it.video_id, it.run, it.step, "", (it.label || {}).verdict, it.model, it.proposal, it.proposal_src,
          d.decision, verdict, d.note, S.who, d.at]);
   }
   const blob = new Blob(["﻿" + rows.map(r => r.map(q).join(",")).join("\r\n")], {type: "text/csv"});
