@@ -375,6 +375,8 @@ docker compose down
 
 舊版選到 Agent D、未選 Agent A 且 gaze 狀態為 `skipped` 的工作，會繼續使用原影片與 Agent D 時段評分，重試也保留此方式與原本的進度總數。新建立的 Agent D 工作仍必須完成 Gazelle 前處理後才評分。
 
+`db` 服務的 5432 port 只綁定在本機（`127.0.0.1`），區網其他電腦連不到預設帳密 `postgres/postgres` 的資料庫；本機的 psql 或資料庫工具照常用 `localhost:5432` 連線。
+
 若要增加 worker：`docker compose up -d --scale worker=2`，所有 worker 使用同一份環境設定。PgQueuer 預設 heartbeat timeout 為 30 秒，中斷任務會在 heartbeat 過期後重新派發。`pgq` 管理指令使用 PostgreSQL 的 `PGHOST/PGUSER/PGPASSWORD/PGDATABASE` 環境變數；本專案的 `app.bootstrap`／`app.worker` 則使用 `DATABASE_URL`。
 
 ### 方式二：手動本機環境設定

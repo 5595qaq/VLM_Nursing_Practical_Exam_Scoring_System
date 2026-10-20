@@ -73,7 +73,7 @@ async def lifespan(app):
 
 
 app = FastAPI(title="VLM+LLM Nursing Exam API", lifespan=lifespan)
-app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True,
+app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=False,
                    allow_methods=["*"], allow_headers=["*"])
 app.include_router(evaluations.router, prefix="/api/v1/evaluations", tags=["evaluations"])
 app.include_router(uploads.router, prefix="/api/v1/uploads", tags=["uploads"])
