@@ -858,18 +858,22 @@ async def test_sop_grading_quota_error_is_requeued_and_resumes(
 async def test_grading_that_ends_after_another_video_failed_is_kept(
         pool, fake_models, fake_skill, fake_grading, monkeypatch):
     run = fake_grading.side_effect
-    second_may_finish = asyncio.Event()
+    second_started = asyncio.Event()
     calls = []
 
     async def one_fails(video_uri, video_id, generation, segmentation, on_progress, previous=None,
                         previous_artifacts=None):
         calls.append((video_uri[-12:], generation))
         if generation == 0 and video_uri.endswith(f"{0:064x}_src.mp4"):
-            second_may_finish.set()
+            # Fail only once video 1 is grading too, or its call would just be skipped as obsolete.
+            await asyncio.wait_for(second_started.wait(), 10)
             raise RuntimeError("broken grading")
         if generation == 0:
-            await second_may_finish.wait()
-            await asyncio.sleep(0.5)  # finishes after video 0 failed the job
+            second_started.set()
+            for _ in range(200):  # finish only after video 0 failed the job
+                if await pool.fetchval("SELECT status FROM evaluation_jobs WHERE id=$1", job["id"]) == "failed":
+                    break
+                await asyncio.sleep(0.05)
 
         async def no_heartbeat(*_args):
             pass  # the real heartbeat stops a run once the job failed; this test is about one that ends
