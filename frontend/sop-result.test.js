@@ -4,6 +4,8 @@ const SopResult = require('./sop-result.js');
 assert.equal(SopResult.formatSeconds(0), '00:00.0');
 assert.equal(SopResult.formatSeconds(65.25), '01:05.3');
 assert.equal(SopResult.formatSeconds(null), '');
+assert.equal(SopResult.formatSeconds(59.96), '01:00.0');
+assert.equal(SopResult.formatSeconds(119.97), '02:00.0');
 assert.equal(SopResult.formatSpan(6.5, 41), '00:06.5–00:41.0');
 assert.equal(SopResult.formatSpan(null, null), '');
 assert.equal(Object.keys(SopResult.STEP_NAMES).length, 30);
