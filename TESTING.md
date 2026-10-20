@@ -70,7 +70,7 @@ Token 用量記錄（`backend/tests/test_usage.py`）包含不需資料庫的單
 pytest backend/tests/test_usage.py -q
 ```
 
-前端純函式測試使用 Node.js：
+前端純函式測試使用 Node.js（CI 也會執行；CI 另外安裝 ffmpeg，所以需要 ffmpeg 的影片腳本測試在 CI 上不會被略過）：
 
 ```bash
 node frontend/csv-export.test.js

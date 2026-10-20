@@ -15,11 +15,11 @@ jobs:
     steps:
     # 1. 取得專案原始碼
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     # 2. 安裝 Python 環境 (建議指定你開發用的版本，例如 3.10)
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.11'
 
@@ -29,6 +29,22 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r backend/requirements.txt
         pip install httpx pytest-asyncio
+
+    # 3b. ffmpeg：sop-video-skill／sop-video-grading 的影片腳本測試需要，沒有時這些測試會被略過
+    - name: Install ffmpeg
+      run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+    # 3c. 前端純函式測試（csv-export、recovery、sop-result）
+    - name: Set up Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Run frontend tests
+      run: |
+        node frontend/csv-export.test.js
+        node frontend/recovery.test.js
+        node frontend/sop-result.test.js
 
     # 4. 準備與執行 PostgreSQL (Test DB)
     - name: Start PostgreSQL container
