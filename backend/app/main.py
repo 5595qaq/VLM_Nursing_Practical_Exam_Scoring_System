@@ -42,12 +42,13 @@ async def pg_listener():
                     raise ConnectionError("PostgreSQL notification connection closed")
                 try:
                     data = json.loads(raw)
+                    job_id = data["job_id"]
                     payload = {"stage": data["branch_name"], "status": data["status"],
                                "progress": data.get("progress"), "message": data.get("message")}
                 except (ValueError, TypeError, KeyError):
                     logger.warning("Ignoring invalid branch notification")
                     continue
-                await manager.broadcast_to_job("BRANCH_STATUS_UPDATE", payload, data["job_id"])
+                await manager.broadcast_to_job("BRANCH_STATUS_UPDATE", payload, job_id)
         except asyncio.CancelledError:
             raise
         except Exception:
@@ -72,7 +73,7 @@ async def lifespan(app):
 
 
 app = FastAPI(title="VLM+LLM Nursing Exam API", lifespan=lifespan)
-app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True,
+app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=False,
                    allow_methods=["*"], allow_headers=["*"])
 app.include_router(evaluations.router, prefix="/api/v1/evaluations", tags=["evaluations"])
 app.include_router(uploads.router, prefix="/api/v1/uploads", tags=["uploads"])

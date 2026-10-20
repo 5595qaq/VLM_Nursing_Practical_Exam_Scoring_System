@@ -1,5 +1,9 @@
-from fastapi import WebSocket
+import asyncio
 from typing import Dict, List
+
+from fastapi import WebSocket
+
+SEND_TIMEOUT_SECONDS = 5
 
 class ConnectionManager:
     def __init__(self):
@@ -22,11 +26,16 @@ class ConnectionManager:
     async def broadcast_to_job(self, event: str, payload: dict, job_id: str):
         if job_id in self.active_connections:
             message = {"event": event, "payload": payload}
-            # Create a copy of the list to avoid Modification during iteration errors
-            for connection in self.active_connections[job_id][:]:
+
+            async def send(connection):
+                # One stalled client (sleeping laptop, bad network) must not hold up the single
+                # pg_listener that broadcasts every job's updates.
                 try:
-                    await connection.send_json(message)
+                    await asyncio.wait_for(connection.send_json(message), SEND_TIMEOUT_SECONDS)
                 except Exception:
                     self.disconnect(connection, job_id)
+
+            # Copy the list: send() may remove connections while we iterate.
+            await asyncio.gather(*(send(c) for c in self.active_connections[job_id][:]))
 
 manager = ConnectionManager()
