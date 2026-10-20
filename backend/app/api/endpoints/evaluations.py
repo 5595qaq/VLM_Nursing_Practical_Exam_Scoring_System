@@ -31,11 +31,12 @@ SOP_FILE_TYPES = {
 
 @router.get("/{job_id}/sop-skill/{position}/{kind}")
 async def download_sop_skill_file(job_id: str, position: int,
-                                  kind: Literal["artifacts", "result", "transcript"],
-                                  db: Session = Depends(get_db)):
+                                  kind: Literal["artifacts", "result", "transcript"], request: Request):
     """Stream one sop-video-skill run file (images zip, result, model transcript) from GCS."""
-    job = db.query(EvaluationJob).filter(EvaluationJob.id == job_id).first()
-    runs = (job.result or {}).get("sop_skill") if job else None
+    async with request.app.state.queue_pool.acquire() as connection:
+        result = evaluation_queue.decoded(
+            await connection.fetchval("SELECT result FROM evaluation_jobs WHERE id=$1", job_id))
+    runs = (result or {}).get("sop_skill") if isinstance(result, dict) else None
     if not runs or not 0 <= position < len(runs):
         raise HTTPException(status_code=404, detail="SOP skill result not found")
     uri = (runs[position].get("files") or {}).get(kind)

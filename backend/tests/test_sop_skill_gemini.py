@@ -138,3 +138,8 @@ async def test_gemini_empty_candidate_is_an_invalid_action_not_a_crash(monkeypat
     assert reply.text == "" and reply.stop_reason == "end_turn"
     with pytest.raises(ValueError):
         skill.parse_action(reply.text)
+
+
+def test_gemini_parts_rejects_unknown_blocks():
+    with pytest.raises(ValueError, match="unsupported content block"):
+        skill._gemini_parts([{"type": "vidoe", "path": "clip.mp4"}])

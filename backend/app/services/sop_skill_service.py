@@ -478,6 +478,8 @@ def _gemini_parts(content: list[dict]):
             parts.append(types.Part(
                 inline_data=types.Blob(data=Path(block["path"]).read_bytes(), mime_type="video/mp4"),
                 video_metadata=types.VideoMetadata(fps=block["fps"])))
+        else:
+            raise ValueError(f"unsupported content block type for Gemini: {block['type']!r}")
     return parts
 
 
@@ -515,12 +517,14 @@ async def gemini_call(system: str, content: list[dict]) -> ModelReply:
         config["thinking_config"] = types.ThinkingConfig(thinking_level=settings.SOP_SKILL_GEMINI_THINKING_LEVEL)
     if settings.SOP_SKILL_GEMINI_MAX_OUTPUT_TOKENS:
         config["max_output_tokens"] = settings.SOP_SKILL_GEMINI_MAX_OUTPUT_TOKENS
+    # Decoding images and reading clip files (several MB per grading turn) blocks; keep it off the loop.
+    contents = await asyncio.to_thread(_gemini_contents, content)
     token = attempt_state.set({"attempt": 0})
     try:
         async with asyncio.timeout(settings.GEMINI_CALL_TIMEOUT_SECONDS):
             response = await agents.get_client().aio.models.generate_content(
                 model=settings.SOP_SKILL_GEMINI_MODEL,
-                contents=_gemini_contents(content),
+                contents=contents,
                 config=types.GenerateContentConfig(**config),
             )
     finally:

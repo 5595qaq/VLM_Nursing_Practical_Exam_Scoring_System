@@ -17,7 +17,8 @@ def register(pgq, pool):
     async def handle(job):
         await process_model_call(job, pool)
 
-    # Claude skill runs are long CPU+model loops with their own fleet-wide limit.
+    # SOP skill runs are long CPU+model loops with their own fleet-wide limit. They are not counted
+    # in GEMINI_GLOBAL_CONCURRENCY, so Gemini may see up to GEMINI_GLOBAL + SOP_SKILL requests.
     @pgq.entrypoint(SOP_SKILL_ENTRYPOINT, concurrency_limit=settings.SOP_SKILL_CONCURRENCY, on_failure="hold")
     async def handle_sop_skill(job):
         await process_model_call(job, pool)
