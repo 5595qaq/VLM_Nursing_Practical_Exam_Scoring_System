@@ -7,6 +7,8 @@
 - `sop_grading_service.py`：`--steps` 重評時，任務失敗（429、連續不合格）的標準保留上次 `grading.json` 的判定，不再被覆寫成待判定；失敗仍列在 `failed_tasks`。
 - `tests/sop_grading/requirements.txt`：補上 `numpy`（`motion_peaks.py`、`audio_peaks.py` 與其測試需要）。
 - 接上佇列、API 與前端：新增 `pipeline=sop_grading`（切分完成後排入評分任務）、`run_sop_grading`（從 GCS 下載、上傳 `grading.json` 與對話紀錄到 `sop_runs/<video_id>/g<generation>/grading/`、有失敗任務時讓工作失敗）、`run_grading` 的 `on_progress` 參數、下載端點 `/sop-grading/{位置}/{result|artifacts}`，以及前端的評分摘要、逐步評分表與 SOP 評分 CSV。評分失敗時保留已評好的標準（`grading_partial`），下一次嘗試只重評失敗的任務組；失敗任務全是 429／逾時時由 queue 自動退避重新派送。評分邏輯與命令列行為不變。
+- `sop_grading_service.py`：超過 180 秒的區間改切成每段 179.99 秒。原本 `76.1 + 180 - 76.1` 會算成 180.00000000000003，`motion_peaks.py`／`audio_peaks.py` 拒絕後整組任務沒有任何峰值（約 12% 的起始時間會遇到）。
+- 佇列評分：續跑時 `artifacts.zip` 併入前一次的檔案；上傳失敗不再丟掉已完成的評分；heartbeat 失敗、工作被其他影片弄失敗時保留已評的標準；驗證不過的已評標準不帶到下一次。
 - `sop_grading_service.py`：任務區間超過 180 秒時，動作峰值與聲音峰值改為每 180 秒一段分別分析再合併。原本只分析前 180 秒，15-16-17 這類長區間尾端的彈針聲會被漏掉，任務說明卻顯示「連續響聲：（無）」。
 
 ## 0.9（rubric 1.5）

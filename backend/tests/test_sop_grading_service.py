@@ -285,7 +285,7 @@ def test_system_prompt_includes_skill_steps_and_actions():
 
 def test_long_windows_are_analysed_in_pieces(tmp_path, monkeypatch):
     assert grading._spans(0, 100) == [(0, 100)]
-    assert grading._spans(10, 400) == [(10, 190), (190, 370), (370, 400)]
+    assert grading._spans(10, 400) == pytest.approx([(10, 189.99), (189.99, 369.98), (369.98, 400)])
 
     calls = []
 
@@ -301,9 +301,10 @@ def test_long_windows_are_analysed_in_pieces(tmp_path, monkeypatch):
     monkeypatch.setattr(grading.GradingRunner, "_grading_script", script)
     runner = grading.GradingRunner(tmp_path, tmp_path / "v.mp4")
     peaks = runner.motion_peaks(0, 400, HANDS)
-    assert [p["t"] for p in peaks] == [1, 181, 361]
+    assert [p["t"] for p in peaks] == pytest.approx([1, 180.99, 360.98])
     audio = runner.audio_peaks(0, 400)
-    assert [c[1:] for c in calls if c[0] == "audio_peaks.py"] == [(0, 180), (180, 360), (360, 400)]
+    assert [c[1:] for c in calls if c[0] == "audio_peaks.py"] == pytest.approx(
+        [(0, 179.99), (179.99, 359.98), (359.98, 400)])
     # The flick at the end of the window (399 s) is no longer cut off at 180 s.
     assert audio["runs"][-1]["start"] == 399 and audio["max_db"] == -20.0 and audio["end"] == 400
 
@@ -353,16 +354,31 @@ async def test_run_sop_grading_uploads_then_raises_on_failed_tasks(video, monkey
     assert "sop_runs/vid/g0/grading/artifacts.zip" in uploads
 
 
-async def test_progress_callback_error_stops_the_run(video, tmp_path):
+async def test_progress_callback_error_stops_the_run_and_keeps_the_graded_criteria(video, tmp_path):
     class Stop(Exception):
         pass
 
-    async def on_progress(done, total, key):
-        raise Stop()
+    stop = Stop()
 
-    with pytest.raises(Stop):
+    async def on_progress(done, total, key):
+        if done == 2:
+            raise stop
+
+    with pytest.raises(grading.GradingIncomplete) as stopped:
         await grading.run_grading(video, segmentation(), tmp_path, FakeModel(), on_progress=on_progress)
-    assert not (tmp_path / "grading.json").exists()
+    assert stopped.value.errors == [stop]
+    verdicts = [c["verdict"] for s in stopped.value.partial["steps"] for c in s["criteria"] if c["source"] == "vlm"
+                or c["verdict"] == "待判定"]
+    assert verdicts.count("待判定") > 0 and len(verdicts) - verdicts.count("待判定") >= 2
+
+
+async def test_progress_callback_error_after_the_last_task_is_ignored(video, tmp_path):
+    async def on_progress(done, total, key):
+        if done == total:
+            raise RuntimeError("heartbeat after the end")
+
+    outcome = await grading.run_grading(video, segmentation(), tmp_path, FakeModel(), on_progress=on_progress)
+    assert outcome["failed_tasks"] == [] and outcome["validation_errors"] == []
 
 
 async def test_failed_grading_keeps_partial_and_resume_regrades_only_the_rest(video, monkeypatch):
@@ -401,3 +417,71 @@ async def test_resume_from_a_fully_graded_invalid_result_regrades_everything(vid
     outcome = await grading.run_sop_grading("gs://test-bucket/videos/x_src.mp4", "vid", 1, segmentation(),
                                             model_call=model, previous=first["result"])
     assert outcome["tasks"] == first["tasks"]
+
+
+def test_spans_stay_within_the_scripts_limit():
+    # 76.1 + 180 - 76.1 == 180.00000000000003, which motion_peaks.py / audio_peaks.py reject.
+    for start in (0.0, 76.1, 12.3, 99.7, 0.1):
+        spans = grading._spans(start, start + 400.0)
+        assert spans[0][0] == start and spans[-1][1] == start + 400.0
+        assert all(b - a <= grading.MOTION_MAX_SPAN for a, b in spans)
+        assert all(spans[i][1] == spans[i + 1][0] for i in range(len(spans) - 1))
+
+
+async def test_resume_merges_the_earlier_artifacts(video, monkeypatch):
+    uploads = {}
+    fake_gcs(monkeypatch, video, uploads)
+
+    class Exhausted(FakeModel):
+        async def __call__(self, system, content):
+            if "12a" in CRITERION.findall(content[0]["text"]):
+                raise RuntimeError("429 RESOURCE_EXHAUSTED")
+            return await super().__call__(system, content)
+
+    with pytest.raises(grading.GradingIncomplete) as failed:
+        await grading.run_sop_grading("gs://test-bucket/videos/x_src.mp4", "vid", 0, segmentation(),
+                                      model_call=Exhausted())
+    first_zip = "sop_runs/vid/g0/grading/artifacts.zip"
+    assert failed.value.files["artifacts"] == f"gs://test-bucket/{first_zip}"
+    first_names = set(zipfile.ZipFile(io.BytesIO(uploads[first_zip][0])).namelist())
+
+    def download(uri, filename):
+        if uri.endswith("artifacts.zip"):
+            Path(filename).write_bytes(uploads[uri.removeprefix("gs://test-bucket/")][0])
+        else:
+            shutil.copy(video, filename)
+
+    monkeypatch.setattr(grading.gcs_service, "download_to_filename", download)
+    await grading.run_sop_grading("gs://test-bucket/videos/x_src.mp4", "vid", 1, segmentation(),
+                                  model_call=FakeModel(), previous=failed.value.partial,
+                                  previous_artifacts=failed.value.files["artifacts"])
+    second = zipfile.ZipFile(io.BytesIO(uploads["sop_runs/vid/g1/grading/artifacts.zip"][0]))
+    names = set(second.namelist())
+    assert first_names <= names  # nothing from the first attempt is lost
+    assert any(n not in first_names for n in names)  # the rerun's new images got new numbers
+    assert "transcript_task_15-16-17.json" in names and "transcript_task_12.json" in names
+
+
+async def test_finished_grading_is_returned_when_the_upload_fails(video, monkeypatch):
+    fake_gcs(monkeypatch, video, {})
+
+    def broken(*_args):
+        raise OSError("503 from GCS")
+
+    monkeypatch.setattr(grading.gcs_service, "upload_file", broken)
+    outcome = await grading.run_sop_grading("gs://test-bucket/videos/x_src.mp4", "vid", 0, segmentation(),
+                                            model_call=FakeModel())
+    assert outcome["files"] == {} and "upload" in outcome["upload_error"]
+    assert outcome["failed_tasks"] == [] and len(outcome["result"]["steps"]) == 30
+
+
+async def test_invalid_graded_criteria_are_not_kept_for_the_next_attempt(video, monkeypatch):
+    fake_gcs(monkeypatch, video, {})
+    real = grading.load_grading_module("validate_grading").validate_grading
+    monkeypatch.setattr(grading.load_grading_module("validate_grading"), "validate_grading",
+                        lambda result, rubric, final=False: real(result, rubric, final=final) + ["1a: invalid"])
+    model = FakeModel({"12a": [{"action": "dance"}] * grading.MAX_CONSECUTIVE_REJECTS})
+    with pytest.raises(grading.GradingIncomplete) as failed:
+        await grading.run_sop_grading("gs://test-bucket/videos/x_src.mp4", "vid", 0, segmentation(),
+                                      model_call=model)
+    assert failed.value.partial is None

@@ -178,7 +178,13 @@ Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499，或 Claude 回傳 429／529（o
 - 失敗的任務全是 429／`RESOURCE_EXHAUSTED`、499 或逾時（配額暫時用完）時，與切分一樣由 queue 退避後自動重新派送（最多 `GEMINI_QUEUE_MAX_ATTEMPTS` 次），不必手動續跑。
 - 其他失敗（例如連續 4 次不合格動作）會讓工作失敗，按「從失敗處繼續」。
 
-不論哪一種，下一次嘗試都只把還沒評好的那幾組送給模型，已評好的標準沿用，也不會重新切分。全部標準都評好、只是驗證不過時，下一次改為整支重評。
+不論哪一種，下一次嘗試都只把還沒評好的那幾組送給模型，已評好的標準沿用，也不會重新切分；新的 `artifacts.zip` 會併入前一次的對話紀錄與影格，下載時看得到每一組的依據。已評好的標準本身驗證不過時不保留，下一次改為整支重評。
+
+另外幾種情況也不會丟掉已完成的評分：
+
+- 進度回報（heartbeat）遇到資料庫短暫斷線時只記 log，評分照常進行。
+- 評分完成但上傳 `artifacts.zip`／`grading.json` 到 GCS 失敗時，仍保存評分結果（`files` 為空並附 `upload_error`），只是沒有下載連結。
+- 同一工作的另一支影片失敗後，這支影片正在進行的評分：已評好的標準存進 `grading_partial`；若剛好評完，結果直接保存為已完成，續跑時不再重評。
 
 完成後的 `result` 為 `{"pipeline": "sop_grading", "items": [], "sop_skill": [...], "sop_grading": [...]}`，兩個陣列都依影片順序排列。`sop_grading` 的每一項含 `video_uri`、`result`（`sop-video-grading/schema.json`）、`tasks`、`failed_tasks`、`validation_errors`、`usage`、`files`、`model`，以及 `criterion_texts`（評分標準 id → `rubric.json` 的文字，供前端顯示）。
 
