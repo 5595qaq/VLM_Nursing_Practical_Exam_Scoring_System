@@ -54,6 +54,19 @@ def test_missing_motion_with_enough_time_is_partial(segmentation):
     assert build_step(load_rubric()["steps"][0], step["criteria"])["verdict"] == "部分正確"
 
 
+def test_flick_without_pushing_air_out_is_partial(segmentation):
+    # rubric 1.7: 17b (expel air) is not key, 17a (flick) is; VID_0106 step 17 was labelled 部分正確
+    from rubric import load_rubric
+    from rules import build_step
+    spec = next(s for s in load_rubric()["steps"] if s["step_id"] == 17)
+    for wrong, verdict in (("17b", "部分正確"), ("17a", "錯誤")):
+        step = result_step(fill_visual(grade_from_segmentation(segmentation), "正確"), 17)
+        for c in step["criteria"]:
+            if c["criterion_id"] == wrong:
+                c["verdict"] = "錯誤"
+        assert build_step(spec, step["criteria"])["verdict"] == verdict
+
+
 def test_no_washing_is_wrong(segmentation):
     seg_step(segmentation, 1).update(start=None, end=None, status="not_performed", evidence="未見洗手")
     step = result_step(grade_from_segmentation(segmentation), 1)
