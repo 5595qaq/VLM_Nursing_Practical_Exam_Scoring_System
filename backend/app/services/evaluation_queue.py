@@ -21,8 +21,11 @@ from app.services import agents, gcs_service
 ENTRYPOINT = "gemini_api_call"
 GAZELLE_ENTRYPOINT = "gazelle_inference"
 SOP_SKILL_ENTRYPOINT = "sop_skill_run"
+SOP_GRADING_ENTRYPOINT = "sop_grading_run"
 PIPELINE_AGENTS = "agents"  # Time_cuting + selected Agent_A ~ Agent_D
 PIPELINE_SOP_SKILL = "sop_skill"  # sop-video-skill segmentation only
+PIPELINE_SOP_GRADING = "sop_grading"  # sop-video-skill segmentation, then sop-video-grading
+SOP_PIPELINES = (PIPELINE_SOP_SKILL, PIPELINE_SOP_GRADING)
 TERMINAL = {"finished", "failed", "retired"}
 NORMALIZED_VIDEO_OBJECT = re.compile(r"^videos/[0-9a-f]{64}_src\.mp4$")
 
@@ -32,7 +35,7 @@ class ModelCall(BaseModel):
     version: Literal[1] = 1
     evaluation_id: str
     video_id: str
-    action: Literal["segment", "gaze", "score", "sop_skill"]
+    action: Literal["segment", "gaze", "score", "sop_skill", "sop_grading"]
     agent: Literal["Agent_A", "Agent_B", "Agent_C", "Agent_D"] | None = None
     generation: int = 0
 
@@ -76,7 +79,8 @@ async def enqueue(conn, call: ModelCall, position: int = 0):
     base = (f"score:{call.video_id}:{call.agent}" if call.action == "score"
             else f"{call.action}:{call.video_id}")
     key = f"{base}:{call.generation}"
-    entrypoint = {"gaze": GAZELLE_ENTRYPOINT, "sop_skill": SOP_SKILL_ENTRYPOINT}.get(call.action, ENTRYPOINT)
+    entrypoint = {"gaze": GAZELLE_ENTRYPOINT, "sop_skill": SOP_SKILL_ENTRYPOINT,
+                  "sop_grading": SOP_GRADING_ENTRYPOINT}.get(call.action, ENTRYPOINT)
     await Queries(AsyncpgDriver(conn)).enqueue(
         entrypoint, call.model_dump_json().encode(),
         execute_after=timedelta(milliseconds=position * settings.GEMINI_CALL_STAGGER_MS), dedupe_key=key,
@@ -109,14 +113,17 @@ async def fill_window(conn, job_id):
         "AND status IN ('queued','segmenting','scoring')", job_id,
     )
     videos = await conn.fetch(
-        "SELECT id,segments,gaze_status FROM evaluation_videos WHERE job_id=$1 "
-        "AND status='pending' ORDER BY position LIMIT $2",
+        "SELECT id,segments,gaze_status,sop_result IS NOT NULL AS segmented FROM evaluation_videos "
+        "WHERE job_id=$1 AND status='pending' ORDER BY position LIMIT $2",
         job_id, max(0, settings.MAX_ACTIVE_VIDEOS_PER_EVALUATION - active),
     )
     for position, video in enumerate(videos):
-        if job["pipeline"] == PIPELINE_SOP_SKILL:
-            await conn.execute("UPDATE evaluation_videos SET status='queued' WHERE id=$1", video["id"])
-            await enqueue(conn, ModelCall(evaluation_id=job_id, video_id=video["id"], action="sop_skill",
+        if job["pipeline"] in SOP_PIPELINES:
+            # Only sop_grading videos can be pending with a segmentation (a retry after grading failed).
+            action = "sop_grading" if video["segmented"] else "sop_skill"
+            await conn.execute("UPDATE evaluation_videos SET status=$2 WHERE id=$1", video["id"],
+                               "scoring" if video["segmented"] else "queued")
+            await enqueue(conn, ModelCall(evaluation_id=job_id, video_id=video["id"], action=action,
                                           generation=generation), position)
             continue
         if video["segments"] is None:
@@ -152,12 +159,14 @@ async def fill_window(conn, job_id):
                           position + agent_position)
 
 
-async def initialize_videos(conn, job_id, video_paths, selected_agents):
-    # SOP-skill jobs select no agents: one step per video and no gaze.
+async def initialize_videos(conn, job_id, video_paths, selected_agents, pipeline=PIPELINE_AGENTS):
+    # SOP jobs select no agents and no gaze: one step per video, two with grading.
     enable_gaze = bool({"Agent_A", "Agent_D"}.intersection(selected_agents))
+    steps_per_video = (2 if pipeline == PIPELINE_SOP_GRADING
+                       else 1 + len(selected_agents) + int(enable_gaze))
     await conn.execute(
         "INSERT INTO evaluation_progress(job_id,total_steps,completed_steps) VALUES($1,$2,0)",
-        job_id, len(video_paths) * (1 + len(selected_agents) + int(enable_gaze)),
+        job_id, len(video_paths) * steps_per_video,
     )
     for position, uri in enumerate(video_paths):
         video_id = str(uuid.uuid4())
@@ -176,7 +185,7 @@ async def initialize_videos(conn, job_id, video_paths, selected_agents):
 
 async def create_evaluation(conn, exam_topic, video_paths, selected_agents=None,
                             pipeline=PIPELINE_AGENTS):
-    if pipeline == PIPELINE_SOP_SKILL:
+    if pipeline in SOP_PIPELINES:
         selected_agents = []
     elif selected_agents is None:
         selected_agents = agents.AGENT_NAMES
@@ -192,7 +201,7 @@ async def create_evaluation(conn, exam_topic, video_paths, selected_agents=None,
             await branch(conn, job_id, name, "pending")
         if not {"Agent_A", "Agent_D"}.intersection(selected_agents):
             await branch(conn, job_id, "GAZE_PROCESSING", "completed", "Gaze analysis not selected")
-        await initialize_videos(conn, job_id, video_paths, selected_agents)
+        await initialize_videos(conn, job_id, video_paths, selected_agents, pipeline)
     return dict(id=job_id, exam_topic=exam_topic, status="pending", video_paths=video_paths,
                 selected_agents=selected_agents, pipeline=pipeline, result=None)
 
@@ -216,6 +225,12 @@ async def prepare_call(pool, call: ModelCall):
             if job["status"] == "pending":
                 await conn.execute("UPDATE evaluation_jobs SET status='uploading' WHERE id=$1", call.evaluation_id)
                 await branch(conn, call.evaluation_id, "GEMINI_UPLOAD", "in-progress", "Verifying uploaded videos in GCS...")
+        elif call.action == "sop_grading":
+            if video["sop_result"] is None:
+                raise ValueError("Grading cannot start before segmentation")
+            if video["grading_result"] is not None:
+                return None
+            await conn.execute("UPDATE evaluation_videos SET status='scoring' WHERE id=$1", call.video_id)
         elif call.action == "gaze":
             if video["segments"] is None:
                 raise ValueError("Gaze inference cannot start before segmentation")
@@ -257,6 +272,7 @@ async def prepare_call(pool, call: ModelCall):
             "segments": decoded(video["segments"]),
             "gaze_agents": [row["agent_name"] for row in gaze_agents],
             "gaze_artifacts": decoded(video["gaze_artifacts"]) if video["gaze_artifacts"] else {},
+            "sop_result": decoded(video["sop_result"]),
         }
 
 
@@ -340,10 +356,22 @@ async def persist_result(pool, call, result):
         elif call.action == "sop_skill":
             if video["sop_result"] is not None:
                 return
-            await conn.execute("UPDATE evaluation_videos SET sop_result=$2::json,status='finished' WHERE id=$1",
+            grading = job["pipeline"] == PIPELINE_SOP_GRADING
+            await conn.execute("UPDATE evaluation_videos SET sop_result=$2::json,status=$3 WHERE id=$1",
+                               call.video_id, json.dumps(result), "scoring" if grading else "finished")
+            if grading:
+                await enqueue(conn, ModelCall(evaluation_id=call.evaluation_id, video_id=call.video_id,
+                                              action="sop_grading", generation=call.generation))
+            else:
+                await fill_window(conn, call.evaluation_id)
+            message = f"SOP_skill finished segmenting {video['uri']}"
+        elif call.action == "sop_grading":
+            if video["grading_result"] is not None:
+                return
+            await conn.execute("UPDATE evaluation_videos SET grading_result=$2::json,status='finished' WHERE id=$1",
                                call.video_id, json.dumps(result))
             await fill_window(conn, call.evaluation_id)
-            message = f"SOP_skill finished segmenting {video['uri']}"
+            message = f"SOP_grading finished grading {video['uri']}"
         elif call.action == "gaze":
             if video["gaze_status"] in ("finished", "skipped"):
                 return
@@ -429,9 +457,12 @@ async def usage_rows(conn, job_id):
 async def finalize(conn, job_id):
     await branch(conn, job_id, "LLM_SCORING", "in-progress", "Aggregating agent outputs...")
     videos = await conn.fetch("SELECT * FROM evaluation_videos WHERE job_id=$1 ORDER BY position", job_id)
-    if await conn.fetchval("SELECT pipeline FROM evaluation_jobs WHERE id=$1", job_id) == PIPELINE_SOP_SKILL:
-        result = {"pipeline": PIPELINE_SOP_SKILL, "items": [],
+    pipeline = await conn.fetchval("SELECT pipeline FROM evaluation_jobs WHERE id=$1", job_id)
+    if pipeline in SOP_PIPELINES:
+        result = {"pipeline": pipeline, "items": [],
                   "sop_skill": [{"video_uri": v["uri"], **decoded(v["sop_result"])} for v in videos]}
+        if pipeline == PIPELINE_SOP_GRADING:
+            result["sop_grading"] = [{"video_uri": v["uri"], **decoded(v["grading_result"])} for v in videos]
         await conn.execute("UPDATE evaluation_jobs SET status='finished',result=$2::json WHERE id=$1",
                            job_id, json.dumps(result))
         await branch(conn, job_id, "LLM_SCORING", "completed", "Evaluation completed successfully.")

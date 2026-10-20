@@ -18,7 +18,7 @@
 - **評分證據時間點**：Agent_A、Agent_B、Agent_D 的每個評分步驟都會輸出 `證據時間點`（`MM:SS-MM:SS`），指出最直接支持判定的影片區間；未觀察到的步驟則填該動作應出現的檢查區間。前端下載的 CSV 也會帶出此欄位。
 - **PostgreSQL 持久佇列**：PgQueuer 管理派送、去重與中斷恢復；每個評分工作最多 10 支活動影片，所有 worker 合計最多 5 個 Gemini 呼叫。
 - **SOP 影片步驟切分 skill（開發中）**：`sop-video-skill/` 是新的前處理方案，把影片切成 30 個 SOP 步驟各自的時間區段（只切分、不評分）。評分表單的「執行模式」選「只跑 SOP 步驟切分」即可執行，詳見下方「SOP 影片步驟切分 skill」。
-- **SOP 評分（開發中）**：`sop-video-grading/` 讀取切分結果，對 30 步逐條判定「正確／錯誤／部分正確／無法判定」並附說明。看畫面的標準由評分 agent（Gemini，可聽影片聲音）判定；目前以命令列在本機逐支測試，尚未接上評分佇列與前端，詳見下方「SOP 評分」。
+- **SOP 評分（開發中）**：`sop-video-grading/` 讀取切分結果，對 30 步逐條判定「正確／錯誤／部分正確／無法判定」並附說明。看畫面的標準由評分 agent（Gemini，可聽影片聲音）判定。評分表單的「執行模式」選「SOP 步驟切分＋評分」即可從前端執行（先切分、再評分），也可以用命令列在本機逐支測試，詳見下方「SOP 評分」。
 
 ## 系統運作流程與架構
 
@@ -124,6 +124,7 @@ python sop-video-skill/scripts/schema_tools.py sop-video-skill/schema.json > out
 | `SOP_SKILL_CONCURRENCY` | 2 | 所有 worker 同時執行的 skill 數。skill 一次只送一個請求，但不計入 Agent A–D 的 5 路 Gemini 上限，兩者同時跑時 Gemini 最多會有 5＋2 個請求 |
 | `SOP_SKILL_MAX_TURNS` | 60 | 每支影片的最多回合數（預算用滿約 42 回合） |
 | `SOP_GRADING_DIR` | repo 內的 `sop-video-grading/`（容器內 `/sop-video-grading`） | 評分 agent 的 skill 目錄（SKILL.md、rubric、腳本） |
+| `SOP_GRADING_CONCURRENCY` | 2 | 「切分＋評分」模式下，所有 worker 同時評分的影片數。每支影片的評分最多同時送 3 個 Gemini 請求，所以評分最多 2×3 個請求，同樣不計入 Agent A–D 的 5 路上限 |
 
 Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499，或 Claude 回傳 429／529（overloaded），且 SDK 重試用盡時，該影片的 skill 任務會依 queue 層退避重新派送，並從頭重跑該影片（最多 `GEMINI_QUEUE_MAX_ATTEMPTS` 次，之後工作失敗）；其他錯誤（模型拒答、連續 6 次不合格動作、超過回合上限）會讓工作失敗，可在前端「從失敗處繼續」只重跑未完成的影片。
 
@@ -165,6 +166,27 @@ Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499，或 Claude 回傳 429／529（o
 
 評分 agent（`backend/app/services/sop_grading_service.py`）把待判定的標準依 `window_steps` 分組（例如 15b 與 17a 共用步驟 15–17 的區間），每組跑一段短對話：外部程式先附上區間的 3×3 影格，需要聲音或每 0.5 秒一格時改附 2 fps 的帶聲音片段；任務說明會列出程式算出的動作峰值，告訴模型短動作可能在哪裡（區間超過 180 秒時分段分析再合併，不會只看前 180 秒）；模型可再要求 `overview`／`zoom`／`burst`／`clip`（每組各 3／3／3／2 次），最後以 `final` 判定該組的每一條標準。不合格的動作（`validate_grading_action.py` 檢查不過，或腳本以 `REJECTED` 拒絕，例如要求的時間超出原檔長度）會連同錯誤訊息退回給模型，不執行也不扣預算；連續 4 次不合格，該組才算失敗。開場影格每 2–4 秒才一張，不到 1 秒的短動作（彈針、墊棉片、碰觸的瞬間）可能落在兩格之間，所以 SKILL.md 要求在峰值附近用 `burst` 確認；持續的持握姿勢（持毛筆、夾瓶、持針心尾端、單手回套）則在手穩定持握的時間點用 overview 或 zoom 看，判錯誤前要在兩個以上時間點都看到同樣的問題（依據見 `sop-video-grading/EXPERIMENTS.md`）。片段帶聲音只有 Gemini 支援，所以評分一律使用 Gemini（`SOP_SKILL_GEMINI_MODEL`）。
 
+#### 執行模式：SOP 步驟切分＋評分
+
+評分表單的「執行模式」選 **SOP 步驟切分＋評分**（API 傳 `"pipeline": "sop_grading"`，不可同時傳 `selected_agents`）。每支影片在佇列裡依序跑兩個任務：
+
+1. `sop_skill`：與「只跑 SOP 步驟切分」相同，切分結果存進該影片的 `sop_result`。
+2. `sop_grading`：切分完成時在同一個交易排入。worker 從 GCS 下載原檔，以 `sop_result` 的切分結果執行 `sop_grading_service.run_grading`，把 `grading.json` 與各組對話紀錄、影格（`artifacts.zip`，不含片段影片）上傳到 `gs://<bucket>/sop_runs/<video_id>/g<generation>/grading/`，結果存進 `grading_result`。每完成一組評分任務回報一次進度。
+
+工作的總步數是「影片數 × 2」。有任務失敗（例如 429 重試用盡、連續 4 次不合格動作）或最終結果驗證不過時，仍會先上傳對話紀錄，再讓工作失敗；按「從失敗處繼續」時，已有切分結果的影片只重跑評分，不會重新切分。
+
+完成後的 `result` 為 `{"pipeline": "sop_grading", "items": [], "sop_skill": [...], "sop_grading": [...]}`，兩個陣列都依影片順序排列。`sop_grading` 的每一項含 `video_uri`、`result`（`sop-video-grading/schema.json`）、`tasks`、`failed_tasks`、`validation_errors`、`usage`、`files`、`model`，以及 `criterion_texts`（評分標準 id → `rubric.json` 的文字，供前端顯示）。
+
+前端每支影片先顯示評分摘要與 30 步評分，再顯示原本的步驟切分表：
+
+- 得分 = 正確步數 ÷ 可判定步數（不適用、無法判定不計入分母），並列出各判定的步數與需人工複核的步數。
+- 每一步可展開，查看各評分標準的判定、來源（程式規則／模型／固定）、說明、證據、時間窗與無法判定的原因。
+- 可下載「SOP 評分 CSV」（每步一列），以及每支影片的評分 JSON 與對話紀錄 ZIP（`GET /api/v1/evaluations/{job_id}/sop-grading/{影片序號}/{result|artifacts}`，與切分的下載端點一樣只讀取本部署 bucket 的 `sop_runs/`）。
+
+評分的 token 用量以 `SOP_grading` 階段記錄。
+
+#### 命令列
+
 在本機逐支測試（轉檔 → 切分 → 評分；需要 Vertex AI 憑證，會計費）：
 
 ```bash
@@ -192,7 +214,7 @@ python sop-video-grading/scripts/validate_grading.py grading.json --final  # 最
 
 ### Token 用量與成本
 
-每一次成功的模型回應寫一列到 `model_usage`，記錄 evaluation、影片、階段（`Time_cuting`、`Agent_A`～`Agent_D`、`SOP_skill`）、generation、queue attempt、provider 與實際使用的模型。JSON 驗證失敗後的重送與 SOP skill 的每一回合也都會計費，所以各自算一列；HTTP 失敗、沒有回應的嘗試沒有 token，不會記錄。工作被刪除時，對應的用量列也會一起刪除。
+每一次成功的模型回應寫一列到 `model_usage`，記錄 evaluation、影片、階段（`Time_cuting`、`Agent_A`～`Agent_D`、`SOP_skill`、`SOP_grading`）、generation、queue attempt、provider 與實際使用的模型。JSON 驗證失敗後的重送與 SOP skill 的每一回合也都會計費，所以各自算一列；HTTP 失敗、沒有回應的嘗試沒有 token，不會記錄。工作被刪除時，對應的用量列也會一起刪除。
 
 | 欄位 | 意義 |
 | --- | --- |
@@ -432,7 +454,7 @@ docker compose down
 1. 無需特別的伺服器。請使用檔案總管進入 `frontend` 資料夾，直接**對著 `index.html` 點擊兩下**開啟，或是將 `index.html` 檔案**直接拖曳到您的瀏覽器視窗**中。
    *(注意：請不要直接在網址列手動輸入 `frontend/index.html`，否則瀏覽器會當成網址搜尋而報錯)*
 2. 選擇評估項目後，在「Upload Videos to GCS」選取本機影片檔案並按下「Upload to GCS」——內容相同的影片（依 SHA-256 判斷，與檔名無關）若已存在於 bucket 中會直接沿用，不會重複上傳。也可以在下方文字框貼上本系統先前產生的 `gs://` 路徑。
-3. 點擊「Start Evaluation」進行即時評分！結果會依 Agent 分組顯示，並提供「View Raw JSON Response」查看模型原始輸出，方便測試/調整 prompt。完成後可用「下載評分總表 CSV」與「下載完整分析資料 CSV」匯出結果，用「下載 token 用量 CSV」查看每次模型呼叫的 token 數與估計成本。
+3. 點擊「Start Evaluation」進行即時評分！結果會依 Agent 分組顯示，並提供「View Raw JSON Response」查看模型原始輸出，方便測試/調整 prompt。完成後可用「下載評分總表 CSV」與「下載完整分析資料 CSV」匯出結果，用「下載 token 用量 CSV」查看每次模型呼叫的 token 數與估計成本。執行模式選「SOP 步驟切分＋評分」時，改為顯示 SOP 評分與步驟切分表，並可下載「SOP 評分 CSV」與「步驟切分 CSV」。
 
 ## 測試與 CI
 
@@ -440,7 +462,7 @@ docker compose down
 
 | Workflow | 觸發 | 內容 |
 | --- | --- | --- |
-| `python-ci.yml` | push 或 PR 到 `main`、`release/**` | 先跑 `tests/sop_skill/`、`tests/sop_grading/`，再以 PostgreSQL 跑後端 pytest |
+| `python-ci.yml` | push 或 PR 到 `main`、`release/**` | 先跑 `tests/sop_skill/`、`tests/sop_grading/` 與前端 Node 測試，再以 PostgreSQL 跑後端 pytest |
 | `claude-code-review.yml` | PR 開啟、推送新提交、重新開啟或轉為可審查 | Claude 以 code-review 外掛審查 PR，結果以行內留言貼回（草稿與 fork 的 PR 不審查） |
 | `claude.yml` | issue／PR 留言、review 或新 issue 中提到 `@claude` | Claude 回應並可推送提交；只有具寫入權限的人能觸發 |
 
@@ -466,7 +488,8 @@ my-awesome-project/
 │   ├── app.js
 │   ├── csv-export.js
 │   ├── recovery.js
-│   └── sop-result.js
+│   ├── sop-result.js
+│   └── sop-grading.js
 ├── backend/
 │   ├── Dockerfile
 │   ├── Dockerfile.gazelle

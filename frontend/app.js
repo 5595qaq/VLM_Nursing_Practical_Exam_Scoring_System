@@ -86,17 +86,18 @@ const uploadStatusList = document.getElementById('upload-status-list');
 const clearUploadsBtn = document.getElementById('clear-uploads-btn');
 const retryBtn = document.getElementById('retry-btn');
 const agentSelection = document.getElementById('agent-selection');
-const pipelineHint = document.getElementById('pipeline-hint');
+const pipelineHints = document.querySelectorAll('[data-pipeline]');
+const SOP_PIPELINES = ['sop_skill', 'sop_grading'];
 
 function selectedPipeline() {
     return document.querySelector('input[name="pipeline"]:checked')?.value || 'agents';
 }
 
-// sop_skill runs only sop-video-skill segmentation, so the Agent choice does not apply.
+// The SOP pipelines (segmentation, segmentation + grading) run no Agent, so the Agent choice does not apply.
 function updatePipelineUi() {
-    const sopOnly = selectedPipeline() === 'sop_skill';
-    agentSelection.hidden = sopOnly;
-    pipelineHint.hidden = !sopOnly;
+    const pipeline = selectedPipeline();
+    agentSelection.hidden = pipeline !== 'agents';
+    pipelineHints.forEach(hint => { hint.hidden = hint.dataset.pipeline !== pipeline; });
 }
 
 document.querySelectorAll('input[name="pipeline"]').forEach(input => input.addEventListener('change', updatePipelineUi));
@@ -532,9 +533,10 @@ async function fetchAndRenderResult(jobId, appendLog) {
         currentEvaluationJob = job;
         renderResult(job.result);
         setDownloadButtonsEnabled(Array.isArray(job.result?.items) && job.result.items.length > 0);
-        const sopOnly = job.result?.pipeline === 'sop_skill';
-        sopCsvDownloadBtn.hidden = !sopOnly;
-        summaryDownloadBtn.hidden = detailDownloadBtn.hidden = sopOnly;
+        const sopPipeline = SOP_PIPELINES.includes(job.result?.pipeline);
+        sopCsvDownloadBtn.hidden = !sopPipeline;
+        gradingCsvDownloadBtn.hidden = job.result?.pipeline !== 'sop_grading';
+        summaryDownloadBtn.hidden = detailDownloadBtn.hidden = sopPipeline;
         // Tokens of every model response (incl. retries), with cost when prices are configured.
         usageDownloadLink.href = `${API_BASE}/api/v1/evaluations/${jobId}/usage.csv`;
         usageDownloadLink.hidden = false;
@@ -548,11 +550,17 @@ async function fetchAndRenderResult(jobId, appendLog) {
 const summaryDownloadBtn = document.getElementById('download-summary-btn');
 const detailDownloadBtn = document.getElementById('download-detail-btn');
 const sopCsvDownloadBtn = document.getElementById('download-sop-csv-btn');
+const gradingCsvDownloadBtn = document.getElementById('download-grading-csv-btn');
 const usageDownloadLink = document.getElementById('download-usage-link');
 
 sopCsvDownloadBtn.addEventListener('click', () => {
     if (!currentEvaluationJob) return;
     downloadCsv(SopResult.buildStepsCsv(currentEvaluationJob, videoNames), makeCsvFilename('步驟切分'));
+});
+
+gradingCsvDownloadBtn.addEventListener('click', () => {
+    if (!currentEvaluationJob) return;
+    downloadCsv(SopGrading.buildGradingCsv(currentEvaluationJob, videoNames), makeCsvFilename('SOP評分'));
 });
 
 summaryDownloadBtn.addEventListener('click', () => {
@@ -601,7 +609,7 @@ function renderResult(result) {
     const feed = document.getElementById('result-feed');
     feed.innerHTML = "";
 
-    if (result?.pipeline === 'sop_skill') {
+    if (SOP_PIPELINES.includes(result?.pipeline)) {
         renderSopSkillResult(feed, result, currentEvaluationJob?.id);
         return;
     }
@@ -693,6 +701,14 @@ function renderSopSkillResult(feed, result, jobId) {
         details.append(summary, code);
         section.append(title, details);
 
+        const grading = result.sop_grading?.[position];
+        if (grading) {
+            renderGradingSection(section, grading, jobId, position);
+            const segTitle = document.createElement('h4');
+            segTitle.textContent = '步驟切分';
+            section.appendChild(segTitle);
+        }
+
         const counts = SopResult.statusCounts(run.result);
         const budget = run.result?.meta?.budget || {};
         const info = document.createElement('p');
@@ -748,6 +764,74 @@ function renderSopSkillResult(feed, result, jobId) {
         }
         feed.appendChild(section);
     });
+}
+
+function renderGradingSection(section, run, jobId, position) {
+    const score = SopGrading.scoreSummary(run.result);
+    const counts = score.counts;
+    const heading = document.createElement('h4');
+    heading.textContent = 'SOP 評分';
+    const info = document.createElement('p');
+    info.className = 'sop-summary grading-score';
+    info.textContent = `得分 ${score.correct}/${score.gradable}`
+        + (score.percent === null ? '' : `（${score.percent}%）`)
+        + `｜正確 ${counts['正確']}、部分正確 ${counts['部分正確']}、錯誤 ${counts['錯誤']}、`
+        + `無法判定 ${counts['無法判定']}、不適用 ${counts['不適用']}`
+        + (score.needsReview ? `｜需人工複核 ${score.needsReview} 步` : '')
+        + `｜模型 ${run.model || '未知'}`;
+    section.append(heading, info);
+
+    const files = document.createElement('div');
+    files.className = 'download-actions';
+    [['result', '下載評分 JSON'], ['artifacts', '下載評分對話紀錄與圖片 ZIP']]
+        .filter(([kind]) => run.files?.[kind])
+        .forEach(([kind, label]) => {
+            const link = document.createElement('a');
+            link.className = 'button-link';
+            link.href = SopGrading.fileUrl(API_BASE, jobId, position, kind);
+            link.textContent = label;
+            files.appendChild(link);
+        });
+    section.appendChild(files);
+
+    const steps = [...(run.result?.steps || [])].sort((a, b) => a.step_id - b.step_id);
+    const rows = SopGrading.buildStepRows(run.result);
+    const list = document.createElement('div');
+    list.className = 'grading-steps';
+    rows.forEach((row, index) => {
+        const item = document.createElement('details');
+        item.className = `grading-step grade-${row.verdictClass}`;
+        const summary = document.createElement('summary');
+        const verdict = document.createElement('span');
+        verdict.className = 'grade-badge';
+        verdict.textContent = row.verdict;
+        const name = document.createElement('span');
+        name.className = 'grading-step-name';
+        name.textContent = `${row.stepId}. ${row.stepName}`;
+        summary.append(verdict, name);
+        if (row.needsReview) {
+            const review = document.createElement('span');
+            review.className = 'review-badge';
+            review.textContent = '需人工複核';
+            summary.appendChild(review);
+        }
+        const explanation = document.createElement('p');
+        explanation.className = 'grading-explanation';
+        explanation.textContent = row.explanation + (row.confidence === '' ? '' : `（信心 ${row.confidence}）`);
+        item.append(summary, explanation);
+        const criteria = SopGrading.buildCriterionRows(steps[index], run.criterion_texts || {});
+        item.appendChild(createTable(
+            ['項目', '評分標準', '判定', '來源', '說明', '證據', '時間窗', '無法判定原因', '信心', '複核'],
+            criteria.map(c => ({
+                source: c.verdictClass,
+                cells: [c.id, c.text, c.verdict, c.source, c.explanation, c.evidence, c.window, c.reason,
+                        c.confidence, c.review]
+            })),
+            verdictClass => `grade-row grade-${verdictClass}`
+        ));
+        list.appendChild(item);
+    });
+    section.appendChild(list);
 }
 
 function renderResultCard(item) {
@@ -861,6 +945,15 @@ function localizeMessage(message = '') {
 
     const sopFinished = message.match(/^SOP_skill finished segmenting (.+)$/);
     if (sopFinished) return `已完成 SOP 步驟切分：${sopFinished[1]}`;
+
+    const gradingProgress = message.match(/^SOP_grading task (\d+)\/(\d+) \| (.+?) \| (\d+)s \| (.+)$/);
+    if (gradingProgress) {
+        const [, done, total, key, seconds, uri] = gradingProgress;
+        return `SOP 評分已完成 ${done}/${total} 個評分任務（最近完成：${key}；已執行 ${seconds} 秒）：${uri}`;
+    }
+
+    const gradingFinished = message.match(/^SOP_grading finished grading (.+)$/);
+    if (gradingFinished) return `已完成 SOP 評分：${gradingFinished[1]}`;
 
     const segmented = message.match(/^Time_cuting finished segmenting (.+)$/);
     if (segmented) return `已完成影片分段：${segmented[1]}`;

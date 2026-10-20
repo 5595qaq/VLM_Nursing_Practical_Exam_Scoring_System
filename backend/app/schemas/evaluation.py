@@ -2,8 +2,9 @@ from pydantic import BaseModel, Field, ConfigDict, field_validator, model_valida
 from typing import List, Optional, Any, Dict, Literal
 
 AgentName = Literal["Agent_A", "Agent_B", "Agent_C", "Agent_D"]
-# agents: Time_cuting + selected Agent_A ~ Agent_D; sop_skill: only sop-video-skill segmentation.
-Pipeline = Literal["agents", "sop_skill"]
+# agents: Time_cuting + selected Agent_A ~ Agent_D; sop_skill: only sop-video-skill segmentation;
+# sop_grading: sop-video-skill segmentation, then sop-video-grading.
+Pipeline = Literal["agents", "sop_skill", "sop_grading"]
 
 class EvaluationCreate(BaseModel):
     model_config = ConfigDict(extra="forbid")
@@ -22,9 +23,9 @@ class EvaluationCreate(BaseModel):
 
     @model_validator(mode="after")
     def agents_for_pipeline(self):
-        if self.pipeline == "sop_skill":
+        if self.pipeline in ("sop_skill", "sop_grading"):
             if self.selected_agents:
-                raise ValueError("selected_agents must be omitted or empty for the sop_skill pipeline")
+                raise ValueError(f"selected_agents must be omitted or empty for the {self.pipeline} pipeline")
             self.selected_agents = []
         elif self.selected_agents is None:
             self.selected_agents = ["Agent_A", "Agent_B", "Agent_C", "Agent_D"]

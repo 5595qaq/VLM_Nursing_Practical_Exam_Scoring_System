@@ -29,27 +29,40 @@ SOP_FILE_TYPES = {
 }
 
 
-@router.get("/{job_id}/sop-skill/{position}/{kind}")
-async def download_sop_skill_file(job_id: str, position: int,
-                                  kind: Literal["artifacts", "result", "transcript"], request: Request):
-    """Stream one sop-video-skill run file (images zip, result, model transcript) from GCS."""
+async def _download_run_file(request: Request, job_id: str, section: str, position: int, kind: str,
+                             label: str) -> Response:
+    """Stream files[kind] of job.result[section][position] from this deployment's sop_runs/ in GCS."""
     async with request.app.state.queue_pool.acquire() as connection:
         result = evaluation_queue.decoded(
             await connection.fetchval("SELECT result FROM evaluation_jobs WHERE id=$1", job_id))
-    runs = (result or {}).get("sop_skill") if isinstance(result, dict) else None
+    runs = (result or {}).get(section) if isinstance(result, dict) else None
     if not runs or not 0 <= position < len(runs):
-        raise HTTPException(status_code=404, detail="SOP skill result not found")
+        raise HTTPException(status_code=404, detail=f"{label} result not found")
     uri = (runs[position].get("files") or {}).get(kind)
     if not uri:
         raise HTTPException(status_code=404, detail=f"No {kind} file for this video")
     bucket, object_name = gcs_service.parse_gcs_uri(uri)
     if bucket != gcs_service.settings.GCS_BUCKET_NAME or not object_name.startswith("sop_runs/"):
-        raise HTTPException(status_code=404, detail="SOP skill file is outside this deployment")
+        raise HTTPException(status_code=404, detail=f"{label} file is outside this deployment")
     data = await asyncio.to_thread(gcs_service.download_as_bytes, uri)
     media_type, extension = SOP_FILE_TYPES[kind]
-    filename = f"sop_skill_{job_id[:8]}_{position + 1}_{kind}.{extension}"
+    filename = f"{section}_{job_id[:8]}_{position + 1}_{kind}.{extension}"
     return Response(data, media_type=media_type,
                     headers={"Content-Disposition": f'attachment; filename="{filename}"'})
+
+
+@router.get("/{job_id}/sop-skill/{position}/{kind}")
+async def download_sop_skill_file(job_id: str, position: int,
+                                  kind: Literal["artifacts", "result", "transcript"], request: Request):
+    """Stream one sop-video-skill run file (images zip, result, model transcript) from GCS."""
+    return await _download_run_file(request, job_id, "sop_skill", position, kind, "SOP skill")
+
+
+@router.get("/{job_id}/sop-grading/{position}/{kind}")
+async def download_sop_grading_file(job_id: str, position: int,
+                                    kind: Literal["artifacts", "result"], request: Request):
+    """Stream one sop-video-grading run file (task transcripts and images zip, grading.json) from GCS."""
+    return await _download_run_file(request, job_id, "sop_grading", position, kind, "SOP grading")
 
 
 async def _usage_summary(job_id: str, request: Request) -> dict:

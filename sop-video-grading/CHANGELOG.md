@@ -6,6 +6,7 @@
 - `sop_grading_service.py`：音軌在任務區間內沒有任何聲音樣本（`max_db` 為 null）時，任務說明改寫「沒有讀到聲音樣本」，不再因格式化 None 而讓 15b+17a／27a 任務失敗。
 - `sop_grading_service.py`：`--steps` 重評時，任務失敗（429、連續不合格）的標準保留上次 `grading.json` 的判定，不再被覆寫成待判定；失敗仍列在 `failed_tasks`。
 - `tests/sop_grading/requirements.txt`：補上 `numpy`（`motion_peaks.py`、`audio_peaks.py` 與其測試需要）。
+- 接上佇列、API 與前端：新增 `pipeline=sop_grading`（切分完成後排入評分任務）、`run_sop_grading`（從 GCS 下載、上傳 `grading.json` 與對話紀錄到 `sop_runs/<video_id>/g<generation>/grading/`、有失敗任務時讓工作失敗）、`run_grading` 的 `on_progress` 參數、下載端點 `/sop-grading/{位置}/{result|artifacts}`，以及前端的評分摘要、逐步評分表與 SOP 評分 CSV。評分邏輯與命令列行為不變。
 - `sop_grading_service.py`：任務區間超過 180 秒時，動作峰值與聲音峰值改為每 180 秒一段分別分析再合併。原本只分析前 180 秒，15-16-17 這類長區間尾端的彈針聲會被漏掉，任務說明卻顯示「連續響聲：（無）」。
 
 ## 0.9（rubric 1.5）

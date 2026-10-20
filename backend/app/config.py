@@ -66,6 +66,8 @@ class Settings:
     MODEL_PRICES = _model_prices()
     SOP_SKILL_CONCURRENCY = _integer("SOP_SKILL_CONCURRENCY", 2)
     SOP_SKILL_MAX_TURNS = _integer("SOP_SKILL_MAX_TURNS", 60)
+    # Videos graded at once across all workers; each grading runs up to 3 Gemini tasks in parallel.
+    SOP_GRADING_CONCURRENCY = _integer("SOP_GRADING_CONCURRENCY", 2)
 
     if SOP_SKILL_PROVIDER not in ("gemini", "claude"):
         raise ValueError("SOP_SKILL_PROVIDER must be 'gemini' or 'claude'")

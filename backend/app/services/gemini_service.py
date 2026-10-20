@@ -8,7 +8,8 @@ import asyncpg
 from pgqueuer import RetryRequested
 
 from app.config import settings
-from app.services import agents, evaluation_queue as repository, gcs_service, sop_skill_service, usage
+from app.services import (agents, evaluation_queue as repository, gcs_service, sop_grading_service,
+                          sop_skill_service, usage)
 from app.services.model_logging import context, emit
 
 logger = logging.getLogger("uvicorn.error.analysis_progress")
@@ -124,9 +125,30 @@ async def _run_sop_skill(pool, call, video_uri):
         return None
 
 
+async def _run_sop_grading(pool, call, video):
+    """Grade the stored segmentation, publishing one heartbeat per finished grading task."""
+    started = time.monotonic()
+    video_uri = video["uri"]
+
+    async def report(done, total, key):
+        message = f"SOP_grading task {done}/{total} | {key} | {int(time.monotonic() - started)}s | {video_uri}"
+        if not await repository.report_progress(pool, call, lambda _uri: message):
+            raise _ObsoleteCall()
+
+    try:
+        return await sop_grading_service.run_sop_grading(
+            video_uri, call.video_id, call.generation, video["sop_result"]["result"], report,
+        )
+    except _ObsoleteCall:
+        return None
+
+
+STAGES = {"sop_skill": "SOP_skill", "sop_grading": "SOP_grading"}
+
+
 async def process_model_call(job, pool):
     call = repository.ModelCall.model_validate_json(job.payload)
-    stage = "SOP_skill" if call.action == "sop_skill" else "Time_cuting"
+    stage = STAGES.get(call.action, "Time_cuting")
     token = context.set({"queue_job_id": job.id, "evaluation_id": call.evaluation_id,
                          "video_id": call.video_id, "agent": call.agent or stage,
                          "queue_attempt": job.attempts})
@@ -151,6 +173,12 @@ async def process_model_call(job, pool):
                 result = await _run_sop_skill(pool, call, video["uri"])
             else:
                 result = await _segment_with_progress(pool, call, video["uri"])
+            if result is None:
+                emit("model_stage_skipped")
+                return
+        elif call.action == "sop_grading":
+            # The video was verified before its segmentation; grading reuses it.
+            result = await _run_sop_grading(pool, call, video)
             if result is None:
                 emit("model_stage_skipped")
                 return

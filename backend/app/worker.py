@@ -8,7 +8,7 @@ from pgqueuer import PgQueuer
 from app.config import settings
 from app.db import asyncpg_dsn
 from app.services import agents, sop_skill_service
-from app.services.evaluation_queue import ENTRYPOINT, SOP_SKILL_ENTRYPOINT
+from app.services.evaluation_queue import ENTRYPOINT, SOP_GRADING_ENTRYPOINT, SOP_SKILL_ENTRYPOINT
 from app.services.gemini_service import process_model_call
 
 
@@ -21,6 +21,11 @@ def register(pgq, pool):
     # in GEMINI_GLOBAL_CONCURRENCY, so Gemini may see up to GEMINI_GLOBAL + SOP_SKILL requests.
     @pgq.entrypoint(SOP_SKILL_ENTRYPOINT, concurrency_limit=settings.SOP_SKILL_CONCURRENCY, on_failure="hold")
     async def handle_sop_skill(job):
+        await process_model_call(job, pool)
+
+    # Each grading runs up to 3 Gemini tasks at once, so it has its own limit too.
+    @pgq.entrypoint(SOP_GRADING_ENTRYPOINT, concurrency_limit=settings.SOP_GRADING_CONCURRENCY, on_failure="hold")
+    async def handle_sop_grading(job):
         await process_model_call(job, pool)
 
 

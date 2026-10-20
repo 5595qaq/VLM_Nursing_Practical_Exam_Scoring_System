@@ -57,6 +57,7 @@ services:
       # 選填：各模型每 1M token 的美元單價（JSON），用來估計成本；token 用量不論是否設定都會記錄
       - MODEL_PRICES_JSON
       - SOP_SKILL_CONCURRENCY=${SOP_SKILL_CONCURRENCY:-2}
+      - SOP_GRADING_CONCURRENCY=${SOP_GRADING_CONCURRENCY:-2}
       - SOP_SKILL_MAX_TURNS=${SOP_SKILL_MAX_TURNS:-60}
       - SOP_SKILL_DIR=/sop-video-skill
       - SOP_GRADING_DIR=/sop-video-grading
