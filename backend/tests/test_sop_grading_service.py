@@ -244,3 +244,28 @@ def test_gemini_parts_sends_video_with_fps(tmp_path):
 def test_system_prompt_includes_skill_steps_and_actions():
     system = grading.build_system_prompt()
     assert "SOP 影片評分" in system and "30 步驟定義" in system and '"const": "clip"' in system
+
+
+def test_long_windows_are_analysed_in_pieces(tmp_path, monkeypatch):
+    assert grading._spans(0, 100) == [(0, 100)]
+    assert grading._spans(10, 400) == [(10, 190), (190, 370), (370, 400)]
+
+    calls = []
+
+    def script(self, name, *args):
+        start, end = float(args[1]), float(args[3])
+        calls.append((name, start, end))
+        if name == "motion_peaks.py":
+            return json.dumps({"peaks": [{"t": start + 1, "e": start / 1000}]})
+        return json.dumps({"has_audio": True, "silent": False, "max_db": -20.0 - start / 100,
+                           "floor_db": -50.0, "start": start, "end": end,
+                           "peaks": [{"t": end - 1 + i * 0.3, "db": -25.0} for i in range(3)], "runs": []})
+
+    monkeypatch.setattr(grading.GradingRunner, "_grading_script", script)
+    runner = grading.GradingRunner(tmp_path, tmp_path / "v.mp4")
+    peaks = runner.motion_peaks(0, 400, HANDS)
+    assert [p["t"] for p in peaks] == [1, 181, 361]
+    audio = runner.audio_peaks(0, 400)
+    assert [c[1:] for c in calls if c[0] == "audio_peaks.py"] == [(0, 180), (180, 360), (360, 400)]
+    # The flick at the end of the window (399 s) is no longer cut off at 180 s.
+    assert audio["runs"][-1]["start"] == 399 and audio["max_db"] == -20.0 and audio["end"] == 400

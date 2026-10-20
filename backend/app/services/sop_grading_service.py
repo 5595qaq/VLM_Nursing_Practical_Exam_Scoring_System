@@ -95,6 +95,16 @@ def build_tasks(result: dict, rubric: dict, steps: set[int] | None = None) -> li
     return tasks
 
 
+def _spans(start: float, end: float) -> list[tuple[float, float]]:
+    """Split [start, end] into pieces of at most MOTION_MAX_SPAN s (the peak scripts' limit).
+    A long 15-16-17 window used to be cut at 180 s, dropping the flick near its end."""
+    spans, a = [], start
+    while end - a > MOTION_MAX_SPAN:
+        spans.append((a, a + MOTION_MAX_SPAN))
+        a += MOTION_MAX_SPAN
+    return spans + [(a, end)]
+
+
 class GradingRunner(ScriptRunner):
     """ScriptRunner (overview / zoom from sop-video-skill) plus clip.py from sop-video-grading."""
 
@@ -129,18 +139,26 @@ class GradingRunner(ScriptRunner):
 
     def motion_peaks(self, start: float, end: float, box) -> list[dict]:
         """Short bursts of hand movement in the window, so the agent knows where to zoom/burst."""
-        if end - start > MOTION_MAX_SPAN:
-            end = start + MOTION_MAX_SPAN
-        out = self._grading_script("motion_peaks.py", "--start", start, "--end", end,
-                                   "--box", ",".join(map(str, box)), "--top", MOTION_TOP)
-        return json.loads(out.strip().splitlines()[-1])["peaks"]
+        peaks = []
+        for a, b in _spans(start, end):  # the script handles at most MOTION_MAX_SPAN s per call
+            out = self._grading_script("motion_peaks.py", "--start", a, "--end", b,
+                                       "--box", ",".join(map(str, box)), "--top", MOTION_TOP)
+            peaks += json.loads(out.strip().splitlines()[-1])["peaks"]
+        return sorted(sorted(peaks, key=lambda p: -p["e"])[:MOTION_TOP], key=lambda p: p["t"])
 
     def audio_peaks(self, start: float, end: float) -> dict:
         """Short sharp sounds (flick clicks) in the window, so the agent knows where to burst."""
-        if end - start > MOTION_MAX_SPAN:
-            end = start + MOTION_MAX_SPAN
-        return json.loads(self._grading_script("audio_peaks.py", "--start", start, "--end", end)
-                          .strip().splitlines()[-1])
+        parts = [json.loads(self._grading_script("audio_peaks.py", "--start", a, "--end", b)
+                            .strip().splitlines()[-1]) for a, b in _spans(start, end)]
+        if len(parts) == 1 or not parts[0]["has_audio"]:
+            return {**parts[0], "start": start, "end": end}
+        levels = [p["max_db"] for p in parts if p["max_db"] is not None]
+        floors = [p["floor_db"] for p in parts if p["floor_db"] is not None]
+        peaks = sorted((pk for p in parts for pk in p["peaks"]), key=lambda pk: pk["t"])
+        return {"has_audio": True, "silent": all(p["silent"] for p in parts),
+                "max_db": max(levels) if levels else None, "floor_db": min(floors) if floors else None,
+                "peaks": peaks, "runs": load_grading_module("audio_peaks").find_runs(peaks),
+                "start": start, "end": end}
 
     def burst(self, start: float, end: float, n: int, region, context_box) -> Material:
         out = self._next(f"burst_{start:g}-{end:g}.jpg")

@@ -162,7 +162,7 @@ Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499，或 Claude 回傳 429／529（o
 
 步驟定義沿用 `sop-video-skill/references/sop_steps.md`。
 
-評分 agent（`backend/app/services/sop_grading_service.py`）把待判定的標準依 `window_steps` 分組（例如 15b 與 17a 共用步驟 15–17 的區間），每組跑一段短對話：外部程式先附上區間的 3×3 影格，需要聲音或每 0.5 秒一格時改附 2 fps 的帶聲音片段；任務說明會列出程式算出的動作峰值，告訴模型短動作可能在哪裡；模型可再要求 `overview`／`zoom`／`burst`／`clip`（每組各 3／3／3／2 次），最後以 `final` 判定該組的每一條標準。開場影格每 2–4 秒才一張，不到 1 秒的短動作（彈針、墊棉片、碰觸的瞬間）可能落在兩格之間，所以 SKILL.md 要求在峰值附近用 `burst` 確認；持續的持握姿勢（持毛筆、夾瓶、持針心尾端、單手回套）則在手穩定持握的時間點用 overview 或 zoom 看，判錯誤前要在兩個以上時間點都看到同樣的問題（依據見 `sop-video-grading/EXPERIMENTS.md`）。片段帶聲音只有 Gemini 支援，所以評分一律使用 Gemini（`SOP_SKILL_GEMINI_MODEL`）。
+評分 agent（`backend/app/services/sop_grading_service.py`）把待判定的標準依 `window_steps` 分組（例如 15b 與 17a 共用步驟 15–17 的區間），每組跑一段短對話：外部程式先附上區間的 3×3 影格，需要聲音或每 0.5 秒一格時改附 2 fps 的帶聲音片段；任務說明會列出程式算出的動作峰值，告訴模型短動作可能在哪裡（區間超過 180 秒時分段分析再合併，不會只看前 180 秒）；模型可再要求 `overview`／`zoom`／`burst`／`clip`（每組各 3／3／3／2 次），最後以 `final` 判定該組的每一條標準。開場影格每 2–4 秒才一張，不到 1 秒的短動作（彈針、墊棉片、碰觸的瞬間）可能落在兩格之間，所以 SKILL.md 要求在峰值附近用 `burst` 確認；持續的持握姿勢（持毛筆、夾瓶、持針心尾端、單手回套）則在手穩定持握的時間點用 overview 或 zoom 看，判錯誤前要在兩個以上時間點都看到同樣的問題（依據見 `sop-video-grading/EXPERIMENTS.md`）。片段帶聲音只有 Gemini 支援，所以評分一律使用 Gemini（`SOP_SKILL_GEMINI_MODEL`）。
 
 在本機逐支測試（轉檔 → 切分 → 評分；需要 Vertex AI 憑證，會計費）：
 
