@@ -67,7 +67,7 @@ class CancelledApiError(RuntimeError):
     status = "CANCELLED"
 
 
-@pytest.mark.parametrize("attempts,expected_delay", [(0, 60), (1, 120), (4, 900), (100, 900)])
+@pytest.mark.parametrize("attempts,expected_delay", [(0, 60), (1, 120), (4, 900), (8, 900)])
 async def test_resource_exhausted_requeues_without_failing_parent(monkeypatch, attempts, expected_delay):
     call = repo.ModelCall(evaluation_id="e", video_id="v", action="score", agent="Agent_A")
     job = type("Job", (), {"payload": call.model_dump_json(), "id": 7, "attempts": attempts})()
@@ -92,6 +92,23 @@ async def test_resource_exhausted_requeues_without_failing_parent(monkeypatch, a
     assert captured["delay"] == timedelta(seconds=expected_delay)
     assert captured["reason"] == "Transient Vertex AI failure after request retries"
     failure.assert_not_awaited()
+
+
+async def test_transient_error_fails_the_job_after_max_queue_attempts(monkeypatch):
+    call = repo.ModelCall(evaluation_id="e", video_id="v", action="score", agent="Agent_A")
+    attempts = gemini_service.settings.GEMINI_QUEUE_MAX_ATTEMPTS - 1  # this is the last allowed run
+    job = type("Job", (), {"payload": call.model_dump_json(), "id": 7, "attempts": attempts})()
+    video = {"uri": "gs://bucket/v.mp4", "gaze_overlay_uri": "gs://bucket/gaze.mp4", "gaze_status": "finished",
+             "segments": SEGMENTS, "verified": True, "exam_topic": "exam"}
+    monkeypatch.setattr(repo, "prepare_call", AsyncMock(return_value=video))
+    monkeypatch.setattr(agents, "run_agent", AsyncMock(side_effect=ResourceExhaustedError("capacity")))
+    failure = AsyncMock()
+    monkeypatch.setattr(repo, "fail_job", failure)
+
+    with pytest.raises(RuntimeError, match="persisted after 10 queue attempts"):
+        await gemini_service.process_model_call(job, object())
+    failure.assert_awaited_once()
+    assert "ResourceExhaustedError persisted after 10 queue attempts" in str(failure.await_args.args[2])
 
 
 @pytest.mark.parametrize("error", [

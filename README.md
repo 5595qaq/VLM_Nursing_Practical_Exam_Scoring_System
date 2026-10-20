@@ -48,6 +48,7 @@ Gemini 推論在雲端執行；worker 不需要 GPU。增加 worker 數量不會
 | `GEMINI_CALL_TIMEOUT_SECONDS` | 900 | 單次邏輯模型呼叫的最長等待秒數 |
 | `GEMINI_QUEUE_RETRY_BASE_SECONDS` | 60 | 暫時性模型錯誤後，PgQueuer 第一次重新派送前的等待秒數 |
 | `GEMINI_QUEUE_RETRY_MAX_SECONDS` | 900 | queue 層指數退避的最長等待秒數 |
+| `GEMINI_QUEUE_MAX_ATTEMPTS` | 10 | 同一個 queue 任務最多執行幾次（含第一次）；暫時性模型錯誤到這個次數仍未成功，工作改為失敗，不再重新派送（預設約 1.8 小時後放棄） |
 
 `execute_after` 是最早執行時間，不是保證的全域 RPM 限流；積壓任務或多個評分工作仍可能同時就緒。5 路是本專案的控制值，不是 Google 配額保證。
 
@@ -124,7 +125,7 @@ python sop-video-skill/scripts/schema_tools.py sop-video-skill/schema.json > out
 | `SOP_SKILL_MAX_TURNS` | 60 | 每支影片的最多回合數（預算用滿約 42 回合） |
 | `SOP_GRADING_DIR` | repo 內的 `sop-video-grading/`（容器內 `/sop-video-grading`） | 評分 agent 的 skill 目錄（SKILL.md、rubric、腳本） |
 
-Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499，或 Claude 回傳 429／529（overloaded），且 SDK 重試用盡時，該影片的 skill 任務會依 queue 層退避重新派送，並從頭重跑該影片；其他錯誤（模型拒答、連續 6 次不合格動作、超過回合上限）會讓工作失敗，可在前端「從失敗處繼續」只重跑未完成的影片。
+Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499，或 Claude 回傳 429／529（overloaded），且 SDK 重試用盡時，該影片的 skill 任務會依 queue 層退避重新派送，並從頭重跑該影片（最多 `GEMINI_QUEUE_MAX_ATTEMPTS` 次，之後工作失敗）；其他錯誤（模型拒答、連續 6 次不合格動作、超過回合上限）會讓工作失敗，可在前端「從失敗處繼續」只重跑未完成的影片。
 
 ### SOP 評分（開發中）
 

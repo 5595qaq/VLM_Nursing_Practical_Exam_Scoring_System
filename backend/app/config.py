@@ -37,6 +37,8 @@ class Settings:
     GEMINI_CALL_TIMEOUT_SECONDS = _integer("GEMINI_CALL_TIMEOUT_SECONDS", 900)
     GEMINI_QUEUE_RETRY_BASE_SECONDS = _integer("GEMINI_QUEUE_RETRY_BASE_SECONDS", 60)
     GEMINI_QUEUE_RETRY_MAX_SECONDS = _integer("GEMINI_QUEUE_RETRY_MAX_SECONDS", 900)
+    # Runs of one queue job (first run included) before a transient model error fails the evaluation.
+    GEMINI_QUEUE_MAX_ATTEMPTS = _integer("GEMINI_QUEUE_MAX_ATTEMPTS", 10)
     GAZELLE_MODEL_NAME = os.getenv("GAZELLE_MODEL_NAME", "gazelle_dinov2_vitb14_inout")
     GAZELLE_MODEL_VERSION = os.getenv("GAZELLE_MODEL_VERSION", "gazelle-dinov2-vitb14-inout-v1")
     GAZELLE_CHECKPOINT_PATH = os.getenv("GAZELLE_CHECKPOINT_PATH", "/models/gazelle.pt")
