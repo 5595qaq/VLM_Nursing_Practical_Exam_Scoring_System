@@ -1,7 +1,7 @@
 ---
 name: sop-video-segmentation
 description: 把護理技術操作影片（無菌抽藥技術－vial 粉劑，30 步驟）切分成「每個時間區段正在做哪個 SOP 步驟」的 JSON。只做前處理切分，不評分。輸入為抽好的影格圖片（模型不直接讀影片）。
-version: 1.3
+version: 1.4.5
 ---
 
 # SOP 影片步驟切分（前處理，不評分）

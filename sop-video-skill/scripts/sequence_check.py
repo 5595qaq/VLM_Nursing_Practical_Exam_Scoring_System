@@ -6,12 +6,13 @@ usage: python sequence_check.py result.json [--write]
   names sequence_check.py; the "auto" tag of check() is removed because schema.json has no such field).
 
 Pairs that SOP allows to overlap (outer/inner steps, see sop_steps.md) are ignored:
-  16 contains 15,17 ; 23 contains 24 ; 25/26/27 overlap.
+  15/16/17 overlap (16 is the outer step, 17 spans the whole 15/16 box and may start before 15) ;
+  23 contains 24 ; 25/26/27 overlap.
 """
 import argparse
 import json
 
-ALLOWED = {frozenset(p) for p in [(15, 16), (16, 17), (23, 24), (25, 26), (25, 27), (26, 27)]}
+ALLOWED = {frozenset(p) for p in [(15, 16), (15, 17), (16, 17), (23, 24), (25, 26), (25, 27), (26, 27)]}
 
 
 def first_starts(steps):

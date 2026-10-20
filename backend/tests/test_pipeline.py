@@ -57,9 +57,13 @@ async def workers(pool, count=1):
     finally:
         for queue in queues:
             queue.shutdown.set()
-        await asyncio.wait_for(asyncio.gather(*tasks), 10)
-        for conn in connections:
-            await conn.close()
+        try:
+            await asyncio.wait_for(asyncio.gather(*tasks), 10)
+        except TimeoutError:
+            raise AssertionError("workers did not shut down within 10 s\n" + await queue_state(pool)) from None
+        finally:
+            for conn in connections:
+                await conn.close()
 
 
 async def wait_terminal(pool, job_ids):
@@ -69,7 +73,20 @@ async def wait_terminal(pool, job_ids):
             if len(rows) == len(job_ids) and all(r["status"] in repo.TERMINAL for r in rows):
                 return rows
             await asyncio.sleep(.02)
-    return await asyncio.wait_for(wait(), 20)
+    try:
+        return await asyncio.wait_for(wait(), 20)
+    except TimeoutError:
+        # Intermittent in full runs; say what was stuck instead of a bare TimeoutError.
+        raise AssertionError(f"jobs {job_ids} not terminal within 20 s\n" + await queue_state(pool)) from None
+
+
+async def queue_state(pool):
+    jobs = await pool.fetch("SELECT id,status,generation FROM evaluation_jobs ORDER BY id")
+    queue = await pool.fetch(
+        "SELECT entrypoint,status,attempts,slot,execute_after - now() AS due_in,payload FROM pgqueuer ORDER BY id"
+    )
+    return "\n".join([*(f"job {dict(r)}" for r in jobs),
+                      *(f"queue {dict(r, payload=bytes(r['payload'] or b'').decode()[:200])}" for r in queue)])
 
 
 async def create(pool, count, selected_agents=None):

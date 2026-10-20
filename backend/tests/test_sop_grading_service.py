@@ -127,6 +127,30 @@ async def test_rejected_action_is_returned_with_errors(video, tmp_path):
     assert outcome["tasks"] == ["12"] and outcome["failed_tasks"] == []
 
 
+async def test_script_rejection_goes_back_to_the_model(video, tmp_path, monkeypatch):
+    real_clip = grading.GradingRunner.clip
+    calls = []
+
+    def clip(self, start, end, box):
+        calls.append((start, end))
+        if len(calls) == 1:  # task 12 opens with an overview, so this is the model's clip
+            raise grading.SkillRunError("clip.py failed (2): REJECTED clip: end 25 is past the video")
+        return real_clip(self, start, end, box)
+
+    monkeypatch.setattr(grading.GradingRunner, "clip", clip)
+    ask = {"action": "clip", "start": 20, "end": 25, "reason": "看連續動作"}
+    model = FakeModel({"12a": [ask]})
+    outcome = await grading.run_grading(video, segmentation(), tmp_path, model, steps={12})
+    retry = requests_for(model, "12a")[1][0]["text"]
+    assert "被退回" in retry and "REJECTED clip" in retry and "clip 剩 2/2" in retry
+    assert outcome["failed_tasks"] == []
+
+
+def test_silent_window_without_samples_is_described():
+    task = {"criteria": [{"audio": True}], "audio": {"has_audio": True, "silent": True, "max_db": None}}
+    assert "沒有讀到聲音樣本" in grading._audio_line(task)[0]
+
+
 async def test_extra_material_actions_run(video, tmp_path):
     model = FakeModel({"12a": [
         {"action": "zoom", "times": [21.8, 22.5], "region": [0.2, 0.2, 0.6, 0.6], "reason": "看手指"},
@@ -167,6 +191,16 @@ async def test_steps_filter_keeps_previous_grades(video, tmp_path):
     steps = {s["step_id"]: s for s in second["result"]["steps"]}
     assert second["tasks"] == ["19"] and steps[19]["verdict"] == "部分正確"
     assert steps[12]["verdict"] == "正確" and second["validation_errors"] == []
+
+
+async def test_failed_regrade_keeps_the_previous_grade(video, tmp_path):
+    first = await grading.run_grading(video, segmentation(), tmp_path / "a", FakeModel())
+    model = FakeModel({"19b": [{"action": "dance"}] * grading.MAX_CONSECUTIVE_REJECTS})
+    second = await grading.run_grading(video, segmentation(), tmp_path / "b", model, steps={19},
+                                       previous=first["result"])
+    steps = {s["step_id"]: s for s in second["result"]["steps"]}
+    assert [f["task"] for f in second["failed_tasks"]] == ["19"]
+    assert steps[19]["verdict"] == "正確"  # not 待判定: the earlier grade survives the failed rerun
 
 
 async def test_review_flag_reaches_the_result(video, tmp_path):

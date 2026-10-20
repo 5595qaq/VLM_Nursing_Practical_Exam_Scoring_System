@@ -11,6 +11,7 @@ usage: python -m app.sop_grading_cli VIDEO --video-id VID_0083 --out WORK/VID_00
 --labels builds segmentation.json from the label sheet's times (labels_to_segmentation.py) instead of
 running sop-video-skill: faster and cheaper while tuning the grading agent.
 --steps regrades only those steps' visual criteria and keeps the rest from an existing grading.json.
+A regraded task that fails keeps its earlier grade (it is listed in failed_tasks).
 """
 import argparse
 import asyncio
