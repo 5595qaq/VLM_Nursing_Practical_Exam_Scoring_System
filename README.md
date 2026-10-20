@@ -173,7 +173,12 @@ Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499，或 Claude 回傳 429／529（o
 1. `sop_skill`：與「只跑 SOP 步驟切分」相同，切分結果存進該影片的 `sop_result`。
 2. `sop_grading`：切分完成時在同一個交易排入。worker 從 GCS 下載原檔，以 `sop_result` 的切分結果執行 `sop_grading_service.run_grading`，把 `grading.json` 與各組對話紀錄、影格（`artifacts.zip`，不含片段影片）上傳到 `gs://<bucket>/sop_runs/<video_id>/g<generation>/grading/`，結果存進 `grading_result`。每完成一組評分任務回報一次進度。
 
-工作的總步數是「影片數 × 2」。有任務失敗（例如 429 重試用盡、連續 4 次不合格動作）或最終結果驗證不過時，仍會先上傳對話紀錄，再讓工作失敗；按「從失敗處繼續」時，已有切分結果的影片只重跑評分，不會重新切分。
+工作的總步數是「影片數 × 2」。有任務失敗或最終結果驗證不過時，會先上傳對話紀錄，並把已評好的標準存進該影片的 `grading_partial`：
+
+- 失敗的任務全是 429／`RESOURCE_EXHAUSTED`、499 或逾時（配額暫時用完）時，與切分一樣由 queue 退避後自動重新派送（最多 `GEMINI_QUEUE_MAX_ATTEMPTS` 次），不必手動續跑。
+- 其他失敗（例如連續 4 次不合格動作）會讓工作失敗，按「從失敗處繼續」。
+
+不論哪一種，下一次嘗試都只把還沒評好的那幾組送給模型，已評好的標準沿用，也不會重新切分。全部標準都評好、只是驗證不過時，下一次改為整支重評。
 
 完成後的 `result` 為 `{"pipeline": "sop_grading", "items": [], "sop_skill": [...], "sop_grading": [...]}`，兩個陣列都依影片順序排列。`sop_grading` 的每一項含 `video_uri`、`result`（`sop-video-grading/schema.json`）、`tasks`、`failed_tasks`、`validation_errors`、`usage`、`files`、`model`，以及 `criterion_texts`（評分標準 id → `rubric.json` 的文字，供前端顯示）。
 

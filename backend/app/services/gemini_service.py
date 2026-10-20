@@ -18,6 +18,9 @@ SEGMENT_PROGRESS_INTERVAL_SECONDS = 15
 
 def _is_transient_model_error(exc):
     """Recognize errors that are safe to retry as a fresh queue execution."""
+    if isinstance(exc, sop_grading_service.GradingIncomplete):
+        # Retry only when every failed grading task hit a quota/timeout error (not an invalid result).
+        return bool(exc.errors) and all(_is_transient_model_error(e) for e in exc.errors)
     code = getattr(exc, "code", None)
     status = getattr(exc, "status", None)
     return (
@@ -138,9 +141,14 @@ async def _run_sop_grading(pool, call, video):
     try:
         return await sop_grading_service.run_sop_grading(
             video_uri, call.video_id, call.generation, video["sop_result"]["result"], report,
+            previous=video["grading_partial"],
         )
     except _ObsoleteCall:
         return None
+    except sop_grading_service.GradingIncomplete as exc:
+        # Saved before the queue retries (429) or the job fails, so either retry resumes from here.
+        await repository.save_grading_partial(pool, call, exc.partial)
+        raise
 
 
 STAGES = {"sop_skill": "SOP_skill", "sop_grading": "SOP_grading"}

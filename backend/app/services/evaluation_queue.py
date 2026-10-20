@@ -273,6 +273,7 @@ async def prepare_call(pool, call: ModelCall):
             "gaze_agents": [row["agent_name"] for row in gaze_agents],
             "gaze_artifacts": decoded(video["gaze_artifacts"]) if video["gaze_artifacts"] else {},
             "sop_result": decoded(video["sop_result"]),
+            "grading_partial": decoded(video["grading_partial"]),
         }
 
 
@@ -326,6 +327,16 @@ async def report_progress(pool, call, make_message):
             f"{progress['completed_steps']}/{progress['total_steps']}",
         )
         return True
+
+
+async def save_grading_partial(pool, call, partial):
+    """Keep the criteria a failed grading attempt did grade, so the next attempt only regrades the rest."""
+    async with pool.acquire() as conn, conn.transaction():
+        job = await lock_job(conn, call.evaluation_id)
+        if not job or job["status"] in TERMINAL or call.generation != job["generation"]:
+            return
+        await conn.execute("UPDATE evaluation_videos SET grading_partial=$2::json WHERE id=$1 AND job_id=$3",
+                           call.video_id, json.dumps(partial), call.evaluation_id)
 
 
 async def persist_result(pool, call, result):

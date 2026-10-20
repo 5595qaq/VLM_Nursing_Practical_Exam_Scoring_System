@@ -92,7 +92,7 @@ node frontend/sop-grading.test.js
 - 舊版未完成工作一次性 backfill、空影片 422、23 支影片的 REST API 相容性與上傳回歸。
 
 - SOP skill 模式：只派送 skill 任務（不呼叫 Time_cuting、Agent、Gazelle），活動窗口補位、結果依影片順序彙整；失敗後續跑只重跑未完成影片；Gemini 429／499 與 Claude 429／529 重新派送；Gemini 呼叫的請求格式（system instruction、圖片、JSON 回覆）與 finish reason 對應（MAX_TOKENS → 截斷重送、SAFETY 等 → 拒答）；被退回的動作不扣預算、舊圖片不重送、`final` 不合格會連同被退回的原文回傳模型修正；`set_crop` 後每回合的固定前綴逐位元組相同，送 Gemini 時拆成 user(固定內容)＋固定的 model 回覆＋user(本回合)（隱式快取）；結果檔下載端點只讀取本部署 bucket 的 `sop_runs/`。
-- SOP 切分＋評分模式（`test_pipeline.py`、`test_api.py`、`test_sop_grading_service.py`）：每支影片先切分再評分，總步數為影片數 × 2，結果依影片順序含 `sop_skill` 與 `sop_grading`；評分失敗後續跑只重跑評分、不重新切分；`run_sop_grading` 下載原檔、上傳 `grading.json` 與不含影片的對話紀錄 ZIP、每完成一組任務回報進度，有失敗任務時先上傳再讓工作失敗；進度回報丟出例外時停止其他任務；評分下載端點只讀取本部署 bucket 的 `sop_runs/`，不提供 transcript。前端 `sop-grading.test.js` 檢查步驟排序、需人工複核、得分分母（不計不適用與無法判定）與 CSV 公式防護。
+- SOP 切分＋評分模式（`test_pipeline.py`、`test_api.py`、`test_sop_grading_service.py`）：每支影片先切分再評分，總步數為影片數 × 2，結果依影片順序含 `sop_skill` 與 `sop_grading`；評分失敗後續跑只重跑評分、不重新切分，且只重評失敗的那幾組（`grading_partial`）；失敗任務全是 429 時由 queue 自動重新派送；全部評好但驗證不過時改為整支重評；`run_sop_grading` 下載原檔、上傳 `grading.json` 與不含影片的對話紀錄 ZIP、每完成一組任務回報進度，有失敗任務時先上傳再讓工作失敗；進度回報丟出例外時停止其他任務；評分下載端點只讀取本部署 bucket 的 `sop_runs/`，不提供 transcript。前端 `sop-grading.test.js` 檢查步驟排序、需人工複核、得分分母（不計不適用與無法判定）與 CSV 公式防護。
 - Token 用量：每次模型回應（含 JSON 重送）都會寫入 `model_usage`，並帶有正確的階段與影片；工作被刪除時跳過寫入、不影響評分；`/usage` 與 `/usage.csv` 的合計與成本估計。
 
 `tests/queue_probe.py` 只供測試子程序使用，啟動前檢查資料庫名稱，不會呼叫 Google。

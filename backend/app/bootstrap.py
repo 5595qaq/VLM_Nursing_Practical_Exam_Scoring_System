@@ -168,6 +168,7 @@ async def main():
             "ALTER TABLE evaluation_jobs ADD COLUMN IF NOT EXISTS pipeline varchar NOT NULL DEFAULT 'agents'",
             "ALTER TABLE evaluation_videos ADD COLUMN IF NOT EXISTS sop_result json",
             "ALTER TABLE evaluation_videos ADD COLUMN IF NOT EXISTS grading_result json",
+            "ALTER TABLE evaluation_videos ADD COLUMN IF NOT EXISTS grading_partial json",
         ):
             await connection.execute(statement)
         queries = Queries(AsyncpgDriver(connection))

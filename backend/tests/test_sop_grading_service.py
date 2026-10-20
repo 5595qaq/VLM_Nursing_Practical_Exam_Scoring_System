@@ -363,3 +363,41 @@ async def test_progress_callback_error_stops_the_run(video, tmp_path):
     with pytest.raises(Stop):
         await grading.run_grading(video, segmentation(), tmp_path, FakeModel(), on_progress=on_progress)
     assert not (tmp_path / "grading.json").exists()
+
+
+async def test_failed_grading_keeps_partial_and_resume_regrades_only_the_rest(video, monkeypatch):
+    uploads = {}
+    fake_gcs(monkeypatch, video, uploads)
+    quota = RuntimeError("429 RESOURCE_EXHAUSTED")
+
+    class Exhausted(FakeModel):
+        async def __call__(self, system, content):
+            if "12a" in CRITERION.findall(content[0]["text"]):
+                raise quota
+            return await super().__call__(system, content)
+
+    with pytest.raises(grading.GradingIncomplete) as failed:
+        await grading.run_sop_grading("gs://test-bucket/videos/x_src.mp4", "vid", 0, segmentation(),
+                                      model_call=Exhausted())
+    assert failed.value.errors == [quota]
+    partial = failed.value.partial
+    verdicts = {c["criterion_id"]: c["verdict"] for s in partial["steps"] for c in s["criteria"]}
+    assert verdicts["12a"] == "待判定" and verdicts["1a"] == "正確"
+
+    model = FakeModel()
+    outcome = await grading.run_sop_grading("gs://test-bucket/videos/x_src.mp4", "vid", 1, segmentation(),
+                                            model_call=model, previous=partial)
+    assert outcome["tasks"] == ["12"]  # only the failed group goes back to the model
+    assert all(CRITERION.findall(c[0]["text"]) == ["12a"] for c in model.requests)
+    assert "task_exceptions" not in outcome
+    steps = {s["step_id"]: s for s in outcome["result"]["steps"]}
+    assert steps[12]["verdict"] == "正確" and steps[1]["verdict"] == "正確"
+
+
+async def test_resume_from_a_fully_graded_invalid_result_regrades_everything(video, monkeypatch):
+    fake_gcs(monkeypatch, video, {})
+    first = await grading.run_grading(video, segmentation(), Path(video.parent / "first"), FakeModel())
+    model = FakeModel()
+    outcome = await grading.run_sop_grading("gs://test-bucket/videos/x_src.mp4", "vid", 1, segmentation(),
+                                            model_call=model, previous=first["result"])
+    assert outcome["tasks"] == first["tasks"]
