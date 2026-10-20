@@ -1,0 +1,57 @@
+"""Tests for run_record.py (the shared record of grading runs)."""
+
+import json
+
+import run_record as rr
+
+VERSIONS = {"rubric": "1.7", "skill": "0.11", "model": "gemini-4-argon"}
+
+
+def add(record, steps=None, failed=()):
+    return rr.add_run(record, "VID_0083", VERSIONS, "abc", steps=steps, failed_tasks=list(failed), by="5595QAQ",
+                      date="2026-10-21", commit="ce021ed", segmentation="label times", usage={"input_tokens": 1})
+
+
+def test_skill_version_reads_frontmatter(tmp_path):
+    path = tmp_path / "SKILL.md"
+    path.write_text("---\nname: x\nversion: 0.11\n---\n# x\n", encoding="utf-8")
+    assert rr.skill_version(path) == "0.11"
+    assert rr.skill_version() == rr.skill_version(rr.SKILL_PATH)  # the real SKILL.md has one
+
+
+def test_record_dir_names_the_version(tmp_path):
+    folder = rr.record_dir(tmp_path, "VID_0083", {**VERSIONS, "model": "models/gemini 4"})
+    assert folder == tmp_path / "VID_0083" / "rubric1.7_skill0.11_models_gemini_4"
+
+
+def test_already_graded_and_failed_tasks_can_be_rerun():
+    assert rr.already_graded(None, None) == set()
+    record = add(None, steps={15, 16, 17, 18}, failed=[{"task": "15-16-17", "error": "429"}])
+    assert record["runs"][0]["steps"] == [18]  # the failed task's steps are not counted
+    assert rr.already_graded(record, {15, 16, 17}) == set()
+    assert rr.already_graded(record, {17, 18}) == {18}
+    assert rr.already_graded(record, None) == {18}  # a full run would regrade step 18
+    record = add(record)
+    assert record["runs"][1]["run"] == 2 and rr.graded_steps(record) == set(rr.ALL_STEPS)
+
+
+def test_save_and_load(tmp_path):
+    source = tmp_path / "transcript_task_1.json"
+    source.write_text("[]", encoding="utf-8")
+    folder = rr.record_dir(tmp_path / "runs", "VID_0083", VERSIONS)
+    record = add(None, steps={1})
+    run = rr.save(folder, record, {"video_id": "VID_0083"}, {"steps": []},
+                  {"grading/transcript_task_1.json": source})
+    assert run == folder / "run1" and (run / "grading" / "transcript_task_1.json").read_text() == "[]"
+    assert rr.load(folder) == record
+    assert json.loads((folder / "grading.json").read_text(encoding="utf-8")) == {"steps": []}
+    assert rr.load(tmp_path / "missing") is None
+
+
+def test_main_lists_records(tmp_path, capsys):
+    assert rr.main(["run_record.py", str(tmp_path)]) == 0
+    assert "沒有評分紀錄" in capsys.readouterr().out
+    folder = rr.record_dir(tmp_path, "VID_0083", VERSIONS)
+    rr.save(folder, add(None, steps={1, 2}), {}, {}, {})
+    rr.main(["run_record.py", str(tmp_path)])
+    assert "VID_0083  rubric 1.7  SKILL 0.11  gemini-4-argon  步驟 1,2  （5595QAQ 2026-10-21）" in capsys.readouterr().out

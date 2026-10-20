@@ -201,15 +201,41 @@ Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499，或 Claude 回傳 429／529（o
 在本機逐支測試（轉檔 → 切分 → 評分；需要 Vertex AI 憑證，會計費）：
 
 ```bash
-docker compose run --rm -v /path/to/videos:/data:ro -v /path/to/runs:/work worker   python -m app.sop_grading_cli /data/影片.mp4 --video-id VID_0083 --out /work/VID_0083
+docker compose run --rm -e SOP_RUN_BY=你的名字 -e GIT_COMMIT=$(git rev-parse HEAD) \
+  -v /path/to/videos:/data:ro -v /path/to/work:/work worker \
+  python -m app.sop_grading_cli /data/影片.mp4 --video-id VID_0083 --out /work/VID_0083
 # 加 --labels 時改用標註表的時間當切分結果，不跑 sop-video-skill（較快、較省）
 docker compose run --rm ... worker python -m app.sop_grading_cli ... --labels /labels.csv
 # 只重評某幾步（其餘沿用上次的 grading.json；重評失敗的步驟也保留上次的判定）
 docker compose run --rm ... worker python -m app.sop_grading_cli ... --steps 15,17
-python sop-video-grading/scripts/eval_grading.py --labels 標註表.csv runs/VID_0083/grading.json
+python sop-video-grading/scripts/eval_grading.py --labels 標註表.csv sop-video-grading/runs/VID_0083/<版本>/grading.json
+python sop-video-grading/scripts/run_record.py   # 列出所有評分紀錄（影片、版本、評過的步驟、誰、哪天）
 ```
 
+PowerShell 用 `-e GIT_COMMIT=$(git rev-parse HEAD)` 同樣可行；也可以改用 `--by`、`--commit` 參數。
+
 `--out` 目錄會留下轉檔後的 `source.mp4`、`segmentation.json`、`grading.json` 與每組的對話紀錄；已有 `segmentation.json` 時不會重新切分。
+
+**評分紀錄（`sop-video-grading/runs/`，要 commit）**：影片ID 是標記表的 `VID_xxxx` 時，每次執行都會記錄到 `runs/<影片ID>/rubric<版本>_skill<SKILL.md 版本>_<模型>/`，讓多人共用、避免重複付費：
+
+- `record.json`：版本、原始影片的 SHA-256，以及每次執行的執行者、日期、commit、評過的步驟（失敗任務的步驟不算）、`failed_tasks`、切分來源與 token 用量。
+- `segmentation.json`、`grading.json`：最新一次的切分與評分結果。
+- `run1/`、`run2/`…：該次的評分對話（`grading/transcript_task_*.json`、`probe.json`）；該次有跑切分時另含 `seg/transcript.json`、`motion.json`、`probe.json`。
+- 不存圖片與影片片段：對話紀錄列出每張 overview／zoom／burst／clip 的時間、張數與區域，`segmentation.json` 有裁切框，用原始影片（以 SHA-256 確認）在紀錄的 commit 上可以重新產生。
+
+**人工核對頁面**：把需要人工確認的步驟做成本機網頁，邊看影片邊點同意／不同意（只需要 Python 標準函式庫，不用進容器）：
+
+```bash
+python sop-video-grading/scripts/review_page.py sop-video-grading/runs/VID_0083/<版本> sop-video-grading/runs/VID_0074/<版本> \
+  --labels 標註表.csv --video-root /path/to/原始影片資料夾 [--items claude_items.json] [--all]
+```
+
+- 列入的項目：模型判定和標記表不同、或模型標了需人工複核的步驟（`--all` 改為所有有標記的步驟）；`--items` 加入 Claude 提出的建議判定或標準修改（格式見 `review_page.py` 開頭）。
+- 頁面播放每個人自己電腦上的原始影片（`--video-root` 依標記表的相對路徑找檔，也可用 `--video VID_0083=路徑`；找不到時在頁面裡選檔），說明裡的時間點一下就跳過去，可慢放、逐 0.2 秒前後、放大手部區域；不複製任何影格。
+- 每項可選「同意建議／同意標記表／改判（選正確判定）／待老師確認」並寫備註，進度存在瀏覽器；完成後「匯出 CSV」交回。
+- 預設輸出到 `sop-video-grading/review/`（已被 `.gitignore` 忽略：頁面含影片路徑，可能有學生姓名），不要 commit 頁面與匯出的 CSV。
+
+呼叫模型前會先檢查：要跑的步驟已經用相同 rubric、SKILL.md 與模型評過，或影片檔和紀錄的 SHA-256 不同時拒絕執行（確定要重跑加 `--force`）；沒有填執行者或 commit、紀錄資料夾無法寫入時也會停止。`--out` 沒有 `segmentation.json`（或 `--steps` 時沒有 `grading.json`）而紀錄裡有時，直接沿用紀錄，不重新切分。其他影片ID（可能含學生姓名）不寫紀錄。worker 容器只有 `sop-video-grading/runs` 可寫，其餘 skill 目錄維持唯讀。
 
 用 `--labels` 時只取標註表的時間，不複製判定與說明（評分 agent 會看到切分依據，不能讓它看到答案）；沒有時間的步驟給前後步驟之間的區間，由評分 agent 自己判斷有沒有做。裁切框不在標註表裡，預設為整個畫面。此時「有沒有做」這類程式判定的標準等於照抄標註時間，所以評估評分 agent 時要看 `eval_grading.py` 的「看畫面的步驟（V）」那一行。
 
@@ -557,6 +583,8 @@ my-awesome-project/
 │   ├── rubric.json
 │   ├── schema.json
 │   ├── actions.schema.json
+│   ├── runs/            # sop_grading_cli 的評分紀錄（commit 共用）
+│   ├── review/          # review_page.py 產生的本機人工核對頁面（gitignored）
 │   └── scripts/
 ├── tests/
 │   ├── sop_skill/

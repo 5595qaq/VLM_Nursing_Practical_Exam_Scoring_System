@@ -87,6 +87,8 @@ services:
       # skill 位於 build context（./backend）之外，以唯讀方式掛載給 worker 執行
       - ./sop-video-skill:/sop-video-skill:ro
       - ./sop-video-grading:/sop-video-grading:ro
+      # sop_grading_cli 寫入的評分紀錄（要 commit 給其他人看），只有這個資料夾可寫
+      - ./sop-video-grading/runs:/sop-video-grading/runs
     depends_on:
       init:
         condition: service_completed_successfully

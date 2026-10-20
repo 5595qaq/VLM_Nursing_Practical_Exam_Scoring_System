@@ -56,6 +56,14 @@ python sop-video-grading/scripts/labels_to_segmentation.py --labels 標註表.cs
 pytest backend/tests/test_sop_grading_service.py -q
 ```
 
+`sop_grading_cli` 的評分紀錄（`backend/tests/test_sop_grading_cli.py`）以假的轉檔與評分取代，不需 ffmpeg、資料庫與 Google 憑證：檢查同版本重複執行、影片 SHA-256 不符、沒填執行者或 commit、紀錄無法寫入時都在呼叫模型前停止，以及紀錄只存這次跑過的對話、同事用 `--steps` 時沿用紀錄的切分與評分。`run_record.py` 的純函式測試在 `tests/sop_grading/test_run_record.py`。
+
+人工核對頁面（`review_page.py`）的 Python 部分在 `tests/sop_grading/test_review_page.py`：列入哪些步驟、重複步驟的時間、Claude 建議的合併、依標記表相對路徑找影片、說明文字不能提早結束頁面的 script。頁面裡的互動（點時間跳轉、手部放大、決定按鈕、重新整理後保留進度、匯出 CSV、找不到影片時選檔）沒有自動測試，修改頁面腳本後要在瀏覽器裡實際操作一遍。
+
+```bash
+pytest backend/tests/test_sop_grading_cli.py -q
+```
+
 真實影片的評分要呼叫 Vertex AI（會計費），用 `python -m app.sop_grading_cli` 在 worker 容器內逐支執行，再以 `eval_grading.py` 比對人工標註，見 README「SOP 評分」。
 
 sop-video-skill 執行迴圈（`backend/tests/test_sop_skill_service.py`）用 ffmpeg 產生 60 秒合成影片，以真實的 skill 腳本執行 crop／set_crop／overview／zoom／final，模型以腳本化假回覆取代；需要 ffmpeg 與 `opencv-python-headless`、`matplotlib`、`jsonschema`（已列在 `backend/requirements.txt`），不需資料庫與 Google 憑證：
