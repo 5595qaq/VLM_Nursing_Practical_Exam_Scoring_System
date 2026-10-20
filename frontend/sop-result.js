@@ -39,8 +39,10 @@
 
     function formatSeconds(value) {
         if (typeof value !== 'number' || !Number.isFinite(value)) return '';
-        const minutes = Math.floor(value / 60);
-        const seconds = value - minutes * 60;
+        // Round to tenths first so 59.96 becomes 01:00.0, not 00:60.0.
+        const tenths = Math.round(value * 10);
+        const minutes = Math.floor(tenths / 600);
+        const seconds = (tenths - minutes * 600) / 10;
         return `${String(minutes).padStart(2, '0')}:${seconds.toFixed(1).padStart(4, '0')}`;
     }
 

@@ -102,7 +102,7 @@ python sop-video-skill/scripts/schema_tools.py sop-video-skill/schema.json > out
 1. worker 從 GCS 下載上傳時產生的 `_src.mp4` 原檔，執行 `prepare.py` 產生 proxy 與格線圖。
 2. 每回合模型回覆一個動作 JSON（`crop_preview`／`set_crop`／`overview`／`zoom`／`final`）；worker 先用 `validate_action.py` 驗證，不合格就把錯誤和被退回的動作原文回傳（要求模型只修正錯誤的地方）、不執行也不扣預算，合格才執行對應腳本並把新圖片送回。
 3. 每次請求只附「全片總覽圖＋動作能量圖＋最新一批圖片＋最新 draft＋動作紀錄＋剩餘預算」（SKILL.md 第 0 節），不重送舊的對話回合。每回合不變的 system prompt 與固定圖片（`set_crop` 前是格線圖，之後是總覽圖與動作能量圖）一律放在最前面、逐位元組相同，會變的部分放在最後。送 Gemini 時，固定內容自成一個 user 回合，後面接一句固定的 model 回覆（「已收到固定圖片…」），再接本回合的 user 內容：實測 `gemini-4-argon` 的隱式快取只在前綴剛好結束一個回合時命中，固定內容與本回合內容放在同一個（或兩個連續的）user 回合時完全不命中。`gemini-4-argon` 不支援明確快取；隱式快取是否命中仍由 Google 決定，不保證。
-4. `final` 通過 `schema.json` 與 `validate_result.py` 規則後，`video_id` 與 `meta.budget` 由 worker 依實際執行紀錄填入；`sequence_check.py` 的自動比對另存於 `sequence_check`，不寫進 result。
+4. `final` 通過 `schema.json` 與 `validate_result.py` 規則後，`video_id`、`meta.duration`（實際影片長度）、`meta.crop` 的 `box`／`hands_box`（`set_crop` 確定的框）與 `meta.budget` 由 worker 依實際執行紀錄填入；`sequence_check.py` 的自動比對另存於 `sequence_check`，不寫進 result。
 5. 結果 JSON、模型對話紀錄（`transcript.json`）與全部中間圖片（`artifacts.zip`）上傳到 `gs://<bucket>/sop_runs/<video_id>/g<generation>/`。失敗的執行也會上傳對話紀錄，方便除錯。
 
 前端完成後顯示每支影片的 30 步表格與流程觀察，可下載「步驟切分 CSV」，以及每支影片的結果 JSON、圖片 ZIP、模型對話紀錄（後端 `GET /api/v1/evaluations/{job_id}/sop-skill/{影片序號}/{result|artifacts|transcript}` 代為從 GCS 讀取）。API 建立工作時傳 `"pipeline": "sop_skill"` 即為此模式（不可同時傳 `selected_agents`）；省略時為原本的 `"agents"` 模式。
@@ -162,7 +162,7 @@ Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499，或 Claude 回傳 429／529（o
 
 步驟定義沿用 `sop-video-skill/references/sop_steps.md`。
 
-評分 agent（`backend/app/services/sop_grading_service.py`）把待判定的標準依 `window_steps` 分組（例如 15b 與 17a 共用步驟 15–17 的區間），每組跑一段短對話：外部程式先附上區間的 3×3 影格，需要聲音或每 0.5 秒一格時改附 2 fps 的帶聲音片段；任務說明會列出程式算出的動作峰值，告訴模型短動作可能在哪裡；模型可再要求 `overview`／`zoom`／`burst`／`clip`（每組各 3／3／3／2 次），最後以 `final` 判定該組的每一條標準。開場影格每 2–4 秒才一張，不到 1 秒的短動作（彈針、墊棉片、碰觸的瞬間）可能落在兩格之間，所以 SKILL.md 要求在峰值附近用 `burst` 確認；持續的持握姿勢（持毛筆、夾瓶、持針心尾端、單手回套）則在手穩定持握的時間點用 overview 或 zoom 看，判錯誤前要在兩個以上時間點都看到同樣的問題（依據見 `sop-video-grading/EXPERIMENTS.md`）。片段帶聲音只有 Gemini 支援，所以評分一律使用 Gemini（`SOP_SKILL_GEMINI_MODEL`）。
+評分 agent（`backend/app/services/sop_grading_service.py`）把待判定的標準依 `window_steps` 分組（例如 15b 與 17a 共用步驟 15–17 的區間），每組跑一段短對話：外部程式先附上區間的 3×3 影格，需要聲音或每 0.5 秒一格時改附 2 fps 的帶聲音片段；任務說明會列出程式算出的動作峰值，告訴模型短動作可能在哪裡；模型可再要求 `overview`／`zoom`／`burst`／`clip`（每組各 3／3／3／2 次），最後以 `final` 判定該組的每一條標準。不合格的動作（`validate_grading_action.py` 檢查不過，或腳本以 `REJECTED` 拒絕，例如要求的時間超出原檔長度）會連同錯誤訊息退回給模型，不執行也不扣預算；連續 4 次不合格，該組才算失敗。開場影格每 2–4 秒才一張，不到 1 秒的短動作（彈針、墊棉片、碰觸的瞬間）可能落在兩格之間，所以 SKILL.md 要求在峰值附近用 `burst` 確認；持續的持握姿勢（持毛筆、夾瓶、持針心尾端、單手回套）則在手穩定持握的時間點用 overview 或 zoom 看，判錯誤前要在兩個以上時間點都看到同樣的問題（依據見 `sop-video-grading/EXPERIMENTS.md`）。片段帶聲音只有 Gemini 支援，所以評分一律使用 Gemini（`SOP_SKILL_GEMINI_MODEL`）。
 
 在本機逐支測試（轉檔 → 切分 → 評分；需要 Vertex AI 憑證，會計費）：
 
@@ -170,7 +170,7 @@ Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499，或 Claude 回傳 429／529（o
 docker compose run --rm -v /path/to/videos:/data:ro -v /path/to/runs:/work worker   python -m app.sop_grading_cli /data/影片.mp4 --video-id VID_0083 --out /work/VID_0083
 # 加 --labels 時改用標註表的時間當切分結果，不跑 sop-video-skill（較快、較省）
 docker compose run --rm ... worker python -m app.sop_grading_cli ... --labels /labels.csv
-# 只重評某幾步（其餘沿用上次的 grading.json）
+# 只重評某幾步（其餘沿用上次的 grading.json；重評失敗的步驟也保留上次的判定）
 docker compose run --rm ... worker python -m app.sop_grading_cli ... --steps 15,17
 python sop-video-grading/scripts/eval_grading.py --labels 標註表.csv runs/VID_0083/grading.json
 ```

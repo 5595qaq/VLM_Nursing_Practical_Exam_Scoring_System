@@ -49,3 +49,11 @@ def test_result_breaking_a_skill_rule_is_rejected():
     result["steps"] = [s for s in result["steps"] if s["step_id"] != 5]
     errors, _ = validate(final(result), state={})
     assert any(e.startswith("result: ") and "5" in e for e in errors), errors
+
+
+def test_final_duration_must_match_the_video():
+    result = make_valid_result()
+    duration = result["meta"]["duration"]
+    assert validate(final(result), state={}, duration=duration)[0] == []
+    errors, _ = validate(final(result), state={}, duration=duration - 30)
+    assert any("meta.duration" in e for e in errors), errors

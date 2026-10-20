@@ -50,7 +50,7 @@ python sop-video-grading/scripts/eval_grading.py --labels 標註表.csv grading.
 python sop-video-grading/scripts/labels_to_segmentation.py --labels 標註表.csv --video-id VID_0083 --duration 424 -o seg.json  # 用標註時間組出切分結果
 ```
 
-`tests/sop_grading/test_clip.py`、`test_motion_burst.py` 與 `test_audio_peaks.py` 需要 ffmpeg／ffprobe（沒有時自動略過；burst 的圖片測試另外需要 OpenCV）。評分 agent 迴圈（`backend/tests/test_sop_grading_service.py`）用 ffmpeg 產生 60 秒帶聲音的合成影片，以真實腳本執行 overview／zoom／burst／clip／final（含「需人工複核」標記帶到結果、彈針任務列出聲音峰值、沒有聲音的影片不能判彈針錯誤、洗手計時沒填 span 會被退回），模型以假回覆取代，不需資料庫與 Google 憑證：
+`tests/sop_grading/test_clip.py`、`test_motion_burst.py` 與 `test_audio_peaks.py` 需要 ffmpeg／ffprobe（沒有時自動略過；burst 的圖片測試另外需要 OpenCV）。評分 agent 迴圈（`backend/tests/test_sop_grading_service.py`）用 ffmpeg 產生 60 秒帶聲音的合成影片，以真實腳本執行 overview／zoom／burst／clip／final（含「需人工複核」標記帶到結果、彈針任務列出聲音峰值、沒有聲音的影片不能判彈針錯誤、洗手計時沒填 span 會被退回、腳本拒絕的動作退回給模型而不讓任務失敗），模型以假回覆取代，不需資料庫與 Google 憑證：
 
 ```bash
 pytest backend/tests/test_sop_grading_service.py -q
@@ -93,6 +93,15 @@ node frontend/sop-result.test.js
 - Token 用量：每次模型回應（含 JSON 重送）都會寫入 `model_usage`，並帶有正確的階段與影片；工作被刪除時跳過寫入、不影響評分；`/usage` 與 `/usage.csv` 的合計與成本估計。
 
 `tests/queue_probe.py` 只供測試子程序使用，啟動前檢查資料庫名稱，不會呼叫 Google。
+
+## 壓力測試（locust）
+
+`locustfile.py` 對 `POST /api/v1/evaluations/` 送出建立評分工作的請求。每個請求都是真的工作，worker 會呼叫 Gemini（會計費），所以只對測試部署執行。`LOCUST_VIDEO_URI` 必須是該部署上傳 API 產生的 `gs://<GCS_BUCKET_NAME>/videos/<sha256>_src.mp4`：
+
+```bash
+pip install locust
+LOCUST_VIDEO_URI=gs://bucket/videos/<sha256>_src.mp4 locust -H http://localhost:8000
+```
 
 ## 首次真實模型驗收
 

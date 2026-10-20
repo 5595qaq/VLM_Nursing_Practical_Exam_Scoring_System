@@ -3,3 +3,7 @@ __pycache__/
 .pytest_cache/
 .coverage
 htmlcov/
+# Paths are relative to the build context (./backend). Model weights are mounted at run time.
+*.pt
+**/*.pt
+test.db

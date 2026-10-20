@@ -38,10 +38,14 @@ def read_frames(path, fps, box, w=320):
     W, H = info["width"], info["height"]
     x0, y0, x1, y1 = box or (0, 0, 1, 1)
     cw, ch = int((x1 - x0) * W) // 2 * 2, int((y1 - y0) * H) // 2 * 2
-    vf = f"fps={fps},crop={cw}:{ch}:{int(x0*W)}:{int(y0*H)},scale={w}:-2,format=gray"
+    if cw < 2 or ch < 2:
+        raise SystemExit(f"box {box} is too small for a {W}x{H} video")
+    # Give ffmpeg the exact height: with scale=w:-2 it rounds .5 up while Python's round() rounds to
+    # even, so the two could differ by 2 px and every raw frame below would be sliced at the wrong offset.
+    h = max(2, int(w * ch / cw / 2 + 0.5) * 2)
+    vf = f"fps={fps},crop={cw}:{ch}:{int(x0*W)}:{int(y0*H)},scale={w}:{h},format=gray"
     p = subprocess.Popen(["ffmpeg", "-v", "error", "-i", path, "-vf", vf, "-f", "rawvideo", "-"],
                          stdout=subprocess.PIPE)
-    h = int(round(w * ch / cw / 2)) * 2
     size = w * h
     frames = []
     while True:
@@ -49,7 +53,8 @@ def read_frames(path, fps, box, w=320):
         if len(b) < size:
             break
         frames.append(np.frombuffer(b, np.uint8).reshape(h, w))
-    p.wait()
+    if p.wait() != 0 or len(frames) < 2:
+        raise SystemExit(f"ffmpeg could not read frames from {path} (exit {p.returncode}, {len(frames)} frames)")
     return frames
 
 

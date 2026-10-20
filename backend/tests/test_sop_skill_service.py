@@ -91,6 +91,10 @@ HAPPY_PATH = [
      "reason": "看瓶子", "draft": "d4"},
     {"action": "final", "result": valid_result()},
 ]
+# The model misreports the duration and the crop; the external program knows both.
+HAPPY_PATH[-1]["result"]["meta"].update(duration=DURATION + 5,
+                                         crop={"box": [0.0, 0.0, 1.0, 1.0], "hands_box": HANDS,
+                                               "rounds": 1, "notes": ""})
 
 
 async def test_loop_runs_real_scripts_and_returns_validated_result(video, tmp_path):
@@ -109,6 +113,8 @@ async def test_loop_runs_real_scripts_and_returns_validated_result(video, tmp_pa
     assert result["meta"]["budget"]["overview_calls"] == 1
     assert result["meta"]["budget"]["zoom_calls"] == 1
     assert result["meta"]["budget"]["est_input_tokens"] == 600
+    assert abs(result["meta"]["duration"] - DURATION) < 0.5
+    assert result["meta"]["crop"]["box"] == BOX and result["meta"]["crop"]["hands_box"] == HANDS
     assert outcome["turns"] == 6
     assert outcome["sequence_check"] == []
     assert json.loads((tmp_path / "result.json").read_text(encoding="utf-8")) == result

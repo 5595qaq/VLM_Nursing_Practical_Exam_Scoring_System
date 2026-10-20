@@ -1,5 +1,18 @@
 # CHANGELOG
 
+## 1.4.5
+
+規則、動作格式與 schema 都不變。
+
+- `motion.py`：明確指定縮圖高度給 ffmpeg（`scale=w:h`）。原本用 `scale=w:-2`，ffmpeg 遇到 .5 會進位，Python 的 `round()` 卻取偶數，兩邊可能差 2 px，之後每一格都切錯位置，能量曲線與 candidates 會變成雜訊而且不會報錯。ffmpeg 失敗或讀不到影格時改為直接報錯。
+- `validate_action.py`：有傳入影片長度時，`final` 的 `meta.duration` 必須和影片相差 0.5 秒以內，避免模型寫大的長度讓超出影片的區間通過驗證。
+- 後端在驗證 `final` 前，以實際影片長度與 `set_crop` 確定的框覆寫 `meta.duration` 與 `meta.crop.box`／`hands_box`。
+
+## 1.4.4
+
+- `sequence_check.py`：允許步驟 15 與 17 重疊（17 的區間是 15/16 外框整段，見 SKILL.md 4.7，通常比 15 早開始）。原本幾乎每支影片都會多一筆假的 `out_of_order [15,17]`；25/27 早已允許。
+- `SKILL.md` frontmatter 的 version 由 1.3 更新為 1.4.4，與本檔一致（1.4～1.4.3 漏改）。規則、動作格式與 schema 都不變。
+
 ## 1.4.3
 
 動作被 `validate_action.py` 退回時，外部程式除了 `errors`，也會附上被退回的動作原文；SKILL.md 第 0 節要求模型只修改錯誤指出的地方再重送。原本模型只拿到錯誤訊息和舊的 draft，重送的 `final` 等於重新產生一份，連沒被指出的步驟與 observations 也會改變。動作格式與 schema 不變。

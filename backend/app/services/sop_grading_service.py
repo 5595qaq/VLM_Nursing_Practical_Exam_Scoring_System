@@ -192,7 +192,9 @@ def _audio_line(task: dict) -> list[str]:
         return ["聲音：影片沒有音軌（拍攝設備沒錄到聲音，不代表學生沒做）。17a／27a 只能判無法判定（無音軌），"
                 "explanation 寫出畫面上有沒有看到手指彈針筒。"]
     if audio["silent"]:
-        return [f"聲音：音軌幾乎沒有聲音（最大 {audio['max_db']:g} dB），視同沒有錄到聲音（不代表學生沒做）。"
+        # max_db is None when the window has no decoded audio samples at all (audio track ends early).
+        level = "沒有讀到聲音樣本" if audio["max_db"] is None else f"最大 {audio['max_db']:g} dB"
+        return [f"聲音：音軌幾乎沒有聲音（{level}），視同沒有錄到聲音（不代表學生沒做）。"
                 "17a／27a 只能判無法判定（無音軌），explanation 寫出畫面上有沒有看到手指彈針筒。"]
     peaks = "、".join(_fmt_t(p["t"]) for p in audio["peaks"]) or "（無）"
     runs = "、".join(f"{_fmt_t(r['start'])}–{_fmt_t(r['end'])}（{r['n']} 聲）" for r in audio["runs"]) or "（無）"
@@ -266,6 +268,39 @@ async def _opening(task: dict, runner: GradingRunner, boxes: dict) -> tuple[list
     return [Material(i.path, i.label) for i in images], f"開場：M1 是任務區間 9 張等距影格{note}。足夠判斷就直接送 final。"
 
 
+async def _run_material_action(action: dict, runner: GradingRunner, boxes: dict, materials: list[Material],
+                               state: TaskState) -> str:
+    """Run an overview / zoom / burst / clip action, add its material, and return the next feedback."""
+    name = action["action"]
+    if name == "overview":
+        which = action.get("box", "hands")
+        n = action.get("n", 9)
+        images = await asyncio.to_thread(runner.overview, boxes[which], action["start"], action["end"], n, which)
+        materials += [Material(i.path, i.label) for i in images]
+        state.log.append(f"overview {action['start']:g}-{action['end']:g} n={n} box={which}")
+        feedback = f"overview 已完成（引用格式 ov@{action['start']:g}-{action['end']:g} #k）。"
+    elif name == "zoom":
+        images = await asyncio.to_thread(runner.zoom, action["times"], action["region"], boxes["context"])
+        materials += [Material(i.path, i.label) for i in images]
+        state.log.append(f"zoom times={action['times']} region={_fmt_box(action['region'])}")
+        feedback = "zoom 已完成（引用格式 zoom@秒數）。"
+    elif name == "burst":
+        n = action.get("n", 9)
+        material = await asyncio.to_thread(runner.burst, action["start"], action["end"], n,
+                                           action["region"], boxes["context"])
+        materials.append(material)
+        state.log.append(f"burst {action['start']:g}-{action['end']:g} n={n} region={_fmt_box(action['region'])}")
+        feedback = f"burst 已完成（引用格式 burst@{action['start']:g}-{action['end']:g} #k）。"
+    else:
+        material, info = await asyncio.to_thread(runner.clip, action["start"], action["end"], boxes["context"])
+        material.fps = action.get("fps", CLIP_FPS)
+        materials.append(material)
+        state.log.append(f"clip {info['start']:g}-{info['end']:g} fps={material.fps:g}")
+        feedback = f"clip 已完成（引用格式 clip@{info['start']:g}-{info['end']:g}）。"
+    state.used[name] += 1
+    return feedback
+
+
 async def run_task(task: dict, video_id: str, runner: GradingRunner, boxes: dict, segmentation: dict,
                    model_call: ModelCall, system: str, workdir: Path,
                    state: TaskState | None = None) -> tuple[list[dict], TaskState]:
@@ -300,47 +335,30 @@ async def run_task(task: dict, video_id: str, runner: GradingRunner, boxes: dict
             action, errors = None, [str(exc)]
         entry["errors"] = errors
         log_path.write_text(json.dumps(transcript, ensure_ascii=False, indent=1), encoding="utf-8")
-        if errors:
-            rejects += 1
-            if rejects >= MAX_CONSECUTIVE_REJECTS:
-                raise SkillRunError(f"task {task['key']}: {rejects} consecutive invalid actions: {errors}")
-            feedback = ("上一個動作被退回（不執行、不扣預算），只修改下列錯誤後重送：\n"
-                        + "\n".join(f"- {e}" for e in errors))
-            if isinstance(action, dict):
-                feedback += "\n被退回的動作原文：\n```json\n" + json.dumps(action, ensure_ascii=False) + "\n```"
-            continue
-        rejects = 0
-        name = action["action"]
-        if name == "final":
+        if not errors and action["action"] == "final":
             windows = {c["criterion_id"]: c["window"] for c in task["criteria"]}
             return [{**c, "source": "vlm", "window": windows[c["criterion_id"]]}
                     for c in action["criteria"]], state
-        if name == "overview":
-            which = action.get("box", "hands")
-            n = action.get("n", 9)
-            images = await asyncio.to_thread(runner.overview, boxes[which], action["start"], action["end"], n, which)
-            materials += [Material(i.path, i.label) for i in images]
-            state.log.append(f"overview {action['start']:g}-{action['end']:g} n={n} box={which}")
-            feedback = f"overview 已完成（引用格式 ov@{action['start']:g}-{action['end']:g} #k）。"
-        elif name == "zoom":
-            images = await asyncio.to_thread(runner.zoom, action["times"], action["region"], boxes["context"])
-            materials += [Material(i.path, i.label) for i in images]
-            state.log.append(f"zoom times={action['times']} region={_fmt_box(action['region'])}")
-            feedback = "zoom 已完成（引用格式 zoom@秒數）。"
-        elif name == "burst":
-            n = action.get("n", 9)
-            material = await asyncio.to_thread(runner.burst, action["start"], action["end"], n,
-                                               action["region"], boxes["context"])
-            materials.append(material)
-            state.log.append(f"burst {action['start']:g}-{action['end']:g} n={n} region={_fmt_box(action['region'])}")
-            feedback = f"burst 已完成（引用格式 burst@{action['start']:g}-{action['end']:g} #k）。"
-        else:
-            material, info = await asyncio.to_thread(runner.clip, action["start"], action["end"], boxes["context"])
-            material.fps = action.get("fps", CLIP_FPS)
-            materials.append(material)
-            state.log.append(f"clip {info['start']:g}-{info['end']:g} fps={material.fps:g}")
-            feedback = f"clip 已完成（引用格式 clip@{info['start']:g}-{info['end']:g}）。"
-        state.used[name] += 1
+        if not errors:
+            try:
+                feedback = await _run_material_action(action, runner, boxes, materials, state)
+                rejects = 0
+                continue
+            except SkillRunError as exc:
+                # A script that refuses the request (exit 2, "REJECTED ...", e.g. the original video is
+                # a little shorter than the proxy) goes back to the model like a validation error.
+                if "REJECTED" not in str(exc):
+                    raise
+                errors = [str(exc)]
+                entry["errors"] = errors
+                log_path.write_text(json.dumps(transcript, ensure_ascii=False, indent=1), encoding="utf-8")
+        rejects += 1
+        if rejects >= MAX_CONSECUTIVE_REJECTS:
+            raise SkillRunError(f"task {task['key']}: {rejects} consecutive invalid actions: {errors}")
+        feedback = ("上一個動作被退回（不執行、不扣預算），只修改下列錯誤後重送：\n"
+                    + "\n".join(f"- {e}" for e in errors))
+        if isinstance(action, dict):
+            feedback += "\n被退回的動作原文：\n```json\n" + json.dumps(action, ensure_ascii=False) + "\n```"
     raise SkillRunError(f"task {task['key']}: no final action within {MAX_TASK_TURNS} turns")
 
 
@@ -353,8 +371,8 @@ async def run_grading(video_path: Path, segmentation: dict, workdir: Path, model
     rubric = rubric_mod.load_rubric()
     model_call = model_call or gemini_call
     result = rules.grade_from_segmentation(segmentation, rubric)
-    if previous and steps:
-        old = {c["criterion_id"]: c for s in previous["steps"] for c in s["criteria"]}
+    old = {c["criterion_id"]: c for s in previous["steps"] for c in s["criteria"]} if previous else {}
+    if old and steps:
         for step in result["steps"]:
             if step["step_id"] not in steps:
                 step["criteria"] = [old.get(c["criterion_id"], c) if c["verdict"] == "待判定" else c
@@ -386,7 +404,11 @@ async def run_grading(video_path: Path, segmentation: dict, workdir: Path, model
     graded = {c["criterion_id"]: c for _, criteria, _, _ in outcomes for c in criteria}
     specs = {s["step_id"]: s for s in rubric["steps"]}
     for i, step in enumerate(result["steps"]):
-        criteria = [graded.get(c["criterion_id"], c) for c in step["criteria"]]
+        # A failed task keeps the previous grade (if any) instead of falling back to 待判定, so a failed
+        # --steps rerun does not wipe out a good earlier result; the failure is still in failed_tasks.
+        criteria = [graded.get(c["criterion_id"])
+                    or (old.get(c["criterion_id"], c) if c["verdict"] == "待判定" else c)
+                    for c in step["criteria"]]
         result["steps"][i] = rules.build_step(specs[step["step_id"]], criteria)
 
     failed = [{"task": t["key"], "error": err} for t, _, _, err in outcomes if err]
