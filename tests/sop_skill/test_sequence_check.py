@@ -16,6 +16,13 @@ def test_check_marks_findings_as_auto():
     assert found[0]["auto"] is True
 
 
+def test_flick_may_start_before_the_cotton_pad():
+    # SKILL.md 4.7: 17 spans the whole 15/16 box, so it usually starts before 15; same for 27 vs 25.
+    result = make_valid_result()
+    step(result, 17)["start"] = step(result, 15)["start"] - 1
+    assert sequence_check.check(result) == []
+
+
 def test_write_keeps_result_valid(tmp_path, monkeypatch):
     result = make_valid_result()
     step(result, 5)["start"] = 35.0
