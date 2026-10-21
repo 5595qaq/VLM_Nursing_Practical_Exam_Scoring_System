@@ -148,6 +148,17 @@ def test_pull_back_wrong_needs_a_burst_first():
     assert validate(action, task, FRESH, DURATION) == []  # 正確 needs no burst
 
 
+def test_rolling_needs_a_clip_first():
+    # AUG0072_SKIP: overview frames 2–4 s apart showed hands around the vial with no rolling in between
+    task = {"window": [178.0, 186.5], "criteria": [{"criterion_id": "20a", "window": [178.0, 186.5]}]}
+    action = {"action": "final", "criteria": [
+        {"criterion_id": "20a", "verdict": "正確", "confidence": 0.8, "reason": None,
+         "explanation": "03:00 雙手夾住 vial。", "evidence": ["ov@178-186.5 #1"]}]}
+    assert any("watch a clip" in e for e in validate(action, task, FRESH, DURATION))
+    assert validate(action, task, {**FRESH, "clip": 1}, DURATION) == []
+    assert validate(action, {**task, "opening_clip": True}, FRESH, DURATION) == []
+
+
 @pytest.mark.parametrize("audio", [
     {**SOUND, "has_audio": False, "silent": True, "max_db": None, "floor_db": None},
     {**SOUND, "silent": True, "max_db": -80.0},
