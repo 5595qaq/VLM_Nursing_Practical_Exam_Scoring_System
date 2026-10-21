@@ -318,7 +318,7 @@ def test_download_sop_grading_record(client, db_session, monkeypatch):
     assert response.headers["content-type"] == "application/zip"
     assert 'filename="sop_record_VID_0083.zip"' in response.headers["content-disposition"]
     zf = zipfile.ZipFile(io.BytesIO(response.content))
-    top = "VID_0083/rubric1.7_skill0.11_m_seg-skill1.4.5_jobgrade-jo-1"
+    top = "VID_0083/rubric1.7_skill0.11_m_seg-skill1.4.5_m_jobgrade-jo-1"
     assert {f"{top}/run1/seg/grid.jpg", f"{top}/run1/grading/burst_1-2.jpg"} <= set(zf.namelist())
     run = json.loads(zf.read(f"{top}/record.json"))["runs"][0]
     assert run["commit"] == "abc"

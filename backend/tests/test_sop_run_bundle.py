@@ -51,7 +51,7 @@ def build(**kwargs):
 
 def test_bundle_is_laid_out_like_a_run_record_with_images():
     filename, zf = build()
-    top = "VID_0083/rubric1.7_skill0.11_gemini-4-argon_seg-skill1.4.5_job12345678-1"
+    top = "VID_0083/rubric1.7_skill0.11_gemini-4-argon_seg-skill1.4.5_gemini-4-argon_job12345678-1"
     assert filename == "sop_record_VID_0083.zip"
     assert set(zf.namelist()) == {
         f"{top}/record.json", f"{top}/segmentation.json", f"{top}/grading.json",
@@ -64,7 +64,7 @@ def test_bundle_is_laid_out_like_a_run_record_with_images():
     run = record["runs"][0]
     assert record["video_id"] == "VID_0083" and record["video_sha256"] == SHA
     assert record["versions"] == {"rubric": "1.7", "skill": "0.11", "model": "gemini-4-argon",
-                                  "segmentation": "skill1.4.5"}
+                                  "segmentation": "skill1.4.5_gemini-4-argon"}
     assert run["commit"] == "def" and run["segmentation_commit"] == "abc" and run["date"] == "2026-10-21"
     assert run["steps"] == [s for s in range(1, 31) if s not in (15, 16, 17)]
     assert run["segmentation"] == "sop-video-skill 1.4.5 gemini-4-argon"
@@ -81,6 +81,9 @@ def test_folder_name_matches_run_record():
     rr = sop_grading_service.load_grading_module("run_record")
     versions = {"rubric": "1.7", "skill": "0.11", "model": "gemini/4 argon", "segmentation": "skill1.4.5"}
     assert sop_run_bundle.version_folder(versions) == rr.record_dir(Path("runs"), "VID_0001", versions).name
+    # the segmentation tag names the segmentation model, as the CLI's does (so its duplicate check and
+    # segmentation reuse see frontend records)
+    assert sop_run_bundle.skill_tag("1.4.5", "models/gemini 4") == rr.skill_tag("1.4.5", "models/gemini 4")
 
 
 def test_extracted_record_is_read_by_run_record(tmp_path):

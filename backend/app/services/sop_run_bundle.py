@@ -1,7 +1,7 @@
 """One video of a finished sop_grading job as an experiment record zip, laid out like
 sop-video-grading/runs/ (run_record.py) so it can be compared and committed with the CLI's records:
 
-  <VID_0083 | job<id>_<n>>/rubric<v>_skill<v>_<model>_seg-skill<v>_job<id>-<n>/
+  <VID_0083 | job<id>_<n>>/rubric<v>_skill<v>_<model>_seg-skill<v>_<segmentation model>_job<id>-<n>/
     record.json          versions, video SHA-256, one run: commit, date, steps, failed tasks, usage,
                          plus what only the queue knows (job, queue attempts, rule history, missing files)
     segmentation.json    the segmentation this grading used
@@ -36,13 +36,19 @@ def version_folder(versions: dict) -> str:
             f"_seg-{versions['segmentation']}")
 
 
+def skill_tag(version: str, model: str) -> str:
+    """run_record.skill_tag: the segmentation tag names the skill version and the model that segmented."""
+    return f"skill{version}_{re.sub(r'[^A-Za-z0-9._-]', '_', model)}"
+
+
 def versions_of(skill_run: dict, grading_run: dict) -> dict:
     graded = grading_run.get("versions") or {}
     segmented = (skill_run.get("versions") or {}).get("skill")
     return {"rubric": graded.get("rubric") or (grading_run.get("result") or {}).get("rubric_version") or UNKNOWN,
             "skill": graded.get("skill") or UNKNOWN,
             "model": grading_run.get("model") or UNKNOWN,
-            "segmentation": f"skill{segmented}" if segmented else f"skill-{UNKNOWN}"}
+            "segmentation": skill_tag(segmented, skill_run.get("model") or UNKNOWN) if segmented
+            else f"skill-{UNKNOWN}"}
 
 
 def failed_steps(failed_tasks: list[dict]) -> set[int]:
