@@ -104,8 +104,22 @@
         return `${apiBase}/api/v1/evaluations/${encodeURIComponent(jobId)}/sop-grading/${position}/${kind}`;
     }
 
+    // Label-sheet video id (VID_0083) in the original file name, or '' when there is none. Only this
+    // id leaves the browser: the rest of the name may contain a student's name. A number right after
+    // it (VID_0083-2, VID_0083_2) may be a retake, which must not be filed under VID_0083.
+    function labelVideoId(name) {
+        const match = /(?<![A-Za-z0-9])VID_\d{4}(?![0-9]|[-_ ]\d)/.exec(name || '');
+        return match ? match[0] : '';
+    }
+
+    // Experiment record zip (laid out like sop-video-grading/runs/, with images).
+    function recordUrl(apiBase, jobId, position, videoId) {
+        const query = videoId ? `?video_id=${encodeURIComponent(videoId)}` : '';
+        return `${fileUrl(apiBase, jobId, position, 'record')}${query}`;
+    }
+
     return {
         VERDICTS, VERDICT_CLASSES, SOURCE_LABELS, buildStepRows, buildCriterionRows, scoreSummary,
-        buildGradingCsv, fileUrl
+        buildGradingCsv, fileUrl, labelVideoId, recordUrl
     };
 });

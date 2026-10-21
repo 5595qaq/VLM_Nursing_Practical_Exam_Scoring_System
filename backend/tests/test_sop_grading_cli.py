@@ -107,6 +107,18 @@ def test_run_is_recorded_and_a_rerun_is_refused(tmp_path, video, fake):
     recorder(video, runs).check({17}, force=True)
 
 
+def test_frontend_records_of_the_same_version_count_as_graded(tmp_path, video, fake):
+    runs = tmp_path / "runs"
+    folder = recorder(video, runs).folder
+    job = folder.parent / f"{folder.name}_job12345678-1"  # unzipped from the frontend (sop_run_bundle)
+    job.mkdir(parents=True)
+    (job / "record.json").write_text(json.dumps({"video_id": VID, "runs": [{"steps": list(range(1, 15))}]}),
+                                     encoding="utf-8")
+    with pytest.raises(SystemExit, match=r"步驟 1 已用相同版本評過.*含前端紀錄.*--steps 15,16"):
+        recorder(video, runs).check({1}, force=False)
+    recorder(video, runs).check({20}, force=False)
+
+
 def test_steps_build_on_the_record_not_on_local_files(tmp_path, video, fake):
     runs = tmp_path / "runs"
     grade(recorder(video, runs), work_folder(tmp_path, "a"), {1}, video)

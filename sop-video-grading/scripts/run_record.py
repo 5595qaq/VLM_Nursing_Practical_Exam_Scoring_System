@@ -64,6 +64,12 @@ def load(folder: Path) -> dict | None:
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
 
 
+def job_records(folder: Path) -> list[dict]:
+    """Records of the same video and version downloaded from the frontend (backend sop_run_bundle):
+    <version folder>_job<id>-<n>, kept apart so unzipping them never overwrites this record."""
+    return [record for path in sorted(folder.parent.glob(f"{folder.name}_job*")) if (record := load(path))]
+
+
 def graded_steps(record: dict | None) -> set[int]:
     return {s for run in (record or {}).get("runs", []) for s in run["steps"]}
 

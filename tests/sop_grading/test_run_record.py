@@ -57,6 +57,17 @@ def test_save_and_load(tmp_path):
     assert rr.load(tmp_path / "missing") is None
 
 
+def test_job_records_are_the_frontend_records_of_the_same_version(tmp_path):
+    folder = rr.record_dir(tmp_path / "runs", "VID_0083", VERSIONS)
+    for name, steps in ((f"{folder.name}_job12345678-1", {1, 2}), (f"{folder.name}_job87654321-2", {3})):
+        (folder.parent / name).mkdir(parents=True)
+        (folder.parent / name / rr.RECORD).write_text(json.dumps(add(None, steps=steps)), encoding="utf-8")
+    (folder.parent / f"{folder.name}_jobempty").mkdir()  # no record.json: skipped
+    other = rr.record_dir(tmp_path / "runs", "VID_0083", {**VERSIONS, "rubric": "9.9"})
+    (other.parent / f"{other.name}_job1").mkdir()  # another version
+    assert [rr.graded_steps(r) for r in rr.job_records(folder)] == [{1, 2}, {3}]
+
+
 def test_root_written_files_go_to_the_runs_folder_owner(tmp_path, monkeypatch):
     runs = tmp_path / "runs"
     folder = rr.record_dir(runs, "VID_0083", VERSIONS)

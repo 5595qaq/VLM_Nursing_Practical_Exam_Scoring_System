@@ -13,9 +13,12 @@ or thinking blocks are replayed, so trimming old images never edits conversation
 """
 import asyncio
 import base64
+import hashlib
 import importlib
 import json
+import logging
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -23,6 +26,7 @@ import tempfile
 import time
 import zipfile
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Awaitable, Callable
 
@@ -30,6 +34,7 @@ from app.config import settings
 from app.services import agents, gcs_service, usage
 from app.services.model_logging import attempt_state
 
+logger = logging.getLogger(__name__)
 BUDGET_LIMITS = {"crop_preview": 5, "overview": 20, "zoom": 15}
 MAX_REQUEST_IMAGE_BYTES = 30_000_000  # SKILL.md section 0: <= 30 MB of images per request
 MAX_CONSECUTIVE_REJECTS = 6
@@ -564,6 +569,56 @@ def artifact_prefix(video_id: str, generation: int) -> str:
     return f"sop_runs/{video_id}/g{generation}"
 
 
+def skill_version(path: Path) -> str:
+    """The `version:` line of a SKILL.md (the same rule as sop-video-grading/scripts/run_record.py)."""
+    match = re.search(r"^version:\s*(\S+)\s*$", path.read_text(encoding="utf-8"), re.MULTILINE)
+    return match.group(1) if match else ""
+
+
+def now_iso() -> str:
+    return datetime.now(timezone.utc).isoformat(timespec="seconds")
+
+
+def run_facts() -> dict:
+    """When a queued run finished and which code ran it, for the experiment record (sop_run_bundle)."""
+    return {"commit": settings.GIT_COMMIT, "finished_at": now_iso()}
+
+
+def tree_digest(root: Path, skip: tuple[str, ...] = ("runs", "review", "__pycache__")) -> str:
+    """SHA-256 over the files under root (relative path and content). GIT_COMMIT is fixed when the
+    worker starts, but the skill folders are mounted live: this shows which rules and scripts a run
+    really read, and whether they changed during it. runs/ and review/ are records, not rules, and are
+    not walked; hidden files and editor backups (~) are not rules either. Line endings are compared as
+    LF, so a Windows (autocrlf) and a Linux checkout of one commit give the same digest.
+    Returns "" when a file vanished mid-walk (an editor's atomic save): unknown, not a failed run."""
+    digest = hashlib.sha256()
+    files = []
+    for folder, dirnames, filenames in os.walk(root):
+        dirnames[:] = [d for d in dirnames if d not in skip and not d.startswith(".")]
+        files += [Path(folder) / f for f in filenames if not f.startswith(".") and not f.endswith("~")]
+    try:
+        for path in sorted(files, key=lambda p: p.relative_to(root).as_posix()):
+            content = path.read_bytes().replace(b"\r\n", b"\n")
+            digest.update(path.relative_to(root).as_posix().encode("utf-8") + b"\0" + content + b"\0")
+    except OSError as exc:
+        logger.warning("could not hash %s: %s", root, exc)
+        return ""
+    return digest.hexdigest()
+
+
+def rules_changed(root: Path, before: str) -> bool | None:
+    """Whether the files under root changed since `before` (tree_digest); None when either is unknown."""
+    after = tree_digest(root)
+    return None if not before or not after else after != before
+
+
+def _snapshot_skill(workdir: Path) -> dict:
+    """Keep the SKILL.md this run reads in its artifacts.zip, with its version and the folder digest."""
+    root = skill_dir()
+    shutil.copyfile(root / "SKILL.md", workdir / "rules_SKILL.md")
+    return {"versions": {"skill": skill_version(workdir / "rules_SKILL.md")}, "rules_digest": tree_digest(root)}
+
+
 def _upload_artifacts(workdir: Path, prefix: str) -> dict:
     archive = workdir.parent / "artifacts.zip"
     with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED) as zf:
@@ -589,6 +644,7 @@ async def run_sop_skill(video_uri: str, video_id: str, generation: int,
         workdir.mkdir()
         video = root / "source.mp4"
         await asyncio.to_thread(gcs_service.download_to_filename, video_uri, str(video))
+        rules = await asyncio.to_thread(_snapshot_skill, workdir)
         try:
             outcome = await run_skill_loop(video, video_id, workdir, model_call or default_model_call(),
                                           on_progress)
@@ -600,4 +656,6 @@ async def run_sop_skill(video_uri: str, video_id: str, generation: int,
                 files = None
         if files is None:
             raise SkillRunError("failed to upload sop-video-skill artifacts to GCS")
-        return {**outcome, "files": files, "model": model_name()}
+        changed = await asyncio.to_thread(rules_changed, skill_dir(), rules["rules_digest"])
+        return {**outcome, "files": files, "model": model_name(), **rules, "rules_changed_during_run": changed,
+                **run_facts()}

@@ -12,6 +12,12 @@
 - 不得使用 `git add -f` 強制加入被忽略的模型檔。
 - 提交前檢查暫存區，避免包含模型權重、憑證、秘密資訊或產生的影片。
 
+## Code review
+
+- 每次修改完成後，開 PR 前必須先做 code review（例如 `/code-review`），對象是這個分支相對 `main` 的完整變更；沒有做過 review 不得開 PR。
+- review 找到的問題要修正；決定不修的，寫明理由。修正後重新執行受影響的測試；修正幅度大時再 review 一次。
+- PR 描述要寫 review 的結果：找到哪些問題、哪些已修正、哪些不修以及理由。
+
 ## 文件同步
 
 - 修改程式、API、資料格式、設定、環境變數、依賴、目錄結構、CI workflow 或操作流程時，必須在同一個分支同步更新受影響的文件，包括 `README.md`、`TESTING.md`、`sop-video-skill/SKILL.md`、`sop-video-skill/CHANGELOG.md` 等。
