@@ -20,7 +20,17 @@
 
 ## SOP 評分與切分的疊代流程
 
-適用於修改 `sop-video-grading/`、`sop-video-skill/` 的規則、prompt、rubric，或評估切分／評分結果時。
+適用於修改 `sop-video-grading/`、`sop-video-skill/` 的規則、prompt、rubric，或使用者要求評估切分／評分結果時。使用者只要求「跑」某支影片時，照下方「只執行評分」做，不進入疊代流程。
+
+### 只執行評分
+
+使用者只要求跑某支影片（例如「幫我跑 VID_0081」）時：
+
+- 用標記表找出影片ID，再用 `python sop-video-grading/scripts/run_record.py` 確認同一版本還沒評過。
+- 執行 `sop_grading_cli`。使用者指定的影片就是同意執行的範圍；工作目錄有別人未 commit 的修改時，照下方「執行評分」的規則先問使用者。
+- 跑完確認紀錄正常寫進 `sop-video-grading/runs/`：檔案齊全（`record.json`、`segmentation.json`、`grading.json`、每個任務的對話紀錄）、`validate_grading.py --final` 通過、沒有學生姓名或原始影片路徑、commit 沒有 `-dirty`。
+- 回報紀錄位置、token 用量與執行時間，並問使用者要不要 commit 紀錄。
+- 不抽影格、不判斷結果對錯、不比對標記表，除非使用者另外要求；要進入疊代流程前先問使用者。
 
 ### 資料來源
 
@@ -33,11 +43,14 @@
 ### 每輪疊代
 
 1. **建立參考答案**：先讀標記表，再自己抽影格（`burst.py`、`clip.py`，或 `sop-video-skill/scripts/sheets.py`、`crop.py`）判斷每個目標步驟。參考答案要寫出判定、依據的 mm:ss 與影格，以及引用的 rubric 條目。
+   - 影格會拍到學生的臉：抽出的圖片只能放在 repo 之外的工作資料夾（例如 `vlm_data/`）或被忽略的 `sop-video-grading/review/`，不得 commit，也不得放進 PR 或 artifact。
    - 在看評分 agent 結果之前完成參考答案，避免被模型答案影響。
    - 參考答案與標記表不一致時，記下兩者與理由，標成「待人工核對」，不要自行認定標記表錯。
-2. **執行評分**：用 `backend/app/sop_grading_cli.py` 評分，只重評受影響的步驟時用 `--steps`。評分會呼叫付費模型，跑超過少數幾支影片或整份重評前先問使用者。
+2. **執行評分**：用 `backend/app/sop_grading_cli.py` 評分，只重評受影響的步驟時用 `--steps`。評分會呼叫付費模型：使用者沒有明確指定影片、要跑的影片比使用者指定的多，或單支影片預估超過 200 萬 input tokens 時，先問使用者（參考：VID_0081 是 11 分鐘的影片，切分約 52 萬、評分約 79 萬，合計約 131 萬）。
    - 不得把標記表或參考答案的判定、說明放進評分 agent 的輸入；`labels_to_segmentation.py` 只能帶時間。
    - 執行時帶 `SOP_RUN_BY` 與 `GIT_COMMIT`（用 README 的寫法，有未 commit 的修改會帶 `-dirty`），跑完把 `sop-video-grading/runs/` 的新紀錄一起 commit。規則有改就先遞增 rubric 或 SKILL.md 版本並 commit 再跑，否則會被當成重複或 dirty 而拒絕；不要用 `--force`、`--allow-dirty` 繞過，除非是刻意重測穩定性並在紀錄中說明。
+   - 共用的工作目錄常有別人未 commit 的修改，`GIT_COMMIT` 會帶 `-dirty` 而被拒絕。不要為了跑評分而 commit、stash 或還原別人的修改，也不要用 `--allow-dirty` 繞過；先告訴使用者，由使用者決定等對方 commit，或改在乾淨的 `git worktree` 跑（worktree 裡沒有被忽略的 `.env` 與 `secrets/`，要另外指定 `--env-file` 與 `GCP_SA_KEY_PATH`；紀錄會寫在 worktree 的 `sop-video-grading/runs/`，跑完複製回原工作目錄再 commit）。
+   - commit 紀錄時只加 `sop-video-grading/runs/<影片ID>/`，不要連同工作目錄裡其他人的修改一起提交。
 3. **比對**：用 `sop-video-grading/scripts/eval_grading.py` 比對評分結果與標記表，再逐一比對與參考答案不一致的步驟。
 4. **歸因**：每個不一致先判斷原因，再決定改什麼：
    - 評分 agent 看錯、漏看 → 改 SKILL.md 的作法（取樣、放大、聲音等）。
