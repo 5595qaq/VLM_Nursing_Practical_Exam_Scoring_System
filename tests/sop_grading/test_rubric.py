@@ -31,6 +31,9 @@ def test_rubric_classification_matches_the_plan():
     assert by_id["16a"]["window_steps"] == [15, 16, 17]  # same task as 15b + 17a
     assert by_id["26a"]["category"] == "visual" and by_id["26a"]["key"] is True
     assert by_id["26a"]["window_steps"] == by_id["26b"]["window_steps"] == [26]
+    # rolling the vial is watched on a clip, not inferred from the step being located (rubric 1.8)
+    assert by_id["20a"]["category"] == "visual" and by_id["20a"]["key"] is True
+    assert by_id["20a"]["window_steps"] == [20] and by_id["20a"]["clip"] is True
     # pushing the air out is its own non-key criterion, in the same task as the flick (rubric 1.7)
     for flick, expel in (("17a", "17b"), ("27a", "27b")):
         assert by_id[flick]["key"] is True and by_id[expel]["key"] is False
@@ -68,6 +71,13 @@ def test_program_criterion_needs_known_rule():
 def test_visual_criterion_needs_window_steps():
     assert any("window_steps" in e
                for e in broken(lambda r: r["steps"][11]["criteria"][0].pop("window_steps")))
+
+
+def test_clip_flag_needs_a_visual_criterion():
+    assert any("clip needs a visual criterion" in e
+               for e in broken(lambda r: r["steps"][4]["criteria"][0].update(clip=True)))  # 5a (program)
+    assert any("clip needs a visual criterion" in e
+               for e in broken(lambda r: r["steps"][19]["criteria"][0].update(clip="yes")))  # 20a
 
 
 def test_not_visible_criterion_cannot_be_key():

@@ -72,7 +72,7 @@
       {"id": "19b", "text": "單手套回（另一手未扶針頭套）", "category": "visual", "key": false, "window_steps": [19]}
     ]},
     {"step_id": 20, "text": "用雙手旋轉Vial瓶，讓稀釋液和粉劑融合。", "criteria": [
-      {"id": "20a", "text": "雙手旋轉 vial 讓稀釋液與粉劑融合（雙手掌心夾住 vial 來回搓滾或旋轉）", "category": "visual", "key": true, "window_steps": [20], "note": "使用者要求（2026-10-21）：原本只看切分有沒有定位到步驟 20；資料擴增 AUG0072_SKIP 刪掉搓滾後，切分把拿著 vial、擦瓶口的幾秒標成 20 而判正確，改由評分 agent 看畫面"}
+      {"id": "20a", "text": "雙手旋轉 vial 讓稀釋液與粉劑融合（雙手掌心夾住 vial 來回搓滾或旋轉）", "category": "visual", "key": true, "window_steps": [20], "clip": true, "note": "暫定（標準文字未經人工核對）。使用者要求（2026-10-21）：原本只看切分有沒有定位到步驟 20；資料擴增 AUG0072_SKIP 刪掉搓滾後，切分把拿著 vial、擦瓶口的幾秒標成 20 而判正確，改由評分 agent 看畫面"}
     ]},
     {"step_id": 21, "text": "空針拔蓋後，抽取空氣。", "criteria": [
       {"id": "21a", "text": "空針拔蓋後抽取空氣", "category": "program", "key": true, "rule": {"type": "detected"}}

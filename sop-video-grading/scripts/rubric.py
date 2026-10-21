@@ -54,6 +54,8 @@ def check_rubric(rubric: dict) -> list[str]:
                 errors.append(f"criterion {cid}: program criterion needs rule.type in {sorted(RULE_TYPES)}")
             if "min_seconds" in c and (cat != "visual" or not isinstance(c["min_seconds"], (int, float))):
                 errors.append(f"criterion {cid}: min_seconds needs a visual criterion and a number")
+            if "clip" in c and (cat != "visual" or not isinstance(c["clip"], bool)):
+                errors.append(f"criterion {cid}: clip needs a visual criterion and true/false")
             if cat == "visual" and not c.get("window_steps"):
                 errors.append(f"criterion {cid}: visual criterion needs window_steps")
             if cat == "not_visible" and (c.get("key") or not c.get("reason")):

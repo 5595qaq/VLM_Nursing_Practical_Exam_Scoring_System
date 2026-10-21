@@ -118,6 +118,9 @@ async def test_audio_and_washing_tasks_open_with_a_clip(video, tmp_path):
     assert len(videos) == 1 and videos[0]["fps"] == grading.CLIP_FPS
     assert "有聲音" in flick[0]["text"]
     assert [b for b in requests_for(model, "1b")[0] if b["type"] == "video"]
+    rolling = requests_for(model, "20a")  # clip: true (rubric 1.8); final accepted on the opening clip
+    assert len(rolling) == 1 and [b for b in rolling[0] if b["type"] == "video"]
+    assert "要看 clip 的連續動作" in rolling[0][0]["text"]
     assert not [b for b in requests_for(model, "12a")[0] if b["type"] == "video"]  # overview sheet
 
 

@@ -98,12 +98,13 @@ def build_tasks(result: dict, rubric: dict, steps: set[int] | None = None) -> li
                                       "text": spec["text"], "window": c["window"],
                                       "audio": spec.get("audio", False),
                                       "min_seconds": spec.get("min_seconds"),
-                                      "dense": spec.get("sample_interval") is not None})
+                                      "dense": spec.get("sample_interval") is not None,
+                                      "clip": spec.get("clip", False)})
     tasks = list(groups.values())
     for task in tasks:
         task["window"] = [min(c["window"][0] for c in task["criteria"]),
                           max(c["window"][1] for c in task["criteria"])]
-        task["needs_clip"] = any(c["audio"] or c["dense"] for c in task["criteria"])
+        task["needs_clip"] = any(c["audio"] or c["dense"] or c["clip"] for c in task["criteria"])
     return tasks
 
 
@@ -246,6 +247,7 @@ def build_task_content(task: dict, video_id: str, duration: float, state: TaskSt
         "要判定的標準（final 必須剛好包含這幾條）：",
         *(f"  {c['criterion_id']}（步驟 {c['step_id']}）：{c['text']}；window={c['window']}"
           + ("；要聽聲音" if c["audio"] else "") + ("；要每 0.5 秒一格" if c["dense"] else "")
+          + ("；要看 clip 的連續動作" if c["clip"] else "")
           + (f"；要計時：final 填 span=[開始, 結束]（影片秒數），滿 {c['min_seconds']:g} 秒才是正確"
              if c.get("min_seconds") else "")
           for c in task["criteria"]),
@@ -292,11 +294,12 @@ async def _opening(task: dict, runner: GradingRunner, boxes: dict) -> tuple[list
             task["audio"] = None  # the agent still hears the clip
     if task["needs_clip"] and end - start <= OPENING_CLIP_MAX_SECONDS:
         material, _ = await asyncio.to_thread(runner.clip, start, end, boxes["context"])
+        task["opening_clip"] = True  # validate_grading_action counts it as a clip seen
         return [material], "開場：M1 是整個任務區間的帶聲音片段（2 fps）。足夠判斷就直接送 final。"
     if end - start < 2:
         start, end = max(0.0, start - 1), end + 1
     images = await asyncio.to_thread(runner.overview, boxes["hands"], start, end, 9, "hands")
-    note = ("（任務區間超過 60 秒，需要聲音或 0.5 秒一格時請用 clip 選一段）" if task["needs_clip"] else "")
+    note = ("（任務區間超過 60 秒，需要聲音、0.5 秒一格或連續動作時請用 clip 選一段）" if task["needs_clip"] else "")
     return [Material(i.path, i.label) for i in images], f"開場：M1 是任務區間 9 張等距影格{note}。足夠判斷就直接送 final。"
 
 
