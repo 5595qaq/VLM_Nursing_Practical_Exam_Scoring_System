@@ -14,6 +14,7 @@ usable audio is announced so the agent does not mark the flick wrong for silence
 import asyncio
 import importlib
 import json
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -514,6 +515,38 @@ def _upload_artifacts(workdir: Path, prefix: str) -> dict:
             for kind, (local, name, content_type) in uploads.items()}
 
 
+RULES_HISTORY = "rules_history.json"
+
+
+def _snapshot_rules(workdir: Path, resumed: bool) -> tuple[list[dict], dict]:
+    """Copy the live rubric.json and SKILL.md into workdir (they go into artifacts.zip) and append this
+    attempt to rules_history.json. A resumed attempt restores that file and the earlier copies with the
+    earlier zip: those copies are kept as rules_*.attempt<N>.* (N = the attempt that read them), so the
+    rules of kept criteria stay in the archive. A resumed attempt without that history (the restore
+    failed, or the earlier attempt predates it) records an unknown earlier attempt.
+    Returns (history, criterion texts)."""
+    root = grading_dir()
+    path = workdir / RULES_HISTORY
+    history = json.loads(path.read_text(encoding="utf-8")) if path.exists() else []
+    if resumed and not history:
+        history = [{"versions": None, "rules_digest": None, "commit": None, "started_at": None}]
+    for name in ("rules_rubric.json", "rules_SKILL.md"):
+        earlier = workdir / name
+        kept = workdir / f"{earlier.stem}.attempt{len(history)}{earlier.suffix}"
+        if earlier.exists() and not kept.exists():
+            earlier.replace(kept)
+    shutil.copyfile(root / "rubric.json", workdir / "rules_rubric.json")
+    shutil.copyfile(root / "SKILL.md", workdir / "rules_SKILL.md")
+    rubric = load_grading_module("rubric").load_rubric(workdir / "rules_rubric.json")
+    history.append({"versions": {"rubric": rubric["version"],
+                                 "skill": sop_skill_service.skill_version(workdir / "rules_SKILL.md")},
+                    "rules_digest": sop_skill_service.tree_digest(root), "commit": settings.GIT_COMMIT,
+                    "started_at": sop_skill_service.now_iso()})
+    path.write_text(json.dumps(history, ensure_ascii=False, indent=1), encoding="utf-8")
+    # The result carries criterion ids only; the frontend shows each criterion's rubric text next to it.
+    return history, {c["id"]: c["text"] for step in rubric["steps"] for c in step["criteria"]}
+
+
 def _restore_artifacts(uri: str, workdir: Path) -> None:
     """Unpack an earlier attempt's artifacts.zip into workdir, so the new zip still holds the transcripts
     and images of the criteria that attempt graded (a rerun task's transcript is replaced)."""
@@ -558,6 +591,7 @@ async def run_sop_grading(video_uri: str, video_id: str, generation: int, segmen
                 await asyncio.to_thread(_restore_artifacts, previous_artifacts, workdir)
             except Exception as exc:  # noqa: BLE001 - only the debugging zip is incomplete
                 logger.warning("could not restore earlier grading artifacts %s: %s", previous_artifacts, exc)
+        history, texts = await asyncio.to_thread(_snapshot_rules, workdir, previous is not None)
         try:
             outcome = await run_grading(video, segmentation, workdir, model_call, on_progress=on_progress,
                                         previous=previous, resume=previous is not None)
@@ -565,6 +599,7 @@ async def run_sop_grading(video_uri: str, video_id: str, generation: int, segmen
             exc.files = await _upload_or_none(workdir, video_id, generation)
             raise
         files = await _upload_or_none(workdir, video_id, generation)
+    changed = await asyncio.to_thread(sop_skill_service.rules_changed, grading_dir(), history[-1]["rules_digest"])
     exceptions = outcome.pop("task_exceptions")
     if outcome["failed_tasks"] or outcome["validation_errors"]:
         problems = [f"{f['task']}: {f['error']}" for f in outcome["failed_tasks"]] + outcome["validation_errors"]
@@ -573,9 +608,12 @@ async def run_sop_grading(video_uri: str, video_id: str, generation: int, segmen
         trusted = not (outcome["failed_tasks"] and outcome["validation_errors"])
         raise GradingIncomplete("grading incomplete: " + "; ".join(problems)[:1000],
                                 outcome["result"] if trusted else None, exceptions, files)
-    rubric = load_grading_module("rubric").load_rubric()
-    # The result carries criterion ids only; the frontend shows each criterion's rubric text next to it.
-    texts = {c["id"]: c["text"] for step in rubric["steps"] for c in step["criteria"]}
     extra = {} if files is not None else {"upload_error": "failed to upload sop-video-grading artifacts to GCS"}
+    # mixed_rules: criteria kept from an earlier attempt were graded under other rules or scripts.
+    # None (unknown) when an attempt's rules were not recorded or could not be hashed.
+    mixed = (None if any(not h["versions"] or not h["rules_digest"] for h in history)
+             else len({(json.dumps(h["versions"], sort_keys=True), h["rules_digest"]) for h in history}) > 1)
     return {**outcome, "files": files or {}, "model": settings.SOP_SKILL_GEMINI_MODEL,
-            "criterion_texts": texts, **extra}
+            "criterion_texts": texts, "versions": history[-1]["versions"],
+            "rules_digest": history[-1]["rules_digest"], "attempts": history, "mixed_rules": mixed,
+            "rules_changed_during_run": changed, **sop_skill_service.run_facts(), **extra}

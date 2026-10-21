@@ -78,4 +78,17 @@ assert.ok(csv.includes(`"'=HYPERLINK(""x"")"`));
 assert.equal(SopGrading.fileUrl('http://api', 'a/b', 2, 'result'),
     'http://api/api/v1/evaluations/a%2Fb/sop-grading/2/result');
 
+assert.equal(SopGrading.labelVideoId('王小明_VID_0083_final.mp4'), 'VID_0083');
+assert.equal(SopGrading.labelVideoId('vid_0083.mp4'), '');
+assert.equal(SopGrading.labelVideoId('VID_00831.mp4'), '');
+assert.equal(SopGrading.labelVideoId('XVID_0083_retake.mp4'), '');
+assert.equal(SopGrading.labelVideoId('VID_0083-2.mp4'), '');
+assert.equal(SopGrading.labelVideoId('VID_0083_2.mp4'), '');
+assert.equal(SopGrading.labelVideoId('VID_0083_final.mp4'), 'VID_0083');
+assert.equal(SopGrading.labelVideoId(undefined), '');
+assert.equal(SopGrading.recordUrl('http://api', 'job', 0, 'VID_0083'),
+    'http://api/api/v1/evaluations/job/sop-grading/0/record?video_id=VID_0083');
+assert.equal(SopGrading.recordUrl('http://api', 'job', 1, ''),
+    'http://api/api/v1/evaluations/job/sop-grading/1/record');
+
 console.log('sop-grading tests passed');

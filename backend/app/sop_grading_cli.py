@@ -100,12 +100,16 @@ class Recorder:
         if self.commit.endswith("-dirty") and not allow_dirty:
             raise SystemExit("有未 commit 的修改，紀錄的 commit 無法重現這次的結果；先 commit 再跑，"
                              "或加 --allow-dirty（紀錄會標明 -dirty）")
-        done = self.rr.already_graded(self.record, steps)
+        # Frontend records of this version (<folder>_job*) count too: their steps were paid for as well.
+        records = [self.record, *self.rr.job_records(self.folder)]
+        done = set().union(*(self.rr.already_graded(r, steps) for r in records))
         if done and not force:
-            left = sorted(set(self.rr.ALL_STEPS) - self.rr.graded_steps(self.record))
+            graded = set().union(*(self.rr.graded_steps(r) for r in records))
+            left = sorted(set(self.rr.ALL_STEPS) - graded)
             hint = f"還沒評過的步驟可用 --steps {','.join(map(str, left))}" if left else "這個版本已全部評過"
+            where = f"{self.folder}，含前端紀錄 {self.folder.name}_job*" if len(records) > 1 else str(self.folder)
             raise SystemExit(f"{self.video_id} 步驟 {','.join(map(str, sorted(done)))} 已用相同版本評過"
-                             f"（{self.folder}）；{hint}；確定要重跑請加 --force")
+                             f"（{where}）；{hint}；確定要重跑請加 --force")
         try:  # fail now, not after paying for the run (the worker mounts sop-video-grading read-only)
             self.folder.mkdir(parents=True, exist_ok=True)
             probe = self.folder / ".write_test"

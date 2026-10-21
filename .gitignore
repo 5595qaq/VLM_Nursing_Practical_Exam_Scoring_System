@@ -36,3 +36,8 @@ sop-video-grading/review/
 
 # Packaged skill archives (the skill lives in sop-video-skill/; old versions are tagged)
 sop-video-skill*.zip
+
+# Images in experiment records downloaded from the frontend (students' faces; the CLI records keep none)
+sop-video-grading/runs/**/*.jpg
+sop-video-grading/runs/**/*.jpeg
+sop-video-grading/runs/**/*.png
