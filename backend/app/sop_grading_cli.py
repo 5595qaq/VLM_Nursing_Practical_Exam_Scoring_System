@@ -45,6 +45,7 @@ from app.services import sop_grading_service, sop_skill_service, video_service
 
 SEG_FILES = ("transcript.json", "motion.json", "probe.json")  # kept from seg/ when the run segmented
 SOURCE_MARK = "segmentation.source"  # segmentation tag of the work folder's segmentation.json
+RECORDED = "recorded"  # second line of SOURCE_MARK once the file is in a record (copied from or saved to one)
 
 
 def _duration(path: Path) -> float:
@@ -98,8 +99,12 @@ class Recorder:
         self.record = self.rr.load(self.folder)
         self.video_sha256 = ""
         self.segmentation_from: dict | None = None  # set by prepare when it copies another record's
+        self.kept_local = False  # prepare kept a segmentation made here that no record has yet
 
-    def check(self, steps: set[int] | None, force: bool, allow_dirty: bool = False) -> None:
+    def check(self, steps: set[int] | None, force: bool, allow_dirty: bool = False,
+              new_segmentation: bool = False) -> None:
+        if new_segmentation and self.record:
+            raise SystemExit(f"{self.folder} 已固定使用一份切分，--new-segmentation 只能用在還沒有紀錄的版本")
         if not self.by:
             raise SystemExit("請用 --by 或環境變數 SOP_RUN_BY 填寫執行者")
         if not self.commit:
@@ -132,43 +137,43 @@ class Recorder:
     def prepare(self, out: Path, labels: Path | None, new_segmentation: bool = False) -> str | None:
         """Make out/segmentation.json the record's segmentation. Returns where it came from when it was
         copied from this or another record (seg_source of the run), else None.
-        Without a record: --labels rebuilds it; a local file this CLI made with the same segmentation tag
-        is kept (e.g. a --new-segmentation run that stopped before it was recorded); otherwise the
-        earliest record of the same video file and segmentation tag is reused (unless new_segmentation);
-        new_segmentation segments again; a file without this version's segmentation tag stops the run.
-        A replaced local file is kept as segmentation.prev.json."""
+        Without a record: --labels rebuilds it; a local file this CLI made with the same segmentation
+        tag and that no record has yet is kept (e.g. a --new-segmentation run that stopped before it was
+        recorded); otherwise the earliest record of the same video file and segmentation tag is reused (unless
+        new_segmentation); new_segmentation segments again; a file without this version's segmentation
+        tag stops the run. A replaced local file is set aside (_set_aside), never overwritten."""
         seg, mark = out / "segmentation.json", out / SOURCE_MARK
         tag = self.versions["segmentation"]
         if self.record:
-            if new_segmentation:
-                raise SystemExit(f"{self.folder} 已固定使用一份切分，--new-segmentation 只能用在還沒有紀錄的版本")
             shutil.copyfile(self.folder / "segmentation.json", seg)
-            mark.write_text(tag, encoding="utf-8")
+            mark.write_text(f"{tag}\n{RECORDED}", encoding="utf-8")
             print("using recorded segmentation.json", flush=True)
             return "recorded segmentation.json"
-        marked = seg.exists() and mark.exists() and mark.read_text(encoding="utf-8").strip() == tag
+        lines = mark.read_text(encoding="utf-8").split() if seg.exists() and mark.exists() else []
+        made_here = lines == [tag]
+        if made_here and not labels and not new_segmentation:  # paid for here and not recorded yet: keep it
+            self.kept_local = True
+            print(f"keeping the local segmentation.json (seg-{tag}, made here)", flush=True)
+            return None
         source = None
         if not labels and not new_segmentation:
             source = self.rr.segmentation_source(self.folder.parent.parent, self.video_id, tag,
                                                  self.video_sha256, self.folder)
-        if (source and marked  # paid for here and not recorded yet (unless it is that record's): keep it
-                and not _same_json(seg, self.folder.parent / source["record"] / "segmentation.json")):
-            print(f"keeping the local segmentation.json (seg-{tag}, made here) instead of reusing "
-                  f"{source['record']}", flush=True)
-            return None
         if seg.exists() and (labels or new_segmentation or source):
-            seg.replace(out / "segmentation.prev.json")
-            print("moved the old segmentation.json to segmentation.prev.json", flush=True)
+            print("moved the old segmentation.json to", _set_aside(seg).name, flush=True)
         if source:
             shutil.copyfile(self.folder.parent / source["record"] / "segmentation.json", seg)
-            mark.write_text(tag, encoding="utf-8")
+            mark.write_text(f"{tag}\n{RECORDED}", encoding="utf-8")
             self.segmentation_from = source
             print(reuse_notice(source), flush=True)
             return f"reused segmentation.json of {source['record']}"
-        if seg.exists() and (not mark.exists() or mark.read_text(encoding="utf-8").strip() != tag):
-            old = mark.read_text(encoding="utf-8").strip() if mark.exists() else ""
-            hint = (f"；{SOURCE_MARK} 是 {old}，是切分標記加上切分模型之前的舊格式，確認是用 {tag} 的模型切分的，"
-                    f"可以把 {SOURCE_MARK} 改成 {tag}" if old and tag.startswith(old + "_") else "")
+        if seg.exists() and lines == [tag, RECORDED]:  # from a record that can no longer be named as its source
+            raise SystemExit(f"{seg} 來自某份 seg-{tag} 的紀錄，但找不到可沿用的來源紀錄（紀錄被刪、影片檔不同，"
+                             "或來源是未 commit 的程式），記進紀錄會看不出它是沿用的；請加 --new-segmentation 重新切分，"
+                             "或換一個 --out")
+        if seg.exists() and lines != [tag]:
+            hint = (f"；{SOURCE_MARK} 是 {lines[0]}，是切分標記加上切分模型之前的舊格式，確認是用 {tag} 的模型"
+                    f"切分的，可以把 {SOURCE_MARK} 改成 {tag}" if lines and tag.startswith(lines[0] + "_") else "")
             raise SystemExit(f"{seg} 不是用 seg-{tag} 產生的（來源不明或不同），不能記進這個紀錄；"
                              f"請換一個 --out，或刪掉它重新切分{hint}")
         return None
@@ -184,19 +189,26 @@ class Recorder:
         files = {f"grading/transcript_task_{key}.json": out / "grading" / f"transcript_task_{key}.json"
                  for key in outcome["tasks"]}
         files["grading/probe.json"] = out / "grading" / "probe.json"
-        files.update({f"seg/{name}": out / "seg" / name for name in SEG_FILES})
+        seg_files = {f"seg/{name}": out / "seg" / name for name in SEG_FILES}
         self.record = self.rr.add_run(
             self.record, self.video_id, self.versions, self.video_sha256, steps=steps,
             failed_tasks=outcome["failed_tasks"], by=self.by, date=datetime.date.today().isoformat(),
             commit=self.commit, segmentation=segmentation, usage=outcome["usage"],
             segmentation_from=self.segmentation_from)
         seg = json.loads((out / "segmentation.json").read_text(encoding="utf-8"))
-        return self.rr.save(self.folder, self.record, seg, outcome["result"],
-                            {k: v for k, v in files.items() if fresh(v)})
+        files = {k: v for k, v in files.items() if fresh(v)}
+        # a kept local segmentation was paid for by an earlier, unrecorded run: keep its transcript too
+        files.update({k: v for k, v in seg_files.items() if (v.exists() if self.kept_local else fresh(v))})
+        return self.rr.save(self.folder, self.record, seg, outcome["result"], files)
 
 
-def _same_json(a: Path, b: Path) -> bool:
-    return json.loads(a.read_text(encoding="utf-8")) == json.loads(b.read_text(encoding="utf-8"))
+def _set_aside(path: Path) -> Path:
+    """Rename segmentation.json to segmentation.prev.json (prev2, prev3... when taken)."""
+    n = 1
+    while (target := path.with_name(f"{path.stem}.prev{n if n > 1 else ''}{path.suffix}")).exists():
+        n += 1
+    path.replace(target)
+    return target
 
 
 def reuse_notice(source: dict) -> str:
@@ -217,7 +229,7 @@ async def run(video: Path, video_id: str, out: Path, steps: set[int] | None,
     started = time.time() - 1  # files written from now on belong to this run (mtime resolution margin)
     recorded_seg = recorder.prepare(out, labels, new_segmentation) if recorder else None
     if not recorder and new_segmentation and (out / "segmentation.json").exists():
-        (out / "segmentation.json").replace(out / "segmentation.prev.json")
+        _set_aside(out / "segmentation.json")
     source = out / "source.mp4"
     if not source.exists():
         print("normalizing", video, flush=True)
@@ -263,6 +275,8 @@ async def run(video: Path, video_id: str, out: Path, steps: set[int] | None,
     grading_path.write_text(json.dumps(outcome["result"], ensure_ascii=False, indent=1), encoding="utf-8")
     if recorder:
         print("recorded", recorder.save(out, outcome, steps, seg_source, started), flush=True)
+        if seg_tag:  # in a record now: a later version reuses it as that record's, with segmentation_from
+            (out / SOURCE_MARK).write_text(f"{seg_tag}\n{RECORDED}", encoding="utf-8")
         if recorder.segmentation_from:  # again at the end, where it is not lost among the grading logs
             print(reuse_notice(recorder.segmentation_from), flush=True)
     return outcome
@@ -291,7 +305,7 @@ def main() -> None:
     if _rr().VIDEO_ID_RE.fullmatch(a.video_id):
         recorder = Recorder(a.video, a.video_id, a.runs_dir or sop_grading_service.grading_dir() / "runs",
                             a.by.strip(), a.commit.strip(), seg_tag)
-        recorder.check(steps, a.force, a.allow_dirty)
+        recorder.check(steps, a.force, a.allow_dirty, a.new_segmentation)
     else:
         print(f"{a.video_id} 不是標記表的影片ID（VID_xxxx），不寫評分紀錄", flush=True)
     outcome = asyncio.run(run(a.video, a.video_id, a.out, steps, a.labels, recorder, seg_tag, a.new_segmentation))

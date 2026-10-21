@@ -274,12 +274,15 @@ python sop-video-grading/scripts/review_page.py sop-video-grading/runs/VID_0083/
 
 一份紀錄只評一份切分：紀錄已存在時，`--out` 的 `segmentation.json` 換成紀錄的，`--steps` 以紀錄的 `grading.json` 為基底（不用本機舊檔）。紀錄還不存在時，`--labels` 會重建 `segmentation.json`（舊檔改名為 `segmentation.prev.json`）；不是這個 CLI 以同一個切分來源產生的 `segmentation.json`（例如舊的工作資料夾）會讓執行停止，請換一個 `--out`。其他影片ID（可能含學生姓名）不寫紀錄。worker 容器只有 `sop-video-grading/runs` 可寫，其餘 skill 目錄維持唯讀。
 
-**沿用切分（避免重複付費切分）**：只改了評分版本（rubric、評分 SKILL.md 或評分模型），切分版本（sop-video-skill 版本＋切分模型）沒變時，新版本第一次執行不會重新切分，而是複製同一支影片（SHA-256 相同）、同一切分版本的舊紀錄的 `segmentation.json`，前端實驗紀錄 ZIP 解壓後的紀錄（`_job*`）也算。有多份時優先選自己切分的（不是沿用來的）、最早的、命令列的。
+**沿用切分（避免重複付費切分）**：只改了評分版本（rubric 或評分 SKILL.md），切分版本（sop-video-skill 版本＋切分模型）沒變時，新版本第一次執行不會重新切分，而是複製同一支影片（SHA-256 相同）、同一切分版本的舊紀錄的 `segmentation.json`，前端實驗紀錄 ZIP 解壓後的紀錄（`_job*`）也算。有多份時優先選自己切分的（不是沿用來的）、最早的、命令列的。用未 commit 的程式（commit 結尾 `-dirty`）、commit 不明，或執行中規則被改過的紀錄不會被沿用。
+
+- 評分模型和 Gemini 切分模型目前都讀 `SOP_SKILL_GEMINI_MODEL`，換評分模型就等於換切分模型，不會沿用。
+- 沿用與否只看 sop-video-skill 的 `SKILL.md` 版本和切分模型。改了切分的程式或腳本（例如 `sop_skill_service.py`、`sop-video-skill/scripts/`）而影響切分結果時，要遞增 `SKILL.md` 版本，否則新的評分版本會沿用舊切分。
 
 - 執行開始與結束時都會印出「注意：沿用既有的切分結果，這次沒有重新切分」以及來源紀錄、原本的切分者、日期與 commit。
 - 新紀錄的 `record.json` 有 `segmentation_from`（來源紀錄資料夾、run、日期、執行者、commit、原本的切分來源；來源本身也是沿用的時，`copied_from` 記它的來源），第一個 run 的 `segmentation` 寫 `reused segmentation.json of <來源紀錄>`；`run_record.py` 的列表也會標「沿用 … 的切分，未重新切分」。新紀錄的 `run1/` 沒有 `seg/`，切分的對話紀錄在來源紀錄裡。
 - 比較不同評分版本時，兩份紀錄用的是同一份切分，差異只來自評分；要看切分本身的變異，加 `--new-segmentation` 重新切分（只能用在還沒有紀錄的版本，紀錄已存在時這份紀錄的切分已固定）。
-- `--out` 裡原有的 `segmentation.json` 會改名為 `segmentation.prev.json`，改用沿用的切分（紀錄裡的來源可追溯）。例外：這個 CLI 在同一個 `--out` 用同一切分版本切出、還沒寫進紀錄的切分（例如 `--new-segmentation` 跑到一半中斷）會保留使用，不會被換掉。
+- `--out` 裡原有的 `segmentation.json` 會改名為 `segmentation.prev.json`（已存在時依序用 `prev2`、`prev3`…，不覆蓋），改用沿用的切分（紀錄裡的來源可追溯）。例外：這個 CLI 在同一個 `--out` 用同一切分版本切出、還沒寫進任何紀錄的切分（例如 `--new-segmentation` 跑到一半中斷）會保留使用，連同它的 `seg/` 對話紀錄記進新紀錄。寫進紀錄後 `segmentation.source` 第二行會標 `recorded`，之後的新版本就當成沿用那份紀錄。標了 `recorded` 卻找不到可沿用的來源紀錄（紀錄被刪、影片檔不同，或來源是 `-dirty`）時會停止，避免記成自己切分的；加 `--new-segmentation` 或換 `--out`。
 - 切分標記加上切分模型之前的工作資料夾，`segmentation.source` 是舊格式（例如 `skill1.4.5`），沒有紀錄可沿用時會停止並提示：確認是用同一個模型切分的，可以把它改成新格式（例如 `skill1.4.5_gemini-4-argon`）。在此之前解壓的前端紀錄 ZIP 也是舊名稱，重複檢查與沿用切分都看不到，要用的話重新下載。
 - 前端的「切分＋評分」流程不沿用，每個工作仍會重新切分。
 

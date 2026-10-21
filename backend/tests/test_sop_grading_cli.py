@@ -46,6 +46,7 @@ def fake(monkeypatch):
 
     async def run_skill_loop(source, video_id, seg_dir, model_call):
         state["segmented"] = state.get("segmented", 0) + 1
+        (seg_dir / "transcript.json").write_text("[]", encoding="utf-8")
         return {"result": {"video_id": video_id, "from": "segmented"}, "usage": {}, "turns": 1}
 
     monkeypatch.setattr(sop_skill_service, "run_skill_loop", run_skill_loop)
@@ -171,7 +172,7 @@ def test_label_times_are_their_own_record(tmp_path, video, fake, labels):
     grade(rec, out, {1}, video, labels)
     assert fake["calls"][1]["segmentation"]["steps"][0]["start"] == 1.0  # built from the label times
     assert json.loads((out / "segmentation.prev.json").read_text(encoding="utf-8"))["from"] == "b"
-    assert (out / cli.SOURCE_MARK).read_text(encoding="utf-8") == tag
+    assert (out / cli.SOURCE_MARK).read_text(encoding="utf-8").split() == [tag, cli.RECORDED]
     assert sorted(p.name for p in (runs / VID).iterdir()) == sorted([rec.folder.name, skill_rec.folder.name])
 
     with open(labels, encoding="utf-8-sig", newline="") as f:
@@ -279,7 +280,7 @@ def test_reuse_and_local_segmentations(tmp_path, video, fake, request, capsys):
     assert json.loads((out / "segmentation.prev.json").read_text(encoding="utf-8"))["from"] == "b"
     shutil.rmtree(rec.folder)
 
-    out = tmp_path / "a"  # the same work folder: its file is the recorded one, still reported as reused
+    out = tmp_path / "a"  # the same work folder: its file is in the old record, so reported as reused
     rec = recorder(video, runs)
     grade(rec, out, {1}, video)
     assert load_record(rec)["segmentation_from"]["record"] == old.folder.name
@@ -293,6 +294,27 @@ def test_reuse_and_local_segmentations(tmp_path, video, fake, request, capsys):
     grade(rec, out, {1}, video)  # resumed without the flag: keeps it instead of reusing "a"
     assert fake["segmented"] == 1 and fake["calls"][-1]["segmentation"]["from"] == "segmented"
     assert "segmentation_from" not in load_record(rec) and "keeping the local" in capsys.readouterr().out
+    # the segmentation's transcript was written by the interrupted run, but belongs to this record
+    assert (rec.folder / "run1" / "seg" / "transcript.json").exists()
+
+
+def test_set_aside_never_overwrites(tmp_path):
+    seg = tmp_path / "segmentation.json"
+    for n in (1, 2):
+        seg.write_text(str(n), encoding="utf-8")
+        cli._set_aside(seg)
+    assert (tmp_path / "segmentation.prev.json").read_text(encoding="utf-8") == "1"
+    assert (tmp_path / "segmentation.prev2.json").read_text(encoding="utf-8") == "2"
+
+
+def test_dirty_segmentation_is_not_reused(tmp_path, video, fake, request):
+    runs = tmp_path / "runs"
+    rec = recorder(video, runs, commit="ce021ed-dirty")
+    rec.check({1}, force=False, allow_dirty=True)
+    asyncio.run(cli.run(video, VID, work_folder(tmp_path, "a"), {1}, None, rec, skill_tag()))
+    request.getfixturevalue("new_rubric")
+    grade(recorder(video, runs), tmp_path / "b", {1}, video)
+    assert fake["segmented"] == 1  # uncommitted code made it: not copied into other versions
 
 
 def test_old_segmentation_mark_gets_a_hint(tmp_path, video, fake):
@@ -318,5 +340,19 @@ def test_no_reuse_for_another_video_file_or_with_new_segmentation(tmp_path, vide
     grade(rec, tmp_path / "c", {1}, video, new_segmentation=True)
     assert fake["segmented"] == 2 and "segmentation_from" not in load_record(rec)
     assert load_record(rec)["runs"][0]["segmentation"].startswith("sop-video-skill")
-    with pytest.raises(SystemExit, match="--new-segmentation 只能用在還沒有紀錄的版本"):
-        grade(recorder(video, runs), tmp_path / "d", {2}, video, new_segmentation=True)
+    with pytest.raises(SystemExit, match="--new-segmentation 只能用在還沒有紀錄的版本"):  # before hashing
+        cli.Recorder(tmp_path / "missing.mp4", VID, runs, "5595QAQ", "ce021ed", skill_tag()).check(
+            {2}, force=False, new_segmentation=True)
+
+
+def test_a_recorded_segmentation_without_its_source_is_refused(tmp_path, video, fake, request):
+    runs = tmp_path / "runs"
+    old = recorder(video, runs)
+    out = work_folder(tmp_path, "a")
+    grade(old, out, {1}, video)  # out's segmentation is now marked as the record's
+    shutil.rmtree(old.folder)  # e.g. the record was deleted
+    request.getfixturevalue("new_rubric")
+    with pytest.raises(SystemExit, match="找不到可沿用的來源紀錄"):
+        grade(recorder(video, runs), out, {1}, video)
+    grade(recorder(video, runs), out, {1}, video, new_segmentation=True)
+    assert fake["segmented"] == 1

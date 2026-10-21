@@ -63,6 +63,16 @@ def test_segmentation_source_finds_the_original_segmentation(tmp_path):
                                   runs / "VID_0083" / "rubric1.6_cli")["record"] == "rubric1.6_job"
 
 
+def test_only_reproducible_segmentations_are_reused():
+    assert rr.reproducible({"commit": "ce021ed"})
+    assert not rr.reproducible({"commit": "ce021ed-dirty"})
+    assert not rr.reproducible({"commit": "unknown"}) and not rr.reproducible({})
+    # frontend records: the segmentation's own commit and rules
+    assert not rr.reproducible({"commit": "def", "segmentation_commit": "unknown"})
+    assert not rr.reproducible({"commit": "def", "segmentation_commit": "abc",
+                                "segmentation_rules_changed_during_run": True})
+
+
 def test_reused_segmentation_is_written_once_and_shown(tmp_path):
     source = {"record": "rubric1.7_x", "run": 1}
     record = rr.add_run(None, "VID_0083", VERSIONS, "abc", steps={1}, failed_tasks=[], by="b",

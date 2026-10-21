@@ -82,10 +82,18 @@ def job_records(folder: Path) -> list[dict]:
     return [record for path in sorted(folder.parent.glob(f"{folder.name}_job*")) if (record := load(path))]
 
 
+def reproducible(run: dict) -> bool:
+    """A run whose segmentation another version may copy: made from committed code (not -dirty or
+    unknown) whose rules did not change while it ran (frontend records say)."""
+    commit = run.get("segmentation_commit") or run.get("commit") or ""
+    return (bool(commit) and commit != "unknown" and not commit.endswith("-dirty")
+            and not run.get("segmentation_rules_changed_during_run"))
+
+
 def segmentation_source(runs_dir: Path, video_id: str, segmentation: str, video_sha256: str,
                         exclude: Path) -> dict | None:
     """An earlier record of this video (CLI or frontend) with the same segmentation tag and video file,
-    whose segmentation.json a new grading version can reuse. Records that segmented themselves come
+    made by reproducible code, whose segmentation.json a new grading version can reuse. Records that segmented themselves come
     before records that copied theirs (copied_from then names the original), then the earliest, then
     CLI before frontend records. None when there is none."""
     found = []
@@ -97,6 +105,8 @@ def segmentation_source(runs_dir: Path, video_id: str, segmentation: str, video_
                 or record.get("video_sha256") != video_sha256 or not record.get("runs")):
             continue
         first = record["runs"][0]
+        if not reproducible(first):
+            continue
         key = ("segmentation_from" in record, first.get("date") or "9999", "_job" in folder.name, folder.name)
         source = {"record": folder.name, "run": first["run"], "date": first.get("date"), "by": first.get("by"),
                   "commit": first.get("commit"), "segmentation": first.get("segmentation")}
