@@ -61,6 +61,8 @@ services:
       - SOP_SKILL_MAX_TURNS=${SOP_SKILL_MAX_TURNS:-60}
       - SOP_SKILL_DIR=/sop-video-skill
       - SOP_GRADING_DIR=/sop-video-grading
+      # 記進 SOP 實驗紀錄的程式版本；啟動時帶入，見 README「SOP 評分」
+      - GIT_COMMIT=${GIT_COMMIT:-}
     volumes:
       # 將本機下載的 service account 金鑰掛載進容器，路徑對應上面的 GOOGLE_APPLICATION_CREDENTIALS
       - ${GCP_SA_KEY_PATH:-./secrets/gcp-key.json}:/secrets/gcp-key.json:ro
@@ -87,6 +89,8 @@ services:
       # skill 位於 build context（./backend）之外，以唯讀方式掛載給 worker 執行
       - ./sop-video-skill:/sop-video-skill:ro
       - ./sop-video-grading:/sop-video-grading:ro
+      # sop_grading_cli 寫入的評分紀錄（要 commit 給其他人看），只有這個資料夾可寫
+      - ./sop-video-grading/runs:/sop-video-grading/runs
     depends_on:
       init:
         condition: service_completed_successfully

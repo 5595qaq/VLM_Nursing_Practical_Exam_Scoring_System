@@ -28,8 +28,16 @@ node_modules/
 *影片標記表*.csv
 *影片標記表*.xlsx
 
+# Local review pages and their exported results (video paths and notes may contain student names)
+sop-video-grading/review/
+
 # Git worktrees
 .worktrees/
 
 # Packaged skill archives (the skill lives in sop-video-skill/; old versions are tagged)
 sop-video-skill*.zip
+
+# Images in experiment records downloaded from the frontend (students' faces; the CLI records keep none)
+sop-video-grading/runs/**/*.jpg
+sop-video-grading/runs/**/*.jpeg
+sop-video-grading/runs/**/*.png

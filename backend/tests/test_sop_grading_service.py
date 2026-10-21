@@ -338,6 +338,14 @@ async def test_run_sop_grading_downloads_grades_and_uploads(video, monkeypatch):
     assert json.loads(uploads["sop_runs/vid-9/g2/grading/grading.json"][0]) == outcome["result"]
     names = zipfile.ZipFile(io.BytesIO(uploads["sop_runs/vid-9/g2/grading/artifacts.zip"][0])).namelist()
     assert "transcript_task_15-16-17.json" in names and not any(n.endswith(".mp4") for n in names)
+    assert {"rules_rubric.json", "rules_SKILL.md"} <= set(names)  # the rules this run read
+    rubric = grading.load_grading_module("rubric").load_rubric()
+    assert outcome["versions"] == {"rubric": rubric["version"], "skill": grading.sop_skill_service.skill_version(
+        grading.grading_dir() / "SKILL.md")}
+    assert outcome["commit"] == grading.settings.GIT_COMMIT and outcome["finished_at"]
+    assert len(outcome["attempts"]) == 1 and outcome["mixed_rules"] is False
+    assert outcome["rules_changed_during_run"] is False
+    assert outcome["rules_digest"] == grading.sop_skill_service.tree_digest(grading.grading_dir())
     assert [d for d, _, _ in progress] == list(range(1, len(outcome["tasks"]) + 1))
     assert {t for _, t, _ in progress} == {len(outcome["tasks"])}
     assert sorted(k for _, _, k in progress) == sorted(outcome["tasks"])
@@ -408,6 +416,8 @@ async def test_failed_grading_keeps_partial_and_resume_regrades_only_the_rest(vi
     assert "task_exceptions" not in outcome
     steps = {s["step_id"]: s for s in outcome["result"]["steps"]}
     assert steps[12]["verdict"] == "正確" and steps[1]["verdict"] == "正確"
+    # No earlier artifacts: the kept criteria's rules are unknown, not "the same".
+    assert outcome["attempts"][0]["versions"] is None and outcome["mixed_rules"] is None
 
 
 async def test_resume_from_a_fully_graded_invalid_result_regrades_everything(video, monkeypatch):
@@ -428,7 +438,7 @@ def test_spans_stay_within_the_scripts_limit():
         assert all(spans[i][1] == spans[i + 1][0] for i in range(len(spans) - 1))
 
 
-async def test_resume_merges_the_earlier_artifacts(video, monkeypatch):
+async def test_resume_merges_the_earlier_artifacts(video, monkeypatch, tmp_path):
     uploads = {}
     fake_gcs(monkeypatch, video, uploads)
 
@@ -452,14 +462,24 @@ async def test_resume_merges_the_earlier_artifacts(video, monkeypatch):
             shutil.copy(video, filename)
 
     monkeypatch.setattr(grading.gcs_service, "download_to_filename", download)
-    await grading.run_sop_grading("gs://test-bucket/videos/x_src.mp4", "vid", 1, segmentation(),
-                                  model_call=FakeModel(), previous=failed.value.partial,
-                                  previous_artifacts=failed.value.files["artifacts"])
+    # The live rules change between the attempts.
+    rules = tmp_path / "sop-video-grading"
+    shutil.copytree(grading.grading_dir(), rules, ignore=shutil.ignore_patterns("runs", "review", "__pycache__"))
+    with open(rules / "SKILL.md", "a", encoding="utf-8") as f:
+        f.write("\n新增的一句規則\n")
+    monkeypatch.setattr(grading.settings, "SOP_GRADING_DIR", str(rules))
+    outcome = await grading.run_sop_grading("gs://test-bucket/videos/x_src.mp4", "vid", 1, segmentation(),
+                                            model_call=FakeModel(), previous=failed.value.partial,
+                                            previous_artifacts=failed.value.files["artifacts"])
+    # Both attempts are in the rule history, and the kept criteria's rules stay in the archive.
+    assert len(outcome["attempts"]) == 2 and outcome["mixed_rules"] is True
     second = zipfile.ZipFile(io.BytesIO(uploads["sop_runs/vid/g1/grading/artifacts.zip"][0]))
     names = set(second.namelist())
     assert first_names <= names  # nothing from the first attempt is lost
     assert any(n not in first_names for n in names)  # the rerun's new images got new numbers
     assert "transcript_task_15-16-17.json" in names and "transcript_task_12.json" in names
+    assert "新增的一句規則" in second.read("rules_SKILL.md").decode("utf-8")
+    assert "新增的一句規則" not in second.read("rules_SKILL.attempt1.md").decode("utf-8")
 
 
 async def test_finished_grading_is_returned_when_the_upload_fails(video, monkeypatch):

@@ -236,6 +236,39 @@ async def test_run_sop_skill_downloads_and_uploads_artifacts(video, monkeypatch)
     names = zipfile.ZipFile(io.BytesIO(data)).namelist()
     assert "grid.jpg" in names and "result.json" in names and "motion.json" in names
     assert not any(name.startswith("proxy.mp4") for name in names)
+    assert "rules_SKILL.md" in names  # the SKILL.md this run read
+    assert outcome["versions"] == {"skill": skill.skill_version(skill.skill_dir() / "SKILL.md")}
+    assert outcome["versions"]["skill"] and outcome["finished_at"]
+    assert outcome["rules_digest"] == skill.tree_digest(skill.skill_dir())
+    assert outcome["rules_changed_during_run"] is False
+
+
+def test_tree_digest_follows_rule_files_but_not_records(tmp_path):
+    (tmp_path / "SKILL.md").write_text("version: 1\n", encoding="utf-8")
+    (tmp_path / "runs").mkdir()
+    before = skill.tree_digest(tmp_path)
+    (tmp_path / "runs" / "record.json").write_text("{}", encoding="utf-8")
+    assert skill.tree_digest(tmp_path) == before  # a new record is not a rule change
+    (tmp_path / ".DS_Store").write_bytes(b"x")
+    (tmp_path / "SKILL.md~").write_text("backup", encoding="utf-8")
+    assert skill.tree_digest(tmp_path) == before  # hidden files and editor backups are not rules
+    (tmp_path / "SKILL.md").write_bytes(b"version: 1\r\n")
+    assert skill.tree_digest(tmp_path) == before  # a Windows (autocrlf) checkout of the same commit
+    (tmp_path / "SKILL.md").write_text("version: 2\n", encoding="utf-8")
+    assert skill.tree_digest(tmp_path) != before
+    assert skill.rules_changed(tmp_path, before) is True
+    assert skill.rules_changed(tmp_path, "") is None
+
+
+def test_tree_digest_is_unknown_when_a_file_vanishes(tmp_path, monkeypatch):
+    (tmp_path / "SKILL.md").write_text("version: 1\n", encoding="utf-8")
+
+    def vanished(self):
+        raise FileNotFoundError(self)
+
+    monkeypatch.setattr(Path, "read_bytes", vanished)
+    assert skill.tree_digest(tmp_path) == ""
+    assert skill.rules_changed(tmp_path, "abc") is None
 
 
 async def test_failed_run_still_uploads_transcript(video, monkeypatch):

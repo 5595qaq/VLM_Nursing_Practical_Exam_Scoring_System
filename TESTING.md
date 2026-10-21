@@ -56,6 +56,20 @@ python sop-video-grading/scripts/labels_to_segmentation.py --labels 標註表.cs
 pytest backend/tests/test_sop_grading_service.py -q
 ```
 
+`sop_grading_cli` 的評分紀錄（`backend/tests/test_sop_grading_cli.py`）以假的轉檔與評分取代，不需 ffmpeg、資料庫與 Google 憑證：檢查同版本重複執行、影片 SHA-256 不符、未 commit 的修改、沒填執行者或 commit（在計算 SHA-256 之前）、紀錄無法寫入、來源不明的本機切分時都在呼叫模型前停止；紀錄只存這次執行寫出的對話；`--steps` 以紀錄的切分與評分為基底而不是本機舊檔；`--labels` 是另一份紀錄且會重建切分；`--force` 換影片時該次記下自己的 SHA-256。`run_record.py` 的純函式測試在 `tests/sop_grading/test_run_record.py`（含 Linux 上 root 寫出的檔案改回 `runs/` 擁有者）。
+
+人工核對頁面（`review_page.py`）的 Python 部分在 `tests/sop_grading/test_review_page.py`：列入哪些步驟、重複步驟的時間、同一支影片兩個版本各自一項、同一版本重複時報錯、Claude 建議的合併、依標記表相對路徑找影片、說明文字不能提早結束頁面的 script。頁面裡的互動（點時間跳轉、手部放大、決定按鈕、重新整理後保留進度、建議改變後回到待核對、匯出 CSV、找不到影片時選檔）沒有自動測試，修改頁面腳本後要在瀏覽器裡實際操作一遍。
+
+```bash
+pytest backend/tests/test_sop_grading_cli.py -q
+```
+
+前端的實驗紀錄 ZIP（`backend/app/services/sop_run_bundle.py`）的組裝在 `backend/tests/test_sop_run_bundle.py`，不需資料庫：版本資料夾名稱與 `run_record.record_dir` 一致（另加工作編號）、步驟與失敗任務的算法與 `run_record.py` 一致、解壓後 `run_record.py` 讀得到、`grading.json`／`segmentation.json` 的 `video_id` 改成 `VID_xxxx`、圖片不重新壓縮、上傳 zip 裡巢狀或 `../` 的檔名不會被複製、讀不到的 zip 列出原因、舊工作沒有版本與 commit 時寫 `unknown`、token 用量依 queue 重試分組。下載端點（`test_api.py` 的 `test_download_sop_grading_record*`，需要 PostgreSQL）檢查 `video_id` 只接受 `VID_xxxx`、不讀取本部署 `sop_runs/` 以外的檔案、GCS 讀不到圖片時仍回傳 JSON 紀錄。規則快照、`rules_digest`（不受 `runs/` 新增紀錄、隱藏檔、備份檔與 CRLF 影響；檔案讀到一半消失時為空字串）與續跑的 `attempts`（規則改變時 `mixed_rules` 為 true 並保留前一次的副本；沒有前一次紀錄時為 null）在 `test_sop_skill_service.py`、`test_sop_grading_service.py`。`sop_grading_cli` 把同版本的前端紀錄（`<版本資料夾>_job*`）算成已評過，在 `test_sop_grading_cli.py`；`run_record.job_records` 在 `tests/sop_grading/test_run_record.py`。前端取出檔名中 `VID_xxxx`（前後不能接英數字或重拍編號）的邏輯在 `frontend/sop-grading.test.js`。
+
+```bash
+pytest backend/tests/test_sop_run_bundle.py -q
+```
+
 真實影片的評分要呼叫 Vertex AI（會計費），用 `python -m app.sop_grading_cli` 在 worker 容器內逐支執行，再以 `eval_grading.py` 比對人工標註，見 README「SOP 評分」。
 
 sop-video-skill 執行迴圈（`backend/tests/test_sop_skill_service.py`）用 ffmpeg 產生 60 秒合成影片，以真實的 skill 腳本執行 crop／set_crop／overview／zoom／final，模型以腳本化假回覆取代；需要 ffmpeg 與 `opencv-python-headless`、`matplotlib`、`jsonschema`（已列在 `backend/requirements.txt`），不需資料庫與 Google 憑證：

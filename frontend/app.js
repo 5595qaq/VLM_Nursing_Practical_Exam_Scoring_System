@@ -703,7 +703,7 @@ function renderSopSkillResult(feed, result, jobId) {
 
         const grading = result.sop_grading?.[position];
         if (grading) {
-            renderGradingSection(section, grading, jobId, position);
+            renderGradingSection(section, grading, jobId, position, videoNames[run.video_uri]);
             const segTitle = document.createElement('h4');
             segTitle.textContent = '步驟切分';
             section.appendChild(segTitle);
@@ -766,7 +766,7 @@ function renderSopSkillResult(feed, result, jobId) {
     });
 }
 
-function renderGradingSection(section, run, jobId, position) {
+function renderGradingSection(section, run, jobId, position, videoName) {
     const score = SopGrading.scoreSummary(run.result);
     const counts = score.counts;
     const heading = document.createElement('h4');
@@ -792,6 +792,15 @@ function renderGradingSection(section, run, jobId, position) {
             link.textContent = label;
             files.appendChild(link);
         });
+    const videoId = SopGrading.labelVideoId(videoName);
+    const record = document.createElement('a');
+    record.className = 'button-link';
+    record.href = SopGrading.recordUrl(API_BASE, jobId, position, videoId);
+    // The id is shown on the button: a wrong one files the record under another video's labels.
+    record.textContent = `下載實驗紀錄 ZIP（含圖片，${videoId || '無影片 ID'}）`;
+    record.title = videoId ? `檔名中的影片 ID ${videoId}；版本、commit、切分、評分、對話紀錄與圖片`
+        : '檔名沒有可辨識的 VID_xxxx（或後面接著重拍編號），紀錄的影片 ID 會是空的';
+    files.appendChild(record);
     section.appendChild(files);
 
     const steps = [...(run.result?.steps || [])].sort((a, b) => a.step_id - b.step_id);

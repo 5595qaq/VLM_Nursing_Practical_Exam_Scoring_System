@@ -104,7 +104,7 @@ python sop-video-skill/scripts/schema_tools.py sop-video-skill/schema.json > out
 2. 每回合模型回覆一個動作 JSON（`crop_preview`／`set_crop`／`overview`／`zoom`／`final`）；worker 先用 `validate_action.py` 驗證，不合格就把錯誤和被退回的動作原文回傳（要求模型只修正錯誤的地方）、不執行也不扣預算，合格才執行對應腳本並把新圖片送回。
 3. 每次請求只附「全片總覽圖＋動作能量圖＋最新一批圖片＋最新 draft＋動作紀錄＋剩餘預算」（SKILL.md 第 0 節），不重送舊的對話回合。每回合不變的 system prompt 與固定圖片（`set_crop` 前是格線圖，之後是總覽圖與動作能量圖）一律放在最前面、逐位元組相同，會變的部分放在最後。送 Gemini 時，固定內容自成一個 user 回合，後面接一句固定的 model 回覆（「已收到固定圖片…」），再接本回合的 user 內容：實測 `gemini-4-argon` 的隱式快取只在前綴剛好結束一個回合時命中，固定內容與本回合內容放在同一個（或兩個連續的）user 回合時完全不命中。`gemini-4-argon` 不支援明確快取；隱式快取是否命中仍由 Google 決定，不保證。
 4. `final` 通過 `schema.json` 與 `validate_result.py` 規則後，`video_id`、`meta.duration`（實際影片長度）、`meta.crop` 的 `box`／`hands_box`（`set_crop` 確定的框）與 `meta.budget` 由 worker 依實際執行紀錄填入；`sequence_check.py` 的自動比對另存於 `sequence_check`，不寫進 result。
-5. 結果 JSON、模型對話紀錄（`transcript.json`）與全部中間圖片（`artifacts.zip`）上傳到 `gs://<bucket>/sop_runs/<video_id>/g<generation>/`。失敗的執行也會上傳對話紀錄，方便除錯。
+5. 結果 JSON、模型對話紀錄（`transcript.json`）與全部中間圖片（`artifacts.zip`，另含這次讀到的 SKILL.md 副本 `rules_SKILL.md`）上傳到 `gs://<bucket>/sop_runs/<video_id>/g<generation>/`。失敗的執行也會上傳對話紀錄，方便除錯。工作結果另記 `versions`（`{"skill": SKILL.md 版本}`）、`rules_digest`（skill 目錄全部檔案的 SHA-256）、`rules_changed_during_run`、`commit`（`GIT_COMMIT`）與 `finished_at`，供實驗紀錄 ZIP 使用。
 
 前端完成後顯示每支影片的 30 步表格與流程觀察，可下載「步驟切分 CSV」，以及每支影片的結果 JSON、圖片 ZIP、模型對話紀錄（後端 `GET /api/v1/evaluations/{job_id}/sop-skill/{影片序號}/{result|artifacts|transcript}` 代為從 GCS 讀取）。API 建立工作時傳 `"pipeline": "sop_skill"` 即為此模式（不可同時傳 `selected_agents`）；省略時為原本的 `"agents"` 模式。
 
@@ -124,6 +124,7 @@ python sop-video-skill/scripts/schema_tools.py sop-video-skill/schema.json > out
 | `SOP_SKILL_CONCURRENCY` | 2 | 所有 worker 同時執行的 skill 數。skill 一次只送一個請求，但不計入 Agent A–D 的 5 路 Gemini 上限，兩者同時跑時 Gemini 最多會有 5＋2 個請求 |
 | `SOP_SKILL_MAX_TURNS` | 60 | 每支影片的最多回合數（預算用滿約 42 回合） |
 | `SOP_GRADING_DIR` | repo 內的 `sop-video-grading/`（容器內 `/sop-video-grading`） | 評分 agent 的 skill 目錄（SKILL.md、rubric、腳本） |
+| `GIT_COMMIT` | （空） | 記進切分／評分結果與實驗紀錄 ZIP 的程式版本；啟動 compose 時帶入（見「實驗紀錄 ZIP」），空白時紀錄寫 `unknown` |
 | `SOP_GRADING_CONCURRENCY` | 2 | 「切分＋評分」模式下，所有 worker 同時評分的影片數。每支影片的評分最多同時送 3 個 Gemini 請求，所以評分最多 2×3 個請求，同樣不計入 Agent A–D 的 5 路上限 |
 
 Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499，或 Claude 回傳 429／529（overloaded），且 SDK 重試用盡時，該影片的 skill 任務會依 queue 層退避重新派送，並從頭重跑該影片（最多 `GEMINI_QUEUE_MAX_ATTEMPTS` 次，之後工作失敗）；其他錯誤（模型拒答、連續 6 次不合格動作、超過回合上限）會讓工作失敗，可在前端「從失敗處繼續」只重跑未完成的影片。
@@ -171,7 +172,7 @@ Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499，或 Claude 回傳 429／529（o
 評分表單的「執行模式」選 **SOP 步驟切分＋評分**（API 傳 `"pipeline": "sop_grading"`，不可同時傳 `selected_agents`）。每支影片在佇列裡依序跑兩個任務：
 
 1. `sop_skill`：與「只跑 SOP 步驟切分」相同，切分結果存進該影片的 `sop_result`。
-2. `sop_grading`：切分完成時在同一個交易排入。worker 從 GCS 下載原檔，以 `sop_result` 的切分結果執行 `sop_grading_service.run_grading`，把 `grading.json` 與各組對話紀錄、影格（`artifacts.zip`，不含片段影片）上傳到 `gs://<bucket>/sop_runs/<video_id>/g<generation>/grading/`，結果存進 `grading_result`。每完成一組評分任務回報一次進度。
+2. `sop_grading`：切分完成時在同一個交易排入。worker 從 GCS 下載原檔，以 `sop_result` 的切分結果執行 `sop_grading_service.run_grading`，把 `grading.json` 與各組對話紀錄、影格（`artifacts.zip`，不含片段影片；另含這次讀到的 `rules_rubric.json`、`rules_SKILL.md` 副本）上傳到 `gs://<bucket>/sop_runs/<video_id>/g<generation>/grading/`，結果存進 `grading_result`。每完成一組評分任務回報一次進度。
 
 工作的總步數是「影片數 × 2」。有任務失敗或最終結果驗證不過時，會先上傳對話紀錄，並把已評好的標準存進該影片的 `grading_partial`：
 
@@ -186,30 +187,90 @@ Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499，或 Claude 回傳 429／529（o
 - 評分完成但上傳 `artifacts.zip`／`grading.json` 到 GCS 失敗時，仍保存評分結果（`files` 為空並附 `upload_error`），只是沒有下載連結。
 - 同一工作的另一支影片失敗後，這支影片正在進行的評分：已評好的標準存進 `grading_partial`；若剛好評完，結果直接保存為已完成，續跑時不再重評。
 
-完成後的 `result` 為 `{"pipeline": "sop_grading", "items": [], "sop_skill": [...], "sop_grading": [...]}`，兩個陣列都依影片順序排列。`sop_grading` 的每一項含 `video_uri`、`result`（`sop-video-grading/schema.json`）、`tasks`、`failed_tasks`、`validation_errors`、`usage`、`files`、`model`，以及 `criterion_texts`（評分標準 id → `rubric.json` 的文字，供前端顯示）。
+完成後的 `result` 為 `{"pipeline": "sop_grading", "items": [], "sop_skill": [...], "sop_grading": [...]}`，兩個陣列都依影片順序排列。`sop_grading` 的每一項含 `video_uri`、`result`（`sop-video-grading/schema.json`）、`tasks`、`failed_tasks`、`validation_errors`、`usage`、`files`、`model`、`criterion_texts`（評分標準 id → `rubric.json` 的文字，供前端顯示），以及 `versions`（`rubric`、評分 `skill` 版本）、`rules_digest`、`attempts`（每次嘗試的版本、`rules_digest`、commit 與開始時間；續跑會累加）、`mixed_rules`（續跑沿用的標準是在不同規則下評的；前一次沒有規則紀錄時為 null，表示不知道）、`rules_changed_during_run`、`commit`、`finished_at`（在這些欄位加入前跑完的工作沒有它們）。
 
 前端每支影片先顯示評分摘要與 30 步評分，再顯示原本的步驟切分表：
 
 - 得分 = 正確步數 ÷ 可判定步數（不適用、無法判定不計入分母），並列出各判定的步數與需人工複核的步數。
 - 每一步可展開，查看各評分標準的判定、來源（程式規則／模型／固定）、說明、證據、時間窗與無法判定的原因。
 - 可下載「SOP 評分 CSV」（每步一列），以及每支影片的評分 JSON 與對話紀錄 ZIP（`GET /api/v1/evaluations/{job_id}/sop-grading/{影片序號}/{result|artifacts}`，與切分的下載端點一樣只讀取本部署 bucket 的 `sop_runs/`）。
+- 可下載「實驗紀錄 ZIP（含圖片）」：一支影片的切分＋評分整理成 `sop-video-grading/runs/` 的格式，見下方「實驗紀錄 ZIP」。
 
 評分的 token 用量以 `SOP_grading` 階段記錄。
+
+#### 實驗紀錄 ZIP
+
+前端每支影片的「下載實驗紀錄 ZIP（含圖片）」（`GET /api/v1/evaluations/{job_id}/sop-grading/{影片序號}/record?video_id=VID_0083`）把疊代比對需要的東西放在一起，目錄和命令列的評分紀錄相同，只是版本資料夾後面多了工作編號：
+
+```
+VID_0083/rubric<版本>_skill<版本>_<模型>_seg-skill<切分版本>_job<工作編號>-<序號>/
+  record.json          版本、影片 SHA-256、commit、日期、評過的步驟、failed_tasks、token 用量，
+                       以及 job_id、validation_errors、切分回合數、每次 queue 重試的用量（usage_by_attempt）、
+                       規則紀錄（attempts、mixed_rules、rules_digest、rules_changed_during_run）、
+                       缺少的檔案與原因（missing_files）
+  segmentation.json    評分用的切分（video_id 改成 VID_xxxx）
+  grading.json         評分結果（video_id 改成 VID_xxxx）
+  run1/criterion_texts.json   當時的評分標準文字
+  run1/seg/            切分的對話紀錄、motion.json、影格、rules_SKILL.md、sequence_check.json
+  run1/grading/        各組評分對話紀錄、probe.json、影格、rules_rubric.json、rules_SKILL.md
+```
+
+- `video_id` 由前端從原始檔名取出 `VID_xxxx`（只送這個 ID，不送檔名），並顯示在下載按鈕上，下載前請確認。前後接著英數字（`VID_00831`、`XVID_0083`）或重拍編號（`VID_0083-2`、`VID_0083_2`）時不採用；這時資料夾改用 `job<工作編號>_<序號>`，`record.json` 的 `video_id` 為空。
+- 影片 SHA-256 取自 `_src.mp4` 的檔名，就是上傳原檔的 SHA-256，與命令列紀錄可以直接比對。
+- `commit` 來自 worker 的 `GIT_COMMIT`，啟動時帶入（PowerShell 寫法同上方命令列）：
+  `GIT_COMMIT=$(git rev-parse HEAD)$(git diff --quiet HEAD -- || echo -dirty) docker compose up -d --build`。skill 與規則目錄是即時掛載的，啟動後才改或 `git pull` 的規則與腳本不會反映在 commit 上，所以每次執行另存 `rules_*` 副本，並記下兩個目錄全部檔案的 `rules_digest`（`runs/`、`review/`、隱藏檔與 `~` 備份檔除外，換行一律當 LF，Windows 與 Linux 的 checkout 結果相同）：digest 不同就表示規則或腳本不同，即使 commit 一樣；讀檔時檔案剛好被換掉則記為空字串（不知道），不會讓評分失敗。執行中規則被改，`rules_changed_during_run` 為 true；續跑時前後兩次的規則不同，`mixed_rules` 為 true，前一次的規則副本保留為 `rules_rubric.attempt<N>.json`、`rules_SKILL.attempt<N>.md`。這兩種結果都不該拿來比較版本。在這些欄位加入前跑完的工作，版本與 commit 寫 `unknown`。
+- 解壓到 `sop-video-grading/runs/` 後，`run_record.py`、`eval_grading.py`、`review_page.py` 都能直接使用。資料夾名稱帶工作編號，所以不會覆蓋同版本的命令列紀錄或其他工作的紀錄；`sop_grading_cli` 的重複檢查會一併看同版本的 `<版本資料夾>_job*`，前端評過的步驟一樣要加 `--force` 才會重跑。圖片（`*.jpg`、`*.png`）已被 `.gitignore` 忽略：畫面有學生，只留在本機，commit 時只會帶到 JSON 與 Markdown。
 
 #### 命令列
 
 在本機逐支測試（轉檔 → 切分 → 評分；需要 Vertex AI 憑證，會計費）：
 
 ```bash
-docker compose run --rm -v /path/to/videos:/data:ro -v /path/to/runs:/work worker   python -m app.sop_grading_cli /data/影片.mp4 --video-id VID_0083 --out /work/VID_0083
+docker compose run --rm --build -e SOP_RUN_BY=你的名字 \
+  -e GIT_COMMIT=$(git rev-parse HEAD)$(git diff --quiet HEAD -- || echo -dirty) \
+  -v /path/to/videos:/data:ro -v /path/to/work:/work worker \
+  python -m app.sop_grading_cli /data/影片.mp4 --video-id VID_0083 --out /work/VID_0083
 # 加 --labels 時改用標註表的時間當切分結果，不跑 sop-video-skill（較快、較省）
 docker compose run --rm ... worker python -m app.sop_grading_cli ... --labels /labels.csv
 # 只重評某幾步（其餘沿用上次的 grading.json；重評失敗的步驟也保留上次的判定）
 docker compose run --rm ... worker python -m app.sop_grading_cli ... --steps 15,17
-python sop-video-grading/scripts/eval_grading.py --labels 標註表.csv runs/VID_0083/grading.json
+python sop-video-grading/scripts/eval_grading.py --labels 標註表.csv sop-video-grading/runs/VID_0083/<版本>/grading.json
+python sop-video-grading/scripts/run_record.py   # 列出所有評分紀錄（影片、版本、評過的步驟、誰、哪天）
 ```
 
-`--out` 目錄會留下轉檔後的 `source.mp4`、`segmentation.json`、`grading.json` 與每組的對話紀錄；已有 `segmentation.json` 時不會重新切分。
+PowerShell 的 commit 寫法：`-e GIT_COMMIT=$(git rev-parse HEAD)$(if (git status --porcelain --untracked-files=no) { '-dirty' })`；也可以改用 `--by`、`--commit` 參數。`--build` 讓容器跑的是目前的後端程式（映像檔不會自動更新，舊映像檔會和紀錄的 commit 不符）。
+
+`--out` 目錄會留下轉檔後的 `source.mp4`、`segmentation.json`、`grading.json` 與每組的對話紀錄；已有 `segmentation.json` 時不會重新切分（寫評分紀錄時例外，見下方）。
+
+**評分紀錄（`sop-video-grading/runs/`，要 commit）**：影片ID 是標記表的 `VID_xxxx` 時，每次執行都會記錄到 `runs/<影片ID>/rubric<版本>_skill<SKILL.md 版本>_<模型>_seg-<切分來源>/`，讓多人共用、避免重複付費。切分來源是 `skill<sop-video-skill 版本>`，或用 `--labels` 時的 `labels-<標記表時間的雜湊>`（標記表時間一改就是新的紀錄）：
+
+- `record.json`：版本、原始影片的 SHA-256，以及每次執行的執行者、日期、commit、該次影片的 SHA-256、評過的步驟（失敗任務的步驟不算）、`failed_tasks`、切分來源與 token 用量。
+- `segmentation.json`：這份紀錄固定使用的切分（第一次執行決定）；`grading.json`：最新的評分結果，之後的 `--steps` 都以它為基底。
+- `run1/`、`run2/`…：該次寫出的評分對話（`grading/transcript_task_*.json`、`probe.json`，只收這次執行寫出的檔案）；該次有跑切分時另含 `seg/transcript.json`、`motion.json`、`probe.json`。
+- 不存圖片與影片片段：對話紀錄列出每張 overview／zoom／burst／clip 的時間、張數與區域，`segmentation.json` 有裁切框，用原始影片（以 SHA-256 確認）在紀錄的 commit 上可以重新產生。
+- 在 Linux 上，容器以 root 寫入的紀錄會改成 `runs/` 資料夾擁有者的檔案，不需要 sudo 就能 commit。
+
+**人工核對頁面**：把需要人工確認的步驟做成本機網頁，邊看影片邊點同意／不同意（只需要 Python 標準函式庫，不用進容器）：
+
+```bash
+python sop-video-grading/scripts/review_page.py sop-video-grading/runs/VID_0083/<版本> sop-video-grading/runs/VID_0074/<版本> \
+  --labels 標註表.csv --video-root /path/to/原始影片資料夾 [--items claude_items.json] [--all]
+```
+
+- 列入的項目：模型判定和標記表不同、或模型標了需人工複核的步驟（`--all` 改為所有有標記的步驟）；`--items` 加入 Claude 提出的建議判定或標準修改（格式見 `review_page.py` 開頭）。
+- 頁面播放每個人自己電腦上的原始影片（`--video-root` 依標記表的相對路徑找檔，也可用 `--video VID_0083=路徑`；找不到時在頁面裡選檔），說明裡的時間點一下就跳過去，可慢放、逐 0.2 秒前後、放大手部區域；不複製任何影格。
+- 每項可選「同意建議／同意標記表／改判（選正確判定）／待老師確認」並寫備註，進度存在瀏覽器；完成後「匯出 CSV」交回。決定綁定當時看到的建議、模型與標記表判定：重新產生頁面後只要其中一個變了，那一項就回到待核對。
+- 同一支影片可以放兩個版本的紀錄一起比較，每個版本各自一項（卡片與 CSV 標出版本）；同一個版本給兩次會報錯。
+- 預設輸出到 `sop-video-grading/review/`（已被 `.gitignore` 忽略：頁面含影片路徑，可能有學生姓名），不要 commit 頁面與匯出的 CSV。
+
+呼叫模型前會先檢查（任何一項不過就停止，不花錢）：
+
+- 要跑的步驟已經用相同版本（含切分來源）評過 → 拒絕，確定要重跑加 `--force`。
+- 影片檔和紀錄的 SHA-256 不同 → 拒絕，`--force` 才跑（該次會記下自己的 SHA-256）。
+- commit 結尾是 `-dirty`（有未 commit 的修改，紀錄無法重現）→ 拒絕，`--allow-dirty` 才跑。
+- 沒有填執行者或 commit、紀錄資料夾無法寫入。執行者、commit 這類檢查在計算影片 SHA-256 之前。
+
+一份紀錄只評一份切分：紀錄已存在時，`--out` 的 `segmentation.json` 換成紀錄的，`--steps` 以紀錄的 `grading.json` 為基底（不用本機舊檔）。紀錄還不存在時，`--labels` 會重建 `segmentation.json`（舊檔改名為 `segmentation.prev.json`）；不是這個 CLI 以同一個切分來源產生的 `segmentation.json`（例如舊的工作資料夾）會讓執行停止，請換一個 `--out`。其他影片ID（可能含學生姓名）不寫紀錄。worker 容器只有 `sop-video-grading/runs` 可寫，其餘 skill 目錄維持唯讀。
 
 用 `--labels` 時只取標註表的時間，不複製判定與說明（評分 agent 會看到切分依據，不能讓它看到答案）；沒有時間的步驟給前後步驟之間的區間，由評分 agent 自己判斷有沒有做。裁切框不在標註表裡，預設為整個畫面。此時「有沒有做」這類程式判定的標準等於照抄標註時間，所以評估評分 agent 時要看 `eval_grading.py` 的「看畫面的步驟（V）」那一行。
 
@@ -530,6 +591,7 @@ my-awesome-project/
 │   │   │   ├── gemini_service.py
 │   │   │   ├── model_logging.py
 │   │   │   ├── sop_grading_service.py
+│   │   │   ├── sop_run_bundle.py
 │   │   │   ├── sop_skill_service.py
 │   │   │   ├── usage.py
 │   │   │   └── video_service.py
@@ -557,6 +619,8 @@ my-awesome-project/
 │   ├── rubric.json
 │   ├── schema.json
 │   ├── actions.schema.json
+│   ├── runs/            # sop_grading_cli 的評分紀錄（commit 共用）
+│   ├── review/          # review_page.py 產生的本機人工核對頁面（gitignored）
 │   └── scripts/
 ├── tests/
 │   ├── sop_skill/

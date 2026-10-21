@@ -62,6 +62,8 @@ class Settings:
     SOP_GRADING_DIR = os.getenv(
         "SOP_GRADING_DIR", str(Path(__file__).resolve().parents[2] / "sop-video-grading"),
     )
+    # Code version recorded with each SOP run (set at `docker compose up`, see README); empty = unknown.
+    GIT_COMMIT = os.getenv("GIT_COMMIT", "").strip()
     # Token usage is always recorded (model_usage table); prices only add a cost estimate.
     MODEL_PRICES = _model_prices()
     SOP_SKILL_CONCURRENCY = _integer("SOP_SKILL_CONCURRENCY", 2)
