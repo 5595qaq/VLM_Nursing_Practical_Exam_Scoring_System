@@ -56,7 +56,7 @@ python sop-video-grading/scripts/labels_to_segmentation.py --labels 標註表.cs
 pytest backend/tests/test_sop_grading_service.py -q
 ```
 
-`sop_grading_cli` 的評分紀錄（`backend/tests/test_sop_grading_cli.py`）以假的轉檔與評分取代，不需 ffmpeg、資料庫與 Google 憑證：檢查同版本重複執行、影片 SHA-256 不符、未 commit 的修改、沒填執行者或 commit（在計算 SHA-256 之前）、紀錄無法寫入、來源不明的本機切分時都在呼叫模型前停止；紀錄只存這次執行寫出的對話；`--steps` 以紀錄的切分與評分為基底而不是本機舊檔；`--labels` 是另一份紀錄且會重建切分；`--force` 換影片時該次記下自己的 SHA-256。`run_record.py` 的純函式測試在 `tests/sop_grading/test_run_record.py`（含 Linux 上 root 寫出的檔案改回 `runs/` 擁有者）。
+`sop_grading_cli` 的評分紀錄（`backend/tests/test_sop_grading_cli.py`）以假的轉檔與評分取代，不需 ffmpeg、資料庫與 Google 憑證：檢查同版本重複執行、影片 SHA-256 不符、未 commit 的修改、沒填執行者或 commit（在計算 SHA-256 之前）、紀錄無法寫入、來源不明的本機切分時都在呼叫模型前停止；紀錄只存這次執行寫出的對話；`--steps` 以紀錄的切分與評分為基底而不是本機舊檔；`--labels` 是另一份紀錄且會重建切分；`--force` 換影片時該次記下自己的 SHA-256。新的評分版本沿用同一切分版本（含切分模型）、同一影片檔的舊切分而不重新切分，印出沿用提示並在 `record.json` 記下 `segmentation_from`；換影片檔或加 `--new-segmentation` 時重新切分，紀錄已存在時 `--new-segmentation` 被拒絕。`run_record.segmentation_source` 的挑選順序（自己切分的優先、最早、命令列優先）與 `skill_tag` 在 `tests/sop_grading/test_run_record.py`；前端紀錄 ZIP 的切分標記與 `run_record.skill_tag` 一致在 `test_sop_run_bundle.py`。`run_record.py` 的純函式測試在 `tests/sop_grading/test_run_record.py`（含 Linux 上 root 寫出的檔案改回 `runs/` 擁有者）。
 
 人工核對頁面（`review_page.py`）的 Python 部分在 `tests/sop_grading/test_review_page.py`：列入哪些步驟、重複步驟的時間、同一支影片兩個版本各自一項、同一版本重複時報錯、Claude 建議的合併、依標記表相對路徑找影片、說明文字不能提早結束頁面的 script。頁面裡的互動（點時間跳轉、手部放大、決定按鈕、重新整理後保留進度、建議改變後回到待核對、匯出 CSV、找不到影片時選檔）沒有自動測試，修改頁面腳本後要在瀏覽器裡實際操作一遍。
 

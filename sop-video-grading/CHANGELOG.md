@@ -2,6 +2,7 @@
 
 ## 未發布（評分 agent 服務端修正，SKILL／rubric 版本不變）
 
+- **評分紀錄沿用切分（2026-10-22）：** 切分版本標記加上切分模型（`seg-skill1.4.5_gemini-4-argon`；前端紀錄 ZIP 的資料夾同步），既有的 `runs/VID_0081` 紀錄改名並更新 `versions.segmentation`（它的 run 紀錄寫的就是 `sop-video-skill 1.4.5 gemini-4-argon`）。只改評分版本時，`sop_grading_cli` 改為複製同一影片檔、同一切分版本的舊紀錄的 `segmentation.json`，不再重新切分（VID_0081 約省 52 萬 input tokens）；開始與結束時印出沿用提示，`record.json` 記下 `segmentation_from`，`run_record.py` 的列表也標明。`--new-segmentation` 強制重新切分。前端流程不變。0.12 說明裡「`--out` 裡沒有同一切分版本的 `segmentation.json` 時還會重新切分」的情況因此不再發生，但只有步驟 20 的新紀錄仍不建議寫進 `runs/`。
 - 前端「實驗紀錄 ZIP（含圖片）」：把佇列的一支影片的切分與評分整理成 `runs/` 格式（資料夾為 `<版本資料夾>_job<工作編號>-<序號>`，不覆蓋命令列紀錄），含版本、commit、`rules_digest`、續跑的規則歷史（`attempts`、`mixed_rules`）、每次 queue 重試的用量與圖片。每次佇列執行把讀到的 `rubric.json`、`SKILL.md` 副本放進 `artifacts.zip`。`runs/` 底下的圖片被 `.gitignore` 忽略。
 - `run_record.py` 新增 `job_records`；`sop_grading_cli` 的重複檢查一併看同版本的前端紀錄。
 - 新增 `scripts/review_page.py`：產生本機人工核對頁面（輸出到 gitignored 的 `review/`），列出模型與標記表不同或需人工複核的步驟，以及 Claude 的建議判定與標準修改；播放每個人本機的原始影片（`--video-root` 依標記表相對路徑找檔），點說明裡的時間跳轉、可慢放與放大手部，逐項選同意建議／同意標記表／改判／待老師確認並匯出 CSV。項目以「影片＋版本＋步驟」區分，決定綁定當時的建議、模型與標記表判定，重新產生頁面後有變就回到待核對。

@@ -4,7 +4,7 @@ import json
 
 import run_record as rr
 
-VERSIONS = {"rubric": "1.7", "skill": "0.11", "model": "gemini-4-argon", "segmentation": "skill1.4.5"}
+VERSIONS = {"rubric": "1.7", "skill": "0.11", "model": "gemini-4-argon", "segmentation": "skill1.4.5_gemini-4-argon"}
 
 
 def add(record, steps=None, failed=(), sha="abc"):
@@ -21,7 +21,60 @@ def test_skill_version_reads_frontmatter(tmp_path):
 
 def test_record_dir_names_the_version_and_segmentation(tmp_path):
     folder = rr.record_dir(tmp_path, "VID_0083", {**VERSIONS, "model": "models/gemini 4"})
-    assert folder == tmp_path / "VID_0083" / "rubric1.7_skill0.11_models_gemini_4_seg-skill1.4.5"
+    assert folder == tmp_path / "VID_0083" / "rubric1.7_skill0.11_models_gemini_4_seg-skill1.4.5_gemini-4-argon"
+
+
+def test_skill_tag_names_the_segmentation_model():
+    assert rr.skill_tag("1.4.5", "gemini-4-argon") == "skill1.4.5_gemini-4-argon"
+    assert rr.skill_tag("1.4.5", "models/gemini 4") == "skill1.4.5_models_gemini_4"
+    assert rr.skill_tag("1.4.5", "gemini-4-argon") != rr.skill_tag("1.4.5", "claude-x")
+
+
+def _record(runs, name, *, segmentation="skill1.4.5_gemini-4-argon", sha="abc", date="2026-10-20",
+            copied=None, seg=True):
+    folder = runs / "VID_0083" / name
+    folder.mkdir(parents=True)
+    record = {"video_id": "VID_0083", "versions": {**VERSIONS, "segmentation": segmentation},
+              "video_sha256": sha, "runs": [{"run": 1, "by": "a", "date": date, "commit": "c1",
+                                             "segmentation": "sop-video-skill 1.4.5 gemini-4-argon"}]}
+    if copied:
+        record["segmentation_from"] = copied
+    (folder / "record.json").write_text(json.dumps(record), encoding="utf-8")
+    if seg:
+        (folder / "segmentation.json").write_text("{}", encoding="utf-8")
+    return folder
+
+
+def test_segmentation_source_finds_the_original_segmentation(tmp_path):
+    runs = tmp_path / "runs"
+    new = runs / "VID_0083" / "rubric1.8_x"
+    assert rr.segmentation_source(runs, "VID_0083", "skill1.4.5_gemini-4-argon", "abc", new) is None
+    _record(runs, "other_tag", segmentation="skill1.4.4_gemini-4-argon")
+    _record(runs, "other_video", sha="zzz")
+    _record(runs, "no_segmentation_file", seg=False)
+    _record(runs, "rubric1.6_job", date="2026-10-01", copied=None)
+    _record(runs, "rubric1.7_copy", date="2026-09-01", copied={"record": "rubric1.6_job"})
+    _record(runs, "rubric1.6_cli", date="2026-10-01")
+    found = rr.segmentation_source(runs, "VID_0083", "skill1.4.5_gemini-4-argon", "abc", new)
+    # copies come last; then the earliest; CLI before frontend (_job) on the same day
+    assert found == {"record": "rubric1.6_cli", "run": 1, "date": "2026-10-01", "by": "a", "commit": "c1",
+                     "segmentation": "sop-video-skill 1.4.5 gemini-4-argon"}
+    assert rr.segmentation_source(runs, "VID_0083", "skill1.4.5_gemini-4-argon", "abc",
+                                  runs / "VID_0083" / "rubric1.6_cli")["record"] == "rubric1.6_job"
+
+
+def test_reused_segmentation_is_written_once_and_shown(tmp_path):
+    source = {"record": "rubric1.7_x", "run": 1}
+    record = rr.add_run(None, "VID_0083", VERSIONS, "abc", steps={1}, failed_tasks=[], by="b",
+                        date="2026-10-22", commit="c2", segmentation="reused", usage={},
+                        segmentation_from=source)
+    assert record["segmentation_from"] == source
+    assert "沿用 rubric1.7_x 的切分" in rr.summary(record)
+    record = rr.add_run(record, "VID_0083", VERSIONS, "abc", steps={2}, failed_tasks=[], by="b",
+                        date="2026-10-22", commit="c2", segmentation="recorded", usage={},
+                        segmentation_from={"record": "else"})
+    assert record["segmentation_from"] == source  # one record grades one segmentation
+    assert "沿用" not in rr.summary(add(None))
 
 
 def test_labels_tag_follows_the_label_times():
@@ -92,5 +145,5 @@ def test_main_lists_records(tmp_path, capsys):
     folder = rr.record_dir(tmp_path, "VID_0083", VERSIONS)
     rr.save(folder, add(None, steps={1, 2}), {}, {}, {})
     rr.main(["run_record.py", str(tmp_path)])
-    assert ("VID_0083  rubric 1.7  SKILL 0.11  gemini-4-argon  切分 skill1.4.5  步驟 1,2  （5595QAQ 2026-10-21）"
+    assert ("VID_0083  rubric 1.7  SKILL 0.11  gemini-4-argon  切分 skill1.4.5_gemini-4-argon  步驟 1,2  （5595QAQ 2026-10-21）"
             in capsys.readouterr().out)

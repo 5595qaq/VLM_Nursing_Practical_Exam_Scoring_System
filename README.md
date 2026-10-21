@@ -203,7 +203,7 @@ Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499，或 Claude 回傳 429／529（o
 前端每支影片的「下載實驗紀錄 ZIP（含圖片）」（`GET /api/v1/evaluations/{job_id}/sop-grading/{影片序號}/record?video_id=VID_0083`）把疊代比對需要的東西放在一起，目錄和命令列的評分紀錄相同，只是版本資料夾後面多了工作編號：
 
 ```
-VID_0083/rubric<版本>_skill<版本>_<模型>_seg-skill<切分版本>_job<工作編號>-<序號>/
+VID_0083/rubric<版本>_skill<版本>_<模型>_seg-skill<切分版本>_<切分模型>_job<工作編號>-<序號>/
   record.json          版本、影片 SHA-256、commit、日期、評過的步驟、failed_tasks、token 用量，
                        以及 job_id、validation_errors、切分回合數、每次 queue 重試的用量（usage_by_attempt）、
                        規則紀錄（attempts、mixed_rules、rules_digest、rules_changed_during_run）、
@@ -233,6 +233,8 @@ docker compose run --rm --build -e SOP_RUN_BY=你的名字 \
 # 加 --labels 時改用標註表的時間當切分結果，不跑 sop-video-skill（較快、較省）
 docker compose run --rm ... worker python -m app.sop_grading_cli ... --labels /labels.csv
 # 只重評某幾步（其餘沿用上次的 grading.json；重評失敗的步驟也保留上次的判定）
+# 新的評分版本預設沿用同一切分版本的舊切分；加 --new-segmentation 才重新切分
+docker compose run --rm ... worker python -m app.sop_grading_cli ... --new-segmentation
 docker compose run --rm ... worker python -m app.sop_grading_cli ... --steps 15,17
 python sop-video-grading/scripts/eval_grading.py --labels 標註表.csv sop-video-grading/runs/VID_0083/<版本>/grading.json
 python sop-video-grading/scripts/run_record.py   # 列出所有評分紀錄（影片、版本、評過的步驟、誰、哪天）
@@ -242,9 +244,9 @@ PowerShell 的 commit 寫法：`-e GIT_COMMIT=$(git rev-parse HEAD)$(if (git sta
 
 `--out` 目錄會留下轉檔後的 `source.mp4`、`segmentation.json`、`grading.json` 與每組的對話紀錄；已有 `segmentation.json` 時不會重新切分（寫評分紀錄時例外，見下方）。
 
-**評分紀錄（`sop-video-grading/runs/`，要 commit）**：影片ID 是標記表的 `VID_xxxx` 時，每次執行都會記錄到 `runs/<影片ID>/rubric<版本>_skill<SKILL.md 版本>_<模型>_seg-<切分來源>/`，讓多人共用、避免重複付費。切分來源是 `skill<sop-video-skill 版本>`，或用 `--labels` 時的 `labels-<標記表時間的雜湊>`（標記表時間一改就是新的紀錄）：
+**評分紀錄（`sop-video-grading/runs/`，要 commit）**：影片ID 是標記表的 `VID_xxxx` 時，每次執行都會記錄到 `runs/<影片ID>/rubric<版本>_skill<SKILL.md 版本>_<模型>_seg-<切分來源>/`，讓多人共用、避免重複付費。切分來源是 `skill<sop-video-skill 版本>_<切分模型>`（例如 `skill1.4.5_gemini-4-argon`），或用 `--labels` 時的 `labels-<標記表時間的雜湊>`（標記表時間一改就是新的紀錄）：
 
-- `record.json`：版本、原始影片的 SHA-256，以及每次執行的執行者、日期、commit、該次影片的 SHA-256、評過的步驟（失敗任務的步驟不算）、`failed_tasks`、切分來源與 token 用量。
+- `record.json`：版本、原始影片的 SHA-256，以及每次執行的執行者、日期、commit、該次影片的 SHA-256、評過的步驟（失敗任務的步驟不算）、`failed_tasks`、切分來源與 token 用量。切分是從其他紀錄沿用的，另有 `segmentation_from`（見下方「沿用切分」）。
 - `segmentation.json`：這份紀錄固定使用的切分（第一次執行決定）；`grading.json`：最新的評分結果，之後的 `--steps` 都以它為基底。
 - `run1/`、`run2/`…：該次寫出的評分對話（`grading/transcript_task_*.json`、`probe.json`，只收這次執行寫出的檔案）；該次有跑切分時另含 `seg/transcript.json`、`motion.json`、`probe.json`。
 - 不存圖片與影片片段：對話紀錄列出每張 overview／zoom／burst／clip 的時間、張數與區域，`segmentation.json` 有裁切框，用原始影片（以 SHA-256 確認）在紀錄的 commit 上可以重新產生。
@@ -271,6 +273,15 @@ python sop-video-grading/scripts/review_page.py sop-video-grading/runs/VID_0083/
 - 沒有填執行者或 commit、紀錄資料夾無法寫入。執行者、commit 這類檢查在計算影片 SHA-256 之前。
 
 一份紀錄只評一份切分：紀錄已存在時，`--out` 的 `segmentation.json` 換成紀錄的，`--steps` 以紀錄的 `grading.json` 為基底（不用本機舊檔）。紀錄還不存在時，`--labels` 會重建 `segmentation.json`（舊檔改名為 `segmentation.prev.json`）；不是這個 CLI 以同一個切分來源產生的 `segmentation.json`（例如舊的工作資料夾）會讓執行停止，請換一個 `--out`。其他影片ID（可能含學生姓名）不寫紀錄。worker 容器只有 `sop-video-grading/runs` 可寫，其餘 skill 目錄維持唯讀。
+
+**沿用切分（避免重複付費切分）**：只改了評分版本（rubric、評分 SKILL.md 或評分模型），切分版本（sop-video-skill 版本＋切分模型）沒變時，新版本第一次執行不會重新切分，而是複製同一支影片（SHA-256 相同）、同一切分版本的舊紀錄的 `segmentation.json`，前端實驗紀錄 ZIP 解壓後的紀錄（`_job*`）也算。有多份時優先選自己切分的（不是沿用來的）、最早的、命令列的。
+
+- 執行開始與結束時都會印出「注意：沿用既有的切分結果，這次沒有重新切分」以及來源紀錄、原本的切分者、日期與 commit。
+- 新紀錄的 `record.json` 有 `segmentation_from`（來源紀錄資料夾、run、日期、執行者、commit、原本的切分來源；來源本身也是沿用的時，`copied_from` 記它的來源），第一個 run 的 `segmentation` 寫 `reused segmentation.json of <來源紀錄>`；`run_record.py` 的列表也會標「沿用 … 的切分，未重新切分」。新紀錄的 `run1/` 沒有 `seg/`，切分的對話紀錄在來源紀錄裡。
+- 比較不同評分版本時，兩份紀錄用的是同一份切分，差異只來自評分；要看切分本身的變異，加 `--new-segmentation` 重新切分（只能用在還沒有紀錄的版本，紀錄已存在時這份紀錄的切分已固定）。
+- `--out` 裡原有的 `segmentation.json` 會改名為 `segmentation.prev.json`，改用沿用的切分（紀錄裡的來源可追溯）。例外：這個 CLI 在同一個 `--out` 用同一切分版本切出、還沒寫進紀錄的切分（例如 `--new-segmentation` 跑到一半中斷）會保留使用，不會被換掉。
+- 切分標記加上切分模型之前的工作資料夾，`segmentation.source` 是舊格式（例如 `skill1.4.5`），沒有紀錄可沿用時會停止並提示：確認是用同一個模型切分的，可以把它改成新格式（例如 `skill1.4.5_gemini-4-argon`）。在此之前解壓的前端紀錄 ZIP 也是舊名稱，重複檢查與沿用切分都看不到，要用的話重新下載。
+- 前端的「切分＋評分」流程不沿用，每個工作仍會重新切分。
 
 用 `--labels` 時只取標註表的時間，不複製判定與說明（評分 agent 會看到切分依據，不能讓它看到答案）；沒有時間的步驟給前後步驟之間的區間，由評分 agent 自己判斷有沒有做。裁切框不在標註表裡，預設為整個畫面。此時「有沒有做」這類程式判定的標準等於照抄標註時間，所以評估評分 agent 時要看 `eval_grading.py` 的「看畫面的步驟（V）」那一行。
 
