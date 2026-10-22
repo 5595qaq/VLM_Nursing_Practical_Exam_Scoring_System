@@ -116,7 +116,8 @@ def test_window_covers_a_step_split_in_two(segmentation):
     segmentation["steps"].append({"step_id": 10, "start": 130.0, "end": 134.0, "confidence": 0.7,
                                   "status": "detected", "evidence": "固定針頭與針心（與取出分開）"})
     result = grade_from_segmentation(segmentation)
-    assert criterion(result, "10b")["window"] == [98.0, 136.0]  # [100, 108] and [130, 134] +- 2 s
+    # rubric 1.11: the window also covers step 9 (tightening while tearing the wrapper), which starts at 90
+    assert criterion(result, "10b")["window"] == [88.0, 136.0]
     assert "01:40–01:48、02:10–02:14" in criterion(result, "10a")["explanation"]
 
 

@@ -50,3 +50,10 @@ def test_interrupted_step_is_not_reported_as_repeated():
     assert not sequence_check.mentioned(auto[0], [])
     obs = [{"type": "interrupted", "start": first["start"], "end": first["end"] + 24, "steps": [8, 10]}]
     assert sequence_check.mentioned(auto[0], obs)
+
+
+def test_needle_may_be_tightened_while_tearing_the_wrapper():
+    # sop_steps.md 1.4.8: step 10 may start before step 9 ends, or with it
+    result = make_valid_result()
+    step(result, 10)["start"] = step(result, 9)["start"]
+    assert sequence_check.check(result) == []
