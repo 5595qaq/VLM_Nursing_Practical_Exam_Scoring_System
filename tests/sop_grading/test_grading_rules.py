@@ -111,6 +111,15 @@ def test_flick_window_covers_outer_steps(segmentation):
     assert c["window"] == [148.0, 180.0]  # steps 15-17 span [150, 178] +- 2 s
 
 
+def test_window_covers_a_step_split_in_two(segmentation):
+    # rubric 1.9: fixing the needle (10b) may be a second step-10 entry, apart from taking it out
+    segmentation["steps"].append({"step_id": 10, "start": 130.0, "end": 134.0, "confidence": 0.7,
+                                  "status": "detected", "evidence": "固定針頭與針心（與取出分開）"})
+    result = grade_from_segmentation(segmentation)
+    assert criterion(result, "10b")["window"] == [98.0, 136.0]  # [100, 108] and [130, 134] +- 2 s
+    assert "01:40–01:48、02:10–02:14" in criterion(result, "10a")["explanation"]
+
+
 def test_window_is_clipped_to_video(segmentation):
     seg_step(segmentation, 30).update(start=399.0, end=400.0)
     assert criterion(grade_from_segmentation(segmentation), "30a")["window"] == [397.0, 400.0]
