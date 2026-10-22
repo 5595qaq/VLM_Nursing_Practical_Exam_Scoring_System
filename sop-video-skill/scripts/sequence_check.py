@@ -46,8 +46,10 @@ def check(res):
 
 
 def mentioned(auto, obs):
+    # an interrupted step is written as several entries (sop_steps.md step 10), so it covers `repeated`
+    types = {auto["type"], "interrupted"} if auto["type"] == "repeated" else {auto["type"]}
     for o in obs:
-        if o["type"] == auto["type"] and set(auto["steps"]) <= set(o.get("steps", [])):
+        if o["type"] in types and set(auto["steps"]) <= set(o.get("steps", [])):
             return True
     return False
 

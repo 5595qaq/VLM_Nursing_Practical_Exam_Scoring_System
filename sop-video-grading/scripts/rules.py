@@ -118,7 +118,8 @@ def _grade(c: dict, sid: int, entries: dict[int, list[dict]], duration: float, m
 
 def _window(step_ids: list[int], entries: dict[int, list[dict]], duration: float,
             margin: float) -> list[float] | None:
-    """Union of the detected spans and logical windows of `step_ids`, padded by `margin`."""
+    """From the earliest start to the latest end of the detected spans and logical windows of `step_ids`,
+    padded by `margin`; a step split in two also covers whatever happened between its entries."""
     bounds = []
     for sid in step_ids:
         for e in entries.get(sid, []):
