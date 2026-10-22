@@ -35,7 +35,8 @@ def test_rubric_classification_matches_the_plan():
     assert by_id["20a"]["category"] == "visual" and by_id["20a"]["key"] is True
     assert by_id["20a"]["window_steps"] == [20] and by_id["20a"]["clip"] is True
     # fixing the needle may happen before, after or apart from taking the syringe out (rubric 1.9)
-    assert "取出時" not in by_id["10b"]["text"] and "取出前、取出後" in by_id["10b"]["text"]
+    assert "取出時" not in by_id["10b"]["text"] and "取出後" in by_id["10b"]["text"]
+    assert "隔著包裝" in by_id["10b"]["text"]  # fixing through the wrapper counts (rubric 1.10)
     assert by_id["10b"]["category"] == "visual" and by_id["10b"]["key"] is False
     assert by_id["10b"]["window_steps"] == [10]
     # pushing the air out is its own non-key criterion, in the same task as the flick (rubric 1.7)
