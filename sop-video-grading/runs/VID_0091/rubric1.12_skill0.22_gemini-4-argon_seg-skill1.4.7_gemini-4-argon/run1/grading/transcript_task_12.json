@@ -1,0 +1,41 @@
+[
+ {
+  "turn": 1,
+  "seconds": 71.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 14682,
+  "output_tokens": 218,
+  "materials": [
+   "ov@100-106.5（hands_box，n=9）#0=01:40.0、#1=01:40.8、#2=01:41.6、#3=01:42.4、#4=01:43.2、#5=01:44.1、#6=01:44.9、#7=01:45.7、#8=01:46.5"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [102.4, 103.2, 104.9, 106.5], \"region\": [0.35, 0.45, 0.75, 0.9], \"reason\": \"放大確認左手是否以食指與中指夾住稀釋液瓶\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 38.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 15930,
+  "output_tokens": 95,
+  "materials": [
+   "ov@100-106.5（hands_box，n=9）#0=01:40.0、#1=01:40.8、#2=01:41.6、#3=01:42.4、#4=01:43.2、#5=01:44.1、#6=01:44.9、#7=01:45.7、#8=01:46.5",
+   "zoom@102.4/103.2/104.9/106.5 region=[0.350, 0.450, 0.750, 0.900]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [103.6, 104.1, 105.7, 108.0], \"region\": [0.35, 0.45, 0.75, 0.9], \"reason\": \"Check how the left hand holds the diluent bottle during 103.6-108.0s\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 73.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 17188,
+  "output_tokens": 138,
+  "materials": [
+   "ov@100-106.5（hands_box，n=9）#0=01:40.0、#1=01:40.8、#2=01:41.6、#3=01:42.4、#4=01:43.2、#5=01:44.1、#6=01:44.9、#7=01:45.7、#8=01:46.5",
+   "zoom@102.4/103.2/104.9/106.5 region=[0.350, 0.450, 0.750, 0.900]",
+   "zoom@103.6/104.1/105.7/108 region=[0.350, 0.450, 0.750, 0.900]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"12a\", \"verdict\": \"正確\", \"explanation\": \"01:43.6–01:48.0 清楚看到學生以左手食指與中指夾住稀釋液瓶口頸部，並將稀釋液瓶提起。\", \"evidence\": [\"zoom@103.6\", \"zoom@104.9\", \"zoom@105.7\", \"zoom@106.5\", \"zoom@108\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
