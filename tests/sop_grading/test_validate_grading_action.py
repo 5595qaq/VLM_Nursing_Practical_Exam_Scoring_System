@@ -148,6 +148,18 @@ def test_pull_back_wrong_needs_a_burst_first():
     assert validate(action, task, FRESH, DURATION) == []  # 正確 needs no burst
 
 
+def test_twist_wrong_needs_a_fast_clip_first():
+    # VID_0098: a 2 fps clip showed the needle twisted at 01:01–01:13 as only tearing the wrapper
+    task = {"window": [59.0, 79.0], "criteria": [{"criterion_id": "10b", "window": [59.0, 79.0]}]}
+    action = {"action": "final", "criteria": [
+        {"criterion_id": "10b", "verdict": "錯誤", "confidence": 0.8, "reason": None,
+         "explanation": "01:02–01:12 雙手只在撕包裝，沒有旋緊。", "evidence": ["clip@62-79"]}]}
+    assert any("fps 5" in e for e in validate(action, task, {**FRESH, "clip": 1}, DURATION))
+    assert validate(action, task, {**FRESH, "clip": 1, "fast_clip": 1}, DURATION) == []
+    action["criteria"][0].update(verdict="正確", explanation="01:08–01:12 一手不動、另一手來回旋轉。")
+    assert validate(action, task, FRESH, DURATION) == []  # 正確 needs no fast clip
+
+
 def test_rolling_needs_a_clip_first():
     # AUG0072_SKIP: overview frames 2–4 s apart showed hands around the vial with no rolling in between
     task = {"window": [178.0, 186.5], "criteria": [{"criterion_id": "20a", "window": [178.0, 186.5]}]}

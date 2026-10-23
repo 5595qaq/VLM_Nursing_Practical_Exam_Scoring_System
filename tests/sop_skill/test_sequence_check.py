@@ -38,3 +38,18 @@ def test_write_keeps_result_valid(tmp_path, monkeypatch):
     assert added["type"] == "out_of_order" and added["steps"] == [4, 5]
     assert "auto" not in added
     assert validate_result(written) == []
+
+
+def test_interrupted_step_is_not_reported_as_repeated():
+    # sop_steps.md 1.4.6: fixing the needle apart from taking it out is a second step-10 entry + interrupted
+    result = make_valid_result()
+    first = step(result, 10)
+    result["steps"].append({**first, "start": first["end"] + 20, "end": first["end"] + 24})
+    auto = [f for f in sequence_check.check(result) if f["type"] == "repeated"]
+    assert [f["steps"] for f in auto] == [[10]]
+    assert not sequence_check.mentioned(auto[0], [])
+    obs = [{"type": "interrupted", "start": first["start"], "end": first["end"] + 24, "steps": [8, 10]}]
+    assert sequence_check.mentioned(auto[0], obs)
+    # an interrupted observation that ends before the second entry does not hide a real redo
+    obs[0]["end"] = first["end"] + 10
+    assert not sequence_check.mentioned(auto[0], obs)

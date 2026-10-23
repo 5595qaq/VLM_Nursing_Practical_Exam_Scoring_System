@@ -168,6 +168,26 @@ async def test_extra_material_actions_run(video, tmp_path):
     assert [b["fps"] for b in last if b["type"] == "video"] == [3]
 
 
+async def test_twist_wrong_is_accepted_only_after_a_fast_clip(video, tmp_path):
+    # 10b: the twist is a short back-and-forth; a 2 fps clip showed VID_0098's as tearing the wrapper
+    wrong = {"action": "final", "criteria": [
+        {"criterion_id": "10b", "verdict": "錯誤", "confidence": 0.8, "reason": None, "evidence": ["clip@15-21"],
+         "explanation": "00:16–00:20 雙手只在撕包裝，沒有旋緊。"}]}
+    model = FakeModel({"10b": [
+        wrong,
+        {"action": "clip", "start": 15, "end": 21, "fps": 2, "reason": "看撕包裝到取出"},
+        wrong,
+        {"action": "clip", "start": 15, "end": 21, "fps": 5, "reason": "看撕包裝到取出"},
+        wrong,
+    ]})
+    outcome = await grading.run_grading(video, segmentation(), tmp_path, model, steps={10})
+    texts = [r[0]["text"] for r in requests_for(model, "10b")]
+    assert "fps 5" in texts[1] and "fps 5" in texts[3]  # rejected before any clip and after the 2 fps one
+    step = next(s for s in outcome["result"]["steps"] if s["step_id"] == 10)
+    assert next(c for c in step["criteria"] if c["criterion_id"] == "10b")["verdict"] == "錯誤"
+    assert outcome["failed_tasks"] == []
+
+
 async def test_motion_peaks_are_listed_and_burst_runs(video, tmp_path):
     model = FakeModel({"12a": [
         {"action": "burst", "start": 21.0, "end": 22.5, "n": 6, "region": [0.2, 0.2, 0.6, 0.6], "reason": "看夾瓶瞬間"},

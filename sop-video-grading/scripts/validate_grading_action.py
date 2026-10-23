@@ -11,7 +11,9 @@ frame/clip evidence). For the flick (17a/27a): 錯誤 only after at least one bu
 For the plunger pull-back (16a/26a): 錯誤 only after at least one burst, since the pull often lasts
 under a second and looks like the hands changing grip. A criterion with "clip": true in the rubric (20a,
 rolling the vial: overview frames 2–4 s apart cannot show the hands moving) is graded only after a clip
-of this task was seen, either the opening clip (task["opening_clip"]) or a clip action.
+of this task was seen, either the opening clip (task["opening_clip"]) or a clip action. For fixing the
+needle (10b): 錯誤 only after a clip at fps >= 5 (used["fast_clip"]), since the twist is a short
+back-and-forth that zoom stills and 2 fps clips show as tearing the wrapper.
 
 A rejected action is NOT executed and does NOT consume budget.
 """
@@ -33,6 +35,8 @@ ZOOM_MAX_AREA, ZOOM_MAX_SIDE = 0.50, 0.75
 BURST_SPAN = (0.3, 3.0)
 FLICK = {"17a", "27a"}  # need sound and the fingers seen together
 PULL_BACK = {"16a", "26a"}  # a sub-second pull a 2 fps clip or a few zooms can miss
+TWIST = {"10b"}  # twisting the needle: a short back-and-forth only a fast clip shows
+FAST_CLIP_FPS = 5
 
 
 def validate(action, task: dict, used: dict, duration: float,
@@ -101,6 +105,10 @@ def _check_final(action: dict, task: dict, used: dict, rubric: dict) -> list[str
             errors.append(f"criterion {cid}: before marking 錯誤, use burst between the needle turning up and "
                           "the first flick to check for a short pull on the plunger's end plate (it often "
                           "lasts under a second and looks like the hands changing grip)")
+        if cid in TWIST and c["verdict"] == "錯誤" and used.get("fast_clip", 0) == 0:
+            errors.append(f"criterion {cid}: before marking 錯誤, watch a clip with fps {FAST_CLIP_FPS} from tearing "
+                          "the wrapper to taking the syringe out; the twist is a short back-and-forth that "
+                          "zoom stills and 2 fps clips show as tearing the wrapper")
     return errors
 
 

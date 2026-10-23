@@ -46,8 +46,15 @@ def check(res):
 
 
 def mentioned(auto, obs):
+    # an interrupted step is written as several entries (sop_steps.md step 10): an `interrupted` observation
+    # that spans the repeated entries covers `repeated`; one that does not (a real redo) does not
     for o in obs:
-        if o["type"] == auto["type"] and set(auto["steps"]) <= set(o.get("steps", [])):
+        if not set(auto["steps"]) <= set(o.get("steps", [])):
+            continue
+        if o["type"] == auto["type"]:
+            return True
+        if (auto["type"] == "repeated" and o["type"] == "interrupted" and o.get("start") is not None
+                and o.get("end") is not None and o["start"] <= auto["start"] and auto["end"] <= o["end"]):
             return True
     return False
 

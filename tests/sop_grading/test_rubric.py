@@ -34,6 +34,11 @@ def test_rubric_classification_matches_the_plan():
     # rolling the vial is watched on a clip, not inferred from the step being located (rubric 1.8)
     assert by_id["20a"]["category"] == "visual" and by_id["20a"]["key"] is True
     assert by_id["20a"]["window_steps"] == [20] and by_id["20a"]["clip"] is True
+    # fixing the needle may happen before, after or apart from taking the syringe out (rubric 1.9)
+    assert "取出時" not in by_id["10b"]["text"] and "取出後" in by_id["10b"]["text"]
+    assert "隔著包裝" in by_id["10b"]["text"]  # fixing through the wrapper counts (rubric 1.10)
+    assert by_id["10b"]["category"] == "visual" and by_id["10b"]["key"] is False
+    assert by_id["10b"]["window_steps"] == [9, 10]  # tightened while tearing the wrapper (rubric 1.11)
     # pushing the air out is its own non-key criterion, in the same task as the flick (rubric 1.7)
     for flick, expel in (("17a", "17b"), ("27a", "27b")):
         assert by_id[flick]["key"] is True and by_id[expel]["key"] is False
