@@ -148,16 +148,26 @@ def test_pull_back_wrong_needs_a_burst_first():
     assert validate(action, task, FRESH, DURATION) == []  # 正確 needs no burst
 
 
-def test_twist_wrong_needs_a_fast_clip_first():
-    # VID_0098: a 2 fps clip showed the needle twisted at 01:01–01:13 as only tearing the wrapper
+def test_twist_wrong_needs_a_fast_clip_of_the_hands_first():
+    # VID_0098: fps 5 clips of the whole context box showed the twist at 01:08–01:12 as tearing the
+    # wrapper in some runs and as twisting in others (SKILL 0.22, same version, 3 runs)
     task = {"window": [59.0, 79.0], "criteria": [{"criterion_id": "10b", "window": [59.0, 79.0]}]}
     action = {"action": "final", "criteria": [
         {"criterion_id": "10b", "verdict": "錯誤", "confidence": 0.8, "reason": None,
          "explanation": "01:02–01:12 雙手只在撕包裝，沒有旋緊。", "evidence": ["clip@62-79"]}]}
-    assert any("fps 5" in e for e in validate(action, task, {**FRESH, "clip": 1}, DURATION))
-    assert validate(action, task, {**FRESH, "clip": 1, "fast_clip": 1}, DURATION) == []
+    assert any("region around both hands" in e for e in validate(action, task, {**FRESH, "clip": 1}, DURATION))
+    assert validate(action, task, {**FRESH, "clip": 1, "hands_clip": 1}, DURATION) == []
     action["criteria"][0].update(verdict="正確", explanation="01:08–01:12 一手不動、另一手來回旋轉。")
-    assert validate(action, task, FRESH, DURATION) == []  # 正確 needs no fast clip
+    assert validate(action, task, FRESH, DURATION) == []  # 正確 needs no hands clip
+
+
+def test_clip_region_and_high_fps_limits():
+    hands = {"action": "clip", "start": 150, "end": 158, "fps": 10, "region": [0.3, 0.4, 0.6, 0.7], "reason": "旋緊"}
+    assert validate(hands, TASK, FRESH, DURATION) == []
+    assert_rejected({**hands, "end": 158.5}, "at most 8s")
+    assert validate({**hands, "end": 170, "fps": 5}, TASK, FRESH, DURATION) == []  # fps 5 keeps the 60 s limit
+    assert_rejected({**hands, "region": [0.0, 0.0, 0.9, 0.9]}, "region too large")
+    assert_rejected({**hands, "fps": 11}, "schema")
 
 
 def test_rolling_needs_a_clip_first():

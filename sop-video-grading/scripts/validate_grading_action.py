@@ -12,8 +12,9 @@ For the plunger pull-back (16a/26a): 錯誤 only after at least one burst, since
 under a second and looks like the hands changing grip. A criterion with "clip": true in the rubric (20a,
 rolling the vial: overview frames 2–4 s apart cannot show the hands moving) is graded only after a clip
 of this task was seen, either the opening clip (task["opening_clip"]) or a clip action. For fixing the
-needle (10b): 錯誤 only after a clip at fps >= 5 (used["fast_clip"]), since the twist is a short
-back-and-forth that zoom stills and 2 fps clips show as tearing the wrapper.
+needle (10b): 錯誤 only after a clip cropped to the hands (region) at fps >= 5 (used["hands_clip"]),
+since the twist is a short back-and-forth with small wrist moves that zoom stills and a context-box
+clip show as tearing the wrapper. A clip above 5 fps may last at most 8 s.
 
 A rejected action is NOT executed and does NOT consume budget.
 """
@@ -35,8 +36,9 @@ ZOOM_MAX_AREA, ZOOM_MAX_SIDE = 0.50, 0.75
 BURST_SPAN = (0.3, 3.0)
 FLICK = {"17a", "27a"}  # need sound and the fingers seen together
 PULL_BACK = {"16a", "26a"}  # a sub-second pull a 2 fps clip or a few zooms can miss
-TWIST = {"10b"}  # twisting the needle: a short back-and-forth only a fast clip shows
+TWIST = {"10b"}  # twisting the needle: a short back-and-forth only a fast clip of the hands shows
 FAST_CLIP_FPS = 5
+HIGH_FPS_MAX_SPAN = 8.0  # clips above FAST_CLIP_FPS stay short to bound the video tokens
 
 
 def validate(action, task: dict, used: dict, duration: float,
@@ -70,12 +72,14 @@ def validate(action, task: dict, used: dict, duration: float,
         if start < lo or end > hi:
             errors.append(f"{name} [{start:g}, {end:g}] must stay within {lo:g}-{hi:g}s "
                           f"(task window ±{WINDOW_SLACK:g}s)")
+    if name == "clip" and action.get("fps", 0) > FAST_CLIP_FPS and action["end"] - action["start"] > HIGH_FPS_MAX_SPAN:
+        errors.append(f"clip above fps {FAST_CLIP_FPS} may last at most {HIGH_FPS_MAX_SPAN:g}s")
     if name == "zoom":
         if any(not lo <= t <= hi for t in action["times"]):
             errors.append(f"zoom times must stay within {lo:g}-{hi:g}s (task window ±{WINDOW_SLACK:g}s)")
         if len(set(action["times"])) != len(action["times"]):
             errors.append("zoom times must be distinct")
-    if name in ("zoom", "burst"):
+    if name in ("zoom", "burst") or (name == "clip" and "region" in action):
         x0, y0, x1, y1 = action["region"]
         if not (x0 < x1 and y0 < y1):
             errors.append(f"{name} region needs x0<x1 and y0<y1")
@@ -105,10 +109,11 @@ def _check_final(action: dict, task: dict, used: dict, rubric: dict) -> list[str
             errors.append(f"criterion {cid}: before marking 錯誤, use burst between the needle turning up and "
                           "the first flick to check for a short pull on the plunger's end plate (it often "
                           "lasts under a second and looks like the hands changing grip)")
-        if cid in TWIST and c["verdict"] == "錯誤" and used.get("fast_clip", 0) == 0:
-            errors.append(f"criterion {cid}: before marking 錯誤, watch a clip with fps {FAST_CLIP_FPS} from tearing "
-                          "the wrapper to taking the syringe out; the twist is a short back-and-forth that "
-                          "zoom stills and 2 fps clips show as tearing the wrapper")
+        if cid in TWIST and c["verdict"] == "錯誤" and used.get("hands_clip", 0) == 0:
+            errors.append(f"criterion {cid}: before marking 錯誤, watch a clip with a region around both hands "
+                          f"and fps >= {FAST_CLIP_FPS} where the hands are together from tearing the wrapper to "
+                          "taking the syringe out; the twist is a short back-and-forth that zoom stills and a "
+                          "context-box clip show as tearing the wrapper")
     return errors
 
 

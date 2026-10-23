@@ -137,11 +137,11 @@ async def test_script_rejection_goes_back_to_the_model(video, tmp_path, monkeypa
     real_clip = grading.GradingRunner.clip
     calls = []
 
-    def clip(self, start, end, box):
+    def clip(self, start, end, box, region=None):
         calls.append((start, end))
         if len(calls) == 1:  # task 12 opens with an overview, so this is the model's clip
             raise grading.SkillRunError("clip.py failed (2): REJECTED clip: end 25 is past the video")
-        return real_clip(self, start, end, box)
+        return real_clip(self, start, end, box, region)
 
     monkeypatch.setattr(grading.GradingRunner, "clip", clip)
     ask = {"action": "clip", "start": 20, "end": 25, "reason": "看連續動作"}
@@ -168,21 +168,25 @@ async def test_extra_material_actions_run(video, tmp_path):
     assert [b["fps"] for b in last if b["type"] == "video"] == [3]
 
 
-async def test_twist_wrong_is_accepted_only_after_a_fast_clip(video, tmp_path):
-    # 10b: the twist is a short back-and-forth; a 2 fps clip showed VID_0098's as tearing the wrapper
+async def test_twist_wrong_is_accepted_only_after_a_fast_clip_of_the_hands(video, tmp_path):
+    # 10b: the twist is a short back-and-forth; fps 5 clips of the whole context box showed VID_0098's
+    # as tearing the wrapper in some runs
     wrong = {"action": "final", "criteria": [
         {"criterion_id": "10b", "verdict": "錯誤", "confidence": 0.8, "reason": None, "evidence": ["clip@15-21"],
          "explanation": "00:16–00:20 雙手只在撕包裝，沒有旋緊。"}]}
     model = FakeModel({"10b": [
         wrong,
-        {"action": "clip", "start": 15, "end": 21, "fps": 2, "reason": "看撕包裝到取出"},
-        wrong,
         {"action": "clip", "start": 15, "end": 21, "fps": 5, "reason": "看撕包裝到取出"},
+        wrong,
+        {"action": "clip", "start": 16, "end": 20, "fps": 10, "region": [0.3, 0.4, 0.7, 0.8], "reason": "只看雙手"},
         wrong,
     ]})
     outcome = await grading.run_grading(video, segmentation(), tmp_path, model, steps={10})
-    texts = [r[0]["text"] for r in requests_for(model, "10b")]
-    assert "fps 5" in texts[1] and "fps 5" in texts[3]  # rejected before any clip and after the 2 fps one
+    requests = requests_for(model, "10b")
+    texts = [r[0]["text"] for r in requests]
+    # rejected before any clip and after the context-box clip
+    assert "region around both hands" in texts[1] and "region around both hands" in texts[3]
+    assert "region=" in texts[4] and [b["fps"] for b in requests[4] if b["type"] == "video"] == [5, 10]
     step = next(s for s in outcome["result"]["steps"] if s["step_id"] == 10)
     assert next(c for c in step["criteria"] if c["criterion_id"] == "10b")["verdict"] == "錯誤"
     assert outcome["failed_tasks"] == []

@@ -186,13 +186,15 @@ class GradingRunner(ScriptRunner):
         return Material(out, f"burst@{start:g}-{end:g}（原始解析度，{len(times)} 格，每 {step:.2f} s）{cells} "
                              f"region={_fmt_box(region)}")
 
-    def clip(self, start: float, end: float, box) -> tuple[Material, dict]:
+    def clip(self, start: float, end: float, box, region=None) -> tuple[Material, dict]:
+        """A clip of the context box, or of `region` inside it (original resolution) when given."""
         out = self._next(f"clip_{start:g}-{end:g}.mp4")
-        info = json.loads(self._grading_script("clip.py", "--start", start, "--end", end,
-                                               "--box", ",".join(map(str, box)), "--out", out))
+        crop = ["--box", ",".join(map(str, region)), "--rel-to-crop", ",".join(map(str, box))] if region             else ["--box", ",".join(map(str, box))]
+        info = json.loads(self._grading_script("clip.py", "--start", start, "--end", end, *crop, "--out", out))
         self.has_audio = info["has_audio"]
         sound = "有聲音" if info["has_audio"] else "無音軌（原始影片沒有錄音）"
-        label = (f"clip@{info['start']:g}-{info['end']:g}（context box，{sound}；"
+        where = f"region={_fmt_box(region)}，原始解析度裁切" if region else "context box"
+        label = (f"clip@{info['start']:g}-{info['end']:g}（{where}，{sound}；"
                  f"片段內 00:00 ＝ 影片 {_fmt_t(info['start'])}）")
         return Material(out, label, "video"), info
 
@@ -327,13 +329,16 @@ async def _run_material_action(action: dict, runner: GradingRunner, boxes: dict,
         state.log.append(f"burst {action['start']:g}-{action['end']:g} n={n} region={_fmt_box(action['region'])}")
         feedback = f"burst 已完成（引用格式 burst@{action['start']:g}-{action['end']:g} #k）。"
     else:
-        material, info = await asyncio.to_thread(runner.clip, action["start"], action["end"], boxes["context"])
+        region = action.get("region")
+        material, info = await asyncio.to_thread(runner.clip, action["start"], action["end"], boxes["context"],
+                                                 region)
         material.fps = action.get("fps", CLIP_FPS)
         materials.append(material)
-        state.log.append(f"clip {info['start']:g}-{info['end']:g} fps={material.fps:g}")
+        state.log.append(f"clip {info['start']:g}-{info['end']:g} fps={material.fps:g}"
+                         + (f" region={_fmt_box(region)}" if region else ""))
         feedback = f"clip 已完成（引用格式 clip@{info['start']:g}-{info['end']:g}）。"
-        if material.fps >= load_grading_module("validate_grading_action").FAST_CLIP_FPS:
-            state.used["fast_clip"] = state.used.get("fast_clip", 0) + 1  # 10b 錯誤 needs one (validate_grading_action)
+        if region and material.fps >= load_grading_module("validate_grading_action").FAST_CLIP_FPS:
+            state.used["hands_clip"] = state.used.get("hands_clip", 0) + 1  # 10b 錯誤 needs one (validate_grading_action)
     state.used[name] += 1
     return feedback
 

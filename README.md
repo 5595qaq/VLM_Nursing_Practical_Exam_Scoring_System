@@ -154,7 +154,7 @@ Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499，或 Claude 回傳 429／529（o
 | `scripts/validate_grading.py` | 驗證評分結果；`--final` 另外拒絕還在待判定的標準 |
 | `SKILL.md` | 評分 agent 的 system prompt（看畫面的標準怎麼判、說明怎麼寫） |
 | `actions.schema.json` | 評分 agent 的動作格式（`overview`、`zoom`、`burst`、`clip`、`final`），由 `scripts/validate_grading_action.py` 檢查 |
-| `scripts/clip.py` | 從原檔剪出帶聲音的片段（裁到 context box），給彈針與洗手七個動作用 |
+| `scripts/clip.py` | 從原檔剪出帶聲音的片段（裁到 context box，或用 `--rel-to-crop` 只裁其中一塊，例如雙手），給彈針、洗手七個動作與旋緊針頭用 |
 | `scripts/motion_peaks.py` | 以每秒 15 格分析任務區間內 hands_box 的畫面變化，找出手有明顯動作的時間點（不呼叫模型） |
 | `scripts/audio_peaks.py` | 找出任務區間內短促的響聲與連續響聲（彈針聲），並判斷影片有沒有可用的聲音（不呼叫模型） |
 | `scripts/burst.py` | 在 0.3–3 秒內平均取 3–12 張原始解析度的局部畫面，看不到 1 秒的短動作 |
@@ -165,7 +165,7 @@ Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499，或 Claude 回傳 429／529（o
 
 步驟定義沿用 `sop-video-skill/references/sop_steps.md`。
 
-評分 agent（`backend/app/services/sop_grading_service.py`）把待判定的標準依 `window_steps` 分組（例如 15b 與 17a 共用步驟 15–17 的區間），每組跑一段短對話：外部程式先附上區間的 3×3 影格，需要聲音、每 0.5 秒一格或看連續動作（`rubric.json` 標 `clip: true`，例如 20a 雙手旋轉 vial）時改附 2 fps 的帶聲音片段；任務說明會列出程式算出的動作峰值，告訴模型短動作可能在哪裡（區間超過 180 秒時分段分析再合併，不會只看前 180 秒）；模型可再要求 `overview`／`zoom`／`burst`／`clip`（每組各 3／3／3／2 次），最後以 `final` 判定該組的每一條標準。不合格的動作（`validate_grading_action.py` 檢查不過，或腳本以 `REJECTED` 拒絕，例如要求的時間超出原檔長度）會連同錯誤訊息退回給模型，不執行也不扣預算；連續 4 次不合格，該組才算失敗。開場影格每 2–4 秒才一張，不到 1 秒的短動作（彈針、墊棉片、碰觸的瞬間）可能落在兩格之間，所以 SKILL.md 要求在峰值附近用 `burst` 確認；持續的持握姿勢（持毛筆、夾瓶、持針心尾端、單手回套）則在手穩定持握的時間點用 overview 或 zoom 看，判錯誤前要在兩個以上時間點都看到同樣的問題（依據見 `sop-video-grading/EXPERIMENTS.md`）。有幾條標準由 `validate_grading_action.py` 檢查判錯誤前用過對應的素材，否則退回：彈針（17a／27a）與針心往後抽（16a／26a）要先用過 `burst`，固定針頭（10b，旋緊是很短的來回動作）要先看過 `fps` ≥ 5 的 `clip`。片段帶聲音只有 Gemini 支援，所以評分一律使用 Gemini（`SOP_SKILL_GEMINI_MODEL`）。
+評分 agent（`backend/app/services/sop_grading_service.py`）把待判定的標準依 `window_steps` 分組（例如 15b 與 17a 共用步驟 15–17 的區間），每組跑一段短對話：外部程式先附上區間的 3×3 影格，需要聲音、每 0.5 秒一格或看連續動作（`rubric.json` 標 `clip: true`，例如 20a 雙手旋轉 vial）時改附 2 fps 的帶聲音片段；任務說明會列出程式算出的動作峰值，告訴模型短動作可能在哪裡（區間超過 180 秒時分段分析再合併，不會只看前 180 秒）；模型可再要求 `overview`／`zoom`／`burst`／`clip`（每組各 3／3／3／2 次；`clip` 可加 `region` 只裁一塊、fps 最高 10，超過 5 時 ≤ 8 秒），最後以 `final` 判定該組的每一條標準。不合格的動作（`validate_grading_action.py` 檢查不過，或腳本以 `REJECTED` 拒絕，例如要求的時間超出原檔長度）會連同錯誤訊息退回給模型，不執行也不扣預算；連續 4 次不合格，該組才算失敗。開場影格每 2–4 秒才一張，不到 1 秒的短動作（彈針、墊棉片、碰觸的瞬間）可能落在兩格之間，所以 SKILL.md 要求在峰值附近用 `burst` 確認；持續的持握姿勢（持毛筆、夾瓶、持針心尾端、單手回套）則在手穩定持握的時間點用 overview 或 zoom 看，判錯誤前要在兩個以上時間點都看到同樣的問題（依據見 `sop-video-grading/EXPERIMENTS.md`）。有幾條標準由 `validate_grading_action.py` 檢查判錯誤前用過對應的素材，否則退回：彈針（17a／27a）與針心往後抽（16a／26a）要先用過 `burst`，固定針頭（10b，旋緊是很短的來回動作，手腕只動一點點）要先看過有 `region` 只框雙手、`fps` ≥ 5 的 `clip`。片段帶聲音只有 Gemini 支援，所以評分一律使用 Gemini（`SOP_SKILL_GEMINI_MODEL`）。
 
 #### 執行模式：SOP 步驟切分＋評分
 
