@@ -332,6 +332,8 @@ async def _run_material_action(action: dict, runner: GradingRunner, boxes: dict,
         materials.append(material)
         state.log.append(f"clip {info['start']:g}-{info['end']:g} fps={material.fps:g}")
         feedback = f"clip 已完成（引用格式 clip@{info['start']:g}-{info['end']:g}）。"
+        if material.fps >= load_grading_module("validate_grading_action").FAST_CLIP_FPS:
+            state.used["fast_clip"] = state.used.get("fast_clip", 0) + 1  # 10b 錯誤 needs one (validate_grading_action)
     state.used[name] += 1
     return feedback
 

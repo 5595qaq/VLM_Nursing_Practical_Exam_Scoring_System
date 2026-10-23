@@ -50,3 +50,6 @@ def test_interrupted_step_is_not_reported_as_repeated():
     assert not sequence_check.mentioned(auto[0], [])
     obs = [{"type": "interrupted", "start": first["start"], "end": first["end"] + 24, "steps": [8, 10]}]
     assert sequence_check.mentioned(auto[0], obs)
+    # an interrupted observation that ends before the second entry does not hide a real redo
+    obs[0]["end"] = first["end"] + 10
+    assert not sequence_check.mentioned(auto[0], obs)

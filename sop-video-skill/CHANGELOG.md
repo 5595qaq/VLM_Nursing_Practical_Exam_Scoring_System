@@ -2,7 +2,7 @@
 
 ## 未發布（不影響切分結果，SKILL 版本不變）
 
-- `sequence_check.py`：`--write` 判斷模型有沒有提過重複時，`interrupted` 也算涵蓋 `repeated`。1.4.6 起被打斷的步驟 10 要輸出兩筆並寫 `interrupted`，原本會再自動補一筆 `repeated`（「步驟 10 出現 2 次」）。後端只把 `check()` 的結果另存成 `sequence_check.json`，不寫進切分結果。
+- `sequence_check.py`：`--write` 判斷模型有沒有提過重複時，時間涵蓋重複那幾筆的 `interrupted` 也算涵蓋 `repeated`（沒涵蓋到的仍視為真的重做）。1.4.6 起被打斷的步驟 10 要輸出兩筆並寫 `interrupted`，原本會再自動補一筆 `repeated`（「步驟 10 出現 2 次」）。後端只把 `check()` 的結果另存成 `sequence_check.json`，不寫進切分結果。
 
 ## 1.4.7
 
