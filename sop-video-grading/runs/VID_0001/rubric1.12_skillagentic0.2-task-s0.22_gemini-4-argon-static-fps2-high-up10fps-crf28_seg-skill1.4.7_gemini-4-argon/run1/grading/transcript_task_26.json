@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 23.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 20106,
+  "output_tokens": 266,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"26a\", \"verdict\": \"錯誤\", \"explanation\": \"08:58.0–09:00.0 將針筒直立並以右手手指彈針筒，09:00.0–09:01.5 拿取酒精棉片墊在針頭與針筒接合處，09:02.0–09:06.0 右手拇指壓在針心尾端圓盤往上推排氣；整段過程中手部沒有往後拉針心的動作，外露推桿也沒有變長。\", \"evidence\": [\"clip@536.0-549.5\"], \"confidence\": 0.85, \"reason\": null}, {\"criterion_id\": \"26b\", \"verdict\": \"正確\", \"explanation\": \"08:58.0–09:06.5 左手握持針筒使其保持垂直、針頭朝上進行彈針與排氣。\", \"evidence\": [\"clip@536.0-549.5\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "phXdauu-Adbs2roPlZWN8Qs"
+  },
+  "errors": []
+ }
+]

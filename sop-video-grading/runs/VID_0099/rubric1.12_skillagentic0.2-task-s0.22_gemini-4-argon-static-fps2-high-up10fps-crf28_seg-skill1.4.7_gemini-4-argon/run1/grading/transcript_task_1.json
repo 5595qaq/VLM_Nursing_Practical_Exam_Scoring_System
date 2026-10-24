@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 47.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 26888,
+  "output_tokens": 431,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"1a\", \"verdict\": \"正確\", \"explanation\": \"學生於 00:00.8 開始雙手互搓（中間於 00:02.8–00:04.5 停頓說話後繼續搓手），至 00:22.2 雙手分開去拿治療車上的空針包裝，總計約 21.4 秒（扣除停頓或從 00:04.5 起算亦有約 17.7 秒），已滿 15 秒。\", \"evidence\": [\"clip@0.0-24.8\"], \"confidence\": 0.9, \"reason\": null, \"span\": [0.8, 22.2]}, {\"criterion_id\": \"1b\", \"verdict\": \"正確\", \"explanation\": \"雙手全程清楚可見，七個動作皆有完成：內（00:00.8–00:02.5 掌心對掌心互搓）、外（00:05.0–00:07.5 手心搓手背）、夾（00:08.0–00:10.5 十指交叉搓指縫）、弓（00:12.5–00:15.5 彎曲手指搓指背）、大（00:16.0–00:17.5 握住大拇指旋轉）、立（00:11.0–00:12.0、00:18.0–00:19.0 指尖立於掌心搓）、腕（00:19.5–00:22.0 搓手腕）。\", \"evidence\": [\"clip@0.0-24.8\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "ChvdaueUOJK1vr0Pyo6kwQ0"
+  },
+  "errors": []
+ }
+]

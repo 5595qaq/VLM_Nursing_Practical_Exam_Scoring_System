@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 26.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 17738,
+  "output_tokens": 230,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"2a\", \"verdict\": \"錯誤\", \"explanation\": \"00:12.6–00:22.0 給藥紀錄單在學生左後方牆上清楚可見，但學生在 00:12.6–00:15.0 洗手、00:15.5 伸手拿起桌面上的 vial 後全程低頭看手中的 vial，完全沒有轉頭注視給藥紀錄單。\", \"evidence\": [\"clip@12.6-22.0\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"2b\", \"verdict\": \"錯誤\", \"explanation\": \"00:12.6–00:22.0 學生全程未轉向給藥紀錄單，也沒有用手指指出給藥紀錄單。\", \"evidence\": [\"clip@12.6-22.0\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "cxXdapzyGPrx2roP9sWo0Qc"
+  },
+  "errors": []
+ }
+]

@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 51.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 16286,
+  "output_tokens": 232,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"2a\", \"verdict\": \"無法判定\", \"explanation\": \"00:13.0–00:20.0 畫面中看不到給藥紀錄單的位置（牆上或點滴架上皆無白色 A4 藥單），學生低頭整理車上器材並於 00:18.0 拿起 vial 檢視，無法確認視線是否朝向藥單。\", \"evidence\": [\"clip@13.0-20.0\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}, {\"criterion_id\": \"2b\", \"verdict\": \"無法判定\", \"explanation\": \"00:13.0–00:20.0 畫面中看不到給藥紀錄單的位置，無法判定是否有用手指指出給藥紀錄單。\", \"evidence\": [\"clip@13.0-20.0\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "Sx3daorIEMqcosUPotvrgA4"
+  },
+  "errors": []
+ }
+]

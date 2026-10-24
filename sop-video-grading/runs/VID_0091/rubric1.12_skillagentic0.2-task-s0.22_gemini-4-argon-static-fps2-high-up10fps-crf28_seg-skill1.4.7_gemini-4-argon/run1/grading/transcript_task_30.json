@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 38.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 77344,
+  "output_tokens": 294,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"30a\", \"verdict\": \"正確\", \"explanation\": \"05:02.0–05:05.5 抽完藥排氣後，將空針插入治療車左側透明針架上的針頭套中直立放置；06:46.0–06:48.5 完成點滴加藥後，再次將空針插回針架上的針頭套中。\", \"evidence\": [\"clip@301.5-306.0\", \"clip@405.5-409.0\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"30b\", \"verdict\": \"正確\", \"explanation\": \"05:02.0–05:05.5 及 06:46.0–06:48.5 右手持空針筒身（針柄處），由針頭端向下將空針插回針架上的針頭套中，未拿著針頭部位放入。\", \"evidence\": [\"clip@301.5-306.0\", \"clip@405.5-409.0\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "QBjdauHxGpK1vr0Pyo6kwQ0"
+  },
+  "errors": []
+ }
+]

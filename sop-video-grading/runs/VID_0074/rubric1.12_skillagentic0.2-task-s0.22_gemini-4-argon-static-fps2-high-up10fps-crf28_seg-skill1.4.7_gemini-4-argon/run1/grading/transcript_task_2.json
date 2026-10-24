@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 23.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 17738,
+  "output_tokens": 236,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"2a\", \"verdict\": \"錯誤\", \"explanation\": \"00:12.6–00:22.0 期間，學生於 00:12.6–00:14.5 搓手，00:15.5 伸手從桌面拿起 vial 後便一直低頭檢視手中的 vial，全程未轉頭注視左後方牆上的給藥紀錄單。\", \"evidence\": [\"clip@12.6-22.0\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"2b\", \"verdict\": \"錯誤\", \"explanation\": \"00:12.6–00:22.0 期間，學生雙手搓洗後直接從桌面拿起 vial 檢視，未用手指指出左後方牆上的給藥紀錄單。\", \"evidence\": [\"clip@12.6-22.0\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "xBTdatbFAajOrfcPur32yAE"
+  },
+  "errors": []
+ }
+]

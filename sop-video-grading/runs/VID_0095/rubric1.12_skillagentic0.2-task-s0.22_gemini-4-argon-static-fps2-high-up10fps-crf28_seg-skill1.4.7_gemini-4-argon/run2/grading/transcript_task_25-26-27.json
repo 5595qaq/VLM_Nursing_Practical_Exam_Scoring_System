@@ -1,0 +1,50 @@
+[
+ {
+  "turn": 1,
+  "seconds": 25.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 22331,
+  "output_tokens": 368,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"25b\", \"verdict\": \"正確\", \"explanation\": \"05:45.0 右手拿起白色酒精棉片墊在針頭與針筒接合處，並持續墊著直到 05:59.5 排氣結束，期間 05:50.5 才用左手手指彈針筒，符合先墊酒精棉片才彈針。\", \"evidence\": [\"clip@344.5-360.0\"], \"confidence\": 0.85, \"reason\": null}, {\"criterion_id\": \"27a\", \"verdict\": \"無法判定\", \"explanation\": \"05:50.5 看到左手食指彈針筒一下，但沒有聽到對應的彈擊聲。\", \"evidence\": [\"clip@350.0-352.0\"], \"confidence\": 0.5, \"reason\": \"只有聲音或動作\", \"needs_review\": true, \"review_reason\": \"05:50.5 看到左手手指彈針筒一下，但未聽到彈擊聲\"}, {\"criterion_id\": \"27b\", \"verdict\": \"正確\", \"explanation\": \"05:47.5–05:49.5 及 05:51.5–05:54.5 左手握在針筒下端將針心往上推進行排氣，可看到外露的推桿逐漸變短。\", \"evidence\": [\"clip@347.0-355.5\"], \"confidence\": 0.85, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "DRndapibLcqcosUPotvrgA4"
+  },
+  "errors": [
+   "criterion 27a: needs_review explanation must list each attempt with its time (≥ 2 mm:ss)"
+  ]
+ },
+ {
+  "turn": 2,
+  "seconds": 29.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 22753,
+  "output_tokens": 405,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"25b\", \"verdict\": \"正確\", \"explanation\": \"05:45.0 右手拿起白色酒精棉片墊在針頭與針筒接合處，並持續墊著直到 05:59.5 排氣結束，期間 05:50.5 才用左手手指彈針筒，符合先墊酒精棉片才彈針。\", \"evidence\": [\"clip@344.5-360.0\"], \"confidence\": 0.85, \"reason\": null}, {\"criterion_id\": \"27a\", \"verdict\": \"無法判定\", \"explanation\": \"05:50.0–05:51.0（尤其 05:50.5）看到左手食指彈針筒一下，但整段 05:45.0–05:59.5 都沒有聽到對應的彈擊聲。\", \"evidence\": [\"clip@350.0-352.0\"], \"confidence\": 0.5, \"reason\": \"只有聲音或動作\", \"needs_review\": true, \"review_reason\": \"05:50.5 看到左手手指彈針筒一下，但未聽到彈擊聲\"}, {\"criterion_id\": \"27b\", \"verdict\": \"正確\", \"explanation\": \"05:47.5–05:49.5 及 05:51.5–05:54.5 左手握在針筒下端將針心往上推進行排氣，可看到外露的推桿逐漸變短。\", \"evidence\": [\"clip@347.0-355.5\"], \"confidence\": 0.85, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "JhndavmoK_fU1e8P5cCsiAE"
+  },
+  "errors": []
+ }
+]

@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 20.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 23959,
+  "output_tokens": 346,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"1a\", \"verdict\": \"正確\", \"explanation\": \"00:01.5 雙手開始互搓，至 00:17.5 雙手分開，共計 16.0 秒，滿 15 秒。\", \"evidence\": [\"clip@0.0-20.2\"], \"confidence\": 0.9, \"reason\": null, \"span\": [1.5, 17.5]}, {\"criterion_id\": \"1b\", \"verdict\": \"錯誤\", \"explanation\": \"洗手間見內（00:01.5–00:03.5 掌心對掌心）、夾（00:04.0–00:05.5 十指交叉搓指縫）、弓（00:06.0–00:08.0 搓指背）、外（00:08.5–00:11.0 手心搓手背）、大（00:11.5–00:12.5 握大拇指旋轉）、腕（00:13.0–00:15.5 搓手腕），00:16.0–00:17.0 為掌心搓指腹，未見指尖立於掌心之「立」動作。\", \"evidence\": [\"clip@0.0-20.2\"], \"confidence\": 0.85, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "5hXdaprpL9_01e8PxeyqiAo"
+  },
+  "errors": []
+ }
+]

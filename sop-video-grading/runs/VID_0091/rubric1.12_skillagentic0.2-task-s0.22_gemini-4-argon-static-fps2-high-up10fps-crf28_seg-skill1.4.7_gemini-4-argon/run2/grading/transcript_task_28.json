@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 28.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 43609,
+  "output_tokens": 255,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"28b\", \"verdict\": \"正確\", \"explanation\": \"考生於此區間內進行了兩次單手回套動作：第一次於 05:02.0–05:04.5，右手持空針將針頭插入桌面針架上的針頭套，左手扶在右手前臂上未碰觸針頭套；第二次於 05:38.0 拔出空針檢視後，在 05:43.5–05:46.5 再次以右手單手持空針插入針架上的針頭套（左手在旁未碰觸針套），直到 05:49.0–05:50.5 針頭已套入後左手才按壓針架協助固定並拿起空針。兩次插入過程皆符合單手回套標準。\", \"evidence\": [\"clip@301.5-305.5\", \"clip@342.0-351.0\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "_xjdasXvN7T61e8PvvSh0Ao"
+  },
+  "errors": []
+ }
+]

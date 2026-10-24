@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 27.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 80739,
+  "output_tokens": 289,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4a\", \"verdict\": \"正確\", \"explanation\": \"給藥紀錄單放在治療車檯面透明墊下。學生於 01:43.5–01:50.0、01:56.0–02:01.0、02:26.5–02:42.5、02:45.5–03:00.0 右手持 vial 並低頭注視檯面上的給藥紀錄單核對，累計注視時間超過 30 秒，大於 10 秒。\", \"evidence\": [\"clip@103.5-180.0\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"4b\", \"verdict\": \"正確\", \"explanation\": \"02:27.0–02:41.5 及 02:45.5–02:58.5 學生右手持 vial，左手食指明顯指出治療車檯面透明墊下的給藥紀錄單進行核對。\", \"evidence\": [\"clip@147.0-178.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "6RXdasTnM5_u2roPgbzOyQQ"
+  },
+  "errors": []
+ }
+]

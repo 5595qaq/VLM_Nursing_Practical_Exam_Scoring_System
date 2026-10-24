@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 35.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 36190,
+  "output_tokens": 197,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"2a\", \"verdict\": \"無法判定\", \"explanation\": \"00:20.8–01:02.0 畫面中看不到給藥紀錄單的位置（牆上及點滴架旁均無藥單），無法確認視線對象。\", \"evidence\": [\"clip@20.8-62.0\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}, {\"criterion_id\": \"2b\", \"verdict\": \"無法判定\", \"explanation\": \"00:20.8–01:02.0 給藥紀錄單不在畫面內，無法判定是否有用手指指出藥單。\", \"evidence\": [\"clip@20.8-62.0\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "Fx7datvBCbCm1e8PkvbgkAI"
+  },
+  "errors": []
+ }
+]

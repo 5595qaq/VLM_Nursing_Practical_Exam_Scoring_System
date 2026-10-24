@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 23.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 20072,
+  "output_tokens": 331,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"16a\", \"verdict\": \"正確\", \"explanation\": \"01:47.0–01:49.5 針頭朝上直立後，右手拇指與食指握住針心尾端圓盤往下拉，將針頭內液體往後抽回針筒。\", \"evidence\": [\"clip@106.5-110.0\"], \"confidence\": 0.85, \"reason\": null}, {\"criterion_id\": \"17a\", \"verdict\": \"錯誤\", \"explanation\": \"01:45.0–01:54.5 將空針垂直舉起回抽及推針心排氣的過程中，雙手始終握持針筒與針心，沒有看到手指彈擊針筒的動作，也沒有聽到連續彈擊聲。\", \"evidence\": [\"clip@105.0-114.5\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"17b\", \"verdict\": \"正確\", \"explanation\": \"01:50.0–01:53.5 右手拇指與食指持針心尾端圓盤往上推，外露推桿變短，將空針內空氣排出。\", \"evidence\": [\"clip@110.0-114.0\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "NxrdatDEIJme1e8P6fm9-Ac"
+  },
+  "errors": []
+ }
+]

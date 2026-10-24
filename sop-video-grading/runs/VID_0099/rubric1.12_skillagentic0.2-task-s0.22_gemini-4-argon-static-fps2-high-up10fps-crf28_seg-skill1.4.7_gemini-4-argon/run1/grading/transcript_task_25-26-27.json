@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 34.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 28253,
+  "output_tokens": 431,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"25b\", \"verdict\": \"正確\", \"explanation\": \"04:12.5 左手拿起桌面上的白色方形酒精棉片，04:13.0–04:14.0 將酒精棉片墊在針頭與針筒接合處並由左手捏住，之後於 04:16.5–04:19.0、04:22.0–04:26.0 及 04:29.0 才用右手手指彈擊針筒，符合先墊酒精棉片才彈針。\", \"evidence\": [\"clip@252.0-270.0\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"27a\", \"verdict\": \"正確\", \"explanation\": \"04:16.5–04:19.0、04:22.0–04:26.0 及 04:29.0 清楚看到右手手指連續彈擊針筒外管，同時聽到清楚的連續彈擊聲。\", \"evidence\": [\"clip@256.0-270.0\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"27b\", \"verdict\": \"正確\", \"explanation\": \"04:20.0–04:21.5、04:27.0–04:28.5 及 04:31.0–04:33.5 針筒直立，清楚看到右手拇指與食指持針心尾端圓盤往上推針心排氣，外露的推桿明顯變短。\", \"evidence\": [\"clip@259.5-274.0\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "ohvdapCcNbT61e8PvvSh0Ao"
+  },
+  "errors": []
+ }
+]

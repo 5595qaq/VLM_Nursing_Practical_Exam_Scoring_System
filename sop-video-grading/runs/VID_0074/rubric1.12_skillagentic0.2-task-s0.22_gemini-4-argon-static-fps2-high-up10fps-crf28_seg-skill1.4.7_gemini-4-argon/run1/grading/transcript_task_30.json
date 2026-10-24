@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 21.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 16013,
+  "output_tokens": 230,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"30a\", \"verdict\": \"正確\", \"explanation\": \"05:19.5–05:21.0 右手拿著空針，將針頭端插入治療車桌面上的透明針架中，之後在 05:21.5 開始將藥液打入點滴袋中，符合放入針架之標準。\", \"evidence\": [\"clip@316.5-323.0\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"30b\", \"verdict\": \"正確\", \"explanation\": \"05:19.5–05:20.5 右手握持空針外筒（針柄處），將針頭套端放入桌面上的針架中，未拿著針頭部位放入。\", \"evidence\": [\"clip@319.5-321.0\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "VBXdaqnRKo2y2roP1P_zUA"
+  },
+  "errors": []
+ }
+]

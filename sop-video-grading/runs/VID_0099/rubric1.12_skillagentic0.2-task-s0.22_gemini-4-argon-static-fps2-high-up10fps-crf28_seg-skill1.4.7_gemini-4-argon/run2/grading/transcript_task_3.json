@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 26.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 36176,
+  "output_tokens": 162,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"3a\", \"verdict\": \"錯誤\", \"explanation\": \"00:22.8–01:02.0 學生洗完手後直接整理桌面上的酒精棉片包、撕開空針包裝並取出空針（00:27.5–00:55.5），接著撕開酒精棉片並於 00:59.5 拿起 vial 開蓋與消毒，全程未見將 vial 舉到眼前或轉動檢視標籤、粉末的動作。\", \"evidence\": [\"clip@20.8-62.0\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "Fx7daunwCN_01e8PxeyqiAo"
+  },
+  "errors": []
+ }
+]

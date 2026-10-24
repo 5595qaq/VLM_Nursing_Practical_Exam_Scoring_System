@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 23.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 22377,
+  "output_tokens": 320,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"16a\", \"verdict\": \"錯誤\", \"explanation\": \"02:28.5–02:36.0 左手持針筒直立，右手手指僅托住尾端圓盤往上推針心排氣，全程沒有看到往後拉針心的動作，外露推桿也沒有變長。\", \"evidence\": [\"clip@146.8-164.0\"], \"confidence\": 0.85, \"reason\": null}, {\"criterion_id\": \"17a\", \"verdict\": \"錯誤\", \"explanation\": \"02:26.8–02:44.0 排氣過程中雙手清楚在畫面內，只看到右手往上推針心，沒有看到手指彈針筒，也沒有聽到連續彈擊聲。\", \"evidence\": [\"clip@146.8-164.0\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"17b\", \"verdict\": \"正確\", \"explanation\": \"02:29.0–02:35.5 左手持針筒直立，右手手指在尾端圓盤處往上推針心排氣，外露的推桿明顯變短。\", \"evidence\": [\"clip@146.8-164.0\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "ChfdatbhAZme1e8P6fm9-Ac"
+  },
+  "errors": []
+ }
+]

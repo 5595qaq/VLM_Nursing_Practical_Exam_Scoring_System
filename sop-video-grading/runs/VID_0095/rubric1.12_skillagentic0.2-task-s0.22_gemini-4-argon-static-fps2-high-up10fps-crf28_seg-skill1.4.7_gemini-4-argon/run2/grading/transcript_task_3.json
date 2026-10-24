@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 23.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 23871,
+  "output_tokens": 150,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"3a\", \"verdict\": \"正確\", \"explanation\": \"00:16.5–00:22.0 拿起 vial 舉到胸前轉動檢視標籤與外觀，00:22.5–00:25.5 拿起稀釋液瓶檢視，00:27.5–00:31.0 再次拿起 vial 檢視。影片限制，無法得知檢查內容是否正確。\", \"evidence\": [\"clip@16.5-31.0\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "fRjdaqTlHZme1e8P6fm9-Ac"
+  },
+  "errors": []
+ }
+]

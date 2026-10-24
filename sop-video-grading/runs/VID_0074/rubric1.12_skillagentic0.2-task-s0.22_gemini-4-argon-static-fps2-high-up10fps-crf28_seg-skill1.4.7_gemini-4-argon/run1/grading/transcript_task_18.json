@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 19.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 23126,
+  "output_tokens": 218,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"18b\", \"verdict\": \"正確\", \"explanation\": \"02:31.0–02:34.5 左手持 vial，右手以拇指、食指、中指握住針筒外管呈持毛筆姿勢，將針頭垂直向下刺入 vial，手指未碰觸針頭、針座及活塞柄內側。\", \"evidence\": [\"clip@151.0-154.5\"], \"confidence\": 0.85, \"reason\": null}, {\"criterion_id\": \"18c\", \"verdict\": \"正確\", \"explanation\": \"02:31.5–02:34.5 針頭對準並垂直刺入 vial 瓶口橡皮塞中心位置。\", \"evidence\": [\"clip@151.5-154.5\"], \"confidence\": 0.85, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "DRXdatS4A42y2roP1P_zUA"
+  },
+  "errors": []
+ }
+]

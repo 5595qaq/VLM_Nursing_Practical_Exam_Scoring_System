@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 20.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 25738,
+  "output_tokens": 349,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"1a\", \"verdict\": \"正確\", \"explanation\": \"00:03.0 雙手開始互搓，00:21.0 雙手分開去拿藥瓶，共約 18.0 秒，滿 15 秒。\", \"evidence\": [\"clip@3.0-21.0\"], \"confidence\": 0.9, \"reason\": null, \"span\": [3.0, 21.0]}, {\"criterion_id\": \"1b\", \"verdict\": \"正確\", \"explanation\": \"內（00:03.0–00:04.0 掌心對掌心互搓）、外（00:04.5–00:06.5 手心搓手背）、夾（00:07.0–00:08.0 十指交叉搓指縫）、弓（00:08.5–00:10.5 彎曲手指在掌心搓指背）、大（00:11.0–00:13.5 握住大拇指旋轉）、立（00:14.0–00:16.0 指尖立在掌心搓）、腕（00:16.5–00:20.0 搓手腕），七個動作皆有完成。\", \"evidence\": [\"clip@3.0-21.0\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "jRfdaqivLPfU1e8P5cCsiAE"
+  },
+  "errors": []
+ }
+]

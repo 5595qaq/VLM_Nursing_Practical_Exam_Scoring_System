@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 29.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 53804,
+  "output_tokens": 529,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"25b\", \"verdict\": \"部分正確\", \"explanation\": \"第一次排氣時，03:40–03:42 先以右手指彈擊針筒，03:44 才拿起酒精棉片、03:45 墊在針頭與針筒接合處，再於 03:46–03:47 彈擊針筒（先彈後墊）；第二次重抽後排氣，04:36 拿起酒精棉片墊在接合處，04:37–04:41 才彈擊針筒（先墊再彈）。\", \"evidence\": [\"clip@219.5-233.5\", \"clip@275.5-285.0\"], \"confidence\": 0.9, \"reason\": null, \"needs_review\": true, \"review_reason\": \"排氣做了 2 次，第一次先彈後墊（部分正確），第二次先墊再彈（正確）\"}, {\"criterion_id\": \"27a\", \"verdict\": \"正確\", \"explanation\": \"03:40.0–03:41.5、03:46.5–03:47.5 以及第二次排氣 04:37.5–04:41.0 皆清楚看到右手食指連續彈擊針筒，並同時聽到連續短促的彈擊聲。\", \"evidence\": [\"clip@219.5-228.0\", \"clip@277.0-282.0\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"27b\", \"verdict\": \"正確\", \"explanation\": \"第一次排氣於 03:48.0–03:52.5 右手手指握住針心尾端圓盤往上推排氣；第二次排氣於 04:41.5–04:43.5 亦看到右手將針心往上推排出空氣，外露推桿略微變短。\", \"evidence\": [\"clip@227.5-233.0\", \"clip@281.0-284.5\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "ZxrdasemH8qcosUPotvrgA4"
+  },
+  "errors": []
+ }
+]

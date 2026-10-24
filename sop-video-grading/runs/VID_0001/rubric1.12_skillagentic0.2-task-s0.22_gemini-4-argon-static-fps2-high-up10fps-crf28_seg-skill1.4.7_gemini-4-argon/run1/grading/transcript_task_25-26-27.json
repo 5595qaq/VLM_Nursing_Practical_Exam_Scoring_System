@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 24.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 20321,
+  "output_tokens": 348,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"25b\", \"verdict\": \"部分正確\", \"explanation\": \"08:58.0–08:59.5 先以右手手指輕彈針筒（未墊酒精棉片），之後於 09:00.5 才拿起桌上的酒精棉片，於 09:01.0–09:06.5 墊在針頭與針筒接合處排氣，屬於先彈針後墊棉片。\", \"evidence\": [\"clip@538.0-547.0\"], \"confidence\": 0.85, \"reason\": null}, {\"criterion_id\": \"27a\", \"verdict\": \"正確\", \"explanation\": \"08:58.0–08:59.5 清楚看到右手手指連續輕彈針筒，且同時聽到短促的連續彈擊聲。\", \"evidence\": [\"clip@538.0-540.0\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"27b\", \"verdict\": \"正確\", \"explanation\": \"09:02.5–09:06.5 左手握針頭與棉片、右手拇指與食指扶住尾端圓盤往上推針心排氣，外露的推桿明顯變短。\", \"evidence\": [\"clip@542.0-547.0\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "jhXdaqDnAZ_u2roPgbzOyQQ"
+  },
+  "errors": []
+ }
+]

@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 30.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 19814,
+  "output_tokens": 446,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"26a\", \"verdict\": \"錯誤\", \"explanation\": \"在 05:59.5–06:08.5 期間，學生於 06:00.5–06:01.0 雙手水平持針筒將針頭蓋拔除，06:02.5–06:04.5 用酒精棉片擦拭點滴套組上的加藥口，06:04.5–06:07.5 將空針上的針頭旋下，06:08.0 將針頭放到治療車上，06:09.5–06:11.0 將無針頭的針筒直接接上點滴套組加藥。全程為給藥動作，並未進行步驟 26 將針心往後抽的動作，手也未觸碰針心尾端圓盤。\", \"evidence\": [\"clip@358.0-371.0\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"26b\", \"verdict\": \"錯誤\", \"explanation\": \"在 05:59.5–06:07.5 期間，學生於 06:00.5–06:04.5 持針筒時針筒皆呈水平方向，接著於 06:04.5–06:07.5 將針頭旋下並於 06:08.0 放到治療車上，後續 06:09.5–06:11.0 是將無針頭的針筒朝下接在點滴加藥口上，全程未將裝有針頭的針筒垂直拿起且針頭向上。\", \"evidence\": [\"clip@358.0-371.0\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "KhrdapOeGsqcosUPotvrgA4"
+  },
+  "errors": []
+ }
+]

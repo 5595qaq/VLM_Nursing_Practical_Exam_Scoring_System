@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 25.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 22441,
+  "output_tokens": 229,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"2a\", \"verdict\": \"無法判定\", \"explanation\": \"00:55.5–01:10.5 學生低頭查看治療車下方或電腦螢幕（被治療車擋住），畫面中完全看不到給藥紀錄單的位置，無法確認學生注視對象是否為給藥紀錄單。\", \"evidence\": [\"clip@53.4-70.8\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}, {\"criterion_id\": \"2b\", \"verdict\": \"無法判定\", \"explanation\": \"00:55.5–01:10.5 給藥紀錄單不在畫面內，且學生的手在治療車後方操作時部分被治療車遮擋，無法判定是否有用手指指出給藥紀錄單。\", \"evidence\": [\"clip@53.4-70.8\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "0RXdao6XCra02roPmpnFiAE"
+  },
+  "errors": []
+ }
+]

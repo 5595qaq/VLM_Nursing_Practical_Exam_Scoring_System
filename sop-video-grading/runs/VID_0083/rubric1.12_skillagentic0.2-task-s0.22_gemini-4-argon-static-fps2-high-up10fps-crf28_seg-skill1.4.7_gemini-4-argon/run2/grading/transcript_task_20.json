@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 29.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 25716,
+  "output_tokens": 168,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"20a\", \"verdict\": \"正確\", \"explanation\": \"學生於 03:35.5 將 vial 夾在雙手掌心開始來回搓滾旋轉，持續至 03:50.0 停下查看瓶底溶解狀況，隨後於 03:51.5–03:52.5 再次夾在掌心搓滾，03:54.5 將 vial 放回桌面，符合雙手旋轉 vial 讓稀釋液與粉劑融合的標準。\", \"evidence\": [\"clip@215.5-234.5\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "0xfdaprzI8qcosUPotvrgA4"
+  },
+  "errors": []
+ }
+]

@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 26.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 19187,
+  "output_tokens": 227,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"2a\", \"verdict\": \"無法判定\", \"explanation\": \"00:24.0–00:36.0 畫面中看不到給藥紀錄單的位置，學生在 00:26.0 拿起 vial 後全程低頭看手中的藥瓶與治療車桌面，無法確認給藥紀錄單位置與視線對象。\", \"evidence\": [\"clip@24.0-36.0\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}, {\"criterion_id\": \"2b\", \"verdict\": \"無法判定\", \"explanation\": \"00:24.0–00:36.0 給藥紀錄單不在畫面內，且學生雙手僅操作 vial 與酒精棉片，無法判定是否有指出藥單。\", \"evidence\": [\"clip@24.0-36.0\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "qRndaqSBFJme1e8P6fm9-Ac"
+  },
+  "errors": []
+ }
+]

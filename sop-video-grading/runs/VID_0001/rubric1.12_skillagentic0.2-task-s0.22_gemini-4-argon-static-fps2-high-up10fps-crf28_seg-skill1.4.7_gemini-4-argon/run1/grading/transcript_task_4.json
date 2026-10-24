@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 35.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 80739,
+  "output_tokens": 254,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4a\", \"verdict\": \"無法判定\", \"explanation\": \"本考場給藥紀錄單不在畫面內（01:43–02:02、02:27–02:58 學生低頭往治療車後方抽屜方向看並以左手指腹點按，但治療車後方被車體擋住，看不到藥單本身）。\", \"evidence\": [\"clip@103-122\", \"clip@147-178\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}, {\"criterion_id\": \"4b\", \"verdict\": \"無法判定\", \"explanation\": \"02:27–02:58 學生右手拿著 vial，左手伸到治療車後方或上方做指點的動作，但本考場給藥紀錄單不在畫面內，無法確認手指所指對象是否為給藥紀錄單。\", \"evidence\": [\"clip@147-178\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "FxXdau3rIfrx2roP9sWo0Qc"
+  },
+  "errors": []
+ }
+]

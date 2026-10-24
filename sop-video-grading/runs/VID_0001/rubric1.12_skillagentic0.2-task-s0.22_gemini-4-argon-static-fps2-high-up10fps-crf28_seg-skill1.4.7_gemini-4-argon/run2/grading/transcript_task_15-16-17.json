@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 30.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 37706,
+  "output_tokens": 501,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"15b\", \"verdict\": \"部分正確\", \"explanation\": \"學生在 04:12.5–04:15.0 先以右手手指輕彈針筒且有彈擊聲（此時針頭與針筒接合處未墊酒精棉片），之後於 04:16.5 左手拿起酒精棉片，04:17.5 墊在針頭與針筒接合處，並在 04:26.0–04:30.0 再次彈針與排氣，屬於先彈針後墊棉片。\", \"evidence\": [\"clip@251-271\"], \"confidence\": 0.85, \"reason\": null}, {\"criterion_id\": \"16a\", \"verdict\": \"正確\", \"explanation\": \"04:18.0–04:19.5 針頭朝上，右手手指握住針心尾端圓盤往下拉（往後抽），外露推桿略微變長。\", \"evidence\": [\"clip@257-260\"], \"confidence\": 0.85, \"reason\": null}, {\"criterion_id\": \"17a\", \"verdict\": \"正確\", \"explanation\": \"04:12.5–04:15.0 及 04:26.0–04:30.0 皆清楚看到右手手指輕彈針筒，並同時聽到連續短促的彈擊聲。\", \"evidence\": [\"clip@252-255\", \"clip@266-270\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"17b\", \"verdict\": \"正確\", \"explanation\": \"04:20.0–04:25.0 右手拇指與手指握住針心尾端圓盤往上推，以及 04:31.0–04:41.0 左手推動針心進行排氣，外露推桿變短。\", \"evidence\": [\"clip@260-281\"], \"confidence\": 0.85, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "BRbdao7AG_rx2roP9sWo0Qc"
+  },
+  "errors": []
+ }
+]

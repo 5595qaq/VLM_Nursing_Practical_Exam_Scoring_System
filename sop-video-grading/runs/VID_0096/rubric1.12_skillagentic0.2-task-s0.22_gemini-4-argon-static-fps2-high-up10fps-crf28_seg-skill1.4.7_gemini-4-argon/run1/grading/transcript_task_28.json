@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 24.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 17436,
+  "output_tokens": 132,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"28b\", \"verdict\": \"錯誤\", \"explanation\": \"05:18.0–05:19.0 右手持針筒將針頭插入桌上的針頭套時，05:18.5 與 05:19.0 清楚看到左手手指直接扶著針頭套協助套回，並非單手回套。\", \"evidence\": [\"clip@317.5-320.5\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "VxndasvSFN_01e8PxeyqiAo"
+  },
+  "errors": []
+ }
+]

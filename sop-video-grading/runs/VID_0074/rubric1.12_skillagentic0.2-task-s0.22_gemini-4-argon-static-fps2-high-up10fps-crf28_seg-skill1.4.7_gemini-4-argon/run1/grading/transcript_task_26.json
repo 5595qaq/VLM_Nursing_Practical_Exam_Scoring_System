@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 26.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 33015,
+  "output_tokens": 201,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"26a\", \"verdict\": \"正確\", \"explanation\": \"04:28.0–04:29.5 左手握住針筒上半部，右手手指捏住針心尾端圓盤往下拉，將針心往後抽。\", \"evidence\": [\"clip@268.0-270.0\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"26b\", \"verdict\": \"正確\", \"explanation\": \"04:28.0–04:56.5 操作回抽針心、彈針與排氣時，針筒皆保持垂直、針頭朝上。\", \"evidence\": [\"clip@268.0-296.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "OhXdaqzSIMOy2roP6OeTyAE"
+  },
+  "errors": []
+ }
+]

@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 135.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 20939,
+  "output_tokens": 329,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4a\", \"verdict\": \"無法判定\", \"explanation\": \"00:16.0–00:31.0 畫面中看不到給藥紀錄單（可能為治療車左前方的白色紙片，但無法確認），學生於 00:18.0–00:29.0 期間檢視 vial、稀釋液瓶與空針包裝，偶爾低頭看桌面（如 00:28.0–00:29.0），因藥單看不見故無法判定注視時間是否達 10 秒。\", \"evidence\": [\"clip@16.0-31.0\"], \"confidence\": 0.8, \"reason\": \"藥單看不見\"}, {\"criterion_id\": \"4b\", \"verdict\": \"無法判定\", \"explanation\": \"00:16.0–00:31.0 畫面中無法確認給藥紀錄單的位置（藥單看不見），雖於 00:16.0–00:17.5 與 00:28.5–00:29.0 手部曾碰觸治療車左前方的白色紙片，但無法確認該紙片是否為給藥紀錄單。\", \"evidence\": [\"clip@16.0-31.0\"], \"confidence\": 0.8, \"reason\": \"藥單看不見\"}]}",
+  "diag": {
+   "http_attempts": 2,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "AhzdauStOsOy2roP6OeTyAE"
+  },
+  "errors": []
+ }
+]

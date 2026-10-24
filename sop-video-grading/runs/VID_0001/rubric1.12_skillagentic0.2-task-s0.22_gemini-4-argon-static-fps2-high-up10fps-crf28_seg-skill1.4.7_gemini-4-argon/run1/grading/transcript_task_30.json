@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 24.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 17508,
+  "output_tokens": 205,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"30a\", \"verdict\": \"正確\", \"explanation\": \"09:08.0–09:12.5 右手持空針將針頭插回左側針架（單手回套固定座）上的針頭套中固定直立放置。\", \"evidence\": [\"clip@547.5-553.0\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"30b\", \"verdict\": \"正確\", \"explanation\": \"09:08.0–09:12.5 右手握住針筒（針柄）處，將空針放入左側針架固定，未拿著針頭部位。\", \"evidence\": [\"clip@547.5-553.0\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "sBXdas6RBba02roPmpnFiAE"
+  },
+  "errors": []
+ }
+]

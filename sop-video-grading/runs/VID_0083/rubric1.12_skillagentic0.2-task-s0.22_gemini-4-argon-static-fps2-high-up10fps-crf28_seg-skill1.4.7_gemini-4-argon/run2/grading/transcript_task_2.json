@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 21.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 15101,
+  "output_tokens": 239,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"2a\", \"verdict\": \"錯誤\", \"explanation\": \"給藥紀錄單位於學生左後方牆壁置物籃下（畫面中右側白色單張），00:18.8–00:24.0 學生在搓手腕後直接低頭從治療車拿起 vial 檢視，全程未轉頭或將視線朝向給藥紀錄單（累計注視 0 秒，未達 10 秒）。\", \"evidence\": [\"clip@18.8-24.0\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"2b\", \"verdict\": \"錯誤\", \"explanation\": \"00:18.8–00:24.0 學生雙手在搓手腕與拿起治療車上的 vial，完全沒有用手指指向後方牆上的給藥紀錄單。\", \"evidence\": [\"clip@18.8-24.0\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "jRfdapvoK9Onvr0Pu8rakAY"
+  },
+  "errors": []
+ }
+]

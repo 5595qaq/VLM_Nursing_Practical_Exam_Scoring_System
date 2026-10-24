@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 30.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 20050,
+  "output_tokens": 411,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"25b\", \"verdict\": \"正確\", \"explanation\": \"06:02.5–06:07.5 將白色酒精棉片墊在針頭與針筒接合處（06:06.0–06:07.5 旋轉拆下針頭），此段沒有彈針動作。\", \"evidence\": [\"clip@358.0-371.0\"], \"confidence\": 0.85, \"reason\": null}, {\"criterion_id\": \"27a\", \"verdict\": \"錯誤\", \"explanation\": \"05:58.0–06:11.0 拿起空針拔蓋（06:01.0）、在針座處墊酒精棉片並將針頭旋下放到車上（06:02.5–06:08.5），接著將針筒拿到點滴架加藥，全程沒有看到手指彈針筒，也沒有聽到彈擊聲。\", \"evidence\": [\"clip@358.0-371.0\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"27b\", \"verdict\": \"錯誤\", \"explanation\": \"05:58.0–06:11.0 拔掉針套後以酒精棉片包住針座旋下針頭（06:02.5–06:07.5），雙手只握在針筒外管與針頭接合處，沒有碰觸針心尾端圓盤，外露推桿長度也沒有變短，未做推針心排氣動作。\", \"evidence\": [\"clip@358.0-371.0\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "IRrdarOsOd_01e8PxeyqiAo"
+  },
+  "errors": []
+ }
+]

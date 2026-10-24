@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 28.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 18595,
+  "output_tokens": 229,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4a\", \"verdict\": \"無法判定\", \"explanation\": \"00:43.0–00:54.0 畫面中看不見給藥紀錄單（無論在牆上、點滴架或治療車上皆未見藥單位置），學生全程低頭操作治療車上的空針、vial 與酒精棉片，無法確認視線對象是否為藥單。\", \"evidence\": [\"clip@43.0-54.0\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}, {\"criterion_id\": \"4b\", \"verdict\": \"無法判定\", \"explanation\": \"00:43.0–00:54.0 畫面中看不見給藥紀錄單，無法判定是否有用手指指出給藥紀錄單。\", \"evidence\": [\"clip@43.0-54.0\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "qBrdaoyYHMqcosUPotvrgA4"
+  },
+  "errors": []
+ }
+]

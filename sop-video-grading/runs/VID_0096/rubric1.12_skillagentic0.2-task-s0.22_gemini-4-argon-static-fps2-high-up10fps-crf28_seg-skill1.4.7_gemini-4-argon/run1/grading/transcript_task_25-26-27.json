@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 28.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 20050,
+  "output_tokens": 383,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"25b\", \"verdict\": \"正確\", \"explanation\": \"06:03.0 學生將白色酒精棉片墊在針頭與針筒接合處，06:05.0–06:06.0 持針筒進行調整（期間沒有彈針），符合墊酒精棉片的要求。\", \"evidence\": [\"clip@358.0-371.0\"], \"confidence\": 0.85, \"reason\": null}, {\"criterion_id\": \"27a\", \"verdict\": \"錯誤\", \"explanation\": \"06:00.0–06:09.0 拔除針頭套、墊酒精棉片、將針筒直立後即拔除針頭（06:06.0–06:07.5），全程未聽到彈擊聲，也未看到手指彈針筒。\", \"evidence\": [\"clip@358.0-371.0\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"27b\", \"verdict\": \"錯誤\", \"explanation\": \"06:03.0–06:07.5 墊上酒精棉片並將針筒直立後，右手僅握在外筒上並直接將針頭旋下拔除（06:06.0–06:07.5），未看到手指推針心尾端圓盤排氣，外露推桿長度也無變短。\", \"evidence\": [\"clip@358.0-371.0\"], \"confidence\": 0.85, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "RhndatGlE9_01e8PxeyqiAo"
+  },
+  "errors": []
+ }
+]

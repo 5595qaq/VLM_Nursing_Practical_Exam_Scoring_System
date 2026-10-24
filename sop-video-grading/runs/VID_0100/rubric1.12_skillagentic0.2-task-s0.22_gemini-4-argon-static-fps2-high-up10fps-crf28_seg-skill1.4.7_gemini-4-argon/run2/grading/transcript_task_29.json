@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 27.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 17264,
+  "output_tokens": 362,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"29a\", \"verdict\": \"無法判定\", \"explanation\": \"05:03.5–05:12.0 畫面中未拍到給藥紀錄單的位置（學生在 05:05.0–05:07.5 拿起空 vial 檢視後於 05:08.0–05:09.0 放入透明盒中，全程未見藥單），無法判定是否注視給藥紀錄單累計達 10 秒。\", \"evidence\": [\"clip@303.5-312.0\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}, {\"criterion_id\": \"29b\", \"verdict\": \"無法判定\", \"explanation\": \"05:03.5–05:12.0 畫面中未拍到給藥紀錄單，無法判定是否有用手指指出給藥紀錄單。\", \"evidence\": [\"clip@303.5-312.0\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}, {\"criterion_id\": \"29c\", \"verdict\": \"正確\", \"explanation\": \"05:05.0 拿起空 vial 檢視後，於 05:07.5–05:09.0 將空 vial 丟入治療車左側的透明收集盒中。\", \"evidence\": [\"clip@305.0-309.5\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "oB7daqvhFLCm1e8PkvbgkAI"
+  },
+  "errors": []
+ }
+]

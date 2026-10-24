@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 19.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 17216,
+  "output_tokens": 234,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"30a\", \"verdict\": \"正確\", \"explanation\": \"04:41.0–04:43.5 學生左手拿起原空針包裝袋，右手將已回套的空針放入空針包裝袋內，並於 04:43.5 將裝有空針的包裝袋放回治療車桌面上。\", \"evidence\": [\"clip@280.0-284.5\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"30b\", \"verdict\": \"正確\", \"explanation\": \"04:41.0–04:43.0 學生右手握住空針外筒與針心端，將針頭端朝向包裝袋開口放入空針包裝袋內，未握持針頭部位。\", \"evidence\": [\"clip@280.5-283.5\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "VRbdat_4AbT61e8PvvSh0Ao"
+  },
+  "errors": []
+ }
+]

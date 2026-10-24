@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 22.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 19555,
+  "output_tokens": 261,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"13a\", \"verdict\": \"正確\", \"explanation\": \"01:46.0–01:48.0 第一次將針頭插入稀釋液瓶，01:52.0–01:54.5 重新拿起稀釋液瓶後第二次將針頭插入瓶中，兩次皆由右手持空針將針頭插入稀釋液瓶，左手食指與中指夾瓶，拇指與其餘手指固定針筒前端。\", \"evidence\": [\"clip@106.0-116.5\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"13b\", \"verdict\": \"正確\", \"explanation\": \"01:46.0 及 01:52.0 針頭插入稀釋液瓶口時，針筒皆由右上往左下斜向插入，針頭比針筒尾端低（朝下）。\", \"evidence\": [\"clip@106.0-115.0\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "uxjdat27BpK1vr0Pyo6kwQ0"
+  },
+  "errors": []
+ }
+]

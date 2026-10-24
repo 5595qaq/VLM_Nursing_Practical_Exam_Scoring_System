@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 39.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 27373,
+  "output_tokens": 281,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4a\", \"verdict\": \"無法判定\", \"explanation\": \"00:24.0–00:50.0 畫面中看不到給藥紀錄單的位置（牆上或點滴架上皆無白色 A4 單張，也未在治療車上看到），無法確認視線對象。此區間學生全程低頭看雙手、治療車上的器材及手中的 vial 藥瓶。\", \"evidence\": [\"clip@24.0-50.0\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}, {\"criterion_id\": \"4b\", \"verdict\": \"無法判定\", \"explanation\": \"00:24.0–00:50.0 畫面中看不到給藥紀錄單的位置，無法確認是否有用手指指出藥單（學生於 00:27.5–00:32.0 及 00:46.5–00:50.0 僅用手指指著手中的 vial 藥瓶標籤）。\", \"evidence\": [\"clip@24.0-50.0\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "whndaovKMLCm1e8PkvbgkAI"
+  },
+  "errors": []
+ }
+]

@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 22.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 28564,
+  "output_tokens": 280,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"2a\", \"verdict\": \"錯誤\", \"explanation\": \"給藥紀錄單在點滴架托盤上（畫面右側），但 00:22.0–00:50.0 期間考生全程低頭看自己的手與治療車桌面（00:22.0–00:25.5 搓手、00:28.0–00:44.0 撕開空針包裝、00:45.0 拿起 vial 開蓋），完全沒有轉頭或將視線朝向給藥紀錄單。\", \"evidence\": [\"clip@22.0-50.0\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"2b\", \"verdict\": \"錯誤\", \"explanation\": \"00:22.0–00:50.0 期間考生雙手僅在搓手、拿取及撕開空針包裝與打開 vial 瓶蓋，完全沒有用手指指出點滴架上的給藥紀錄單。\", \"evidence\": [\"clip@22.0-50.0\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "DBrdaqaUCLT61e8PvvSh0Ao"
+  },
+  "errors": []
+ }
+]

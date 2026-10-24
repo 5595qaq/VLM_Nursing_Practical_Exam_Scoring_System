@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 31.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 19775,
+  "output_tokens": 119,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"19b\", \"verdict\": \"錯誤\", \"explanation\": \"02:59.0–03:01.0 右手持針筒將針頭插入針架上的針頭套時，左手食指與拇指持續扶在針頭套與透明針架上，並非單手套回。\", \"evidence\": [\"clip@197.0-202.0\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "fRvdaqHdKMqcosUPotvrgA4"
+  },
+  "errors": []
+ }
+]

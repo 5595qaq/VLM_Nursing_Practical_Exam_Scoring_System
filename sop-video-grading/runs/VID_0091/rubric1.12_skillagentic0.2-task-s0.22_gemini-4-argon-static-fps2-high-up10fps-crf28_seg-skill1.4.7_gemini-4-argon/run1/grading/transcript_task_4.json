@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 37.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 22685,
+  "output_tokens": 305,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4a\", \"verdict\": \"無法判定\", \"explanation\": \"00:22.0–00:40.0 學生在治療車前拿起 vial 檢視（00:24.5–00:26.0、00:32.0–00:36.0）、拿取空針包裝檢視（00:27.0–00:31.5），並於 00:34.0–00:34.5 用右手食指指向治療車台面，但給藥紀錄單不在畫面內（桌面反光無法確認是否為藥單），無法判定注視時間。\", \"evidence\": [\"clip@22.0-40.0\"], \"confidence\": 0.8, \"reason\": \"藥單看不見\"}, {\"criterion_id\": \"4b\", \"verdict\": \"無法判定\", \"explanation\": \"00:34.0–00:34.5 學生用右手食指指向治療車台面，但給藥紀錄單不在畫面內，無法確認所指位置是否為給藥紀錄單。\", \"evidence\": [\"clip@22.0-40.0\"], \"confidence\": 0.8, \"reason\": \"藥單看不見\"}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "uhfdapWfKZK1vr0Pyo6kwQ0"
+  },
+  "errors": []
+ }
+]

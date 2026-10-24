@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 34.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 25745,
+  "output_tokens": 214,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"26a\", \"verdict\": \"正確\", \"explanation\": \"04:17.5–04:19.0 針筒垂直、針頭朝上，右手捏住針心尾端圓盤往下拉（往後抽），推桿長度變化不明顯，但可清楚看到右手在尾端圓盤上做往下拉的動作。\", \"evidence\": [\"clip@257-260\"], \"confidence\": 0.85, \"reason\": null}, {\"criterion_id\": \"26b\", \"verdict\": \"正確\", \"explanation\": \"04:16.5–04:34.0 操作回抽、彈針與排氣期間，針筒保持垂直拿起、針頭朝上。\", \"evidence\": [\"clip@256.5-274\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "TxXdatnCFNbs2roPlZWN8Qs"
+  },
+  "errors": []
+ }
+]

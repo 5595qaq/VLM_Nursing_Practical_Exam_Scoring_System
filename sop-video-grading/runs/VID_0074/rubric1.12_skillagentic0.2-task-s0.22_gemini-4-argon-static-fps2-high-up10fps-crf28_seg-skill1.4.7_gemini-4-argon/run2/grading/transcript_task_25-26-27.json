@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 23.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 33288,
+  "output_tokens": 361,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"25b\", \"verdict\": \"部分正確\", \"explanation\": \"04:29.5–04:32.5 針頭與針筒接合處尚未墊上酒精棉片即先用右手手指彈針筒；04:33.5 從桌上拿起白色方形酒精棉片，04:34.5 將酒精棉片墊在針頭與針筒接合處，04:35.5–04:45.5 繼續彈針筒，屬於先彈針後墊棉片。\", \"evidence\": [\"clip@269-286\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"27a\", \"verdict\": \"正確\", \"explanation\": \"04:29.5–04:32.5 及 04:35.5–04:45.5 清楚看到右手手指連續彈擊針筒，並同時聽到清楚的連續彈擊聲。\", \"evidence\": [\"clip@269-286\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"27b\", \"verdict\": \"正確\", \"explanation\": \"04:47.5–04:54.5 彈針後，右手拇指壓住針心尾端圓盤往上推排氣，外露的推桿明顯變短。\", \"evidence\": [\"clip@287-296\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "4RXdapCoLba02roPmpnFiAE"
+  },
+  "errors": []
+ }
+]

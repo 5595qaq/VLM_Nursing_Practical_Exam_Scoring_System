@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 22.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 16926,
+  "output_tokens": 345,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"29a\", \"verdict\": \"錯誤\", \"explanation\": \"05:23.0–05:31.0 期間，學生於 05:24.0–05:27.5 拿起空 vial 低頭檢視，之後放回治療車上並整理桌面，全程低頭看手中物品與治療車桌面，沒有轉頭注視右後方點滴架旁的給藥紀錄單。\", \"evidence\": [\"clip@323.0-331.0\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"29b\", \"verdict\": \"錯誤\", \"explanation\": \"05:23.0–05:31.0 雙手皆在治療車上方拿取空 vial 及整理包裝，沒有用手指指出給藥紀錄單。\", \"evidence\": [\"clip@323.0-331.0\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"29c\", \"verdict\": \"錯誤\", \"explanation\": \"05:24.0 拿起空 vial 檢視後，於 05:27.5–05:28.0 將空 vial 放回治療車左側桌面，並未丟入收集筒或垃圾桶。\", \"evidence\": [\"clip@323.0-331.0\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "Xhndap7WI_fU1e8P5cCsiAE"
+  },
+  "errors": []
+ }
+]

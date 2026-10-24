@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 25.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 33263,
+  "output_tokens": 210,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4a\", \"verdict\": \"錯誤\", \"explanation\": \"00:16.2–00:52.2 全程低頭檢視手中的 vial、稀釋液瓶與空針包裝，頭與視線完全沒有轉向後方牆上的給藥紀錄單。\", \"evidence\": [\"clip@16.2-52.2\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"4b\", \"verdict\": \"錯誤\", \"explanation\": \"00:16.2–00:52.2 雙手在治療車前拿取並檢視 vial、稀釋液瓶與空針包裝，沒有用手指指出後方牆上的給藥紀錄單。\", \"evidence\": [\"clip@16.2-52.2\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "-RTdao_fDMOy2roP6OeTyAE"
+  },
+  "errors": []
+ }
+]

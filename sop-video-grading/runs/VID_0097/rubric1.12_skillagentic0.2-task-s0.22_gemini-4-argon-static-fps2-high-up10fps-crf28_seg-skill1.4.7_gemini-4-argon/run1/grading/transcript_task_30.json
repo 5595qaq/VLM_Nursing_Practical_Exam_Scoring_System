@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 17.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 17224,
+  "output_tokens": 200,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"30a\", \"verdict\": \"正確\", \"explanation\": \"04:51.0–04:55.0 左手拿起空針包裝袋，右手將空針放入空針包裝袋內並放回治療車上。\", \"evidence\": [\"clip@291.0-295.0\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"30b\", \"verdict\": \"正確\", \"explanation\": \"04:51.5–04:54.0 右手持針筒將空針由針心端放入左手拿著的空針包裝袋內，針頭端朝外。\", \"evidence\": [\"clip@291.5-294.0\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "hRrdavegCbCm1e8PkvbgkAI"
+  },
+  "errors": []
+ }
+]

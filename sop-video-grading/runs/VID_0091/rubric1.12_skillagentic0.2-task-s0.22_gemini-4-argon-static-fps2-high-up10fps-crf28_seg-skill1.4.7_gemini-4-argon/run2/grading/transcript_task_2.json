@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 22.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 21893,
+  "output_tokens": 232,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"2a\", \"verdict\": \"無法判定\", \"explanation\": \"00:11.6–00:21.0 學生視線雖朝向畫面左側（點滴架及病床方向），但畫面中完全看不見給藥紀錄單的位置，無法確認其視線對象是否為給藥紀錄單。\", \"evidence\": [\"clip@11.6-28.0\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}, {\"criterion_id\": \"2b\", \"verdict\": \"無法判定\", \"explanation\": \"00:13.5–00:19.5 學生雙手觸碰點滴架上的管路與小卡，但畫面中看不見給藥紀錄單的位置，無法確認是否有用手指指出給藥紀錄單。\", \"evidence\": [\"clip@11.6-28.0\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "exjdarPEDrCm1e8PkvbgkAI"
+  },
+  "errors": []
+ }
+]

@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 31.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 29434,
+  "output_tokens": 341,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4a\", \"verdict\": \"無法判定\", \"explanation\": \"00:17.4–00:47.0 畫面中看不見給藥紀錄單的位置（右後方牆上及點滴架旁無單張，治療車台面上亦未見給藥紀錄單），學生於 00:20–00:33 拿起 vial 低頭檢視瓶身並於 00:31.5–00:32.0 看向治療車台面右前側，00:35–00:40 檢視空針包裝，00:41–00:44 再次拿 vial 檢視，因藥單不在畫面內無法確認視線是否注視給藥紀錄單。\", \"evidence\": [\"clip@17.4-47.0\"], \"confidence\": 0.85, \"reason\": \"藥單看不見\"}, {\"criterion_id\": \"4b\", \"verdict\": \"無法判定\", \"explanation\": \"00:17.4–00:47.0 畫面中看不見給藥紀錄單的位置，無法確認是否有用手指指出給藥紀錄單（00:31.5 左手食指指向手中的 vial 瓶身，非指向藥單）。\", \"evidence\": [\"clip@17.4-47.0\"], \"confidence\": 0.85, \"reason\": \"藥單看不見\"}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "Uxrdate0IN_01e8PxeyqiAo"
+  },
+  "errors": []
+ }
+]

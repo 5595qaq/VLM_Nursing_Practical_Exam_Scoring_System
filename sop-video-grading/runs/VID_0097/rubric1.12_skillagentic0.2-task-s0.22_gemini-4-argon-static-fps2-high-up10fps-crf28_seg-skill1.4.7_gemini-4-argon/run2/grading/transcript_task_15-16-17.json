@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 19.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 20072,
+  "output_tokens": 318,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"16a\", \"verdict\": \"錯誤\", \"explanation\": \"01:45.0–01:54.0 針筒垂直舉起、針頭朝上，右手拇指放在針心尾端圓盤上直接往上推排氣，沒有先將針心往後抽的動作，外露推桿長度也沒有變長。\", \"evidence\": [\"clip@103.4-116.5\"], \"confidence\": 0.85, \"reason\": null}, {\"criterion_id\": \"17a\", \"verdict\": \"錯誤\", \"explanation\": \"01:45.0–01:54.0 雙手握持針筒與針心排氣的過程中，沒有看到手指彈針筒的動作，也沒有聽到彈擊聲。\", \"evidence\": [\"clip@103.4-116.5\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"17b\", \"verdict\": \"正確\", \"explanation\": \"01:47.0–01:53.5 右手拇指壓住針心尾端圓盤往上推排氣，外露推桿變短。\", \"evidence\": [\"clip@103.4-116.5\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "2BrdavyXOdOnvr0Pu8rakAY"
+  },
+  "errors": []
+ }
+]

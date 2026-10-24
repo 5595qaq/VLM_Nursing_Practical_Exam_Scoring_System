@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 45.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 72647,
+  "output_tokens": 248,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"30a\", \"verdict\": \"正確\", \"explanation\": \"05:21.0–05:24.0 學生抽藥排氣並回套後，將空針放入原空針包裝袋內並平放於治療車上（之後 05:59.0 取出空針至點滴架加藥，加藥完於 06:49.0 將空針放回治療車上）。\", \"evidence\": [\"clip@320.5-324.5\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"30b\", \"verdict\": \"正確\", \"explanation\": \"05:21.0–05:23.5 右手持針筒外管與針心處，將針頭端朝向左手持握的空針包裝袋開口插入放入包裝。\", \"evidence\": [\"clip@320.5-324.0\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "SBrdat78KJme1e8P6fm9-Ac"
+  },
+  "errors": []
+ }
+]

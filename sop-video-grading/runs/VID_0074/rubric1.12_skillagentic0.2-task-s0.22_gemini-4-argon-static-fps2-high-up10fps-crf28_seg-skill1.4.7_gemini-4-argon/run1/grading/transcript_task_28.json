@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 19.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 18941,
+  "output_tokens": 131,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"28b\", \"verdict\": \"錯誤\", \"explanation\": \"05:08.0 左手從治療車桌面拿起針頭套，05:09.0–05:13.0 右手持針筒、左手直接拿著針頭套在空中對準並將針頭套回，並非在桌面上單手回套。\", \"evidence\": [\"clip@307.5-314.0\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "SRXdatbFI42y2roP1P_zUA"
+  },
+  "errors": []
+ }
+]

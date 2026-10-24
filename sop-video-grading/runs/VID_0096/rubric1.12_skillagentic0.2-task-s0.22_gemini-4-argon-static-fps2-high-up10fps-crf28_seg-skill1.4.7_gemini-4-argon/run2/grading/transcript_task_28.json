@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 25.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 17436,
+  "output_tokens": 134,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"28b\", \"verdict\": \"錯誤\", \"explanation\": \"05:18.0 右手持針筒將針頭靠近桌上的針頭套，05:18.5–05:19.0 針頭插入針頭套過程中，左手手指直接捏住並扶著桌上的針頭套協助對準套入，並非單手套回。\", \"evidence\": [\"clip@317.5-320.5\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "NxrdaqzEAt_01e8PxeyqiAo"
+  },
+  "errors": []
+ }
+]

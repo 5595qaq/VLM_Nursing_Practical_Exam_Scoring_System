@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 16.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 17204,
+  "output_tokens": 226,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"13a\", \"verdict\": \"正確\", \"explanation\": \"01:49.5–01:51.0 右手持針筒將針頭插入桌上的稀釋液瓶口，01:51.5–01:52.0 左手夾起稀釋液瓶並以其餘手指（拇指、食指）固定針筒前端。\", \"evidence\": [\"clip@109.5-113.0\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"13b\", \"verdict\": \"正確\", \"explanation\": \"01:49.5–01:51.0 針筒由上往下斜向插入稀釋液瓶，針頭明顯比針筒尾端低。\", \"evidence\": [\"clip@109.5-111.5\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "CxbdapqQDMqcosUPotvrgA4"
+  },
+  "errors": []
+ }
+]

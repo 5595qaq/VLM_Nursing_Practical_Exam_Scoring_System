@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 32.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 36176,
+  "output_tokens": 216,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"3a\", \"verdict\": \"錯誤\", \"explanation\": \"00:22.5–01:02.0 學生在洗手後整理桌面酒精棉片（00:22.5–00:27.0）、拿起並撕開空針包裝與旋緊針頭（00:27.5–00:55.5）、撕開酒精棉片包裝（00:56.0–00:59.5），接著在 00:59.5 拿起 vial 直接推開塑膠瓶蓋並以酒精棉片消毒瓶口（01:00.0–01:02.0），全程未將藥物舉到眼前或轉動檢視標籤與粉末。\", \"evidence\": [\"clip@20.8-62.0\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "ChvdavXgN9_01e8PxeyqiAo"
+  },
+  "errors": []
+ }
+]

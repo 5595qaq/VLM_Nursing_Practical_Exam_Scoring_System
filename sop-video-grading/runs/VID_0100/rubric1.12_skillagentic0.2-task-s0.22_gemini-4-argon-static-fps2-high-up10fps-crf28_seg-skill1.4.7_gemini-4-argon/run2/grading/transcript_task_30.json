@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 19.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 22777,
+  "output_tokens": 275,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"30a\", \"verdict\": \"錯誤\", \"explanation\": \"05:19.0–05:21.0 空針原本插在針架上，05:21.5 拿起空針並更換新針頭後，於 05:29.0–05:30.0 直接將空針平放在治療車桌面上，並未放入空針包裝袋或插回針架，至片段結束（05:36.5）空針仍平放在桌面上。\", \"evidence\": [\"clip@319.0-336.5\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"30b\", \"verdict\": \"錯誤\", \"explanation\": \"05:29.0–05:30.0 更換針頭後直接將空針平放在治療車桌面上，未執行將空針由針心處或針柄處放入空針包裝袋或針架的動作。\", \"evidence\": [\"clip@319.0-336.5\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "vB7dar_tAvfU1e8P5cCsiAE"
+  },
+  "errors": []
+ }
+]

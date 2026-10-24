@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 34.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 22441,
+  "output_tokens": 229,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"2a\", \"verdict\": \"無法判定\", \"explanation\": \"00:55.5–01:10.5 學生低頭看向治療車下方抽屜並從中取出藥瓶，給藥紀錄單不在畫面內（位於治療車擋住處或螢幕上），無法確認注視對象是否為藥單。\", \"evidence\": [\"clip@53.4-70.8\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}, {\"criterion_id\": \"2b\", \"verdict\": \"無法判定\", \"explanation\": \"00:55.5–01:10.5 給藥紀錄單不在畫面內，且雙手在治療車後方操作時部分被遮擋，無法確認是否有手指指出給藥紀錄單。\", \"evidence\": [\"clip@53.4-70.8\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "-BTdaqyjL6K12roPkrejgQI"
+  },
+  "errors": []
+ }
+]

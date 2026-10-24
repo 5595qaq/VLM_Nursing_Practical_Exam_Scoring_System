@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 35.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 27373,
+  "output_tokens": 266,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4a\", \"verdict\": \"錯誤\", \"explanation\": \"00:24.0–00:50.0 給藥紀錄單在學生左後方點滴架托盤上（畫面右側），學生在 00:26.5 拿起 vial、00:34.0 拿起酒精棉片、00:45.0 再次拿起 vial，全程低頭看手中的藥瓶與治療車上的器材，沒有轉頭或將視線朝向給藥紀錄單。\", \"evidence\": [\"clip@24.0-50.0\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"4b\", \"verdict\": \"錯誤\", \"explanation\": \"00:24.0–00:50.0 給藥紀錄單在點滴架托盤上清楚可見，但學生雙手全程在胸前操作藥瓶與酒精棉片，沒有用手指指出給藥紀錄單。\", \"evidence\": [\"clip@24.0-50.0\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "0hjdasOIEt_01e8PxeyqiAo"
+  },
+  "errors": []
+ }
+]

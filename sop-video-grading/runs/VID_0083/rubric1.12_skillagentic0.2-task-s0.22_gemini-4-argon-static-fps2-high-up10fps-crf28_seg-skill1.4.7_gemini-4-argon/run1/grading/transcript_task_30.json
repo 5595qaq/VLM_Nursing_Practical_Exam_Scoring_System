@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 34.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 99626,
+  "output_tokens": 296,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"30a\", \"verdict\": \"正確\", \"explanation\": \"02:42.0–02:57.5 抽完稀釋液後曾將空針放入空針包裝袋內；05:05.0–05:06.5 抽藥並單手回套完成後，將空針放入治療車上的透明針架上。\", \"evidence\": [\"clip@162.0-177.5\", \"clip@305.0-307.0\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"30b\", \"verdict\": \"正確\", \"explanation\": \"02:42.0–02:57.5 將空針由針心處放入原包裝袋；05:05.0–05:06.5 右手握住空針筒身（針柄處），由針柄處將空針放到治療車上的透明針架上，未拿著針頭部位。\", \"evidence\": [\"clip@162.0-177.5\", \"clip@305.0-307.0\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "VRfdaofoL9_01e8PxeyqiAo"
+  },
+  "errors": []
+ }
+]

@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 22.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 27385,
+  "output_tokens": 340,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"25b\", \"verdict\": \"正確\", \"explanation\": \"04:43.5 將白色方形酒精棉片墊在針頭與針筒交接處，直到 04:58.0 排氣完成後才拿開；整段區間沒有彈針動作，但排氣時棉片全程墊在交接處。\", \"evidence\": [\"clip@275.4-301\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"27a\", \"verdict\": \"錯誤\", \"explanation\": \"04:37.4–04:58.5 針筒直立進行回抽與推針心排氣，雙手清楚可見，但整段沒有看到手指彈針筒的動作，也沒有聽到連續彈擊聲。\", \"evidence\": [\"clip@275.4-301\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"27b\", \"verdict\": \"正確\", \"explanation\": \"04:44.5–04:57.5 右手手指與拇指握在針心尾端圓盤往上緩慢推針心排氣，外露推桿長度明顯比 04:41.5 回抽後變短。\", \"evidence\": [\"clip@275.4-301\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "PBfdao_dKLT61e8PvvSh0Ao"
+  },
+  "errors": []
+ }
+]

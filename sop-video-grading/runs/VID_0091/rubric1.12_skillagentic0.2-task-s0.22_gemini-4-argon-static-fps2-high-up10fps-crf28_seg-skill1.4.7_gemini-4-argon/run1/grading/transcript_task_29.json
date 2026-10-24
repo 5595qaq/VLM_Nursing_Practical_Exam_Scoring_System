@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 26.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 19899,
+  "output_tokens": 382,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"29a\", \"verdict\": \"錯誤\", \"explanation\": \"給藥紀錄單貼在學生右後方點滴架旁的牆上。05:06.0–05:13.0 學生拿起空的 vial 低頭檢視，並在 05:08.5–05:10.5 用右手手指在治療車桌面上比劃，全程低頭看手中藥瓶與桌面，完全沒有轉頭注視右後方牆上的給藥紀錄單。\", \"evidence\": [\"clip@303.5-316.4\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"29b\", \"verdict\": \"錯誤\", \"explanation\": \"給藥紀錄單在學生右後方牆上。05:08.5–05:10.5 學生右手食指只指向治療車桌面，並未指向右後方牆上的給藥紀錄單。\", \"evidence\": [\"clip@303.5-316.4\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"29c\", \"verdict\": \"錯誤\", \"explanation\": \"05:06.0 學生拿起空的 vial 檢視，05:10.5 拿起蓋子蓋回 vial 瓶口，05:12.5–05:13.0 將空 vial 放回治療車桌面上，未丟入紅色收集筒或垃圾桶。\", \"evidence\": [\"clip@303.5-316.4\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "QBjdavrNEPfU1e8P5cCsiAE"
+  },
+  "errors": []
+ }
+]

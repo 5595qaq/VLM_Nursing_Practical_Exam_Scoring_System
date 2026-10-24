@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 107.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 20939,
+  "output_tokens": 317,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4a\", \"verdict\": \"無法判定\", \"explanation\": \"00:16.0–00:31.0 畫面中看不到給藥紀錄單的位置，學生在 00:18.5–00:21.0 拿起 vial 檢視、00:22.5–00:24.0 拿起稀釋液瓶檢視、00:25.0–00:27.5 拿起空針包裝檢視，期間雖偶有視線微調，但因藥單不在畫面內，無法確認是否注視給藥紀錄單。\", \"evidence\": [\"clip@16.0-31.0\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}, {\"criterion_id\": \"4b\", \"verdict\": \"無法判定\", \"explanation\": \"00:16.0–00:31.0 畫面中看不到給藥紀錄單的位置（學生雙手僅於 00:17.0 左右觸碰桌面上酒精棉片包裝及拿取藥瓶，未指向桌面或牆上藥單），因藥單不在畫面內故無法判定。\", \"evidence\": [\"clip@16.0-31.0\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "YR3dau_QA7Cm1e8PkvbgkAI"
+  },
+  "errors": []
+ }
+]

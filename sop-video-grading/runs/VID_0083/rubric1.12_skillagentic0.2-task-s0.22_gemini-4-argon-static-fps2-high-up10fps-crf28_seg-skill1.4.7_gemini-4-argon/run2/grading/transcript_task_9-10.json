@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 21.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 35827,
+  "output_tokens": 198,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"10b\", \"verdict\": \"正確\", \"explanation\": \"01:18.0–01:20.0 撕開空針包裝後直接取出空針，期間未旋緊針頭；01:22.0–01:32.0 拔下針蓋並抽推針心測試；01:32.5–01:39.0 將針蓋套回；01:39.5–01:46.0 左手握住針頭蓋與針筒接合處，右手握住針筒並旋轉固定針頭。\", \"evidence\": [\"clip@78.0-84.0\", \"clip@99.0-106.5\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "oBfdaqmFC5me1e8P6fm9-Ac"
+  },
+  "errors": []
+ }
+]

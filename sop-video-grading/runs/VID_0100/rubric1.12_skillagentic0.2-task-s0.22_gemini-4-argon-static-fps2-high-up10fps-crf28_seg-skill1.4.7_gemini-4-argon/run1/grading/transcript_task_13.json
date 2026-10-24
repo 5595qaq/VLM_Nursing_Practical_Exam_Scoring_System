@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 22.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 34513,
+  "output_tokens": 265,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"13a\", \"verdict\": \"正確\", \"explanation\": \"學生於 01:30–01:41 初次嘗試時尚未拔除針頭套；於 01:48 拔除針套後，01:55.5–01:57.0 右手持空針將針頭插入稀釋液瓶口，左手食指與中指夾住瓶身，左手拇指與無名指等其餘手指握住並固定針筒前端。\", \"evidence\": [\"clip@108.0-118.5\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"13b\", \"verdict\": \"正確\", \"explanation\": \"01:55.5–01:57.0 將針頭插入稀釋液瓶時，針筒由左上往右下斜向插入，針頭端低於針筒尾端，針頭朝下。\", \"evidence\": [\"clip@114.5-118.0\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "GRzdavehO9bs2roPlZWN8Qs"
+  },
+  "errors": []
+ }
+]

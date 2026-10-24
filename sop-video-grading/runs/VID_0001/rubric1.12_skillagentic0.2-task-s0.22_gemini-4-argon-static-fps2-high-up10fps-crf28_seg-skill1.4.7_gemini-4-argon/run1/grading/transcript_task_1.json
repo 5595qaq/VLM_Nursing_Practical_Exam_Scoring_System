@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 31.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 23394,
+  "output_tokens": 374,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"1a\", \"verdict\": \"錯誤\", \"explanation\": \"00:40.5–00:41.5 按壓乾洗手液，00:42.0 雙手開始互搓，00:54.5 雙手分開結束洗手，共約 12.5 秒，未滿 15 秒。\", \"evidence\": [\"clip@38.6-57.4\"], \"confidence\": 0.9, \"reason\": null, \"span\": [42.0, 54.5]}, {\"criterion_id\": \"1b\", \"verdict\": \"正確\", \"explanation\": \"洗手七個動作皆有完成：內（00:42.0–00:42.5 掌心對掌心）、外（00:43.0–00:43.5 手心搓手背）、夾（00:44.0–00:44.5 十指交錯搓指縫）、弓（00:45.0–00:46.0 彎曲手指搓指背）、大（00:46.5–00:48.0 握住大拇指旋轉）、立（00:48.5–00:50.0 指尖立在掌心搓揉）、腕（00:50.5–00:54.0 握住手腕搓揉）。\", \"evidence\": [\"clip@38.6-57.4\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "-BTdaqXQL8Oy2roP6OeTyAE"
+  },
+  "errors": []
+ }
+]

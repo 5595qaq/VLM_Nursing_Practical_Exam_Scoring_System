@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 20.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 22685,
+  "output_tokens": 268,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4a\", \"verdict\": \"錯誤\", \"explanation\": \"00:20.0–00:38.0 期間，給藥紀錄單掛在學生左後方網籃上清晰可見，但學生全程低頭看桌上的藥物與手中拿起的 vial（00:22.0–00:29.5）及稀釋液瓶（00:30.0–00:35.0），完全沒有轉頭注視給藥紀錄單。\", \"evidence\": [\"clip@20.0-38.0\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"4b\", \"verdict\": \"錯誤\", \"explanation\": \"00:20.0–00:38.0 期間，給藥紀錄單在學生左後方網籃上清晰可見，但學生雙手僅在桌上拿取並檢視藥瓶與空針包裝，沒有用手指指出給藥紀錄單。\", \"evidence\": [\"clip@20.0-38.0\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "8Bbdaoq6ErCm1e8PkvbgkAI"
+  },
+  "errors": []
+ }
+]

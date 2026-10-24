@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 25.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 20773,
+  "output_tokens": 252,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"13a\", \"verdict\": \"正確\", \"explanation\": \"01:43.0–01:45.0 右手持空針將針頭插入左手夾住的稀釋液瓶口，01:45.5–01:47.0 左手食指與中指夾住稀釋液瓶，其餘手指（拇指、無名指）扶住並固定針筒外管，準備由右手拉針心。\", \"evidence\": [\"clip@102.5-107.5\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"13b\", \"verdict\": \"正確\", \"explanation\": \"01:43.0–01:44.0 針頭插入稀釋液瓶口時，針筒由左上往右下斜向下插入，針頭明顯低於針筒尾端。\", \"evidence\": [\"clip@102.5-105.0\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "4BfdasDzGNOnvr0Pu8rakAY"
+  },
+  "errors": []
+ }
+]

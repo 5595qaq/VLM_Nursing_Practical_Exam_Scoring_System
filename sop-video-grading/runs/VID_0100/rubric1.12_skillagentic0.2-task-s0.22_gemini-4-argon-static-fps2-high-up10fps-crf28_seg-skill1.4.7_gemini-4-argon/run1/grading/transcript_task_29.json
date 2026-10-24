@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 21.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 17264,
+  "output_tokens": 389,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"29a\", \"verdict\": \"無法判定\", \"explanation\": \"05:03.5–05:12.0 畫面中看不到給藥紀錄單的位置。學生於 05:05.0–05:07.0 拿起空 vial 檢視，05:07.5–05:09.5 將空瓶放入車上左側透明收集盒中，但因藥單不在畫面內，無法判定是否注視藥單。\", \"evidence\": [\"clip@303.5-312.0\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}, {\"criterion_id\": \"29b\", \"verdict\": \"無法判定\", \"explanation\": \"05:03.5–05:12.0 畫面中看不到給藥紀錄單，且學生雙手僅在 05:05.0–05:09.5 拿取並丟棄空瓶，未有指向動作，因藥單不在畫面內故無法判定。\", \"evidence\": [\"clip@303.5-312.0\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}, {\"criterion_id\": \"29c\", \"verdict\": \"正確\", \"explanation\": \"05:05.0 拿起空 vial 檢視後，於 05:07.5–05:09.0 將空瓶丟入治療車左側的收集盒中。\", \"evidence\": [\"clip@303.5-312.0\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "Ih3daqCVMMOy2roP6OeTyAE"
+  },
+  "errors": []
+ }
+]

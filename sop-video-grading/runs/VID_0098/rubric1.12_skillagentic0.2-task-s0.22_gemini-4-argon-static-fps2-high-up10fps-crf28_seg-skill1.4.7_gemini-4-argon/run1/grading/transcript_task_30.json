@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 65.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 65637,
+  "output_tokens": 223,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"30a\", \"verdict\": \"正確\", \"explanation\": \"05:04.5–05:13.0 將抽好藥液並回套後的空針放入原空針包裝袋內並置於治療車上（後續於 05:28.5–06:33.0 取出進行點滴加藥等後續操作）。\", \"evidence\": [\"clip@304.5-313\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"30b\", \"verdict\": \"正確\", \"explanation\": \"05:05.0–05:08.5 右手持針筒外管，將空針由針心端朝下放入左手的空針包裝袋內。\", \"evidence\": [\"clip@305-308.5\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "rxrdataZCNOnvr0Pu8rakAY"
+  },
+  "errors": []
+ }
+]

@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 43.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 22685,
+  "output_tokens": 271,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4a\", \"verdict\": \"無法判定\", \"explanation\": \"00:22.0–00:40.0 給藥紀錄單不在畫面內（牆上及點滴架旁均未見白色單張；00:34.0–00:34.5 學生手指指向治療車桌面，但因檯面反光看不清是否有給藥紀錄單），無法確認視線對象。\", \"evidence\": [\"clip@22.0-40.0\"], \"confidence\": 0.8, \"reason\": \"藥單看不見\"}, {\"criterion_id\": \"4b\", \"verdict\": \"無法判定\", \"explanation\": \"00:22.0–00:40.0 給藥紀錄單不在畫面內（00:34.0–00:34.5 右手食指指向治療車桌面，但因反光看不清是否有給藥紀錄單），無法確認是否指出給藥紀錄單。\", \"evidence\": [\"clip@22.0-40.0\"], \"confidence\": 0.8, \"reason\": \"藥單看不見\"}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "kBjdapv4N5K1vr0Pyo6kwQ0"
+  },
+  "errors": []
+ }
+]

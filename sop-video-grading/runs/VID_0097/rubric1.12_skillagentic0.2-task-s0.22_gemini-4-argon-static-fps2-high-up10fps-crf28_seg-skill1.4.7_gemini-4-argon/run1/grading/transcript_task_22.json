@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 36.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 52522,
+  "output_tokens": 425,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"22b\", \"verdict\": \"正確\", \"explanation\": \"區間內共有多次將針頭刺入 vial 打空氣／抽藥的動作（03:01.0–03:03.0 手持 vial 插針、03:37.5–03:38.5、03:55.0–03:56.0、04:02.5–04:03.5 於車上插針），每次插針瞬間右手皆以拇指與食指、中指握住針筒外管呈持毛筆方式，針筒垂直向下刺入，手指未碰觸針頭、針座及活塞柄內側，刺入後才用手指推針心打入空氣。\", \"evidence\": [\"clip@181-185\", \"clip@217-220\", \"clip@235-238\", \"clip@242-245\"], \"confidence\": 0.85, \"reason\": null}, {\"criterion_id\": \"22c\", \"verdict\": \"正確\", \"explanation\": \"03:01.5–03:03.0（手持 vial）以及 03:37.5–03:38.5、03:55.0–03:56.0、04:02.5–04:03.5（車上 vial）各次插針時，針頭皆刺入 vial 瓶口橡皮塞中央。\", \"evidence\": [\"clip@181-185\", \"clip@217-220\", \"clip@235-238\", \"clip@242-245\"], \"confidence\": 0.85, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "VRrdatjYN9_01e8PxeyqiAo"
+  },
+  "errors": []
+ }
+]

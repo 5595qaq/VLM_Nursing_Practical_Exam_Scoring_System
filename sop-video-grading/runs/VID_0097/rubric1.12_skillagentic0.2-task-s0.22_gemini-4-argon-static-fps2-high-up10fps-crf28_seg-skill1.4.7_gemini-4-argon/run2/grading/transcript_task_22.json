@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 25.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 52522,
+  "output_tokens": 353,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"22b\", \"verdict\": \"正確\", \"explanation\": \"區間內共有三次將空針插入 vial 的動作（03:01.0–03:03.0 左手持 vial、03:55.0–03:56.0 與 04:02.5–04:03.5 vial 置於車上），插針瞬間皆以右手拇指與食指、中指握住針筒外管呈持毛筆方式垂直向下刺入，手指未碰觸針頭、針座及活塞柄內側，插入後才以拇指或食指推針心打入空氣。\", \"evidence\": [\"clip@180.5-184.5\", \"clip@234.5-237.5\", \"clip@242.0-245.0\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"22c\", \"verdict\": \"正確\", \"explanation\": \"三次插針（03:01.5、03:55.5、04:03.0）針頭皆垂直刺入 vial 瓶口橡皮塞中心位置。\", \"evidence\": [\"clip@180.5-184.5\", \"clip@234.5-237.5\", \"clip@242.0-245.0\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "7xrdau2kLvfU1e8P5cCsiAE"
+  },
+  "errors": []
+ }
+]

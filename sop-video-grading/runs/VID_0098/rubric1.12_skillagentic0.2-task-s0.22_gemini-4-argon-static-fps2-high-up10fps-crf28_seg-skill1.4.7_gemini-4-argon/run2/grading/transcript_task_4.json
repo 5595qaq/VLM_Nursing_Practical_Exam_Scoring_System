@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 23.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 29434,
+  "output_tokens": 331,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4a\", \"verdict\": \"錯誤\", \"explanation\": \"給藥紀錄單位於治療車右前方的桌面上（00:17.4–00:47.0 清楚可見）。學生於 00:20.0–00:32.5 拿起 vial 低頭檢視瓶身標籤、00:32.5–00:34.0 將 vial 放回桌面時視線朝向桌面約 1.5 秒、00:35.0–00:40.5 拿空針包裝檢視、00:41.0–00:44.5 再次拿起 vial 低頭檢視，全程注視藥單的時間累計遠不足 10 秒。\", \"evidence\": [\"clip@17.4-47.0\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"4b\", \"verdict\": \"錯誤\", \"explanation\": \"00:17.4–00:47.0 期間，學生於 00:31.5–00:32.0 僅用左手手指指著手中的 vial 瓶身，並未用手指指出治療車桌面上的給藥紀錄單。\", \"evidence\": [\"clip@17.4-47.0\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "FRvdasX-FMqcosUPotvrgA4"
+  },
+  "errors": []
+ }
+]

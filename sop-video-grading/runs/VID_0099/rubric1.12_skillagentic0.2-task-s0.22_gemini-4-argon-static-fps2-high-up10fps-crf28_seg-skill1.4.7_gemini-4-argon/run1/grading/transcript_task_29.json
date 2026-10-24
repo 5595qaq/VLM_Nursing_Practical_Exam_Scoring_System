@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 585.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 17804,
+  "output_tokens": 361,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"29a\", \"verdict\": \"無法判定\", \"explanation\": \"04:36.5–04:39.0 學生拿起空瓶低頭看空瓶，04:39.5–04:41.5 將空瓶放入畫面左側透明盒中，全程未轉頭看藥單；且畫面中看不見給藥紀錄單的位置，無法確認視線對象。\", \"evidence\": [\"clip@275.0-284.5\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}, {\"criterion_id\": \"29b\", \"verdict\": \"無法判定\", \"explanation\": \"04:35.0–04:44.5 畫面中看不見給藥紀錄單的位置，且學生雙手僅操作空瓶與空針，沒有指出藥單的動作。\", \"evidence\": [\"clip@275.0-284.5\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}, {\"criterion_id\": \"29c\", \"verdict\": \"錯誤\", \"explanation\": \"04:36.5 學生拿起空 vial 檢視後，於 04:39.5–04:41.5 將空瓶放回治療車左側的透明盒中，並未丟入紅色尖銳物收集筒或垃圾桶。\", \"evidence\": [\"clip@276.5-282.0\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 5,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "xRzdavuFL9_01e8PxeyqiAo"
+  },
+  "errors": []
+ }
+]

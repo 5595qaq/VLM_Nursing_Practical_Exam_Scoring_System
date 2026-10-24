@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 38.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 24161,
+  "output_tokens": 241,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4a\", \"verdict\": \"錯誤\", \"explanation\": \"給藥紀錄單在學生右後方牆上、點滴架旁。00:13.6–00:34.0 期間學生全程低頭洗手及查看手中的 vial 與稀釋液瓶，完全沒有轉頭注視右後方的給藥紀錄單，未達累計 10 秒。\", \"evidence\": [\"clip@13.6-34.0\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"4b\", \"verdict\": \"錯誤\", \"explanation\": \"給藥紀錄單在學生右後方牆上、點滴架旁。00:13.6–00:34.0 期間學生雙手僅進行搓手及拿取、檢視藥瓶與包裝，未用手指指出給藥紀錄單。\", \"evidence\": [\"clip@13.6-34.0\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "lRjdatlBtPrV7w--9KHQCg"
+  },
+  "errors": []
+ }
+]

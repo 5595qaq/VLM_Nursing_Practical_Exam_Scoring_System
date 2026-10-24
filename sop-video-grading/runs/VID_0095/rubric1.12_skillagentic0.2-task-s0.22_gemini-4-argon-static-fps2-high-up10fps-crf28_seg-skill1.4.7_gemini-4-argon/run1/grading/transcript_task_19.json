@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 32.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 41268,
+  "output_tokens": 222,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"19b\", \"verdict\": \"正確\", \"explanation\": \"區間內有兩次將空針回套於針架上針頭套的動作，皆為單手回套：第一次在 03:13.0–03:18.5，左手持空針將針頭垂直插回針架上的針頭套，右手在空針旁懸空未觸碰針頭套；第二次在將稀釋液打入 vial 並拔出針頭後（03:53.0–03:56.5），左手持空針將針頭插回針架上的針頭套，右手扶在桌上 vial 旁，完全未扶針頭套。\", \"evidence\": [\"clip@193.0-198.5\", \"clip@233.0-236.5\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "-RfdatHHAffU1e8P5cCsiAE"
+  },
+  "errors": []
+ }
+]

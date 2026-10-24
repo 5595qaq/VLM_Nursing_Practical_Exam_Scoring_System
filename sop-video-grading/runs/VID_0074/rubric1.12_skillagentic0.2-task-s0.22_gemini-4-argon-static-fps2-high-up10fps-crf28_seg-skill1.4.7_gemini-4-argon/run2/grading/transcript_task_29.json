@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 19.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 18133,
+  "output_tokens": 382,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"29a\", \"verdict\": \"錯誤\", \"explanation\": \"給藥紀錄單在學生左後方點滴架旁清楚可見，但 05:57.2–06:07.2 間學生於 05:59.5–06:02.5 低頭看手中的空瓶再於 06:03.0–06:04.5 放入藥盒，有看空瓶再丟棄，但沒有轉頭看藥單。\", \"evidence\": [\"clip@357.2-367.2\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"29b\", \"verdict\": \"錯誤\", \"explanation\": \"05:57.2–06:07.2 間給藥紀錄單清楚可見，但學生雙手僅操作點滴管路、拿起空 vial 檢視與收拾桌面，並未用手指指出給藥紀錄單。\", \"evidence\": [\"clip@357.2-367.2\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"29c\", \"verdict\": \"錯誤\", \"explanation\": \"05:59.5 拿起空 vial 檢視後，於 06:03.0–06:04.5 將空 vial 放回治療車左側的透明塑膠藥盒內，並未丟入紅色尖銳物收集筒或垃圾桶。\", \"evidence\": [\"clip@359.5-365.0\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "9RXdauLnLI2y2roP1P_zUA"
+  },
+  "errors": []
+ }
+]
