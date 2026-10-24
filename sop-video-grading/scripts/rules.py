@@ -116,16 +116,6 @@ def _grade(c: dict, sid: int, entries: dict[int, list[dict]], duration: float, m
                       window=window)
 
 
-def window_for(step_ids: list[int], seg: dict, margin: float = WINDOW_MARGIN) -> list[float] | None:
-    """The window of `step_ids` in a segmentation result, as for a visual criterion (None if not located).
-    The grading service uses it for each part of a criterion with split_window_steps (margin 0: to
-    tell whether the parts' steps touch)."""
-    entries: dict[int, list[dict]] = {}
-    for entry in seg["steps"]:
-        entries.setdefault(entry["step_id"], []).append(entry)
-    return _window(step_ids, entries, seg["meta"]["duration"], margin)
-
-
 def _window(step_ids: list[int], entries: dict[int, list[dict]], duration: float,
             margin: float) -> list[float] | None:
     """From the earliest start to the latest end of the detected spans and logical windows of `step_ids`,

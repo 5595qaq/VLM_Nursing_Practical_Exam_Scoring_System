@@ -159,14 +159,3 @@ def test_step30_table_is_wrong(v30a, v30b, expected):
 @pytest.mark.parametrize("seconds, text", [(0, "00:00"), (59.9, "00:59"), (125.4, "02:05")])
 def test_fmt_time(seconds, text):
     assert fmt_time(seconds) == text
-
-
-def test_split_window_steps_need_parts_within_window_steps():
-    assert criteria_by_id(load_rubric())["10b"]["split_window_steps"] == [[9], [10]]
-    for bad in ([[9]], [[9], [11]], [[9], []], "9,10"):
-        assert any("split_window_steps" in e
-                   for e in broken(lambda r, bad=bad: r["steps"][9]["criteria"][1].update(split_window_steps=bad)))
-    assert any("split_window_steps" in e  # 10a is a program criterion
-               for e in broken(lambda r: r["steps"][9]["criteria"][0].update(split_window_steps=[[9], [10]])))
-    assert any("split_labels" in e
-               for e in broken(lambda r: r["steps"][9]["criteria"][1].update(split_labels=["取出前"])))

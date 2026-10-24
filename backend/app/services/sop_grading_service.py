@@ -36,7 +36,6 @@ GRADING_CONCURRENCY = 3
 MAX_TASK_TURNS = 8
 MAX_CONSECUTIVE_REJECTS = 4
 MAX_TASK_BYTES = 18_000_000  # inline images + clips per request
-PARTS_TOUCH_GAP = 2.0  # steps of a split criterion this close are one timeline that every part looks at
 CLIP_FPS = 2.0  # 0.5 s per frame: enough for the seven washing motions
 MOTION_TOP = 8  # motion peaks listed per task
 MOTION_MAX_SPAN = 180.0
@@ -83,59 +82,30 @@ class Material:
     fps: float = CLIP_FPS
 
 
-def build_tasks(result: dict, rubric: dict, steps: set[int] | None = None,
-                segmentation: dict | None = None) -> list[dict]:
-    """Group the 待判定 criteria by window_steps; each group is one model conversation.
-
-    With `segmentation`, a criterion with split_window_steps (10b: before / after taking the syringe
-    out, steps 9 and 10) gets one task per part instead, each asking that part's split_labels question;
-    run_grading merges the parts (_merge_parts). When the parts' steps touch (overlap or a gap of at
-    most PARTS_TOUCH_GAP s) every part looks at the whole window, since the fixing often happens while
-    the wrapper is still being opened; otherwise each part looks at its own steps' window
-    (rules.window_for). Parts whose steps segmentation did not locate are dropped; with no part left
-    the criterion is grouped as usual."""
+def build_tasks(result: dict, rubric: dict, steps: set[int] | None = None) -> list[dict]:
+    """Group the 待判定 criteria by window_steps; each group is one model conversation."""
     specs = load_grading_module("rubric").criteria_by_id(rubric)
-    window_for = load_grading_module("rules").window_for
     groups: dict[tuple, dict] = {}
     for step in result["steps"]:
         for c in step["criteria"]:
             spec = specs[c["criterion_id"]]
             if c["verdict"] != "待判定" or (steps and spec["step_id"] not in steps):
                 continue
-            entry = {"criterion_id": c["criterion_id"], "step_id": spec["step_id"],
-                     "text": spec["text"], "window": c["window"],
-                     "audio": spec.get("audio", False),
-                     "min_seconds": spec.get("min_seconds"),
-                     "dense": spec.get("sample_interval") is not None,
-                     "clip": spec.get("clip", False)}
-            labels = spec.get("split_labels", [])
-            parts = [(part, label, window_for(part, segmentation), window_for(part, segmentation, 0.0))
-                     for part, label in zip(spec.get("split_window_steps", []), labels) if segmentation]
-            parts = [p for p in parts if p[2]]
-            if parts:
-                touch = _parts_touch([p[3] for p in parts])
-                for part, label, w, _ in parts:
-                    groups[(c["criterion_id"], *part)] = {
-                        "key": f"{c['criterion_id']}@" + "-".join(map(str, part)), "window_steps": list(part),
-                        "criteria": [{**entry, "window": c["window"] if touch else w, "part": list(part),
-                                      "label": label, "parts": len(parts), "full_window": c["window"]}]}
-                continue
             key = tuple(spec["window_steps"])
             group = groups.setdefault(key, {"key": "-".join(map(str, key)), "window_steps": list(key),
                                             "criteria": []})
-            group["criteria"].append(entry)
+            group["criteria"].append({"criterion_id": c["criterion_id"], "step_id": spec["step_id"],
+                                      "text": spec["text"], "window": c["window"],
+                                      "audio": spec.get("audio", False),
+                                      "min_seconds": spec.get("min_seconds"),
+                                      "dense": spec.get("sample_interval") is not None,
+                                      "clip": spec.get("clip", False)})
     tasks = list(groups.values())
     for task in tasks:
         task["window"] = [min(c["window"][0] for c in task["criteria"]),
                           max(c["window"][1] for c in task["criteria"])]
         task["needs_clip"] = any(c["audio"] or c["dense"] or c["clip"] for c in task["criteria"])
     return tasks
-
-
-def _parts_touch(spans: list[list[float]]) -> bool:
-    """Whether the parts' unpadded windows overlap or are at most PARTS_TOUCH_GAP s apart."""
-    spans = sorted(spans)
-    return all(b[0] - a[1] <= PARTS_TOUCH_GAP for a, b in zip(spans, spans[1:]))
 
 
 def _spans(start: float, end: float) -> list[tuple[float, float]]:
@@ -238,17 +208,12 @@ class TaskState:
 
 
 def _segment_lines(task: dict, segmentation: dict) -> list[str]:
-    """Segmentation of the task's steps. A split criterion's task (10b) gets only the times: the
-    segmentation's own words (e.g. "撕開包裝" for a stretch where the student was already twisting the
-    needle) were echoed by the grading agent as its reason for 錯誤 (VID_0098)."""
-    times_only = any(c.get("part") for c in task["criteria"])
     lines = []
     for sid in sorted({*task["window_steps"], *(c["step_id"] for c in task["criteria"])}):
         for e in (e for e in segmentation["steps"] if e["step_id"] == sid):
             span = (f"{_fmt_t(e['start'])}–{_fmt_t(e['end'])}" if e["start"] is not None
                     else f"無時間（logical_window={e.get('logical_window')}）")
-            lines.append(f"  步驟 {sid}：{span}" if times_only
-                         else f"  步驟 {sid}：{e['status']}，{span}，依據：{e['evidence']}")
+            lines.append(f"  步驟 {sid}：{e['status']}，{span}，依據：{e['evidence']}")
     return lines
 
 
@@ -288,9 +253,6 @@ def build_task_content(task: dict, video_id: str, duration: float, state: TaskSt
           + (f"；要計時：final 填 span=[開始, 結束]（影片秒數），滿 {c['min_seconds']:g} 秒才是正確"
              if c.get("min_seconds") else "")
           for c in task["criteria"]),
-        *(f"  {c['criterion_id']} 分成 {c['parts']} 個任務，這個任務只判「{c['label']}」：看到就判正確；確定沒有就判"
-          "錯誤（意思是「這部分沒有」）；其他部分由另一個任務判，程式會合併（任一個正確就算正確）。"
-          for c in task["criteria"] if c.get("part")),
         "切分結果（相關步驟）：",
         *_segment_lines(task, segmentation),
         "動作峰值（程式依 hands_box 內的畫面變化算出，只表示這些時間手有明顯動作，不代表是哪個動作；"
@@ -467,7 +429,7 @@ async def run_grading(video_path: Path, segmentation: dict, workdir: Path, model
                 step["criteria"] = [old[c["criterion_id"]] if c["verdict"] == "待判定"
                                     and old.get(c["criterion_id"], c)["verdict"] != "待判定" else c
                                     for c in step["criteria"]]
-    tasks = build_tasks(result, rubric, steps, segmentation)
+    tasks = build_tasks(result, rubric, steps)
 
     workdir.mkdir(parents=True, exist_ok=True)
     runner = GradingRunner(workdir, video_path, probe_dir)
@@ -508,7 +470,7 @@ async def run_grading(video_path: Path, segmentation: dict, workdir: Path, model
         await asyncio.gather(*pending, return_exceptions=True)
     outcomes = [item.result() if not item.cancelled() else (task, [], None, asyncio.CancelledError())
                 for item, task in zip(pending, tasks)]
-    graded = _merge_outcomes(outcomes)
+    graded = {c["criterion_id"]: c for _, criteria, _, _ in outcomes for c in criteria}
     specs = {s["step_id"]: s for s in rubric["steps"]}
     for i, step in enumerate(result["steps"]):
         # A failed task keeps the previous grade (if any) instead of falling back to 待判定, so a failed
@@ -529,56 +491,6 @@ async def run_grading(video_path: Path, segmentation: dict, workdir: Path, model
     return {"result": result, "tasks": [t["key"] for t in tasks], "failed_tasks": failed,
             "validation_errors": errors, "usage": usage,
             "task_exceptions": [exc for _, _, _, exc in outcomes if exc]}
-
-
-def _merge_outcomes(outcomes: list[tuple]) -> dict[str, dict]:
-    """Graded criteria by id; the parts of a split criterion (10b) are merged with _merge_parts.
-    A split criterion with a failed part is kept only when another part already found it 正確."""
-    graded: dict[str, dict] = {}
-    parts: dict[str, list[tuple[list[int], str, dict]]] = {}
-    expected: dict[str, tuple[int, list[float]]] = {}
-    for task, criteria, _, _ in outcomes:
-        specs = {s["criterion_id"]: s for s in task["criteria"]}
-        for spec in specs.values():
-            if spec.get("part"):
-                expected[spec["criterion_id"]] = (spec["parts"], spec["full_window"])
-        for c in criteria:
-            spec = specs.get(c["criterion_id"], {})
-            if spec.get("part"):
-                parts.setdefault(c["criterion_id"], []).append((spec["part"], spec["label"], c))
-            else:
-                graded[c["criterion_id"]] = c
-    for cid, items in parts.items():
-        count, full_window = expected[cid]
-        merged = _merge_parts([(label, c) for _, label, c in sorted(items, key=lambda item: item[0])],
-                              full_window)
-        if len(items) == count or merged["verdict"] == "正確":
-            graded[cid] = merged
-    return graded
-
-
-def _merge_parts(items: list[tuple[str, dict]], full_window: list[float]) -> dict:
-    """One criterion from its parts: 正確 if any part is 正確 (review flags dropped, since one part
-    clearly shows it); 錯誤 only if every part is 錯誤; otherwise the first part that is neither (e.g.
-    無法判定), keeping every part's review flag. The explanation lists every part."""
-    criteria = [c for _, c in items]
-    correct = [c for c in criteria if c["verdict"] == "正確"]
-    if correct:
-        base = max(correct, key=lambda c: c["confidence"])
-    elif all(c["verdict"] == "錯誤" for c in criteria):
-        base = min(criteria, key=lambda c: c["confidence"])
-    else:
-        base = next(c for c in criteria if c["verdict"] != "錯誤")
-    merged = {k: v for k, v in base.items() if k not in ("needs_review", "review_reason")}
-    merged["window"] = full_window
-    merged["explanation"] = "；".join(f"（{label}）{c['verdict']}：{c['explanation'].rstrip('。')}"
-                                     for label, c in items) + "。"
-    merged["evidence"] = list(dict.fromkeys(e for c in criteria for e in c.get("evidence", [])))
-    flagged = [c for c in criteria if c.get("needs_review")]
-    if flagged and not correct:
-        merged["needs_review"] = True
-        merged["review_reason"] = "；".join(c["review_reason"].rstrip("。") for c in flagged)
-    return merged
 
 
 class GradingIncomplete(SkillRunError):

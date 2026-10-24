@@ -3,7 +3,7 @@
 import json
 
 from grading_helpers import criterion, fill_visual, flag_review, make_segmentation, result_step, seg_step
-from rules import grade_from_segmentation, main, window_for
+from rules import grade_from_segmentation, main
 from validate_grading import validate_grading
 from validate_result import validate_result as validate_segmentation
 
@@ -156,9 +156,3 @@ def test_cli_writes_output(tmp_path):
     seg_path.write_text(json.dumps(make_segmentation(), ensure_ascii=False), encoding="utf-8")
     assert main(["rules.py", str(seg_path), "-o", str(out)]) == 0
     assert validate_grading(json.loads(out.read_text(encoding="utf-8"))) == []
-
-
-def test_window_for_one_part_of_a_split_criterion(segmentation):
-    assert window_for([9], segmentation) == [88.0, 100.0]  # step 9 at 90-98, padded by 2 s
-    assert window_for([9, 10], segmentation) == criterion(grade_from_segmentation(segmentation), "10b")["window"]
-    assert window_for([31], segmentation) is None

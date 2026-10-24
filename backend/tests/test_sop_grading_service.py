@@ -63,16 +63,6 @@ def final_for(content, verdict="正確"):
     return {"action": "final", "criteria": criteria}
 
 
-PART_QUESTION = {"9": "只判「空針從包裝取出之前", "10": "只判「空針從包裝取出之後"}  # rubric 10b split_labels
-
-
-def is_task(key, ids, text):
-    """`key` is the first criterion id, or "10b@9" for the part of a split criterion on steps 9 (before
-    taking the syringe out)."""
-    cid, _, part = key.partition("@")
-    return bool(ids) and ids[0] == cid and (not part or PART_QUESTION[part] in text)
-
-
 class FakeModel:
     """Answers final for every task; `script` maps a task key to replies sent before that final."""
 
@@ -83,7 +73,7 @@ class FakeModel:
     async def __call__(self, system, content):
         self.requests.append(content)
         ids = CRITERION.findall(content[0]["text"])
-        key = next((k for k in self.script if is_task(k, ids, content[0]["text"])), None)
+        key = next((k for k in self.script if ids and ids[0] == k), None)
         action = self.script[key].pop(0) if key and self.script[key] else final_for(content)
         return ModelReply(json.dumps(action, ensure_ascii=False), "end_turn", 100, 10)
 
@@ -92,11 +82,8 @@ def peaks_line(content):
     return next(line for line in content[0]["text"].splitlines() if line.startswith("動作峰值"))
 
 
-def requests_for(model, key):
-    """Requests of the task `key` (a criterion id, or "10b@10" for one part of a split criterion)."""
-    cid = key.partition("@")[0]
-    return [c for c in model.requests
-            if cid in CRITERION.findall(c[0]["text"]) and is_task(key, [cid], c[0]["text"])]
+def requests_for(model, cid):
+    return [c for c in model.requests if cid in CRITERION.findall(c[0]["text"])]
 
 
 async def test_grading_grades_every_visual_criterion(video, tmp_path):
@@ -187,16 +174,15 @@ async def test_twist_wrong_is_accepted_only_after_a_fast_clip_of_the_hands(video
     wrong = {"action": "final", "criteria": [
         {"criterion_id": "10b", "verdict": "錯誤", "confidence": 0.8, "reason": None, "evidence": ["clip@15-21"],
          "explanation": "00:16–00:20 雙手只在撕包裝，沒有旋緊。"}]}
-    hands = {"action": "clip", "start": 16, "end": 20, "fps": 10, "region": [0.3, 0.4, 0.7, 0.8], "reason": "只看雙手"}
-    model = FakeModel({"10b@10": [
+    model = FakeModel({"10b": [
         wrong,
         {"action": "clip", "start": 15, "end": 21, "fps": 5, "reason": "看撕包裝到取出"},
         wrong,
-        hands,
+        {"action": "clip", "start": 16, "end": 20, "fps": 10, "region": [0.3, 0.4, 0.7, 0.8], "reason": "只看雙手"},
         wrong,
-    ], "10b@9": [hands, wrong]})
+    ]})
     outcome = await grading.run_grading(video, segmentation(), tmp_path, model, steps={10})
-    requests = requests_for(model, "10b@10")
+    requests = requests_for(model, "10b")
     texts = [r[0]["text"] for r in requests]
     # rejected before any clip and after the context-box clip
     assert "region around both hands" in texts[1] and "region around both hands" in texts[3]
@@ -546,61 +532,3 @@ async def test_invalid_graded_criteria_are_not_kept_for_the_next_attempt(video, 
         await grading.run_sop_grading("gs://test-bucket/videos/x_src.mp4", "vid", 0, segmentation(),
                                       model_call=model)
     assert failed.value.partial is None
-
-
-def split_tasks(seg, steps=frozenset({9, 10})):
-    rubric = grading.load_grading_module("rubric").load_rubric()
-    result = grading.load_grading_module("rules").grade_from_segmentation(seg, rubric)
-    return {t["key"]: t for t in grading.build_tasks(result, rubric, set(steps), seg)}
-
-
-def test_10b_is_split_into_a_before_and_an_after_task():
-    seg = segmentation()  # step 9 at 16.2-17.7, step 10 at 18.0-19.5: they touch, one timeline
-    tasks = split_tasks(seg)
-    assert sorted(tasks) == ["10b@10", "10b@9"]  # 9a, 10a are program criteria; no shared 9-10 task
-    nine, ten = tasks["10b@9"]["criteria"][0], tasks["10b@10"]["criteria"][0]
-    assert nine["window"] == ten["window"] == nine["full_window"] == [14.2, 21.5] and nine["parts"] == 2
-    text = grading.build_task_content(tasks["10b@9"], "VID_TEST", DURATION, grading.TaskState(), [], "", seg)[0]["text"]
-    assert PART_QUESTION["9"] in text and "任一個正確就算正確" in text
-    assert "  步驟 9：00:16.2–00:17.7" in text.splitlines() and "依據" not in text  # times only, no seg words
-    seg["steps"][9].update(start=30.0, end=31.5)  # step 10 well after step 9: each part gets its own window
-    nine, ten = (t["criteria"][0] for t in split_tasks(seg).values())
-    assert (nine["window"], ten["window"]) == ([14.2, 19.7], [28.0, 33.5])
-
-
-def test_10b_falls_back_when_a_part_is_not_located():
-    rubric = grading.load_grading_module("rubric").load_rubric()
-    seg = segmentation()
-    result = grading.load_grading_module("rules").grade_from_segmentation(seg, rubric)
-    assert [t["key"] for t in grading.build_tasks(result, rubric, {9, 10})] == ["9-10"]  # no segmentation given
-    seg["steps"][8].update(status="not_visually_determinable", start=None, end=None)  # step 9 not located
-    assert list(split_tasks(seg, {10})) == ["10b@10"]
-
-
-def part(verdict, explanation, confidence=0.8, **extra):
-    return {"criterion_id": "10b", "verdict": verdict, "source": "vlm", "explanation": explanation,
-            "evidence": [f"clip@{explanation[:5]}"], "confidence": confidence,
-            "reason": "畫面被遮擋" if verdict == "無法判定" else None, "window": [0.0, 1.0], **extra}
-
-
-@pytest.mark.parametrize("nine, ten, verdict, review", [
-    ("正確", "錯誤", "正確", False),       # one part shows the fixing
-    ("錯誤", "錯誤", "錯誤", False),       # neither part does
-    ("錯誤", "無法判定", "無法判定", True),  # the hidden part might have it
-])
-def test_merge_parts(nine, ten, verdict, review):
-    flagged = {"needs_review": True, "review_reason": "01:10 被包裝擋住"} if ten == "無法判定" else {}
-    merged = grading._merge_parts([("取出前", part(nine, "01:05 包裝內。")), ("取出後", part(ten, "01:10 取出後。", **flagged))],
-                                  [3.0, 9.0])
-    assert merged["verdict"] == verdict and merged["window"] == [3.0, 9.0]
-    assert merged["explanation"] == f"（取出前）{nine}：01:05 包裝內；（取出後）{ten}：01:10 取出後。"
-    assert bool(merged.get("needs_review")) is review and len(merged["evidence"]) == 2
-    assert merged["reason"] == ("畫面被遮擋" if verdict == "無法判定" else None)
-
-
-def test_merge_keeps_a_split_criterion_with_a_failed_part_only_when_correct():
-    def outcome(steps, verdict):
-        spec = {"criterion_id": "10b", "part": steps, "label": f"步驟 {steps}", "parts": 2, "full_window": [3.0, 9.0]}
-        return {"criteria": [spec]}, [part(verdict, "01:05 看到。")] if verdict else [], None, None
-    assert grading._merge_outcomes([outcome([9], "正確"), outcome([10], None)])["10b"]["verdict"] == "正確"
-    assert "10b" not in grading._merge_outcomes([outcome([9], "錯誤"), outcome([10], None)])
