@@ -58,6 +58,12 @@ def check_rubric(rubric: dict) -> list[str]:
                 errors.append(f"criterion {cid}: clip needs a visual criterion and true/false")
             if cat == "visual" and not c.get("window_steps"):
                 errors.append(f"criterion {cid}: visual criterion needs window_steps")
+            if "split_window_steps" in c:
+                parts = c["split_window_steps"]
+                if (cat != "visual" or not isinstance(parts, list) or len(parts) < 2
+                        or any(not part or not set(part) <= set(c.get("window_steps", [])) for part in parts)):
+                    errors.append(f"criterion {cid}: split_window_steps needs a visual criterion and 2+ non-empty "
+                                  "parts, each within window_steps")
             if cat == "not_visible" and (c.get("key") or not c.get("reason")):
                 errors.append(f"criterion {cid}: not_visible criterion needs a reason and cannot be key")
     return errors
