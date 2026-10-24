@@ -1,7 +1,8 @@
 """Compare grading systems ("arms") on the same videos against the label sheet (no model call).
 
 usage: python compare_arms.py --labels LABELS.csv --arm NAME=RECORD_FOLDER [--arm ...]
-           [--group NAME=VID_0091,VID_0095 ...] [--corrections FIX.json] [--runs-dir DIR] [--json out.json]
+           [--group NAME=VID_0091,VID_0095 ...] [--corrections FIX.json] [--exclude-steps 2,3,4,29]
+           [--runs-dir DIR] [--json out.json]
 
 An arm is a record folder name under runs/VID_*/ (e.g. the tool-using agent's
 rubric1.12_skill0.22_gemini-4-argon_seg-skill1.4.7_gemini-4-argon and sop_agentic_cli's
@@ -9,6 +10,8 @@ rubric1.12_skillagentic0.1-e2e-s0.22_gemini-4-argon-agentic_seg-agentic-e2e). Ea
 runN/grading.json when the run kept one (sop_agentic_cli does), else the record's grading.json as run 1.
 Only videos every arm graded are compared. Labels are read like eval_grading.py; --corrections is a JSON
 {"VID_0095": {"10": "部分正確"}} of label verdicts a person corrected (kept in the gitignored review/).
+--exclude-steps leaves those steps out of every number (e.g. 2,3,4,29: the old videos did not film the
+medication record sheet, so the label sheet and the models disagree on what is visible).
 
 Prints, on run 1 of every arm:
   - per arm and group: agreement, error recall and false alarms (eval_grading.summarize), all / V / P steps;
@@ -83,11 +86,11 @@ def mcnemar(b: int, c: int) -> float:
     return min(1.0, 2 * tail)
 
 
-def flips(runs: list[dict]) -> tuple[int, int]:
-    """(steps whose verdict differs between any two runs, steps compared)."""
+def flips(runs: list[dict], skip: set[int] = frozenset()) -> tuple[int, int]:
+    """(steps whose verdict differs between any two runs, steps compared), without the `skip` steps."""
     if len(runs) < 2:
         return 0, 0
-    verdicts = [{s["step_id"]: s["verdict"] for s in g["steps"]} for g in runs]
+    verdicts = [{s["step_id"]: s["verdict"] for s in g["steps"] if s["step_id"] not in skip} for g in runs]
     common = set.intersection(*(set(v) for v in verdicts))
     return sum(len({v[sid] for v in verdicts}) > 1 for sid in common), len(common)
 
@@ -98,12 +101,13 @@ def _line(s: dict) -> str:
 
 
 def report(labels: dict, arms: dict[str, dict[str, list[dict]]], groups: dict[str, list[str]],
-           costs: dict[str, dict[str, dict]]) -> tuple[str, dict]:
+           costs: dict[str, dict[str, dict]], skip: set[int] = frozenset()) -> tuple[str, dict]:
     names = list(arms)
     videos = sorted(set.intersection(*(set(a) for a in arms.values())) & set(labels))
     rows = {n: {v: {r["step_id"]: r for r in compare(arms[n][v][0], labels[v])} for v in videos} for n in names}
     groups = {g: [v for v in vids if v in videos] for g, vids in groups.items()} or {"全部": videos}
-    out, data = [f"比對影片（{len(videos)} 支）：{', '.join(videos)}", ""], {"videos": videos, "arms": {}}
+    out, data = [f"比對影片（{len(videos)} 支）：{', '.join(videos)}"
+                 + (f"；排除步驟 {','.join(map(str, sorted(skip)))}" if skip else ""), ""], {"videos": videos, "arms": {}}
 
     out += ["## 一致率（run 1）", "", "| 組 | 影片組 | 全部步驟 | 看畫面（V） | 程式（P） |", "|---|---|---|---|---|"]
     for n in names:
@@ -126,7 +130,7 @@ def report(labels: dict, arms: dict[str, dict[str, list[dict]]], groups: dict[st
 
     out += ["", "## 穩定性與成本", "", "| 組 | run 間判定翻轉 | input／支 | output／支 | 秒／支 |", "|---|---|---|---|---|"]
     for n in names:
-        f = [flips(arms[n][v]) for v in videos]
+        f = [flips(arms[n][v], skip) for v in videos]
         changed, compared = sum(x for x, _ in f), sum(y for _, y in f)
         cs = [costs[n][v] for v in videos]
         avg = lambda k: sum(c[k] for c in cs) / len(cs) if cs else 0  # noqa: E731
@@ -169,11 +173,14 @@ def main(argv: list[str]) -> int:
     ap.add_argument("--group", action="append", default=[], help="NAME=VID_0001,VID_0002 (reported separately)")
     ap.add_argument("--corrections", type=Path, help="JSON of corrected label verdicts")
     ap.add_argument("--exclude", default=",".join(sorted(DEFAULT_EXCLUDE)))
+    ap.add_argument("--exclude-steps", default="", help="comma-separated steps left out of every number")
     ap.add_argument("--runs-dir", type=Path, default=RUNS_DIR)
     ap.add_argument("--json", type=Path)
     a = ap.parse_args(argv[1:])
     labels = load_labels(a.labels, {v for v in a.exclude.split(",") if v})
     apply_corrections(labels, a.corrections)
+    skip = {int(s) for s in a.exclude_steps.split(",") if s.strip()}
+    labels = {v: {sid: x for sid, x in steps.items() if sid not in skip} for v, steps in labels.items()}
     arms = {}
     costs = {}
     for spec in a.arm:
@@ -183,7 +190,7 @@ def main(argv: list[str]) -> int:
         if not arms[name]:
             ap.error(f"no records named {folder} in {a.runs_dir}")
     groups = {g.partition("=")[0]: g.partition("=")[2].split(",") for g in a.group}
-    text, data = report(labels, arms, groups, costs)
+    text, data = report(labels, arms, groups, costs, skip)
     sys.stdout.reconfigure(encoding="utf-8")
     print(text)
     if a.json:

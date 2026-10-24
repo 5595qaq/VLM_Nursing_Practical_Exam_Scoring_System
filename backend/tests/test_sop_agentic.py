@@ -214,3 +214,4 @@ def test_compare_arms_helpers():
     two = {"steps": [{"step_id": 1, "verdict": "正確"}, {"step_id": 2, "verdict": "無法判定"}]}
     assert compare_arms.flips([one]) == (0, 0)
     assert compare_arms.flips([one, two]) == (1, 2)
+    assert compare_arms.flips([one, two], skip={2}) == (0, 1)

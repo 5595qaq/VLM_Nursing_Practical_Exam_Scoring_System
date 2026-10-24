@@ -320,7 +320,7 @@ docker compose run --rm ... worker python -m app.sop_agentic_cli ... --mode e2e 
 python sop-video-grading/scripts/compare_arms.py --labels 標註表.csv \
   --arm 評分agent=rubric1.12_skill0.22_gemini-4-argon_seg-skill1.4.7_gemini-4-argon \
   --arm 影片=rubric1.12_skillagentic0.2-task-s0.22_gemini-4-argon-static-fps2-high-up10fps-crf28_seg-skill1.4.7_gemini-4-argon \
-  --group 驗證=VID_0091,VID_0095,VID_0096,VID_0097,VID_0100 [--corrections sop-video-grading/review/fix.json]
+  --group 驗證=VID_0091,VID_0095,VID_0096,VID_0097,VID_0100 [--corrections sop-video-grading/review/fix.json] \n  [--exclude-steps 2,3,4,29]   # 舊影片沒拍到給藥紀錄單的步驟不計
 ```
 
 `compare_arms.py` 的評分 agent 秒數在沒有 `wall_seconds` 時是對話紀錄每回合模型秒數的加總（評分任務 3 組並行，比實際經過的時間長）；它的 token 含切分（沿用的切分算來源紀錄的）。
