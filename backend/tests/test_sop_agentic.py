@@ -215,3 +215,9 @@ def test_compare_arms_helpers():
     assert compare_arms.flips([one]) == (0, 0)
     assert compare_arms.flips([one, two]) == (1, 2)
     assert compare_arms.flips([one, two], skip={2}) == (0, 1)
+    partial = {"steps": [{"step_id": 1, "verdict": "正確"}, {"step_id": 2, "verdict": "部分正確"}]}
+    assert compare_arms.flips([one, partial]) == (1, 2)
+    assert compare_arms.flips([one, partial], merged={2}) == (0, 2)  # 錯誤 = 部分正確 on step 2
+    rows = [{"step_id": 10, "human": "錯誤", "model": "部分正確", "match": False},
+            {"step_id": 13, "human": "錯誤", "model": "部分正確", "match": False}]
+    assert [r["match"] for r in compare_arms.merge_faults(rows, {10})] == [True, False]

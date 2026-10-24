@@ -2,7 +2,7 @@
 
 usage: python compare_arms.py --labels LABELS.csv --arm NAME=RECORD_FOLDER [--arm ...]
            [--group NAME=VID_0091,VID_0095 ...] [--corrections FIX.json] [--exclude-steps 2,3,4,29]
-           [--runs-dir DIR] [--json out.json]
+           [--merge-faults-steps 10] [--runs-dir DIR] [--json out.json]
 
 An arm is a record folder name under runs/VID_*/ (e.g. the tool-using agent's
 rubric1.12_skill0.22_gemini-4-argon_seg-skill1.4.7_gemini-4-argon and sop_agentic_cli's
@@ -12,6 +12,8 @@ Only videos every arm graded are compared. Labels are read like eval_grading.py;
 {"VID_0095": {"10": "部分正確"}} of label verdicts a person corrected (kept in the gitignored review/).
 --exclude-steps leaves those steps out of every number (e.g. 2,3,4,29: the old videos did not film the
 medication record sheet, so the label sheet and the models disagree on what is visible).
+--merge-faults-steps counts 錯誤 and 部分正確 as the same verdict on those steps, in agreement and in
+run-to-run flips (e.g. 10: its standard is provisional, so the two are not told apart yet).
 
 Prints, on run 1 of every arm:
   - per arm and group: agreement, error recall and false alarms (eval_grading.summarize), all / V / P steps;
@@ -30,7 +32,7 @@ import sys
 from collections import Counter
 from pathlib import Path
 
-from eval_grading import DEFAULT_EXCLUDE, compare, load_labels, summarize
+from eval_grading import DEFAULT_EXCLUDE, FAULTS, compare, load_labels, summarize
 
 RUNS_DIR = Path(__file__).resolve().parent.parent / "runs"
 
@@ -86,11 +88,21 @@ def mcnemar(b: int, c: int) -> float:
     return min(1.0, 2 * tail)
 
 
-def flips(runs: list[dict], skip: set[int] = frozenset()) -> tuple[int, int]:
+def same_verdict(step: int, a: str, b: str, merged: set[int] = frozenset()) -> bool:
+    return a == b or (step in merged and a in FAULTS and b in FAULTS)
+
+
+def merge_faults(rows: list[dict], merged: set[int]) -> list[dict]:
+    """eval_grading.compare rows with 錯誤 = 部分正確 on the `merged` steps."""
+    return [{**r, "match": same_verdict(r["step_id"], r["human"], r["model"], merged)} for r in rows]
+
+
+def flips(runs: list[dict], skip: set[int] = frozenset(), merged: set[int] = frozenset()) -> tuple[int, int]:
     """(steps whose verdict differs between any two runs, steps compared), without the `skip` steps."""
     if len(runs) < 2:
         return 0, 0
-    verdicts = [{s["step_id"]: s["verdict"] for s in g["steps"] if s["step_id"] not in skip} for g in runs]
+    verdicts = [{s["step_id"]: ("錯誤" if s["step_id"] in merged and s["verdict"] in FAULTS else s["verdict"])
+                 for s in g["steps"] if s["step_id"] not in skip} for g in runs]
     common = set.intersection(*(set(v) for v in verdicts))
     return sum(len({v[sid] for v in verdicts}) > 1 for sid in common), len(common)
 
@@ -101,13 +113,17 @@ def _line(s: dict) -> str:
 
 
 def report(labels: dict, arms: dict[str, dict[str, list[dict]]], groups: dict[str, list[str]],
-           costs: dict[str, dict[str, dict]], skip: set[int] = frozenset()) -> tuple[str, dict]:
+           costs: dict[str, dict[str, dict]], skip: set[int] = frozenset(),
+           merged: set[int] = frozenset()) -> tuple[str, dict]:
     names = list(arms)
     videos = sorted(set.intersection(*(set(a) for a in arms.values())) & set(labels))
-    rows = {n: {v: {r["step_id"]: r for r in compare(arms[n][v][0], labels[v])} for v in videos} for n in names}
+    rows = {n: {v: {r["step_id"]: r for r in merge_faults(compare(arms[n][v][0], labels[v]), merged)}
+                for v in videos} for n in names}
     groups = {g: [v for v in vids if v in videos] for g, vids in groups.items()} or {"全部": videos}
-    out, data = [f"比對影片（{len(videos)} 支）：{', '.join(videos)}"
-                 + (f"；排除步驟 {','.join(map(str, sorted(skip)))}" if skip else ""), ""], {"videos": videos, "arms": {}}
+    title = (f"比對影片（{len(videos)} 支）：{', '.join(videos)}"
+             + (f"；排除步驟 {','.join(map(str, sorted(skip)))}" if skip else "")
+             + (f"；步驟 {','.join(map(str, sorted(merged)))} 的錯誤與部分正確視為相同" if merged else ""))
+    out, data = [title, ""], {"videos": videos, "arms": {}}
 
     out += ["## 一致率（run 1）", "", "| 組 | 影片組 | 全部步驟 | 看畫面（V） | 程式（P） |", "|---|---|---|---|---|"]
     for n in names:
@@ -130,7 +146,7 @@ def report(labels: dict, arms: dict[str, dict[str, list[dict]]], groups: dict[st
 
     out += ["", "## 穩定性與成本", "", "| 組 | run 間判定翻轉 | input／支 | output／支 | 秒／支 |", "|---|---|---|---|---|"]
     for n in names:
-        f = [flips(arms[n][v], skip) for v in videos]
+        f = [flips(arms[n][v], skip, merged) for v in videos]
         changed, compared = sum(x for x, _ in f), sum(y for _, y in f)
         cs = [costs[n][v] for v in videos]
         avg = lambda k: sum(c[k] for c in cs) / len(cs) if cs else 0  # noqa: E731
@@ -147,11 +163,13 @@ def report(labels: dict, arms: dict[str, dict[str, list[dict]]], groups: dict[st
     for v in videos:
         for sid, r in sorted(rows[first][v].items()):
             got = {n: rows[n][v].get(sid, {}).get("model") for n in names}
-            if len(set(got.values())) > 1 or all(g != r["human"] for g in got.values()):
+            if (any(not same_verdict(sid, g, h, merged) for g in got.values() for h in got.values())
+                    or not any(same_verdict(sid, g, r["human"], merged) for g in got.values())):
                 data["disagreements"].append({"video_id": v, "step_id": sid, "kind": r["kind"],
                                               "human": r["human"], **got})
                 out.append(f"| {v} | {sid} | {r['kind']} | {r['human']} | "
-                           + " | ".join(f"{g}{'' if g == r['human'] else ' ✗'}" for g in got.values()) + " |")
+                           + " | ".join(f"{g}{'' if same_verdict(sid, g, r['human'], merged) else ' ✗'}"
+                                        for g in got.values()) + " |")
     kinds = Counter(d["kind"] for d in data["disagreements"])
     out += ["", f"共 {len(data['disagreements'])} 步（V {kinds['V']}、P {kinds['P']}）"]
     return "\n".join(out), data
@@ -174,6 +192,7 @@ def main(argv: list[str]) -> int:
     ap.add_argument("--corrections", type=Path, help="JSON of corrected label verdicts")
     ap.add_argument("--exclude", default=",".join(sorted(DEFAULT_EXCLUDE)))
     ap.add_argument("--exclude-steps", default="", help="comma-separated steps left out of every number")
+    ap.add_argument("--merge-faults-steps", default="", help="steps where 錯誤 and 部分正確 count as the same")
     ap.add_argument("--runs-dir", type=Path, default=RUNS_DIR)
     ap.add_argument("--json", type=Path)
     a = ap.parse_args(argv[1:])
@@ -190,7 +209,8 @@ def main(argv: list[str]) -> int:
         if not arms[name]:
             ap.error(f"no records named {folder} in {a.runs_dir}")
     groups = {g.partition("=")[0]: g.partition("=")[2].split(",") for g in a.group}
-    text, data = report(labels, arms, groups, costs, skip)
+    merged = {int(s) for s in a.merge_faults_steps.split(",") if s.strip()}
+    text, data = report(labels, arms, groups, costs, skip, merged)
     sys.stdout.reconfigure(encoding="utf-8")
     print(text)
     if a.json:

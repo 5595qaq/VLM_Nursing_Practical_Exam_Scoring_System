@@ -4,6 +4,7 @@
 
 - **對照實驗：Gemini 代理式影片解讀（2026-10-24）：** 新增 `agentic/PROMPT.md`（版本 0.1）、`backend/app/services/sop_agentic_service.py`、`backend/app/sop_agentic_cli.py` 與 `scripts/compare_arms.py`。`--mode e2e` 一次送整支影片（模型切分＋評分，程式標準仍由 `rules.py` 判定），`--mode task` 沿用切分紀錄、每個任務只送區間影片；`--media-processing static` 為控制組。紀錄用自己的版本資料夾。`run_grading` 多了 `task_runner`／`system` 參數（預設不變），`build_task_content` 的標準列表抽成 `_criteria_lines`，`sop_grading_cli.Recorder` 可傳入版本；評分 agent 的行為不變。
   - 上傳改用另外轉的小檔：解析度不變、10 fps、CRF 28；VID_0072 從 552 MB 變成 65 MB。物件名稱帶影片 SHA-256 與轉檔參數，GCS 上已經有就沿用，第 2 次執行不重傳。原本每次執行都重新上傳 CRF 18、30 fps 的 `source.mp4`。轉檔參數寫進版本，之後的紀錄名稱都以 `-up10fps-crf28` 結尾；之前已 commit 的兩份 VID_0072 紀錄用的是原檔。
+  - `compare_arms.py` 新增 `--merge-faults-steps`：這些步驟的錯誤和部分正確視為相同，一致率和重跑翻轉都照這個規則算。步驟 10 的標準暫定，所以合併。
   - `compare_arms.py` 新增 `--exclude-steps`：所有數字都不算這些步驟。舊影片沒拍到給藥紀錄單，比較時排除步驟 2、3、4、29。
   - 新增 `--media-resolution`（`Part.media_resolution`，寫進版本）。預設的影片解析度約每格 70 tokens，VID_0072 在 2 fps 下每秒影片約 190 tokens（含聲音）；實驗改用 high。
   - 提示詞 0.2：不再寫「可以自己跳轉放大」（static 沒有這個能力），「用 zoom／burst 確認」改成「仔細看影片裡的那幾秒」。新增 `--fps`（static 預設 2），寫進版本的模型名稱。
