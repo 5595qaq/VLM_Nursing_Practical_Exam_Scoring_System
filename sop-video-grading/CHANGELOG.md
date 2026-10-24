@@ -2,6 +2,9 @@
 
 ## 未發布（評分 agent 服務端修正，SKILL／rubric 版本不變）
 
+- **10b 轉人工只列第一次使用空針前的片段（使用者決定，2026-10-24）：** `review_reason` 只列在步驟 13（拔針套、插入稀釋液瓶）開始前開始的 `package_spans`；之後的是空針放回包裝、再取出或步驟 30 放回包裝（0.29 的 VID_0098 列了 9 段到 06:25）。步驟 13 沒有時間時不過濾。只影響程式寫的轉人工說明，評分 agent 的輸入與判定不變；0.29 的紀錄是過濾前產生的。
+- code review 修正：`validate_grading.py` 的「需人工複核要有 ≥ 2 個 mm:ss」只有 10b 可以算進 `review_reason` 的時間（其他標準仍要寫在 explanation），`review_reason` 為 null 時不會出錯；10b 轉人工時保留評分 agent 自己寫的 `review_reason`（接在程式的說明後面）；沒有 `package_spans` 時的說明改成「切分步驟 9、10 的時間範圍」。
+
 - **評分紀錄沿用切分（2026-10-22）：** 切分版本標記加上切分模型（`seg-skill1.4.5_gemini-4-argon`；前端紀錄 ZIP 的資料夾同步），既有的 `runs/VID_0081` 紀錄改名並更新 `versions.segmentation`（它的 run 紀錄寫的就是 `sop-video-skill 1.4.5 gemini-4-argon`）。只改評分版本時，`sop_grading_cli` 改為複製同一影片檔、同一切分版本的舊紀錄的 `segmentation.json`，不再重新切分（VID_0081 約省 52 萬 input tokens）；開始與結束時印出沿用提示，`record.json` 記下 `segmentation_from`，`run_record.py` 的列表也標明。`--new-segmentation` 強制重新切分（紀錄已存在時在計算 SHA-256 前就拒絕）。`-dirty`、commit 不明或執行中規則被改過的紀錄不會被沿用；同一切分版本、還沒寫進紀錄的本機切分會保留；換下的本機切分依序存成 `segmentation.prev*.json`，不覆蓋。前端流程不變。0.12 說明裡「`--out` 裡沒有同一切分版本的 `segmentation.json` 時還會重新切分」的情況因此不再發生，但只有步驟 20 的新紀錄仍不建議寫進 `runs/`。
 - 前端「實驗紀錄 ZIP（含圖片）」：把佇列的一支影片的切分與評分整理成 `runs/` 格式（資料夾為 `<版本資料夾>_job<工作編號>-<序號>`，不覆蓋命令列紀錄），含版本、commit、`rules_digest`、續跑的規則歷史（`attempts`、`mixed_rules`）、每次 queue 重試的用量與圖片。每次佇列執行把讀到的 `rubric.json`、`SKILL.md` 副本放進 `artifacts.zip`。`runs/` 底下的圖片被 `.gitignore` 忽略。
 - `run_record.py` 新增 `job_records`；`sop_grading_cli` 的重複檢查一併看同版本的前端紀錄。

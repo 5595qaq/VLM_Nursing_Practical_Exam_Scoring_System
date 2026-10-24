@@ -118,10 +118,9 @@ def _check_rules(result: dict) -> list[str]:
     package_spans = result.get("package_spans", [])
     for i, span in enumerate(package_spans):
         where = f"package_spans[{i}]"
-        if span["start"] >= span["end"]:
+        errors.extend(_check_span(where, span["start"], span["end"], duration))
+        if span["start"] == span["end"]:
             errors.append(f"{where}: start {span['start']} must be before end {span['end']}")
-        elif span["start"] < 0 or span["end"] > duration:
-            errors.append(f"{where}: [{span['start']}, {span['end']}] is outside the video (0-{duration} s)")
         if i and span["start"] < package_spans[i - 1]["end"]:
             errors.append(f"{where}: spans must be in time order and not overlap; merge it with the one before")
 

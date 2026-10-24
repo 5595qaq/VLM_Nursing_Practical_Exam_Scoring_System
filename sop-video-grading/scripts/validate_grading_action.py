@@ -25,7 +25,7 @@ from pathlib import Path
 from jsonschema import Draft202012Validator
 
 from rubric import criteria_by_id, load_rubric
-from validate_grading import check_criterion
+from validate_grading import AFTER_REMOVAL, check_criterion
 
 SCHEMA_PATH = Path(__file__).resolve().parent.parent / "actions.schema.json"
 
@@ -37,7 +37,6 @@ ZOOM_MAX_AREA, ZOOM_MAX_SIDE = 0.50, 0.75
 BURST_SPAN = (0.3, 3.0)
 FLICK = {"17a", "27a"}  # need sound and the fingers seen together
 PULL_BACK = {"16a", "26a"}  # a sub-second pull a 2 fps clip or a few zooms can miss
-AFTER_REMOVAL = {"10b"}  # fixing the needle: judged only once the syringe is out; else a person checks
 FAST_CLIP_FPS = 5
 HIGH_FPS_MAX_SPAN = 8.0  # clips above FAST_CLIP_FPS stay short to bound the video tokens
 

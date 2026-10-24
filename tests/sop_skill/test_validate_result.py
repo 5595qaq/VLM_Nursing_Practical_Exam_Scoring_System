@@ -102,7 +102,7 @@ def test_package_spans_are_optional_for_older_results():
 
 
 @pytest.mark.parametrize("spans, expected", [
-    ([{"start": 108.0, "end": 88.0, "evidence": "ov"}], "must be before end"),
+    ([{"start": 108.0, "end": 88.0, "evidence": "ov"}], "is after end"),
     ([{"start": 90.0, "end": 90.0, "evidence": "ov"}], "must be before end"),
     ([{"start": 590.0, "end": 610.0, "evidence": "ov"}], "outside the video"),
     ([{"start": 88.0, "end": 100.0, "evidence": "ov"}, {"start": 95.0, "end": 108.0, "evidence": "ov"}],

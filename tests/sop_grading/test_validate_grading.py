@@ -196,7 +196,10 @@ def test_flag_needs_a_reason():
 def test_flag_needs_each_attempt_timed():
     result = flag_review(graded(), "18b")
     criterion(result, "18b")["explanation"] = "02:57 插針時有符合，之後又做了一次但不符合。"
-    assert_rejected(result, "list each attempt or span with its time")
+    assert_rejected(result, "list each attempt with its time")
+    # only 10b's review_reason (the wrapper spans the backend writes) may carry the times
+    criterion(result, "18b")["review_reason"] = "03:10 第二次插針看不清"
+    assert_rejected(result, "list each attempt with its time")
 
 
 def test_reason_without_flag_is_rejected():

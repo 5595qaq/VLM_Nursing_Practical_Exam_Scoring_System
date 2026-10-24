@@ -170,15 +170,16 @@ async def test_extra_material_actions_run(video, tmp_path):
 
 @pytest.mark.parametrize("package_spans, reason", [
     ([{"start": 12.0, "end": 17.5, "evidence": "ov"}, {"start": 40.0, "end": 41.0, "evidence": "ov"}],
-     "（切分標出的手拿空針包裝時段）：00:12.0–00:17.5、00:40.0–00:41.0"),
-    (None, "（切分沒有手拿包裝的時段，改看步驟 9 開始到步驟 10 結束）：00:16.2–00:19.5"),
+     "（切分標出的手拿空針包裝時段，第一次使用空針 00:23.4 之前）：00:12.0–00:17.5"),  # 40-41: put back after step 13
+    (None, "（切分沒有手拿包裝的時段，改看切分步驟 9、10 的時間範圍）：00:16.2–00:19.5"),
 ])
 async def test_fixing_the_needle_not_seen_after_removal_goes_to_a_person(video, tmp_path, package_spans, reason):
     # rubric 1.16: 10b is never 錯誤; 無法判定 gets needs_review with every span the hands held the wrapper
     wrong = {"action": "final", "criteria": [
         {"criterion_id": "10b", "verdict": "錯誤", "confidence": 0.8, "reason": None, "evidence": ["clip@16-21"],
          "explanation": "00:18 空針離開包裝，之後沒有旋緊。"}]}
-    undetermined = {"action": "final", "criteria": [{**wrong["criteria"][0], "verdict": "無法判定", "reason": "資訊不足"}]}
+    undetermined = {"action": "final", "criteria": [{**wrong["criteria"][0], "verdict": "無法判定", "reason": "資訊不足",
+                                                     "needs_review": True, "review_reason": "01:12 手被包裝擋住"}]}
     seg = segmentation()
     if package_spans:
         seg["package_spans"] = package_spans
@@ -188,7 +189,7 @@ async def test_fixing_the_needle_not_seen_after_removal_goes_to_a_person(video, 
     step = next(s for s in outcome["result"]["steps"] if s["step_id"] == 10)
     c = next(c for c in step["criteria"] if c["criterion_id"] == "10b")
     assert c["verdict"] == "無法判定" and c["needs_review"] is True and step["needs_review"] is True
-    assert c["review_reason"] == "取出後沒看到固定；取出前有沒有隔著包裝固定要人工看" + reason
+    assert c["review_reason"] == "取出後沒看到固定；取出前有沒有隔著包裝固定要人工看" + reason + "；評分 agent：01:12 手被包裝擋住"
     assert outcome["failed_tasks"] == []
 
 

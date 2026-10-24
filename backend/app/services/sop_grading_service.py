@@ -189,7 +189,8 @@ class GradingRunner(ScriptRunner):
     def clip(self, start: float, end: float, box, region=None) -> tuple[Material, dict]:
         """A clip of the context box, or of `region` inside it (original resolution) when given."""
         out = self._next(f"clip_{start:g}-{end:g}.mp4")
-        crop = ["--box", ",".join(map(str, region)), "--rel-to-crop", ",".join(map(str, box))] if region             else ["--box", ",".join(map(str, box))]
+        crop = (["--box", ",".join(map(str, region)), "--rel-to-crop", ",".join(map(str, box))] if region
+                else ["--box", ",".join(map(str, box))])
         info = json.loads(self._grading_script("clip.py", "--start", start, "--end", end, *crop, "--out", out))
         self.has_audio = info["has_audio"]
         sound = "有聲音" if info["has_audio"] else "無音軌（原始影片沒有錄音）"
@@ -349,26 +350,33 @@ async def _run_material_action(action: dict, runner: GradingRunner, boxes: dict,
     return feedback
 
 
-PACKAGE_REVIEW = {"10b"}  # graded only after the syringe is out; a person checks the time in the wrapper
+FIRST_SYRINGE_USE_STEP = 13  # uncapping the syringe to draw the diluent
 
 
 def _package_review(c: dict, segmentation: dict) -> dict:
     """10b 無法判定 → needs_review with every span the hands held the syringe wrapper (the segmentation's
     package_spans; without them step 9's start to step 10's end, else the criterion window). Fixing the
     needle through the wrapper is legal, but the grading agent read those frames as twisting or tearing
-    from run to run, so it judges only after the syringe is out and a person looks at the rest."""
-    if c["criterion_id"] not in PACKAGE_REVIEW or c["verdict"] != "無法判定":
+    from run to run, so it judges only after the syringe is out and a person looks at the rest. Only spans
+    starting before the syringe's first use (step 13, uncapping it to draw the diluent) are listed; the
+    later ones are putting it back in the wrapper (VID_0098 listed 9 spans up to 06:25)."""
+    if c["criterion_id"] not in load_grading_module("validate_grading").AFTER_REMOVAL or c["verdict"] != "無法判定":
         return c
-    spans = [(s["start"], s["end"]) for s in segmentation.get("package_spans") or []]
-    where = "切分標出的手拿空針包裝時段"
+    first_use = min((e["start"] if e["start"] is not None else e["logical_window"][0]
+                     for e in segmentation["steps"] if e["step_id"] == FIRST_SYRINGE_USE_STEP
+                     and (e["start"] is not None or e.get("logical_window"))), default=None)
+    spans = [(s["start"], s["end"]) for s in segmentation.get("package_spans") or []
+             if first_use is None or s["start"] < first_use]
+    where = "切分標出的手拿空針包裝時段" + (f"，第一次使用空針 {_fmt_t(first_use)} 之前" if first_use is not None else "")
     if not spans:
         found = [(e["start"], e["end"]) for e in segmentation["steps"]
                  if e["step_id"] in (9, 10) and e["start"] is not None]
         spans = [(min(a for a, _ in found), max(b for _, b in found))] if found else [tuple(c["window"])]
-        where = "切分沒有手拿包裝的時段，改看步驟 9 開始到步驟 10 結束" if found else "切分沒有步驟 9、10，改看評分區間"
+        where = "切分沒有手拿包裝的時段，改看切分步驟 9、10 的時間範圍" if found else "切分沒有步驟 9、10 的時間，改看評分區間"
     times = "、".join(f"{_fmt_t(a)}–{_fmt_t(b)}" for a, b in spans)
+    agent = f"；評分 agent：{c['review_reason']}" if c.get("review_reason") else ""
     return {**c, "needs_review": True,
-            "review_reason": f"取出後沒看到固定；取出前有沒有隔著包裝固定要人工看（{where}）：{times}"}
+            "review_reason": f"取出後沒看到固定；取出前有沒有隔著包裝固定要人工看（{where}）：{times}{agent}"}
 
 
 async def run_task(task: dict, video_id: str, runner: GradingRunner, boxes: dict, segmentation: dict,
