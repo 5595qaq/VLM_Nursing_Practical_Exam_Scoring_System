@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 133.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 19011,
+  "output_tokens": 235,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"2a\", \"verdict\": \"錯誤\", \"explanation\": \"00:16.2–00:52.2 給藥紀錄單位於學生左後方牆上（畫面右側點滴架旁），學生全程低頭檢視桌面與手中的 vial、稀釋液瓶、空針包裝及酒精棉片，完全沒有轉頭注視給藥紀錄單。\", \"evidence\": [\"clip@16.2-52.2\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"2b\", \"verdict\": \"錯誤\", \"explanation\": \"00:16.2–00:52.2 給藥紀錄單清楚在畫面內，學生雙手僅在桌面上拿取及檢視藥瓶、空針與棉片，未用手指指出給藥紀錄單。\", \"evidence\": [\"clip@16.2-52.2\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "XOncarOoMbCm1e8PkvbgkAI"
+  },
+  "errors": []
+ }
+]

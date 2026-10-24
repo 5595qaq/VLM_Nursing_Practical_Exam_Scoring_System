@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 108.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 13850,
+  "output_tokens": 230,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"30a\", \"verdict\": \"正確\", \"explanation\": \"04:41.0–04:43.5 學生左手拿原空針包裝袋，右手將套好針蓋的空針放入包裝袋內，並於 04:43.5 將裝有空針的包裝袋放回桌面。\", \"evidence\": [\"clip@278.0-286.5\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"30b\", \"verdict\": \"正確\", \"explanation\": \"04:41.0–04:43.0 右手持空針筒身與針柄處，將空針由針心端朝向包裝袋開口放入原空針包裝袋內，未拿針頭部位。\", \"evidence\": [\"clip@278.0-286.5\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "_ezcasaIBrT61e8PvvSh0Ao"
+  },
+  "errors": []
+ }
+]

@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 166.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 19190,
+  "output_tokens": 422,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"15b\", \"verdict\": \"正確\", \"explanation\": \"02:14.0 拿起白色酒精棉片，02:16.0 將酒精棉片墊在針頭與針筒接合處，之後在 02:17.5–02:29.0 進行彈針及後續排氣時皆持續墊著酒精棉片，符合先墊棉片才彈針。\", \"evidence\": [\"clip@134-166\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"16a\", \"verdict\": \"正確\", \"explanation\": \"02:21.0–02:22.0 針頭朝上，右手捏住針心尾端圓盤往下拉，將針頭內液體抽回針筒。\", \"evidence\": [\"clip@140-143\"], \"confidence\": 0.85, \"reason\": null}, {\"criterion_id\": \"17a\", \"verdict\": \"正確\", \"explanation\": \"02:17.5–02:19.0 及 02:27.0–02:28.5 看到右手手指彈擊針筒，並同時聽到清楚的連續彈擊聲。\", \"evidence\": [\"clip@137-149\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"17b\", \"verdict\": \"正確\", \"explanation\": \"02:30.0–02:45.0 針筒直立，右手持針心尾端圓盤往上推排出空氣，外露推桿明顯變短。\", \"evidence\": [\"clip@150-166\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "J-vcase3H8qcosUPotvrgA4"
+  },
+  "errors": []
+ }
+]

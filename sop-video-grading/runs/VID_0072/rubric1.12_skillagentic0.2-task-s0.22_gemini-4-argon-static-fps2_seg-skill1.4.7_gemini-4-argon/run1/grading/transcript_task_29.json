@@ -1,0 +1,25 @@
+[
+ {
+  "turn": 1,
+  "seconds": 117.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 14159,
+  "output_tokens": 365,
+  "tool_use_tokens": 0,
+  "thinking_tokens": 0,
+  "tool_calls": 0,
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"29a\", \"verdict\": \"錯誤\", \"explanation\": \"給藥紀錄單位於學生左後方牆上（畫面中央偏右、點滴架旁）。04:42.5–04:52.5 全程學生僅低頭看桌面與手中的空瓶再丟入收集筒，有看空瓶再丟棄，但完全沒有轉頭看向給藥紀錄單，注視時間為 0 秒，未達 10 秒。\", \"evidence\": [\"clip@282.5-292.5\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"29b\", \"verdict\": \"錯誤\", \"explanation\": \"04:42.5–04:52.5 給藥紀錄單在畫面內清楚可見，但學生雙手僅在桌面整理並拿起空瓶與廢棄物丟入收集筒，全程未用手指指出給藥紀錄單。\", \"evidence\": [\"clip@282.5-292.5\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"29c\", \"verdict\": \"正確\", \"explanation\": \"04:44.0–04:50.5 學生拿起桌面上的藥物空瓶（vial 與稀釋液瓶），將其丟入畫面左側的紅色尖銳物收集筒及下方垃圾桶中。\", \"evidence\": [\"clip@284.0-290.5\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "diag": {
+   "http_attempts": 1,
+   "candidates": 1,
+   "finish_reason": "STOP",
+   "finish_message": null,
+   "block_reason": null,
+   "parts": [
+    "text"
+   ],
+   "response_id": "-OzcauexMMqcosUPotvrgA4"
+  },
+  "errors": []
+ }
+]
