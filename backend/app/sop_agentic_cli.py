@@ -14,7 +14,8 @@ usage: python -m app.sop_agentic_cli VIDEO --video-id VID_0083 --out WORK/VID_00
   --media-resolution low|medium|high|ultra_high: Part.media_resolution (unset = the model's default,
                ~70 tokens per video frame); written into the version like --fps.
 
-The normalized video is uploaded to GCS_BUCKET_NAME (sop_runs/agentic/), since Gemini reads it by URI.
+A copy of the normalized video at its resolution but 10 fps / CRF 28 is uploaded to GCS_BUCKET_NAME
+(sop_runs/agentic/<id>/<sha>_up10fps-crf28.mp4, reused when it exists; the encoding is part of the version), since Gemini reads video by URI.
 Runs are recorded in sop-video-grading/runs/ like sop_grading_cli's, with their own version:
   rubric<R>_skillagentic<P>-<mode>-s<S>_<model>-<media processing>_seg-<agentic-e2e | sop-video-skill tag>
 (P = agentic/PROMPT.md's version, S = the grading SKILL.md's version, whose rules the prompt includes).
@@ -28,6 +29,7 @@ import json
 import logging
 import os
 import shutil
+import subprocess
 import time
 from pathlib import Path
 
@@ -36,6 +38,8 @@ from app.services import gcs_service, sop_agentic_service, sop_grading_service, 
 from app.sop_grading_cli import Recorder, _duration, _git_commit, _rr, segmentation_tag
 
 E2E_SEGMENTATION = "agentic-e2e"
+UPLOAD_FPS, UPLOAD_CRF = 10, 28
+UPLOAD_TAG = f"up{UPLOAD_FPS}fps-crf{UPLOAD_CRF}"  # in the object name and the version: the model sees this encoding
 
 
 def versions(mode: str, media_processing: str, seg_tag: str, fps: float | None = None,
@@ -45,8 +49,37 @@ def versions(mode: str, media_processing: str, seg_tag: str, fps: float | None =
     return {"rubric": rubric["version"],
             "skill": f"agentic{sop_agentic_service.prompt_version()}-{mode}-s{skill}",
             "model": f"{settings.SOP_SKILL_GEMINI_MODEL}-{media_processing}" + (f"-fps{fps:g}" if fps else "")
-                     + (f"-{resolution}" if resolution else ""),
+                     + (f"-{resolution}" if resolution else "") + f"-{UPLOAD_TAG}",
             "segmentation": seg_tag}
+
+
+def encode_upload_copy(source: Path, target: Path) -> None:
+    """The copy Gemini reads: original resolution, but UPLOAD_FPS and a higher CRF than source.mp4
+    (CRF 18 at 30 fps: 552 MB for VID_0072's 6 minutes). The model samples at most a few frames per
+    second, so 10 fps keeps every sampled instant."""
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(source), "-map", "0:v:0", "-map", "0:a?",
+                    "-vf", f"fps={UPLOAD_FPS}", "-c:v", "libx264", "-preset", "veryfast", "-crf", str(UPLOAD_CRF),
+                    "-pix_fmt", "yuv420p", "-force_key_frames", "expr:gte(t,n_forced*1)",
+                    "-c:a", "aac", "-b:a", "96k", "-movflags", "+faststart", str(target)], check=True)
+
+
+def upload_copy(source: Path, out: Path, video_id: str, sha: str) -> str:
+    """gs:// URI of the video's upload copy. The object name holds the original video's SHA-256 and the
+    encoding, so a later run (run 2, another mode) reuses it without encoding or uploading again."""
+    name = f"sop_runs/agentic/{video_id}/{sha[:16]}_{UPLOAD_TAG}.mp4"
+    if gcs_service.blob_exists(name):
+        print("reusing uploaded", gcs_service.gcs_uri_for(name), flush=True)
+        return gcs_service.gcs_uri_for(name)
+    target = out / f"upload_{UPLOAD_TAG}.mp4"
+    if not target.exists():
+        print("encoding the upload copy", flush=True)
+        partial = out / f"upload_{UPLOAD_TAG}.partial.mp4"
+        encode_upload_copy(source, partial)
+        partial.replace(target)
+    print(f"uploading {target.stat().st_size / 1e6:.0f} MB", flush=True)
+    uri, _ = gcs_service.upload_filename_if_needed(str(target), name, "video/mp4")
+    print("uploaded", uri, flush=True)
+    return uri
 
 
 async def run(video: Path, video_id: str, out: Path, mode: str, media_processing: str,
@@ -67,9 +100,7 @@ async def run(video: Path, video_id: str, out: Path, mode: str, media_processing
         await asyncio.to_thread(video_service.normalize_source, str(video), str(partial))
         partial.replace(source)
     sha = recorder.video_sha256 if recorder and recorder.video_sha256 else _rr().file_sha256(source)
-    uri = await asyncio.to_thread(gcs_service.upload_file, str(source),
-                                  f"sop_runs/agentic/{video_id}/{sha[:16]}.mp4", "video/mp4")
-    print("uploaded", uri, flush=True)
+    uri = await asyncio.to_thread(upload_copy, source, out, video_id, sha)
 
     work = out / "grading"
     work.mkdir(exist_ok=True)

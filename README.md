@@ -307,9 +307,9 @@ python sop-video-grading/scripts/validate_grading.py grading.json --final  # 最
 - `--mode e2e`：一次請求送整支影片，模型同時切分 30 步並判定所有看畫面的標準；程式判定的標準由 `rules.py` 依模型的切分判定，結果格式與 `validate_grading.py --final` 相同。
 - `--mode task`：沿用同一版 sop-video-skill 的切分紀錄（和評分 agent 評的是同一份），每個任務一次請求、只送該任務區間的影片，不用 overview／zoom／burst／clip。
 - `--media-processing static`：同樣的請求改用固定取樣，每秒 `--fps` 格（預設 2，和評分 agent 的 clip 相同；fps 會寫進版本的模型名稱，例如 `gemini-4-argon-static-fps2`）。`--mode task --media-processing static` 就是「評分 agent 的任務改看影片片段、不用圖片與工具」，是目前實驗採用的組別。
-- `--media-resolution low|medium|high|ultra_high`：影片的 `Part.media_resolution`。不設時是模型的預設值，影片約每格 70 tokens（低）。實驗用 `high`，和評分 agent 的原始解析度 zoom 比較；設定值會寫進版本（例如 `-static-fps2-high`）。
+- `--media-resolution low|medium|high|ultra_high`：影片的 `Part.media_resolution`。不設時是模型的預設值，影片約每格 70 tokens（低）。實驗用 `high`，和評分 agent 的原始解析度 zoom 比較；設定值會寫進版本（例如 `-static-fps2-high-up10fps-crf28`）。
 
-影片會上傳到 `GCS_BUCKET_NAME` 的 `sop_runs/agentic/`（Gemini 只能用 URI 讀長影片）。紀錄寫在 `sop-video-grading/runs/`，版本資料夾是 `rubric<R>_skillagentic<提示詞版本>-<mode>-s<SKILL.md 版本>_<模型>-<agentic|static>_seg-<agentic-e2e｜切分版本>`，不會和評分 agent 的紀錄撞名。兩種模式都評全部步驟，同版本重跑要加 `--force`（刻意重測穩定性）；每個 `runN/` 另存那次的 `grading.json`（e2e 另存 `segmentation.json`），`record.json` 的 `usage` 多記 `wall_seconds`（模型呼叫的時間，不含轉檔與上傳），對話紀錄有 `tool_use_tokens`（模型自己取的影格，算在 input）、`tool_calls` 與 `diag`（finish reason、HTTP 嘗試次數等）。空回覆會以原請求重送，最多連續 2 次。
+Gemini 只能用 URI 讀長影片，所以會把影片傳到 `GCS_BUCKET_NAME` 的 `sop_runs/agentic/<影片ID>/<SHA-256>_up10fps-crf28.mp4`。上傳的是另外轉的小檔：解析度不變、10 fps、CRF 28；VID_0072 從 552 MB 變成 65 MB，轉檔 18 秒。GCS 上已經有就直接沿用，不重新轉檔也不重新上傳。轉檔參數會寫進版本（模型名稱結尾的 `-up10fps-crf28`）。紀錄寫在 `sop-video-grading/runs/`，版本資料夾是 `rubric<R>_skillagentic<提示詞版本>-<mode>-s<SKILL.md 版本>_<模型>-<agentic|static>_seg-<agentic-e2e｜切分版本>`，不會和評分 agent 的紀錄撞名。兩種模式都評全部步驟，同版本重跑要加 `--force`（刻意重測穩定性）；每個 `runN/` 另存那次的 `grading.json`（e2e 另存 `segmentation.json`），`record.json` 的 `usage` 多記 `wall_seconds`（模型呼叫的時間，不含轉檔與上傳），對話紀錄有 `tool_use_tokens`（模型自己取的影格，算在 input）、`tool_calls` 與 `diag`（finish reason、HTTP 嘗試次數等）。空回覆會以原請求重送，最多連續 2 次。
 
 ```bash
 docker compose run --rm --build -e SOP_RUN_BY=你的名字 -e GIT_COMMIT=... \
@@ -319,7 +319,7 @@ docker compose run --rm --build -e SOP_RUN_BY=你的名字 -e GIT_COMMIT=... \
 docker compose run --rm ... worker python -m app.sop_agentic_cli ... --mode e2e   # 整支影片，代理式
 python sop-video-grading/scripts/compare_arms.py --labels 標註表.csv \
   --arm 評分agent=rubric1.12_skill0.22_gemini-4-argon_seg-skill1.4.7_gemini-4-argon \
-  --arm 影片=rubric1.12_skillagentic0.2-task-s0.22_gemini-4-argon-static-fps2-high_seg-skill1.4.7_gemini-4-argon \
+  --arm 影片=rubric1.12_skillagentic0.2-task-s0.22_gemini-4-argon-static-fps2-high-up10fps-crf28_seg-skill1.4.7_gemini-4-argon \
   --group 驗證=VID_0091,VID_0095,VID_0096,VID_0097,VID_0100 [--corrections sop-video-grading/review/fix.json]
 ```
 

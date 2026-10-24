@@ -178,14 +178,31 @@ async def test_task_mode_rejects_tool_actions(tmp_path, video):  # noqa: F811
 
 def test_cli_versions_never_match_the_tool_agent():
     rr = sop_agentic_cli._rr()
+    up = sop_agentic_cli.UPLOAD_TAG
     e2e = rr.record_dir(grading.grading_dir() / "runs", "VID_0001",
                         sop_agentic_cli.versions("e2e", "agentic", sop_agentic_cli.E2E_SEGMENTATION))
-    assert re.fullmatch(r"rubric[\d.]+_skillagentic[\d.]+-e2e-s[\d.]+_.+-agentic_seg-agentic-e2e", e2e.name)
+    assert re.fullmatch(rf"rubric[\d.]+_skillagentic[\d.]+-e2e-s[\d.]+_.+-agentic-{up}_seg-agentic-e2e", e2e.name)
     static = sop_agentic_cli.versions("task", "static", "skill1.4.7_gemini-4-argon", 2.0)
-    assert static["model"].endswith("-static-fps2") and static["skill"].startswith("agentic")
+    assert static["model"].endswith(f"-static-fps2-{up}") and static["skill"].startswith("agentic")
     high = sop_agentic_cli.versions("task", "static", "skill1.4.7_gemini-4-argon", 2.0, "high")
-    assert high["model"].endswith("-static-fps2-high")
-    assert sop_agentic_cli.versions("e2e", "agentic", "agentic-e2e")["model"].endswith("-agentic")
+    assert high["model"].endswith(f"-static-fps2-high-{up}")
+
+
+def test_upload_copy_reuses_the_uploaded_object(tmp_path, monkeypatch):
+    encoded, uploaded = [], []
+    monkeypatch.setattr(sop_agentic_cli, "encode_upload_copy",
+                        lambda source, target: (encoded.append(target), target.write_bytes(b"x")))
+    monkeypatch.setattr(sop_agentic_cli.gcs_service, "upload_filename_if_needed",
+                        lambda path, name, kind: (uploaded.append(name), (f"gs://b/{name}", "uploaded"))[1])
+    monkeypatch.setattr(sop_agentic_cli.gcs_service, "gcs_uri_for", lambda name: f"gs://b/{name}")
+    monkeypatch.setattr(sop_agentic_cli.gcs_service, "blob_exists", lambda name: False)
+    uri = sop_agentic_cli.upload_copy(tmp_path / "source.mp4", tmp_path, "VID_0001", "ab" * 32)
+    name = f"sop_runs/agentic/VID_0001/{'ab' * 8}_{sop_agentic_cli.UPLOAD_TAG}.mp4"
+    assert uri == f"gs://b/{name}" and uploaded == [name] and len(encoded) == 1
+    assert not list(tmp_path.glob("*.partial.mp4"))
+    monkeypatch.setattr(sop_agentic_cli.gcs_service, "blob_exists", lambda name: True)  # run 2
+    assert sop_agentic_cli.upload_copy(tmp_path / "source.mp4", tmp_path, "VID_0001", "ab" * 32) == uri
+    assert uploaded == [name] and len(encoded) == 1  # neither encoded nor uploaded again
 
 
 def test_compare_arms_helpers():
