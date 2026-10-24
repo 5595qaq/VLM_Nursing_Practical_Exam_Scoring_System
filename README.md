@@ -159,6 +159,7 @@ Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499，或 Claude 回傳 429／529（o
 | `scripts/audio_peaks.py` | 找出任務區間內短促的響聲與連續響聲（彈針聲），並判斷影片有沒有可用的聲音（不呼叫模型） |
 | `scripts/burst.py` | 在 0.3–3 秒內平均取 3–12 張原始解析度的局部畫面，看不到 1 秒的短動作 |
 | `scripts/eval_grading.py` | 與人工標註表比對：每步的人工／模型判定與說明、一致率、錯誤召回、誤報（另外列出有看畫面標準的步驟） |
+| `scripts/compare_arms.py` | 在同一批影片上比較多份評分紀錄（不同規則、模型或做法）：一致率、成對差異（McNemar）、重跑翻轉、token 與時間，列出各組判定不同的步驟；可排除步驟（`--exclude-steps`）或讓指定步驟的錯誤＝部分正確（`--merge-faults-steps`），不呼叫模型 |
 | `scripts/labels_to_segmentation.py` | 用人工標註表的開始／結束秒數組出切分結果，調整評分 agent 時可跳過切分 skill |
 | `CHANGELOG.md` | 各版本的修改紀錄 |
 | `EXPERIMENTS.md` | 調整評分 agent 的對照實驗、結論、已確認的標準定義與待辦 |
@@ -238,7 +239,15 @@ docker compose run --rm ... worker python -m app.sop_grading_cli ... --new-segme
 docker compose run --rm ... worker python -m app.sop_grading_cli ... --steps 15,17
 python sop-video-grading/scripts/eval_grading.py --labels 標註表.csv sop-video-grading/runs/VID_0083/<版本>/grading.json
 python sop-video-grading/scripts/run_record.py   # 列出所有評分紀錄（影片、版本、評過的步驟、誰、哪天）
+python sop-video-grading/scripts/compare_arms.py --labels 標註表.csv --arm 舊=<版本資料夾> --arm 新=<版本資料夾>   [--group 驗證=VID_0091,VID_0095] [--exclude-steps 2,3,4,29] [--merge-faults-steps 10]   # 比較兩個版本
 ```
+
+評分紀錄的 token 用量：
+- `record.json` 每次執行的 `usage` 是評分用量：`input_tokens`（全部輸入，含快取）、`cached_input_tokens`（其中從快取讀的）、`output_tokens`（含 thinking）、`thinking_tokens`。
+- 這次執行有切分時另有 `segmentation_usage`（同樣的欄位）。
+- 每回合的用量在 `runN/grading/transcript_task_*.json` 與 `runN/seg/transcript.json`。
+- `runN/grading.json` 是那次執行後的結果，版本資料夾的 `grading.json` 只保留最新的一次。
+- 2026-10-25 之前的紀錄只有 input／output。
 
 PowerShell 的 commit 寫法：`-e GIT_COMMIT=$(git rev-parse HEAD)$(if (git status --porcelain --untracked-files=no) { '-dirty' })`；也可以改用 `--by`、`--commit` 參數。`--build` 讓容器跑的是目前的後端程式（映像檔不會自動更新，舊映像檔會和紀錄的 commit 不符）。
 

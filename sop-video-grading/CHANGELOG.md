@@ -2,6 +2,17 @@
 
 ## 未發布（評分 agent 服務端修正，SKILL／rubric 版本不變）
 
+- **評分紀錄的 token 用量（2026-10-25）：**
+  - `record.json` 每次執行的 `usage`，以及每回合的對話紀錄（評分與切分），都多記 `cached_input_tokens` 與 `thinking_tokens`。`input_tokens` 仍是全部的輸入、含快取；`output_tokens` 含 thinking。
+  - 這次執行有切分時，另記 `segmentation_usage`（同樣的欄位），和前端紀錄 ZIP 一致。之前切分用量只在 `runN/seg/transcript.json`，而且命令列的紀錄完全沒有快取數字。
+  - 每個 `runN/` 另存那次執行後的 `grading.json`，可以比較重跑的穩定性；版本資料夾的 `grading.json` 仍是最新的。
+  - 2026-10-25 之前的紀錄沒有這些欄位。
+- **新增 `scripts/compare_arms.py`（2026-10-25）：**
+  - 在同一批影片上比較多份評分紀錄（不同規則、模型或做法），和標記表比一致率、錯誤召回、誤報（全部／V／P、可分組）。
+  - 另有成對比較（exact McNemar）、重跑的判定翻轉、每支的 token（含切分、有資料時含快取）與時間，並列出各組判定不同的步驟。
+  - `--corrections` 套用人工更正，`--exclude-steps` 排除步驟（例如舊影片沒拍到給藥紀錄單的 2／3／4／29），`--merge-faults-steps` 讓指定步驟的錯誤和部分正確視為相同（例如標準暫定的 10）。
+  - 這是在「評分看影片 vs 看圖片」的對照實驗（見 `EXPERIMENTS.md`）中寫的，實驗本身的程式沒有合併。
+
 - **評分紀錄沿用切分（2026-10-22）：** 切分版本標記加上切分模型（`seg-skill1.4.5_gemini-4-argon`；前端紀錄 ZIP 的資料夾同步），既有的 `runs/VID_0081` 紀錄改名並更新 `versions.segmentation`（它的 run 紀錄寫的就是 `sop-video-skill 1.4.5 gemini-4-argon`）。只改評分版本時，`sop_grading_cli` 改為複製同一影片檔、同一切分版本的舊紀錄的 `segmentation.json`，不再重新切分（VID_0081 約省 52 萬 input tokens）；開始與結束時印出沿用提示，`record.json` 記下 `segmentation_from`，`run_record.py` 的列表也標明。`--new-segmentation` 強制重新切分（紀錄已存在時在計算 SHA-256 前就拒絕）。`-dirty`、commit 不明或執行中規則被改過的紀錄不會被沿用；同一切分版本、還沒寫進紀錄的本機切分會保留；換下的本機切分依序存成 `segmentation.prev*.json`，不覆蓋。前端流程不變。0.12 說明裡「`--out` 裡沒有同一切分版本的 `segmentation.json` 時還會重新切分」的情況因此不再發生，但只有步驟 20 的新紀錄仍不建議寫進 `runs/`。
 - 前端「實驗紀錄 ZIP（含圖片）」：把佇列的一支影片的切分與評分整理成 `runs/` 格式（資料夾為 `<版本資料夾>_job<工作編號>-<序號>`，不覆蓋命令列紀錄），含版本、commit、`rules_digest`、續跑的規則歷史（`attempts`、`mixed_rules`）、每次 queue 重試的用量與圖片。每次佇列執行把讀到的 `rubric.json`、`SKILL.md` 副本放進 `artifacts.zip`。`runs/` 底下的圖片被 `.gitignore` 忽略。
 - `run_record.py` 新增 `job_records`；`sop_grading_cli` 的重複檢查一併看同版本的前端紀錄。

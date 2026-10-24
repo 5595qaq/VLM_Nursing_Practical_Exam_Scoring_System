@@ -2,6 +2,7 @@
 
 ## 未發布（不影響切分結果，SKILL 版本不變）
 
+- 後端（`sop_skill_service.py`）：每回合的對話紀錄與 `run_skill_loop` 回傳的 `usage` 多記 `cached_input_tokens` 與 `thinking_tokens`（`input_tokens` 仍含快取，`output_tokens` 仍含 thinking）。`sop_grading_cli` 把這次的切分用量寫進評分紀錄的 `segmentation_usage`。切分邏輯不變。
 - `sequence_check.py`：`--write` 判斷模型有沒有提過重複時，時間涵蓋重複那幾筆的 `interrupted` 也算涵蓋 `repeated`（沒涵蓋到的仍視為真的重做）。1.4.6 起被打斷的步驟 10 要輸出兩筆並寫 `interrupted`，原本會再自動補一筆 `repeated`（「步驟 10 出現 2 次」）。後端只把 `check()` 的結果另存成 `sequence_check.json`，不寫進切分結果。
 
 ## 1.4.7

@@ -107,7 +107,11 @@ def test_run_is_recorded_and_a_rerun_is_refused(tmp_path, video, fake):
         "segmentation": "existing segmentation.json"}
     assert run["video_sha256"] == record["video_sha256"]
     saved = sorted(p.relative_to(rec.folder / "run1").as_posix() for p in (rec.folder / "run1").rglob("*.json"))
-    assert saved == ["grading/probe.json", "grading/transcript_task_1.json", "grading/transcript_task_15-16-17.json"]
+    assert saved == ["grading.json", "grading/probe.json", "grading/transcript_task_1.json",
+                     "grading/transcript_task_15-16-17.json"]
+    # run1/grading.json keeps this run's result; the record's grading.json is overwritten by later runs
+    assert (rec.folder / "run1" / "grading.json").read_text(encoding="utf-8") == \
+        (rec.folder / "grading.json").read_text(encoding="utf-8")
 
     with pytest.raises(SystemExit, match="步驟 1,2,.*已用相同版本評過"):
         recorder(video, runs).check(None, force=False)

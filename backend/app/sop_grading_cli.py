@@ -184,7 +184,8 @@ class Recorder:
         path = self.folder / "grading.json"
         return json.loads(path.read_text(encoding="utf-8")) if self.record and path.exists() else None
 
-    def save(self, out: Path, outcome: dict, steps: set[int] | None, segmentation: str, started: float) -> Path:
+    def save(self, out: Path, outcome: dict, steps: set[int] | None, segmentation: str, started: float,
+             segmentation_usage: dict | None = None) -> Path:
         fresh = lambda p: p.exists() and p.stat().st_mtime >= started  # noqa: E731 - written by this run
         files = {f"grading/transcript_task_{key}.json": out / "grading" / f"transcript_task_{key}.json"
                  for key in outcome["tasks"]}
@@ -194,7 +195,7 @@ class Recorder:
             self.record, self.video_id, self.versions, self.video_sha256, steps=steps,
             failed_tasks=outcome["failed_tasks"], by=self.by, date=datetime.date.today().isoformat(),
             commit=self.commit, segmentation=segmentation, usage=outcome["usage"],
-            segmentation_from=self.segmentation_from)
+            segmentation_from=self.segmentation_from, segmentation_usage=segmentation_usage)
         seg = json.loads((out / "segmentation.json").read_text(encoding="utf-8"))
         files = {k: v for k, v in files.items() if fresh(v)}
         # a kept local segmentation was paid for by an earlier, unrecorded run: keep its transcript too
@@ -239,6 +240,7 @@ async def run(video: Path, video_id: str, out: Path, steps: set[int] | None,
 
     seg_path, seg_dir = out / "segmentation.json", out / "seg"
     seg_source = recorded_seg or "existing segmentation.json"
+    seg_usage = None  # this run's segmentation tokens, when it segmented
     if not seg_path.exists() and labels:
         print("segmentation from label times", video_id, flush=True)
         to_seg = sop_grading_service.load_grading_module("labels_to_segmentation")
@@ -255,6 +257,7 @@ async def run(video: Path, video_id: str, out: Path, steps: set[int] | None,
                                                          sop_skill_service.default_model_call())
         seg_path.write_text(json.dumps(outcome["result"], ensure_ascii=False, indent=1), encoding="utf-8")
         print("segmentation usage", outcome["usage"], "turns", outcome["turns"], flush=True)
+        seg_usage = outcome["usage"]
         skill = _rr().skill_version(Path(settings.SOP_SKILL_DIR) / "SKILL.md")
         seg_source = f"sop-video-skill {skill} {sop_skill_service.model_name()}"
     made_here = seg_source == "label times" or seg_source.startswith("sop-video-skill")
@@ -274,7 +277,7 @@ async def run(video: Path, video_id: str, out: Path, steps: set[int] | None,
                                                     steps=steps, previous=previous)
     grading_path.write_text(json.dumps(outcome["result"], ensure_ascii=False, indent=1), encoding="utf-8")
     if recorder:
-        print("recorded", recorder.save(out, outcome, steps, seg_source, started), flush=True)
+        print("recorded", recorder.save(out, outcome, steps, seg_source, started, seg_usage), flush=True)
         if seg_tag:  # in a record now: a later version reuses it as that record's, with segmentation_from
             (out / SOURCE_MARK).write_text(f"{seg_tag}\n{RECORDED}", encoding="utf-8")
         if recorder.segmentation_from:  # again at the end, where it is not lost among the grading logs
