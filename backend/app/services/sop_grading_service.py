@@ -236,6 +236,15 @@ def _audio_line(task: dict) -> list[str]:
             f"連續響聲（彈針通常是連續好幾聲）：{runs}；請在這些時間附近用 burst 確認手指有沒有彈針筒。"]
 
 
+def _criteria_lines(task: dict) -> list[str]:
+    return [f"  {c['criterion_id']}（步驟 {c['step_id']}）：{c['text']}；window={c['window']}"
+            + ("；要聽聲音" if c["audio"] else "") + ("；要每 0.5 秒一格" if c["dense"] else "")
+            + ("；要看 clip 的連續動作" if c["clip"] else "")
+            + (f"；要計時：final 填 span=[開始, 結束]（影片秒數），滿 {c['min_seconds']:g} 秒才是正確"
+               if c.get("min_seconds") else "")
+            for c in task["criteria"]]
+
+
 def build_task_content(task: dict, video_id: str, duration: float, state: TaskState,
                        materials: list[Material], feedback: str, segmentation: dict) -> list[dict]:
     limits = load_grading_module("validate_grading_action").BUDGET
@@ -245,12 +254,7 @@ def build_task_content(task: dict, video_id: str, duration: float, state: TaskSt
         f"video_id：{video_id}；影片長度 {duration:.1f} s；任務區間 {task['window'][0]:g}–{task['window'][1]:g} s"
         f"（{_fmt_t(task['window'][0])}–{_fmt_t(task['window'][1])}）",
         "要判定的標準（final 必須剛好包含這幾條）：",
-        *(f"  {c['criterion_id']}（步驟 {c['step_id']}）：{c['text']}；window={c['window']}"
-          + ("；要聽聲音" if c["audio"] else "") + ("；要每 0.5 秒一格" if c["dense"] else "")
-          + ("；要看 clip 的連續動作" if c["clip"] else "")
-          + (f"；要計時：final 填 span=[開始, 結束]（影片秒數），滿 {c['min_seconds']:g} 秒才是正確"
-             if c.get("min_seconds") else "")
-          for c in task["criteria"]),
+        *_criteria_lines(task),
         "切分結果（相關步驟）：",
         *_segment_lines(task, segmentation),
         "動作峰值（程式依 hands_box 內的畫面變化算出，只表示這些時間手有明顯動作，不代表是哪個動作；"
@@ -402,14 +406,16 @@ async def run_task(task: dict, video_id: str, runner: GradingRunner, boxes: dict
 async def run_grading(video_path: Path, segmentation: dict, workdir: Path, model_call: ModelCall | None = None,
                       probe_dir: Path | None = None, steps: set[int] | None = None,
                       previous: dict | None = None, on_progress: GradingProgress | None = None,
-                      resume: bool = False) -> dict:
+                      resume: bool = False, task_runner=None, system: str | None = None) -> dict:
     """Grade one video. With `steps`, only those steps' visual criteria go to the model; the other
     visual criteria are copied from `previous` (an earlier grading result) when given. With `resume`,
     every criterion `previous` already graded is kept and only its 待判定 criteria go to the model.
     on_progress(done, total, task_key) is awaited after each task. An exception it raises before the
     last task cancels the remaining tasks and raises GradingIncomplete (errors=[that exception]) with
     the criteria graded so far; after the last task it is ignored, since nothing is left to stop.
-    The result's `task_exceptions` holds each failed task's exception (not JSON; for the caller only)."""
+    The result's `task_exceptions` holds each failed task's exception (not JSON; for the caller only).
+    `task_runner` (same arguments as run_task) and `system` replace the tool-using agent and its prompt
+    (sop_agentic_service: Gemini's agentic video processing instead of overview/zoom/burst/clip)."""
     rubric_mod, rules, validate = (load_grading_module(n) for n in ("rubric", "rules", "validate_grading"))
     rubric = rubric_mod.load_rubric()
     model_call = model_call or gemini_call
@@ -431,7 +437,8 @@ async def run_grading(video_path: Path, segmentation: dict, workdir: Path, model
     await asyncio.to_thread(runner.load_or_prepare)
     crop = segmentation["meta"]["crop"]
     boxes = {"context": crop["box"], "hands": crop["hands_box"]}
-    system = build_system_prompt()
+    system = system or build_system_prompt()
+    task_runner = task_runner or run_task
     semaphore = asyncio.Semaphore(GRADING_CONCURRENCY)
 
     async def one(task):
@@ -441,8 +448,8 @@ async def run_grading(video_path: Path, segmentation: dict, workdir: Path, model
         state = TaskState()
         async with semaphore:
             try:
-                criteria, _ = await run_task(task, segmentation["video_id"], runner, boxes, segmentation,
-                                             model_call, system, workdir, state)
+                criteria, _ = await task_runner(task, segmentation["video_id"], runner, boxes, segmentation,
+                                                model_call, system, workdir, state)
                 return task, criteria, state, None
             except Exception as exc:  # noqa: BLE001 - see comment above
                 return task, [], state, exc

@@ -533,6 +533,60 @@ VID_0001 是第一支拍到給藥紀錄單的影片（放在工作車前方桌�
 - 其他步驟的不一致這輪沒有歸因；步驟 3、29 與「待老師確認」的項目有關，步驟 2／4 的「藥單在不在畫面裡」兩邊判斷不同，下一輪處理前要先建參考答案。
 - 待辦：步驟 2、3、4、29、30 的不一致歸因；VID_0098 類型（包裝擋住的旋轉）在其他影片是否也會跳動。
 
+## 2026-10-24 對照實驗：Gemini 代理式影片解讀 vs 評分 agent（設計，尚未執行）
+
+### 問題
+
+gemini-4-argon 的代理式影片解讀（`Part.media_processing=AGENTIC`）會自己跳轉時間軸、放大影格、聽聲音，和 sop-video-skill 切分＋評分 agent 的 overview／zoom／burst／clip 做的事重疊。要回答三件事：
+1. 準確度能不能取代整條流程，或只取代評分端？
+2. 成本、時間、穩定性差多少？
+3. 差距來自切分，還是來自看影片的方式？
+
+### 設計
+
+| 組 | 切分 | 看影片 | 紀錄資料夾 |
+|---|---|---|---|
+| 評分 agent（基準，沿用紀錄，不重跑） | sop-video-skill 1.4.7 | 評分 agent＋本機工具 | `rubric1.12_skill0.22_gemini-4-argon_seg-skill1.4.7_gemini-4-argon` |
+| A 端到端 | 模型自己切（同一次請求） | 整支影片，agentic | `rubric1.12_skillagentic0.1-e2e-s0.22_gemini-4-argon-agentic_seg-agentic-e2e` |
+| B 換評分端 | 和基準同一份切分 | 每個任務只送區間影片，agentic，一回合 final | `rubric1.12_skillagentic0.1-task-s0.22_gemini-4-argon-agentic_seg-skill1.4.7_gemini-4-argon` |
+| A-static（選做） | 同 A | 同 A，改 `static` | `..._gemini-4-argon-static_seg-agentic-e2e` |
+
+- 影片：2026-10-24 全步驟驗證的 11 支，分組照那一輪。
+  - 驗證組：VID_0091、0095、0096、0097、0100。
+  - 回歸組：VID_0001、0072、0074、0083。
+  - 另外兩支：VID_0098、0099。
+- 規則：用 main 的 rubric 1.12 與 SKILL 0.22，和基準相同。提示詞（`agentic/PROMPT.md` 0.1）接 SKILL.md 第 3–5 節與 `sop_steps.md`，判定標準文字完全相同。
+  - 只把「用 zoom／burst／fps 5 clip 確認」換成「自己跳到那幾秒逐格看清楚」。
+  - evidence 寫 `clip@a-b`。
+- 公平性：
+  - 同一個模型，thinking 用預設值，都不看標記表。
+  - 結果都要通過 `validate_grading --final`，包含彈針沒音軌、1a 計時等規則。
+  - A 沒有評分 agent 的切分，程式標準由 `rules.py` 依模型自己的切分判定，所以主要看 V 步驟，P 步驟另列。
+- 次數：A、B 每支各 2 次，同版本第 2 次加 `--force`，算刻意重測穩定性。基準組只有 1 次（VID_0098 已有 3 次步驟 10）。
+- 比對：
+  - 用 `scripts/compare_arms.py`，以 run 1 計算一致率、錯誤召回、誤報（全部／V／P、分組）。
+  - 對基準做成對比較（只有它對／只有基準對、exact McNemar；影片少，只當參考）。
+  - 另外算 run 間判定翻轉，以及每支的 tokens 與時間。
+  - 套用已核對的標記表更正（VID_0095 步驟 10 → 部分正確）。
+  - 基準組的 VID_0098 `grading.json` 是步驟 10 的 run3 結果（部分正確），所以回歸組用 `compare_arms` 算出的一致率會比上一節少 1 步。
+- 不一致的判讀：
+  - 各組判定不同、或全都和標記表不同的步驟，用 `review_page.py` 做人工核對頁。建議來自各組的模型輸出，組別名稱遮掉。
+  - 使用者的決定當作修正答案，再算一次一致率。
+
+### 第 0 階段：API 試探（待使用者同意後執行）
+
+SDK 2.23.0 已確認：
+- 參數放在 `Part.media_processing`（`STATIC`／`AGENTIC`）。
+- 用量多一個 `usage_metadata.tool_use_prompt_token_count`。程式把它算進 input，對話紀錄另列 `tool_use_tokens`。
+
+要用實際呼叫確認的事：
+- agentic 能不能搭配 `response_mime_type=application/json`，以及 `start_offset`／`end_offset`（B 組需要）。
+- 用 offset 時，模型回報的時間是整支影片的時間還是片段內的時間。
+- 每支影片的 token 和時間。
+- 重送時回傳模型的 tool call 內容是否被接受。
+
+做法：VID_0072 跑 A 組 1 次、B 組 1 次，再估全部用量。
+
 ## 待老師確認（暫定做法，確認後要回來修改）
 
 | 項目 | 目前暫定 | 待確認的問題 | 記錄日期 |

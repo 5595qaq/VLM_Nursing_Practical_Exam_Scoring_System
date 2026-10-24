@@ -91,10 +91,11 @@ def versions(seg_tag: str) -> dict:
 class Recorder:
     """The run record of one video and version (see run_record.py); checks run before any model call."""
 
-    def __init__(self, video: Path, video_id: str, runs_dir: Path, by: str, commit: str, seg_tag: str):
+    def __init__(self, video: Path, video_id: str, runs_dir: Path, by: str, commit: str, seg_tag: str,
+                 versions_: dict | None = None):
         self.rr = _rr()
         self.video, self.video_id, self.by, self.commit = video, video_id, by, commit
-        self.versions = versions(seg_tag)
+        self.versions = versions_ or versions(seg_tag)  # sop_agentic_cli passes its own
         self.folder = self.rr.record_dir(runs_dir, video_id, self.versions)
         self.record = self.rr.load(self.folder)
         self.video_sha256 = ""

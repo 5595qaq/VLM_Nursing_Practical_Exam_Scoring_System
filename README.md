@@ -159,6 +159,8 @@ Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499，或 Claude 回傳 429／529（o
 | `scripts/audio_peaks.py` | 找出任務區間內短促的響聲與連續響聲（彈針聲），並判斷影片有沒有可用的聲音（不呼叫模型） |
 | `scripts/burst.py` | 在 0.3–3 秒內平均取 3–12 張原始解析度的局部畫面，看不到 1 秒的短動作 |
 | `scripts/eval_grading.py` | 與人工標註表比對：每步的人工／模型判定與說明、一致率、錯誤召回、誤報（另外列出有看畫面標準的步驟） |
+| `scripts/compare_arms.py` | 對照實驗：在同一批影片上比較多組評分紀錄（例如評分 agent 與 Gemini 代理式影片解讀）的一致率、成對差異（McNemar）、重跑翻轉率與成本，列出各組判定不同的步驟（不呼叫模型） |
+| `agentic/PROMPT.md` | 對照實驗用的提示詞：Gemini 直接看影片（`media_processing=agentic`）評分，後面接 `SKILL.md` 第 3–5 節與 `sop_steps.md`，判定規則和評分 agent 相同（見下方「對照實驗」） |
 | `scripts/labels_to_segmentation.py` | 用人工標註表的開始／結束秒數組出切分結果，調整評分 agent 時可跳過切分 skill |
 | `CHANGELOG.md` | 各版本的修改紀錄 |
 | `EXPERIMENTS.md` | 調整評分 agent 的對照實驗、結論、已確認的標準定義與待辦 |
@@ -297,6 +299,24 @@ python sop-video-grading/scripts/validate_grading.py grading.json --final  # 最
 ```
 
 人工標註表（`*影片標記表*.csv`／`.xlsx`）含學生姓名，已被 `.gitignore` 排除，只放在本機。
+
+#### 對照實驗：Gemini 代理式影片解讀
+
+gemini-4-argon 在 Vertex AI 可以用代理式影片解讀（`Part.media_processing=AGENTIC`，預設是 `STATIC`）自己在影片時間軸上跳轉、放大影格、聽聲音。`app.sop_agentic_cli` 用它評分，和上面的評分 agent 比較（實驗設計與結果見 `sop-video-grading/EXPERIMENTS.md`）：
+
+- `--mode e2e`：一次請求送整支影片，模型同時切分 30 步並判定所有看畫面的標準；程式判定的標準由 `rules.py` 依模型的切分判定，結果格式與 `validate_grading.py --final` 相同。
+- `--mode task`：沿用同一版 sop-video-skill 的切分紀錄（和評分 agent 評的是同一份），每個任務一次請求、只送該任務區間的影片，不用 overview／zoom／burst／clip。
+- `--media-processing static`：控制組，同樣的請求改用固定取樣。
+
+影片會上傳到 `GCS_BUCKET_NAME` 的 `sop_runs/agentic/`（Gemini 只能用 URI 讀長影片）。紀錄寫在 `sop-video-grading/runs/`，版本資料夾是 `rubric<R>_skillagentic<提示詞版本>-<mode>-s<SKILL.md 版本>_<模型>-<agentic|static>_seg-<agentic-e2e｜切分版本>`，不會和評分 agent 的紀錄撞名。兩種模式都評全部步驟，同版本重跑要加 `--force`（刻意重測穩定性）；每個 `runN/` 另存那次的 `grading.json`（e2e 另存 `segmentation.json`），`record.json` 的 `usage` 多記 `wall_seconds`（模型呼叫的時間，不含轉檔與上傳），對話紀錄有 `tool_use_tokens`（模型自己取的影格，算在 input）與 `tool_calls`。
+
+```bash
+docker compose run --rm --build -e SOP_RUN_BY=你的名字 -e GIT_COMMIT=...   -v /path/to/videos:/data:ro -v /path/to/work:/work worker   python -m app.sop_agentic_cli /data/影片.mp4 --video-id VID_0072 --out /work/VID_0072_e2e --mode e2e
+docker compose run --rm ... worker python -m app.sop_agentic_cli ... --out /work/VID_0072_task --mode task
+python sop-video-grading/scripts/compare_arms.py --labels 標註表.csv   --arm 評分agent=rubric1.12_skill0.22_gemini-4-argon_seg-skill1.4.7_gemini-4-argon   --arm e2e=rubric1.12_skillagentic0.1-e2e-s0.22_gemini-4-argon-agentic_seg-agentic-e2e   --arm task=rubric1.12_skillagentic0.1-task-s0.22_gemini-4-argon-agentic_seg-skill1.4.7_gemini-4-argon   --group 驗證=VID_0091,VID_0095,VID_0096,VID_0097,VID_0100 [--corrections sop-video-grading/review/fix.json]
+```
+
+`compare_arms.py` 的評分 agent 秒數在沒有 `wall_seconds` 時是對話紀錄每回合模型秒數的加總（評分任務 3 組並行，比實際經過的時間長）；它的 token 含切分（沿用的切分算來源紀錄的）。
 
 ### Token 用量與成本
 
@@ -604,6 +624,7 @@ my-awesome-project/
 │   │   │   ├── gcs_service.py
 │   │   │   ├── gemini_service.py
 │   │   │   ├── model_logging.py
+│   │   │   ├── sop_agentic_service.py
 │   │   │   ├── sop_grading_service.py
 │   │   │   ├── sop_run_bundle.py
 │   │   │   ├── sop_skill_service.py
@@ -614,6 +635,7 @@ my-awesome-project/
 │   │   ├── db.py
 │   │   ├── gazelle_worker.py
 │   │   ├── main.py
+│   │   ├── sop_agentic_cli.py
 │   │   ├── sop_grading_cli.py
 │   │   ├── worker.py
 │   │   └── ws_manager.py
@@ -633,7 +655,8 @@ my-awesome-project/
 │   ├── rubric.json
 │   ├── schema.json
 │   ├── actions.schema.json
-│   ├── runs/            # sop_grading_cli 的評分紀錄（commit 共用）
+│   ├── agentic/         # 對照實驗：Gemini 代理式影片解讀的提示詞（sop_agentic_cli）
+│   ├── runs/            # sop_grading_cli／sop_agentic_cli 的評分紀錄（commit 共用）
 │   ├── review/          # review_page.py 產生的本機人工核對頁面（gitignored）
 │   └── scripts/
 ├── tests/
