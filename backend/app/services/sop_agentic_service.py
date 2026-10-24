@@ -17,7 +17,7 @@ same request with fixed-rate frames). Neither mode sees the label sheet.
 import asyncio
 import json
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Awaitable, Callable
 
@@ -32,6 +32,9 @@ from app.services.sop_skill_service import (SkillRunError, _fmt_t, _GEMINI_REFUS
 MODES = ("e2e", "task")
 MEDIA_PROCESSING = ("agentic", "static")
 MAX_RETRIES = 2  # invalid replies sent back with the errors before the request fails
+# Empty replies (no candidate text and no usage) are resent unchanged, on a budget of their own: in
+# task mode on VID_0072 (2026-10-24) 6 of 15 first requests came back empty after 290-580 s.
+MAX_EMPTY_RETRIES = 2
 STATUSES = {"detected", "not_performed", "not_visually_determinable"}
 E2E_KEY = "e2e"  # transcript_task_e2e.json, so sop_grading_cli.Recorder.save keeps it
 # The agentic model inspects the frames itself; the tool prerequisites of validate_grading_action
@@ -51,6 +54,7 @@ class AgenticReply:
     thinking_tokens: int = 0
     tool_calls: int = 0  # server-side media tool calls in the reply
     content: object = None  # the reply's types.Content, sent back as-is on a retry (tool calls, signatures)
+    diag: dict = field(default_factory=dict)  # finish reason, candidates, part kinds, HTTP attempts (transcript)
 
 
 AgenticCall = Callable[[str, list], Awaitable[AgenticReply]]  # (system, contents) -> reply
@@ -94,7 +98,8 @@ async def agentic_call(system: str, contents: list) -> AgenticReply:
         config["thinking_config"] = types.ThinkingConfig(thinking_level=settings.SOP_SKILL_GEMINI_THINKING_LEVEL)
     if settings.SOP_SKILL_GEMINI_MAX_OUTPUT_TOKENS:
         config["max_output_tokens"] = settings.SOP_SKILL_GEMINI_MAX_OUTPUT_TOKENS
-    token = attempt_state.set({"attempt": 0})
+    attempts = {"attempt": 0}  # LoggedTransport counts the HTTP attempts (SDK retries) here
+    token = attempt_state.set(attempts)
     try:
         async with asyncio.timeout(settings.GEMINI_CALL_TIMEOUT_SECONDS):
             response = await agents.get_client().aio.models.generate_content(
@@ -111,18 +116,30 @@ async def agentic_call(system: str, contents: list) -> AgenticReply:
     reply = AgenticReply("", "end_turn", counts["input_tokens"] + counts["cached_input_tokens"] + tool_use,
                          counts["output_tokens"], tool_use, counts["thinking_tokens"])
     feedback = getattr(response, "prompt_feedback", None)
-    if feedback is not None and _name(feedback.block_reason) in _GEMINI_REFUSALS:
-        reply.stop_reason = "refusal"
-        return reply
     candidate = (response.candidates or [None])[0]
     finish = _name(getattr(candidate, "finish_reason", None))
     reply.content = candidate.content if candidate is not None else None
     parts = (reply.content.parts or []) if reply.content else []
+    reply.diag = {"http_attempts": attempts["attempt"], "candidates": len(response.candidates or []),
+                  "finish_reason": finish, "finish_message": getattr(candidate, "finish_message", None),
+                  "block_reason": _name(getattr(feedback, "block_reason", None)),
+                  "parts": [_part_kind(p) for p in parts], "response_id": getattr(response, "response_id", None)}
+    if feedback is not None and _name(feedback.block_reason) in _GEMINI_REFUSALS:
+        reply.stop_reason = "refusal"
+        return reply
     reply.text = "".join(p.text for p in parts if p.text and not p.thought)
     reply.tool_calls = sum(1 for p in parts if getattr(p, "tool_call", None))
     reply.stop_reason = ("refusal" if finish in _GEMINI_REFUSALS
-                         else "max_tokens" if finish == "MAX_TOKENS" else "end_turn")
+                         else "max_tokens" if finish == "MAX_TOKENS"
+                         else "empty" if not reply.text.strip() else "end_turn")
     return reply
+
+
+def _part_kind(part) -> str:
+    for kind in ("text", "tool_call", "tool_response", "function_call", "executable_code", "inline_data", "file_data"):
+        if getattr(part, kind, None):
+            return "thought" if kind == "text" and part.thought else kind
+    return "other"
 
 
 def _user(text: str, *extra):
@@ -138,21 +155,33 @@ def _model_turn(reply: AgenticReply):
 async def _converse(system: str, contents: list, call: AgenticCall, check: Callable[[str], tuple[object, list[str]]],
                     log_path: Path, state: TaskState, label: str):
     """Send the request, check the reply, and send it back with the errors up to MAX_RETRIES times.
-    Every turn goes to log_path. Returns check's value for the first valid reply."""
+    An empty reply is resent unchanged (an empty model turn would make the next request invalid) up to
+    MAX_EMPTY_RETRIES times in a row. Every turn goes to log_path. Returns check's value for the first
+    valid reply."""
     transcript: list[dict] = []
-    for attempt in range(MAX_RETRIES + 1):
+    retries = empties = 0
+    while True:
         started = time.monotonic()
         reply = await call(system, contents)
         state.input_tokens += reply.input_tokens
         state.output_tokens += reply.output_tokens
-        entry = {"turn": attempt + 1, "seconds": round(time.monotonic() - started, 1),
+        entry = {"turn": len(transcript) + 1, "seconds": round(time.monotonic() - started, 1),
                  "stop_reason": reply.stop_reason, "input_tokens": reply.input_tokens,
                  "output_tokens": reply.output_tokens, "tool_use_tokens": reply.tool_use_tokens,
-                 "thinking_tokens": reply.thinking_tokens, "tool_calls": reply.tool_calls, "reply": reply.text}
+                 "thinking_tokens": reply.thinking_tokens, "tool_calls": reply.tool_calls, "reply": reply.text,
+                 "diag": reply.diag}
         transcript.append(entry)
         if reply.stop_reason == "refusal":
             log_path.write_text(json.dumps(transcript, ensure_ascii=False, indent=1), encoding="utf-8")
             raise SkillRunError(f"{label}: the model declined the request")
+        if reply.stop_reason == "empty":
+            entry["errors"] = [f"空回覆（finish_reason={reply.diag.get('finish_reason')}），原請求重送"]
+            log_path.write_text(json.dumps(transcript, ensure_ascii=False, indent=1), encoding="utf-8")
+            empties += 1
+            if empties > MAX_EMPTY_RETRIES:
+                raise SkillRunError(f"{label}: {empties} empty replies in a row: {reply.diag}")
+            continue
+        empties = 0
         if reply.stop_reason == "max_tokens":
             value, errors = None, ["回覆超過 max_tokens 被截斷；請精簡 explanation 後重送"]
         else:
@@ -164,9 +193,11 @@ async def _converse(system: str, contents: list, call: AgenticCall, check: Calla
         log_path.write_text(json.dumps(transcript, ensure_ascii=False, indent=1), encoding="utf-8")
         if not errors:
             return value
+        retries += 1
+        if retries > MAX_RETRIES:
+            raise SkillRunError(f"{label}: no valid reply after {retries} attempts: {errors}")
         contents = [*contents, _model_turn(reply),
                     _user("上一個回覆被退回，只修改下列錯誤後重送完整的 JSON：\n" + "\n".join(f"- {e}" for e in errors))]
-    raise SkillRunError(f"{label}: no valid reply after {MAX_RETRIES + 1} attempts: {errors}")
 
 
 # ---- task mode -------------------------------------------------------------------------------------

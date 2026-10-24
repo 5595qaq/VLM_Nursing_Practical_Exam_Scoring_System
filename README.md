@@ -308,7 +308,7 @@ gemini-4-argon 在 Vertex AI 可以用代理式影片解讀（`Part.media_proces
 - `--mode task`：沿用同一版 sop-video-skill 的切分紀錄（和評分 agent 評的是同一份），每個任務一次請求、只送該任務區間的影片，不用 overview／zoom／burst／clip。
 - `--media-processing static`：控制組，同樣的請求改用固定取樣。
 
-影片會上傳到 `GCS_BUCKET_NAME` 的 `sop_runs/agentic/`（Gemini 只能用 URI 讀長影片）。紀錄寫在 `sop-video-grading/runs/`，版本資料夾是 `rubric<R>_skillagentic<提示詞版本>-<mode>-s<SKILL.md 版本>_<模型>-<agentic|static>_seg-<agentic-e2e｜切分版本>`，不會和評分 agent 的紀錄撞名。兩種模式都評全部步驟，同版本重跑要加 `--force`（刻意重測穩定性）；每個 `runN/` 另存那次的 `grading.json`（e2e 另存 `segmentation.json`），`record.json` 的 `usage` 多記 `wall_seconds`（模型呼叫的時間，不含轉檔與上傳），對話紀錄有 `tool_use_tokens`（模型自己取的影格，算在 input）與 `tool_calls`。
+影片會上傳到 `GCS_BUCKET_NAME` 的 `sop_runs/agentic/`（Gemini 只能用 URI 讀長影片）。紀錄寫在 `sop-video-grading/runs/`，版本資料夾是 `rubric<R>_skillagentic<提示詞版本>-<mode>-s<SKILL.md 版本>_<模型>-<agentic|static>_seg-<agentic-e2e｜切分版本>`，不會和評分 agent 的紀錄撞名。兩種模式都評全部步驟，同版本重跑要加 `--force`（刻意重測穩定性）；每個 `runN/` 另存那次的 `grading.json`（e2e 另存 `segmentation.json`），`record.json` 的 `usage` 多記 `wall_seconds`（模型呼叫的時間，不含轉檔與上傳），對話紀錄有 `tool_use_tokens`（模型自己取的影格，算在 input）、`tool_calls` 與 `diag`（finish reason、HTTP 嘗試次數等）。空回覆會以原請求重送，最多連續 2 次。
 
 ```bash
 docker compose run --rm --build -e SOP_RUN_BY=你的名字 -e GIT_COMMIT=...   -v /path/to/videos:/data:ro -v /path/to/work:/work worker   python -m app.sop_agentic_cli /data/影片.mp4 --video-id VID_0072 --out /work/VID_0072_e2e --mode e2e

@@ -21,6 +21,7 @@ record.json's usage adds wall_seconds, and the transcripts have the tool-use tok
 import argparse
 import asyncio
 import json
+import logging
 import os
 import shutil
 import time
@@ -99,6 +100,8 @@ def main() -> None:
     ap.add_argument("--allow-dirty", action="store_true", help="record a run of uncommitted code")
     ap.add_argument("--runs-dir", type=Path, help="run records folder (default sop-video-grading/runs)")
     a = ap.parse_args()
+    logging.basicConfig(level=logging.WARNING, format="%(asctime)s %(name)s %(message)s")
+    logging.getLogger("app.gemini").setLevel(logging.INFO)  # each HTTP attempt: status code, seconds
     seg_tag = E2E_SEGMENTATION if a.mode == "e2e" else segmentation_tag(a.video_id, None)
     recorder = None
     if _rr().VIDEO_ID_RE.fullmatch(a.video_id):

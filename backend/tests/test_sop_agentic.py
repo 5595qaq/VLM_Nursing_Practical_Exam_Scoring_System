@@ -98,6 +98,38 @@ async def test_e2e_gives_up_after_retries(tmp_path):
     assert len(call.requests) == agentic.MAX_RETRIES + 1
 
 
+class EmptyThen(FakeCall):
+    """`empties` empty replies (no text, no usage: seen in task mode after 290-580 s), then FakeCall."""
+
+    def __init__(self, empties, *replies):
+        super().__init__(*replies)
+        self.empties = empties
+
+    async def __call__(self, system, contents):
+        if self.empties:
+            self.empties -= 1
+            self.requests.append((system, contents))
+            return AgenticReply("", "empty", diag={"finish_reason": "STOP", "candidates": 1, "parts": []})
+        return await super().__call__(system, contents)
+
+
+async def test_empty_reply_is_resent_unchanged(tmp_path):
+    call = EmptyThen(2, e2e_reply)
+    out = await agentic.grade_whole_video(URI, "VID_TEST", DURATION, tmp_path, "agentic", call)
+    assert out["validation_errors"] == []
+    assert len(call.requests) == 3
+    assert all(len(contents) == 1 for _, contents in call.requests)  # no empty model turn appended
+    log = json.loads((tmp_path / "transcript_task_e2e.json").read_text(encoding="utf-8"))
+    assert [e["stop_reason"] for e in log] == ["empty", "empty", "end_turn"]
+    assert "finish_reason=STOP" in log[0]["errors"][0] and log[0]["diag"]["candidates"] == 1
+
+
+async def test_too_many_empty_replies_fail(tmp_path):
+    call = EmptyThen(agentic.MAX_EMPTY_RETRIES + 1, e2e_reply)
+    with pytest.raises(agentic.SkillRunError, match="empty replies"):
+        await agentic.grade_whole_video(URI, "VID_TEST", DURATION, tmp_path, "agentic", call)
+
+
 async def test_e2e_not_performed_step_keeps_rule_verdict(tmp_path):
     call = FakeCall(lambda t: e2e_reply(t, not_performed={17}))
     out = await agentic.grade_whole_video(URI, "VID_TEST", DURATION, tmp_path, "agentic", call)
