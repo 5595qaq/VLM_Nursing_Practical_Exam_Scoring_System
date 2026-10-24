@@ -64,6 +64,10 @@ def check_rubric(rubric: dict) -> list[str]:
                         or any(not part or not set(part) <= set(c.get("window_steps", [])) for part in parts)):
                     errors.append(f"criterion {cid}: split_window_steps needs a visual criterion and 2+ non-empty "
                                   "parts, each within window_steps")
+                labels = c.get("split_labels")
+                if not isinstance(labels, list) or len(labels) != len(parts) or not all(
+                        isinstance(x, str) and x for x in labels):
+                    errors.append(f"criterion {cid}: split_labels needs one question per split_window_steps part")
             if cat == "not_visible" and (c.get("key") or not c.get("reason")):
                 errors.append(f"criterion {cid}: not_visible criterion needs a reason and cannot be key")
     return errors

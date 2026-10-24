@@ -111,9 +111,9 @@ def _check_final(action: dict, task: dict, used: dict, rubric: dict) -> list[str
                           "lasts under a second and looks like the hands changing grip)")
         if cid in TWIST and c["verdict"] == "錯誤" and used.get("hands_clip", 0) == 0:
             errors.append(f"criterion {cid}: before marking 錯誤, watch a clip with a region around both hands "
-                          f"and fps >= {FAST_CLIP_FPS} where the hands are together in this task's window "
-                          "(tearing the wrapper, or after taking the syringe out); the twist is a short "
-                          "back-and-forth that zoom stills and a context-box clip show as tearing the wrapper")
+                          f"and fps >= {FAST_CLIP_FPS} where the hands are together in this task's window; "
+                          "the twist is a short back-and-forth of the wrist that zoom stills and a context-box "
+                          "clip can miss")
     return errors
 
 

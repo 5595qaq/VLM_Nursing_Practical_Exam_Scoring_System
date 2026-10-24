@@ -118,7 +118,8 @@ def _grade(c: dict, sid: int, entries: dict[int, list[dict]], duration: float, m
 
 def window_for(step_ids: list[int], seg: dict, margin: float = WINDOW_MARGIN) -> list[float] | None:
     """The window of `step_ids` in a segmentation result, as for a visual criterion (None if not located).
-    The grading service uses it for each part of a criterion with split_window_steps."""
+    The grading service uses it for each part of a criterion with split_window_steps (margin 0: to
+    tell whether the parts' steps touch)."""
     entries: dict[int, list[dict]] = {}
     for entry in seg["steps"]:
         entries.setdefault(entry["step_id"], []).append(entry)

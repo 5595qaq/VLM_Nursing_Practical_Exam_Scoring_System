@@ -168,3 +168,5 @@ def test_split_window_steps_need_parts_within_window_steps():
                    for e in broken(lambda r, bad=bad: r["steps"][9]["criteria"][1].update(split_window_steps=bad)))
     assert any("split_window_steps" in e  # 10a is a program criterion
                for e in broken(lambda r: r["steps"][9]["criteria"][0].update(split_window_steps=[[9], [10]])))
+    assert any("split_labels" in e
+               for e in broken(lambda r: r["steps"][9]["criteria"][1].update(split_labels=["取出前"])))
