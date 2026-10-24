@@ -148,17 +148,17 @@ def test_pull_back_wrong_needs_a_burst_first():
     assert validate(action, task, FRESH, DURATION) == []  # 正確 needs no burst
 
 
-def test_twist_wrong_needs_a_fast_clip_of_the_hands_first():
-    # VID_0098: fps 5 clips of the whole context box showed the twist at 01:08–01:12 as tearing the
-    # wrapper in some runs and as twisting in others (SKILL 0.22, same version, 3 runs)
-    task = {"window": [59.0, 79.0], "criteria": [{"criterion_id": "10b", "window": [59.0, 79.0]}]}
+@pytest.mark.parametrize("verdict, reason, ok", [
+    ("正確", None, True), ("無法判定", "資訊不足", True), ("錯誤", None, False), ("部分正確", None, False)])
+def test_fixing_the_needle_is_correct_or_undetermined(verdict, reason, ok):
+    # rubric 1.16: 10b is judged only after the syringe is out; fixing it through the wrapper is legal
+    # but the agent read those frames as twisting or tearing from run to run (VID_0098, 0072, 0091)
+    task = {"window": [74.0, 81.0], "criteria": [{"criterion_id": "10b", "window": [74.0, 81.0]}]}
     action = {"action": "final", "criteria": [
-        {"criterion_id": "10b", "verdict": "錯誤", "confidence": 0.8, "reason": None,
-         "explanation": "01:02–01:12 雙手只在撕包裝，沒有旋緊。", "evidence": ["clip@62-79"]}]}
-    assert any("region around both hands" in e for e in validate(action, task, {**FRESH, "clip": 1}, DURATION))
-    assert validate(action, task, {**FRESH, "clip": 1, "hands_clip": 1}, DURATION) == []
-    action["criteria"][0].update(verdict="正確", explanation="01:08–01:12 一手不動、另一手來回旋轉。")
-    assert validate(action, task, FRESH, DURATION) == []  # 正確 needs no hands clip
+        {"criterion_id": "10b", "verdict": verdict, "confidence": 0.8, "reason": reason,
+         "explanation": "01:16 空針離開包裝，01:17–01:19 一手握針座、另一手旋緊。", "evidence": ["clip@74-81"]}]}
+    errors = validate(action, task, FRESH, DURATION)
+    assert (errors == []) if ok else any("only 正確" in e for e in errors), errors
 
 
 def test_clip_region_and_high_fps_limits():

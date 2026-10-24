@@ -139,8 +139,9 @@ def check_criterion(where: str, c: dict, rule: dict, final: bool) -> list[str]:
             errors.append(f"{where}: needs_review is only for criteria graded by the grading agent")
         if not c.get("review_reason"):
             errors.append(f"{where}: review_reason is required when needs_review is true")
-        if len(TIMESTAMP.findall(c["explanation"])) < 2:
-            errors.append(f"{where}: needs_review explanation must list each attempt with its time (≥ 2 mm:ss)")
+        if len(TIMESTAMP.findall(c["explanation"] + c.get("review_reason", ""))) < 2:
+            errors.append(f"{where}: needs_review explanation or review_reason must list each attempt or "
+                          "span with its time (≥ 2 mm:ss)")
     elif "review_reason" in c:
         errors.append(f"{where}: review_reason is only for needs_review true")
     return errors

@@ -1,7 +1,7 @@
 ---
 name: sop-video-segmentation
 description: 把護理技術操作影片（無菌抽藥技術－vial 粉劑，30 步驟）切分成「每個時間區段正在做哪個 SOP 步驟」的 JSON。只做前處理切分，不評分。輸入為抽好的影格圖片（模型不直接讀影片）。
-version: 1.4.7
+version: 1.5.0
 ---
 
 # SOP 影片步驟切分（前處理，不評分）
@@ -232,6 +232,7 @@ zoom 規則：
      "evidence": "紀錄單文字不可見，無法確認讀單", "logical_window": [41.0, 70.0]}
   ],
   "unassigned_spans": [{"start": 500.0, "end": 530.0, "note": "整理桌面，非本 SOP 步驟"}],
+  "package_spans": [{"start": 58.0, "end": 76.5, "evidence": "ov@55-80 #1 左手拿起空針包裝；#8 空針完全抽出"}],
   "observations": [
     {"type": "extra_action", "start": 500.0, "end": 530.0, "steps": [], "confidence": 0.6,
      "description": "08:20–08:50 雙手在治療車上整理包裝紙與棉片，非 SOP 步驟",
@@ -243,6 +244,10 @@ zoom 規則：
 
 - 30 步每步至少一筆；同一步做了兩次（例如重抽）可輸出兩筆。
 - `evidence` 必須引用具體影格（`global #k`、`ov@120-150 #k`、`zoom@245.0`），不能只寫「看起來像」。
-- `observations` 必填（沒有偏離就輸出空陣列，但要確實檢查過第 6 節的每一類）。`unassigned_spans`、`zoom_log` 也必填，沒有就輸出空陣列。
+- `observations` 必填（沒有偏離就輸出空陣列，但要確實檢查過第 6 節的每一類）。`unassigned_spans`、`zoom_log`、`package_spans` 也必填，沒有就輸出空陣列。
+- `package_spans`：每一段**手上拿著空針包裝**的時間。評分不判「取出前有沒有隔著包裝固定針頭」，而是把這些時段交給人工看，所以**寧可多列、不可漏**。
+  - 一段＝手拿起空針包裝（還沒撕或已撕開、空針還在裡面）→ 放下包裝、或空針完全離開包裝。拿起、放下、再拿起就分成多段，依時間排序、不重疊。
+  - **不限步驟 9、10 的時間**：步驟 9 之前拿起來看、放下去做別的步驟再回來拿，都要列。空針包裝是長條形、比酒精棉片包大很多（第 2 節表格），不要和棉片包搞混。
+  - 開始與結束用 overview 確認（總覽圖 8 s 一格會漏掉短的拿起）；`evidence` 引用影格。整支影片沒拿過空針包裝 → `[]`。
 - 只能使用 `schema.json` 定義的欄位；多出或拼錯的欄位會被 `scripts/validate_result.py` 退回。
 - `confidence`：zoom 確認＝0.8–1.0；overview 確認＝0.6–0.8；只有總覽圖＝0.4–0.6；依邏輯分配＝≤0.5。

@@ -196,7 +196,7 @@ def test_flag_needs_a_reason():
 def test_flag_needs_each_attempt_timed():
     result = flag_review(graded(), "18b")
     criterion(result, "18b")["explanation"] = "02:57 插針時有符合，之後又做了一次但不符合。"
-    assert_rejected(result, "list each attempt with its time")
+    assert_rejected(result, "list each attempt or span with its time")
 
 
 def test_reason_without_flag_is_rejected():

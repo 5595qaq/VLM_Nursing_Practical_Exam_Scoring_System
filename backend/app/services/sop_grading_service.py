@@ -345,10 +345,30 @@ async def _run_material_action(action: dict, runner: GradingRunner, boxes: dict,
         state.log.append(f"clip {info['start']:g}-{info['end']:g} fps={material.fps:g}"
                          + (f" region={_fmt_box(region)}" if region else ""))
         feedback = f"clip 已完成（引用格式 clip@{info['start']:g}-{info['end']:g}）。"
-        if region and material.fps >= load_grading_module("validate_grading_action").FAST_CLIP_FPS:
-            state.used["hands_clip"] = state.used.get("hands_clip", 0) + 1  # 10b 錯誤 needs one (validate_grading_action)
     state.used[name] += 1
     return feedback
+
+
+PACKAGE_REVIEW = {"10b"}  # graded only after the syringe is out; a person checks the time in the wrapper
+
+
+def _package_review(c: dict, segmentation: dict) -> dict:
+    """10b 無法判定 → needs_review with every span the hands held the syringe wrapper (the segmentation's
+    package_spans; without them step 9's start to step 10's end, else the criterion window). Fixing the
+    needle through the wrapper is legal, but the grading agent read those frames as twisting or tearing
+    from run to run, so it judges only after the syringe is out and a person looks at the rest."""
+    if c["criterion_id"] not in PACKAGE_REVIEW or c["verdict"] != "無法判定":
+        return c
+    spans = [(s["start"], s["end"]) for s in segmentation.get("package_spans") or []]
+    where = "切分標出的手拿空針包裝時段"
+    if not spans:
+        found = [(e["start"], e["end"]) for e in segmentation["steps"]
+                 if e["step_id"] in (9, 10) and e["start"] is not None]
+        spans = [(min(a for a, _ in found), max(b for _, b in found))] if found else [tuple(c["window"])]
+        where = "切分沒有手拿包裝的時段，改看步驟 9 開始到步驟 10 結束" if found else "切分沒有步驟 9、10，改看評分區間"
+    times = "、".join(f"{_fmt_t(a)}–{_fmt_t(b)}" for a, b in spans)
+    return {**c, "needs_review": True,
+            "review_reason": f"取出後沒看到固定；取出前有沒有隔著包裝固定要人工看（{where}）：{times}"}
 
 
 async def run_task(task: dict, video_id: str, runner: GradingRunner, boxes: dict, segmentation: dict,
@@ -387,7 +407,7 @@ async def run_task(task: dict, video_id: str, runner: GradingRunner, boxes: dict
         log_path.write_text(json.dumps(transcript, ensure_ascii=False, indent=1), encoding="utf-8")
         if not errors and action["action"] == "final":
             windows = {c["criterion_id"]: c["window"] for c in task["criteria"]}
-            return [{**c, "source": "vlm", "window": windows[c["criterion_id"]]}
+            return [_package_review({**c, "source": "vlm", "window": windows[c["criterion_id"]]}, segmentation)
                     for c in action["criteria"]], state
         if not errors:
             try:
