@@ -208,12 +208,20 @@ class TaskState:
 
 
 def _segment_lines(task: dict, segmentation: dict) -> list[str]:
+    """Only the segmentation's times. Its status and evidence are another model's description of the
+    same frames, often already stating the answer ("單手持空針將針頭套回", "由針心處放回"); the
+    grading agent echoed it instead of judging the frames (10b on VID_0098), and the two models
+    stop being independent checks of each other."""
     lines = []
     for sid in sorted({*task["window_steps"], *(c["step_id"] for c in task["criteria"])}):
         for e in (e for e in segmentation["steps"] if e["step_id"] == sid):
-            span = (f"{_fmt_t(e['start'])}–{_fmt_t(e['end'])}" if e["start"] is not None
-                    else f"無時間（logical_window={e.get('logical_window')}）")
-            lines.append(f"  步驟 {sid}：{e['status']}，{span}，依據：{e['evidence']}")
+            if e["start"] is not None:
+                lines.append(f"  步驟 {sid}：{_fmt_t(e['start'])}–{_fmt_t(e['end'])}")
+            elif e.get("logical_window"):
+                lo, hi = e["logical_window"]
+                lines.append(f"  步驟 {sid}：沒有確切時間，大約在 {_fmt_t(lo)}–{_fmt_t(hi)} 之間")
+            else:
+                lines.append(f"  步驟 {sid}：沒有時間")
     return lines
 
 
@@ -253,7 +261,7 @@ def build_task_content(task: dict, video_id: str, duration: float, state: TaskSt
           + (f"；要計時：final 填 span=[開始, 結束]（影片秒數），滿 {c['min_seconds']:g} 秒才是正確"
              if c.get("min_seconds") else "")
           for c in task["criteria"]),
-        "切分結果（相關步驟）：",
+        "切分結果（相關步驟的時間；只有時間，做了什麼要自己從畫面判斷）：",
         *_segment_lines(task, segmentation),
         "動作峰值（程式依 hands_box 內的畫面變化算出，只表示這些時間手有明顯動作，不代表是哪個動作；"
         "短動作請用 burst 或相鄰時間點的 zoom 在峰值附近確認）："

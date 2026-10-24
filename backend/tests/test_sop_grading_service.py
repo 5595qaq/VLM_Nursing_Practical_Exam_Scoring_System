@@ -532,3 +532,14 @@ async def test_invalid_graded_criteria_are_not_kept_for_the_next_attempt(video, 
         await grading.run_sop_grading("gs://test-bucket/videos/x_src.mp4", "vid", 0, segmentation(),
                                       model_call=model)
     assert failed.value.partial is None
+
+
+async def test_tasks_get_only_the_segmentation_times(video, tmp_path):
+    # The segmentation's evidence often states the answer (e.g. "單手持空針將針頭套回"); it stays out
+    seg = segmentation()
+    seg["steps"][1].update(status="not_visually_determinable", start=None, end=None, logical_window=[2.0, 5.0])
+    model = FakeModel()
+    await grading.run_grading(video, seg, tmp_path, model, steps={2, 12})
+    text = "\n".join(r[0]["text"] for r in model.requests)
+    assert "  步驟 12：00:21.6–00:23.1" in text and "大約在 00:02.0–00:05.0 之間" in text
+    assert "global #" not in text and "依據" not in text and "detected" not in text
