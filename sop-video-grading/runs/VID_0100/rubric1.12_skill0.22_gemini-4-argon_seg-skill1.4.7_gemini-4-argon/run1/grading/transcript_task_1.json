@@ -1,0 +1,14 @@
+[
+ {
+  "turn": 1,
+  "seconds": 70.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 16425,
+  "output_tokens": 651,
+  "materials": [
+   "clip@0-17（context box，有聲音；片段內 00:00 ＝ 影片 00:00.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"1a\", \"verdict\": \"錯誤\", \"explanation\": \"00:02.5 雙手開始互搓，00:13.0 雙手分開，共約 10.5 秒，不足 15 秒。\", \"evidence\": [\"clip@0-17\"], \"confidence\": 0.95, \"reason\": null, \"span\": [2.5, 13.0]}, {\"criterion_id\": \"1b\", \"verdict\": \"正確\", \"explanation\": \"內、外、夾、弓、大、立、腕七個動作都有做到：00:02.5–00:03.0 內（掌心互搓）、00:03.5–00:05.0 外（手心搓手背）、00:05.5 夾（十指交叉搓指縫）、00:06.0–00:07.0 弓（彎曲手指搓指背）、00:08.0–00:08.5 大（握住大拇指旋轉）、00:09.0–00:10.5 立（指尖立在掌心搓）、00:11.0–00:12.5 腕（搓手腕）。\", \"evidence\": [\"clip@0-17\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
