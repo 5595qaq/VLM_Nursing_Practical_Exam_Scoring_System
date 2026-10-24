@@ -186,13 +186,16 @@ class GradingRunner(ScriptRunner):
         return Material(out, f"burst@{start:g}-{end:g}（原始解析度，{len(times)} 格，每 {step:.2f} s）{cells} "
                              f"region={_fmt_box(region)}")
 
-    def clip(self, start: float, end: float, box) -> tuple[Material, dict]:
+    def clip(self, start: float, end: float, box, region=None) -> tuple[Material, dict]:
+        """A clip of the context box, or of `region` inside it (original resolution) when given."""
         out = self._next(f"clip_{start:g}-{end:g}.mp4")
-        info = json.loads(self._grading_script("clip.py", "--start", start, "--end", end,
-                                               "--box", ",".join(map(str, box)), "--out", out))
+        crop = (["--box", ",".join(map(str, region)), "--rel-to-crop", ",".join(map(str, box))] if region
+                else ["--box", ",".join(map(str, box))])
+        info = json.loads(self._grading_script("clip.py", "--start", start, "--end", end, *crop, "--out", out))
         self.has_audio = info["has_audio"]
         sound = "有聲音" if info["has_audio"] else "無音軌（原始影片沒有錄音）"
-        label = (f"clip@{info['start']:g}-{info['end']:g}（context box，{sound}；"
+        where = f"region={_fmt_box(region)}，原始解析度裁切" if region else "context box"
+        label = (f"clip@{info['start']:g}-{info['end']:g}（{where}，{sound}；"
                  f"片段內 00:00 ＝ 影片 {_fmt_t(info['start'])}）")
         return Material(out, label, "video"), info
 
@@ -206,12 +209,20 @@ class TaskState:
 
 
 def _segment_lines(task: dict, segmentation: dict) -> list[str]:
+    """Only the segmentation's times. Its status and evidence are another model's description of the
+    same frames, often already stating the answer ("單手持空針將針頭套回", "由針心處放回"); the
+    grading agent echoed it instead of judging the frames (10b on VID_0098), and the two models
+    stop being independent checks of each other."""
     lines = []
     for sid in sorted({*task["window_steps"], *(c["step_id"] for c in task["criteria"])}):
         for e in (e for e in segmentation["steps"] if e["step_id"] == sid):
-            span = (f"{_fmt_t(e['start'])}–{_fmt_t(e['end'])}" if e["start"] is not None
-                    else f"無時間（logical_window={e.get('logical_window')}）")
-            lines.append(f"  步驟 {sid}：{e['status']}，{span}，依據：{e['evidence']}")
+            if e["start"] is not None:
+                lines.append(f"  步驟 {sid}：{_fmt_t(e['start'])}–{_fmt_t(e['end'])}")
+            elif e.get("logical_window"):
+                lo, hi = e["logical_window"]
+                lines.append(f"  步驟 {sid}：沒有確切時間，大約在 {_fmt_t(lo)}–{_fmt_t(hi)} 之間")
+            else:
+                lines.append(f"  步驟 {sid}：沒有時間")
     return lines
 
 
@@ -251,7 +262,7 @@ def build_task_content(task: dict, video_id: str, duration: float, state: TaskSt
           + (f"；要計時：final 填 span=[開始, 結束]（影片秒數），滿 {c['min_seconds']:g} 秒才是正確"
              if c.get("min_seconds") else "")
           for c in task["criteria"]),
-        "切分結果（相關步驟）：",
+        "切分結果（相關步驟的時間；只有時間，做了什麼要自己從畫面判斷）：",
         *_segment_lines(task, segmentation),
         "動作峰值（程式依 hands_box 內的畫面變化算出，只表示這些時間手有明顯動作，不代表是哪個動作；"
         "短動作請用 burst 或相鄰時間點的 zoom 在峰值附近確認）："
@@ -327,15 +338,45 @@ async def _run_material_action(action: dict, runner: GradingRunner, boxes: dict,
         state.log.append(f"burst {action['start']:g}-{action['end']:g} n={n} region={_fmt_box(action['region'])}")
         feedback = f"burst 已完成（引用格式 burst@{action['start']:g}-{action['end']:g} #k）。"
     else:
-        material, info = await asyncio.to_thread(runner.clip, action["start"], action["end"], boxes["context"])
+        region = action.get("region")
+        material, info = await asyncio.to_thread(runner.clip, action["start"], action["end"], boxes["context"],
+                                                 region)
         material.fps = action.get("fps", CLIP_FPS)
         materials.append(material)
-        state.log.append(f"clip {info['start']:g}-{info['end']:g} fps={material.fps:g}")
+        state.log.append(f"clip {info['start']:g}-{info['end']:g} fps={material.fps:g}"
+                         + (f" region={_fmt_box(region)}" if region else ""))
         feedback = f"clip 已完成（引用格式 clip@{info['start']:g}-{info['end']:g}）。"
-        if material.fps >= load_grading_module("validate_grading_action").FAST_CLIP_FPS:
-            state.used["fast_clip"] = state.used.get("fast_clip", 0) + 1  # 10b 錯誤 needs one (validate_grading_action)
     state.used[name] += 1
     return feedback
+
+
+FIRST_SYRINGE_USE_STEP = 13  # uncapping the syringe to draw the diluent
+
+
+def _package_review(c: dict, segmentation: dict) -> dict:
+    """10b 無法判定 → needs_review with every span the hands held the syringe wrapper (the segmentation's
+    package_spans; without them step 9's start to step 10's end, else the criterion window). Fixing the
+    needle through the wrapper is legal, but the grading agent read those frames as twisting or tearing
+    from run to run, so it judges only after the syringe is out and a person looks at the rest. Only spans
+    starting before the syringe's first use (step 13, uncapping it to draw the diluent) are listed; the
+    later ones are putting it back in the wrapper (VID_0098 listed 9 spans up to 06:25)."""
+    if c["criterion_id"] not in load_grading_module("validate_grading").AFTER_REMOVAL or c["verdict"] != "無法判定":
+        return c
+    first_use = min((e["start"] if e["start"] is not None else e["logical_window"][0]
+                     for e in segmentation["steps"] if e["step_id"] == FIRST_SYRINGE_USE_STEP
+                     and (e["start"] is not None or e.get("logical_window"))), default=None)
+    spans = [(s["start"], s["end"]) for s in segmentation.get("package_spans") or []
+             if first_use is None or s["start"] < first_use]
+    where = "切分標出的手拿空針包裝時段" + (f"，第一次使用空針 {_fmt_t(first_use)} 之前" if first_use is not None else "")
+    if not spans:
+        found = [(e["start"], e["end"]) for e in segmentation["steps"]
+                 if e["step_id"] in (9, 10) and e["start"] is not None]
+        spans = [(min(a for a, _ in found), max(b for _, b in found))] if found else [tuple(c["window"])]
+        where = "切分沒有手拿包裝的時段，改看切分步驟 9、10 的時間範圍" if found else "切分沒有步驟 9、10 的時間，改看評分區間"
+    times = "、".join(f"{_fmt_t(a)}–{_fmt_t(b)}" for a, b in spans)
+    agent = f"；評分 agent：{c['review_reason']}" if c.get("review_reason") else ""
+    return {**c, "needs_review": True,
+            "review_reason": f"取出後沒看到固定；取出前有沒有隔著包裝固定要人工看（{where}）：{times}{agent}"}
 
 
 async def run_task(task: dict, video_id: str, runner: GradingRunner, boxes: dict, segmentation: dict,
@@ -374,7 +415,7 @@ async def run_task(task: dict, video_id: str, runner: GradingRunner, boxes: dict
         log_path.write_text(json.dumps(transcript, ensure_ascii=False, indent=1), encoding="utf-8")
         if not errors and action["action"] == "final":
             windows = {c["criterion_id"]: c["window"] for c in task["criteria"]}
-            return [{**c, "source": "vlm", "window": windows[c["criterion_id"]]}
+            return [_package_review({**c, "source": "vlm", "window": windows[c["criterion_id"]]}, segmentation)
                     for c in action["criteria"]], state
         if not errors:
             try:

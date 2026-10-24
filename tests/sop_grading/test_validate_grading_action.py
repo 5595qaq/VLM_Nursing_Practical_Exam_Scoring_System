@@ -148,16 +148,26 @@ def test_pull_back_wrong_needs_a_burst_first():
     assert validate(action, task, FRESH, DURATION) == []  # 正確 needs no burst
 
 
-def test_twist_wrong_needs_a_fast_clip_first():
-    # VID_0098: a 2 fps clip showed the needle twisted at 01:01–01:13 as only tearing the wrapper
-    task = {"window": [59.0, 79.0], "criteria": [{"criterion_id": "10b", "window": [59.0, 79.0]}]}
+@pytest.mark.parametrize("verdict, reason, ok", [
+    ("正確", None, True), ("無法判定", "資訊不足", True), ("錯誤", None, False), ("部分正確", None, False)])
+def test_fixing_the_needle_is_correct_or_undetermined(verdict, reason, ok):
+    # rubric 1.16: 10b is judged only after the syringe is out; fixing it through the wrapper is legal
+    # but the agent read those frames as twisting or tearing from run to run (VID_0098, 0072, 0091)
+    task = {"window": [74.0, 81.0], "criteria": [{"criterion_id": "10b", "window": [74.0, 81.0]}]}
     action = {"action": "final", "criteria": [
-        {"criterion_id": "10b", "verdict": "錯誤", "confidence": 0.8, "reason": None,
-         "explanation": "01:02–01:12 雙手只在撕包裝，沒有旋緊。", "evidence": ["clip@62-79"]}]}
-    assert any("fps 5" in e for e in validate(action, task, {**FRESH, "clip": 1}, DURATION))
-    assert validate(action, task, {**FRESH, "clip": 1, "fast_clip": 1}, DURATION) == []
-    action["criteria"][0].update(verdict="正確", explanation="01:08–01:12 一手不動、另一手來回旋轉。")
-    assert validate(action, task, FRESH, DURATION) == []  # 正確 needs no fast clip
+        {"criterion_id": "10b", "verdict": verdict, "confidence": 0.8, "reason": reason,
+         "explanation": "01:16 空針離開包裝，01:17–01:19 一手握針座、另一手旋緊。", "evidence": ["clip@74-81"]}]}
+    errors = validate(action, task, FRESH, DURATION)
+    assert (errors == []) if ok else any("only 正確" in e for e in errors), errors
+
+
+def test_clip_region_and_high_fps_limits():
+    hands = {"action": "clip", "start": 150, "end": 158, "fps": 10, "region": [0.3, 0.4, 0.6, 0.7], "reason": "旋緊"}
+    assert validate(hands, TASK, FRESH, DURATION) == []
+    assert_rejected({**hands, "end": 158.5}, "at most 8s")
+    assert validate({**hands, "end": 170, "fps": 5}, TASK, FRESH, DURATION) == []  # fps 5 keeps the 60 s limit
+    assert_rejected({**hands, "region": [0.0, 0.0, 0.9, 0.9]}, "region too large")
+    assert_rejected({**hands, "fps": 11}, "schema")
 
 
 def test_rolling_needs_a_clip_first():

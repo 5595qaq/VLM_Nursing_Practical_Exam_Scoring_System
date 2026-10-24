@@ -115,6 +115,15 @@ def _check_rules(result: dict) -> list[str]:
         if not any(_overlaps(span, o) for o in observations if o["type"] in SPAN_OBSERVATION_TYPES):
             errors.append(f"{where}: needs an overlapping extra_action or left_work_area observation")
 
+    package_spans = result.get("package_spans", [])
+    for i, span in enumerate(package_spans):
+        where = f"package_spans[{i}]"
+        errors.extend(_check_span(where, span["start"], span["end"], duration))
+        if span["start"] == span["end"]:
+            errors.append(f"{where}: start {span['start']} must be before end {span['end']}")
+        if i and span["start"] < package_spans[i - 1]["end"]:
+            errors.append(f"{where}: spans must be in time order and not overlap; merge it with the one before")
+
     zoom_log = result["zoom_log"]
     if len(zoom_log) > MAX_ZOOM_CALLS:
         errors.append(f"zoom_log: {len(zoom_log)} entries exceeds zoom limit {MAX_ZOOM_CALLS}")

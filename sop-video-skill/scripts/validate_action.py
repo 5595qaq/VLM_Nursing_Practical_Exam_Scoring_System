@@ -72,6 +72,10 @@ def validate(act, state, duration=None):
         except ImportError:
             return errs, warns  # needs jsonschema; already warned above
         errs += [f"result: {e}" for e in validate_result(act["result"])]
+        if "package_spans" not in act["result"]:
+            # Optional in schema.json only for older results and labels_to_segmentation.py.
+            errs.append("result: package_spans is required (every span the hands hold the syringe wrapper; "
+                        "[] if never)")
         meta_duration = act["result"]["meta"]["duration"]
         if duration and abs(meta_duration - duration) > 0.5:
             errs.append(f"result: meta.duration {meta_duration} does not match the video ({duration:.1f} s)")

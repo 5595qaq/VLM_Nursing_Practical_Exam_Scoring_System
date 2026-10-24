@@ -200,6 +200,30 @@
         }
       }
     },
+    "package_spans": {
+      "type": "array",
+      "description": "每一段手上拿著空針包裝的時間（拿起 → 放下或空針完全離開包裝）；評分把它交給人工核對取出前有沒有隔著包裝固定針頭。模型輸出必填（validate_action.py），舊切分與標記表轉出的切分可省略",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "start",
+          "end",
+          "evidence"
+        ],
+        "properties": {
+          "start": {
+            "type": "number"
+          },
+          "end": {
+            "type": "number"
+          },
+          "evidence": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "zoom_log": {
       "type": "array",
       "items": {
