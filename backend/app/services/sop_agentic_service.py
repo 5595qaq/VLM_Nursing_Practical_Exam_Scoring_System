@@ -32,6 +32,9 @@ from app.services.sop_skill_service import (SkillRunError, _fmt_t, _GEMINI_REFUS
 
 MODES = ("e2e", "task")
 MEDIA_PROCESSING = ("agentic", "static")
+# Part.media_resolution; unset is the model's default, which for video is ~70 tokens per frame (low):
+# VID_0072 at 2 fps cost ~190 tokens per second of video including audio.
+MEDIA_RESOLUTIONS = ("low", "medium", "high", "ultra_high")
 MAX_RETRIES = 2  # invalid replies sent back with the errors before the request fails
 # Empty replies (no candidate text and no usage) are resent unchanged, on a budget of their own: in
 # task mode on VID_0072 (2026-10-24) 6 of 15 first requests came back empty after 290-580 s.
@@ -80,12 +83,13 @@ def build_system_prompt(mode: str) -> str:
 
 
 def video_part(uri: str, media_processing: str, start: float | None = None, end: float | None = None,
-               fps: float | None = None):
+               fps: float | None = None, resolution: str | None = None):
     from google.genai import types
     offsets = {"start_offset": f"{start:g}s", "end_offset": f"{end:g}s"} if start is not None else {}
     meta = types.VideoMetadata(**offsets, **({"fps": fps} if fps else {})) if offsets or fps else None
+    level = types.PartMediaResolution(level=f"MEDIA_RESOLUTION_{resolution.upper()}") if resolution else None
     return types.Part(file_data=types.FileData(file_uri=uri, mime_type="video/mp4"), video_metadata=meta,
-                      media_processing=media_processing.upper())
+                      media_processing=media_processing.upper(), media_resolution=level)
 
 
 def _int(value) -> int:
@@ -220,7 +224,7 @@ def task_text(task: dict, video_id: str, duration: float, segmentation: dict) ->
 
 
 def make_task_runner(video_uri: str, media_processing: str, call: AgenticCall | None = None,
-                     fps: float | None = None):
+                     fps: float | None = None, resolution: str | None = None):
     """A run_task replacement for sop_grading_service.run_grading (task_runner=...)."""
     call = call or agentic_call
 
@@ -240,7 +244,7 @@ def make_task_runner(video_uri: str, media_processing: str, call: AgenticCall | 
 
         a, b = task["window"]
         contents = [_user(task_text(task, video_id, duration, segmentation),
-                          video_part(video_uri, media_processing, a, b, fps))]
+                          video_part(video_uri, media_processing, a, b, fps, resolution))]
         action = await _converse(system, contents, call, check, workdir / f"transcript_task_{task['key']}.json",
                                  state, f"task {task['key']}")
         windows = {c["criterion_id"]: c["window"] for c in task["criteria"]}
@@ -250,9 +254,10 @@ def make_task_runner(video_uri: str, media_processing: str, call: AgenticCall | 
 
 
 async def grade_tasks(video_path: Path, video_uri: str, segmentation: dict, workdir: Path, media_processing: str,
-                      call: AgenticCall | None = None, fps: float | None = None) -> dict:
+                      call: AgenticCall | None = None, fps: float | None = None,
+                      resolution: str | None = None) -> dict:
     return await sop_grading_service.run_grading(
-        video_path, segmentation, workdir, task_runner=make_task_runner(video_uri, media_processing, call, fps),
+        video_path, segmentation, workdir, task_runner=make_task_runner(video_uri, media_processing, call, fps, resolution),
         system=build_system_prompt("task"))
 
 
@@ -362,14 +367,15 @@ def merge_e2e(reply: dict, video_id: str, duration: float, rubric: dict) -> tupl
 
 
 async def grade_whole_video(video_uri: str, video_id: str, duration: float, workdir: Path, media_processing: str,
-                            call: AgenticCall | None = None, fps: float | None = None) -> dict:
+                            call: AgenticCall | None = None, fps: float | None = None,
+                            resolution: str | None = None) -> dict:
     """e2e mode. Returns {"segmentation", "result", "tasks", "failed_tasks", "validation_errors", "usage"}
     like run_grading (plus the segmentation), with the tool-use breakdown in the transcript."""
     rubric = load_grading_module("rubric").load_rubric()
     validate = load_grading_module("validate_grading")
     workdir.mkdir(parents=True, exist_ok=True)
     state = TaskState()
-    contents = [_user(e2e_text(video_id, duration, rubric), video_part(video_uri, media_processing, fps=fps))]
+    contents = [_user(e2e_text(video_id, duration, rubric), video_part(video_uri, media_processing, fps=fps, resolution=resolution))]
     out: dict = {}
 
     def check(text: str):

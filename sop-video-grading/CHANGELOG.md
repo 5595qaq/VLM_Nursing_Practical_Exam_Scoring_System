@@ -3,6 +3,7 @@
 ## 未發布（評分 agent 服務端修正，SKILL／rubric 版本不變）
 
 - **對照實驗：Gemini 代理式影片解讀（2026-10-24）：** 新增 `agentic/PROMPT.md`（版本 0.1）、`backend/app/services/sop_agentic_service.py`、`backend/app/sop_agentic_cli.py` 與 `scripts/compare_arms.py`。`--mode e2e` 一次送整支影片（模型切分＋評分，程式標準仍由 `rules.py` 判定），`--mode task` 沿用切分紀錄、每個任務只送區間影片；`--media-processing static` 為控制組。紀錄用自己的版本資料夾。`run_grading` 多了 `task_runner`／`system` 參數（預設不變），`build_task_content` 的標準列表抽成 `_criteria_lines`，`sop_grading_cli.Recorder` 可傳入版本；評分 agent 的行為不變。
+  - 新增 `--media-resolution`（`Part.media_resolution`，寫進版本）。預設的影片解析度約每格 70 tokens，VID_0072 在 2 fps 下每秒影片約 190 tokens（含聲音）；實驗改用 high。
   - 提示詞 0.2：不再寫「可以自己跳轉放大」（static 沒有這個能力），「用 zoom／burst 確認」改成「仔細看影片裡的那幾秒」。新增 `--fps`（static 預設 2），寫進版本的模型名稱。
   - 空回覆（沒有文字也沒有用量；task 模式第 0 階段 15 個請求有 6 個在 290–580 秒後這樣回來）改為原請求重送（最多連續 2 次），不再把空的模型回合接進對話；對話紀錄的 `diag` 記 finish reason、candidate 數、part 種類、HTTP 嘗試次數與 response id，CLI 印出每次 HTTP 嘗試的狀態碼。
 - **評分紀錄沿用切分（2026-10-22）：** 切分版本標記加上切分模型（`seg-skill1.4.5_gemini-4-argon`；前端紀錄 ZIP 的資料夾同步），既有的 `runs/VID_0081` 紀錄改名並更新 `versions.segmentation`（它的 run 紀錄寫的就是 `sop-video-skill 1.4.5 gemini-4-argon`）。只改評分版本時，`sop_grading_cli` 改為複製同一影片檔、同一切分版本的舊紀錄的 `segmentation.json`，不再重新切分（VID_0081 約省 52 萬 input tokens）；開始與結束時印出沿用提示，`record.json` 記下 `segmentation_from`，`run_record.py` 的列表也標明。`--new-segmentation` 強制重新切分（紀錄已存在時在計算 SHA-256 前就拒絕）。`-dirty`、commit 不明或執行中規則被改過的紀錄不會被沿用；同一切分版本、還沒寫進紀錄的本機切分會保留；換下的本機切分依序存成 `segmentation.prev*.json`，不覆蓋。前端流程不變。0.12 說明裡「`--out` 裡沒有同一切分版本的 `segmentation.json` 時還會重新切分」的情況因此不再發生，但只有步驟 20 的新紀錄仍不建議寫進 `runs/`。

@@ -165,10 +165,11 @@ async def test_task_mode_one_request_per_task_with_window(tmp_path, video):  # n
 async def test_task_mode_rejects_tool_actions(tmp_path, video):  # noqa: F811
     zoom = {"action": "zoom", "times": [5.0], "region": [0, 0, 0.5, 0.5], "reason": "x"}
     call = FakeCall(zoom, lambda t: {"action": "final", "criteria": criteria_for(t)})
-    out = await agentic.grade_tasks(video, URI, segmentation(), tmp_path, "static", call, fps=2.0)
+    out = await agentic.grade_tasks(video, URI, segmentation(), tmp_path, "static", call, fps=2.0, resolution="high")
     assert out["failed_tasks"] == []
     part = call.requests[0][1][0].parts[1]
     assert part.media_processing.value == "STATIC" and part.video_metadata.fps == 2.0
+    assert part.media_resolution.level.value == "MEDIA_RESOLUTION_HIGH"
     assert part.video_metadata.start_offset.endswith("s")
     logs =[json.loads(p.read_text(encoding="utf-8")) for p in tmp_path.glob("transcript_task_*.json")]
     rejected = [log for log in logs if len(log) == 2]  # tasks run concurrently: any one got the zoom
@@ -182,6 +183,8 @@ def test_cli_versions_never_match_the_tool_agent():
     assert re.fullmatch(r"rubric[\d.]+_skillagentic[\d.]+-e2e-s[\d.]+_.+-agentic_seg-agentic-e2e", e2e.name)
     static = sop_agentic_cli.versions("task", "static", "skill1.4.7_gemini-4-argon", 2.0)
     assert static["model"].endswith("-static-fps2") and static["skill"].startswith("agentic")
+    high = sop_agentic_cli.versions("task", "static", "skill1.4.7_gemini-4-argon", 2.0, "high")
+    assert high["model"].endswith("-static-fps2-high")
     assert sop_agentic_cli.versions("e2e", "agentic", "agentic-e2e")["model"].endswith("-agentic")
 
 

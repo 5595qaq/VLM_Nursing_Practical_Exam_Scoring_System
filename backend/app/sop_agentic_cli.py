@@ -11,6 +11,8 @@ usage: python -m app.sop_agentic_cli VIDEO --video-id VID_0083 --out WORK/VID_00
   --media-processing static: the same requests with fixed-rate frames at --fps (default 2, the grading
                agent's clip rate; agentic ignores --fps unless given). --mode task --media-processing static
                is the grading agent's tasks with a video clip instead of images and tools.
+  --media-resolution low|medium|high|ultra_high: Part.media_resolution (unset = the model's default,
+               ~70 tokens per video frame); written into the version like --fps.
 
 The normalized video is uploaded to GCS_BUCKET_NAME (sop_runs/agentic/), since Gemini reads it by URI.
 Runs are recorded in sop-video-grading/runs/ like sop_grading_cli's, with their own version:
@@ -36,17 +38,19 @@ from app.sop_grading_cli import Recorder, _duration, _git_commit, _rr, segmentat
 E2E_SEGMENTATION = "agentic-e2e"
 
 
-def versions(mode: str, media_processing: str, seg_tag: str, fps: float | None = None) -> dict:
+def versions(mode: str, media_processing: str, seg_tag: str, fps: float | None = None,
+             resolution: str | None = None) -> dict:
     rubric = sop_grading_service.load_grading_module("rubric").load_rubric()
     skill = _rr().skill_version(sop_grading_service.grading_dir() / "SKILL.md")
     return {"rubric": rubric["version"],
             "skill": f"agentic{sop_agentic_service.prompt_version()}-{mode}-s{skill}",
-            "model": f"{settings.SOP_SKILL_GEMINI_MODEL}-{media_processing}" + (f"-fps{fps:g}" if fps else ""),
+            "model": f"{settings.SOP_SKILL_GEMINI_MODEL}-{media_processing}" + (f"-fps{fps:g}" if fps else "")
+                     + (f"-{resolution}" if resolution else ""),
             "segmentation": seg_tag}
 
 
 async def run(video: Path, video_id: str, out: Path, mode: str, media_processing: str,
-              recorder: Recorder | None, fps: float | None = None) -> dict:
+              recorder: Recorder | None, fps: float | None = None, resolution: str | None = None) -> dict:
     out.mkdir(parents=True, exist_ok=True)
     started = time.time() - 1  # files written from now on belong to this run (see Recorder.save)
     seg_path = out / "segmentation.json"
@@ -69,15 +73,16 @@ async def run(video: Path, video_id: str, out: Path, mode: str, media_processing
 
     work = out / "grading"
     work.mkdir(exist_ok=True)
-    print("grading", video_id, "mode", mode, "media_processing", media_processing, "fps", fps, flush=True)
+    print("grading", video_id, "mode", mode, "media_processing", media_processing, "fps", fps, "resolution", resolution, flush=True)
     clock = time.monotonic()  # model time only (not normalizing or uploading)
     if mode == "e2e":
         outcome = await sop_agentic_service.grade_whole_video(uri, video_id, _duration(source), work,
-                                                              media_processing, fps=fps)
+                                                              media_processing, fps=fps, resolution=resolution)
         seg_path.write_text(json.dumps(outcome["segmentation"], ensure_ascii=False, indent=1), encoding="utf-8")
     else:
         segmentation = json.loads(seg_path.read_text(encoding="utf-8"))
-        outcome = await sop_agentic_service.grade_tasks(source, uri, segmentation, work, media_processing, fps=fps)
+        outcome = await sop_agentic_service.grade_tasks(source, uri, segmentation, work, media_processing, fps=fps,
+                                                        resolution=resolution)
     outcome["usage"]["wall_seconds"] = round(time.monotonic() - clock, 1)
     (out / "grading.json").write_text(json.dumps(outcome["result"], ensure_ascii=False, indent=1), encoding="utf-8")
     if recorder:
@@ -98,6 +103,8 @@ def main() -> None:
     ap.add_argument("--media-processing", choices=sop_agentic_service.MEDIA_PROCESSING, default="agentic")
     ap.add_argument("--fps", type=float, help="frames per second of the video; default 2 with static, "
                     "the model's own choice with agentic")
+    ap.add_argument("--media-resolution", choices=sop_agentic_service.MEDIA_RESOLUTIONS,
+                    help="Part.media_resolution of the video (default: the model's, low for video)")
     ap.add_argument("--by", default=os.getenv("SOP_RUN_BY", ""), help="who runs it (default $SOP_RUN_BY)")
     ap.add_argument("--commit", default=os.getenv("GIT_COMMIT", "") or _git_commit(),
                     help="code version (default $GIT_COMMIT, else git rev-parse HEAD with -dirty)")
@@ -113,11 +120,12 @@ def main() -> None:
     if _rr().VIDEO_ID_RE.fullmatch(a.video_id):
         recorder = Recorder(a.video, a.video_id, a.runs_dir or sop_grading_service.grading_dir() / "runs",
                             a.by.strip(), a.commit.strip(), seg_tag,
-                            versions(a.mode, a.media_processing, seg_tag, fps))
+                            versions(a.mode, a.media_processing, seg_tag, fps, a.media_resolution))
         recorder.check(None, a.force, a.allow_dirty)
     else:
         print(f"{a.video_id} 不是標記表的影片ID（VID_xxxx），不寫評分紀錄", flush=True)
-    outcome = asyncio.run(run(a.video, a.video_id, a.out, a.mode, a.media_processing, recorder, fps))
+    outcome = asyncio.run(run(a.video, a.video_id, a.out, a.mode, a.media_processing, recorder, fps,
+                             a.media_resolution))
     print(json.dumps({k: outcome[k] for k in ("tasks", "failed_tasks", "validation_errors", "usage")},
                      ensure_ascii=False, indent=1))
 
