@@ -41,14 +41,15 @@ RUNS_DIR = Path(__file__).resolve().parent.parent / "runs"
 
 def arm_runs(runs_dir: Path, folder: str) -> dict[str, list[tuple[dict, set[int] | None]]]:
     """{video_id: [(grading, steps graded in that run), ...]} of one arm, run 1 first. A record with
-    runs that kept no runN/grading.json gives only its latest grading.json, with steps None (unknown)."""
+    runs that kept no runN/grading.json gives only its latest grading.json; steps is None when unknown."""
     found = {}
     for path in sorted(runs_dir.glob(f"VID_*/{folder}/record.json")):
         base = path.parent
         runs = json.loads(path.read_text(encoding="utf-8")).get("runs", [])
         kept = [base / f"run{n}" / "grading.json" for n in range(1, len(runs) + 1)]
         if runs and all(p.exists() for p in kept):
-            found[base.parent.name] = [(json.loads(p.read_text(encoding="utf-8")), set(run.get("steps", [])))
+            found[base.parent.name] = [(json.loads(p.read_text(encoding="utf-8")),
+                                        set(run["steps"]) if "steps" in run else None)
                                        for p, run in zip(kept, runs)]
         elif (base / "grading.json").exists():
             found[base.parent.name] = [(json.loads((base / "grading.json").read_text(encoding="utf-8")), None)]
