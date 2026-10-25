@@ -201,9 +201,7 @@ class GradingRunner(ScriptRunner):
 class TaskState:
     used: dict = field(default_factory=lambda: {"overview": 0, "zoom": 0, "burst": 0, "clip": 0})
     log: list[str] = field(default_factory=list)
-    input_tokens: int = 0
-    output_tokens: int = 0
-    usage: dict = field(default_factory=dict)  # USAGE_KEYS totals (plus tool_use_tokens in sop_agentic_service)
+    usage: dict = field(default_factory=dict)  # USAGE_KEYS totals
 
 
 def _segment_lines(task: dict, segmentation: dict) -> list[str]:
@@ -355,8 +353,6 @@ async def run_task(task: dict, video_id: str, runner: GradingRunner, boxes: dict
         content = build_task_content(task, video_id, duration, state, materials, feedback, segmentation)
         started = time.monotonic()
         reply = await model_call(system, content)
-        state.input_tokens += reply.input_tokens
-        state.output_tokens += reply.output_tokens
         add_usage(state.usage, reply)
         entry = {"turn": turn, "seconds": round(time.monotonic() - started, 1), "stop_reason": reply.stop_reason,
                  **{k: getattr(reply, k, 0) for k in USAGE_KEYS},

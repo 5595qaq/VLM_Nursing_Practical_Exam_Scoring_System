@@ -239,7 +239,7 @@ docker compose run --rm ... worker python -m app.sop_grading_cli ... --new-segme
 docker compose run --rm ... worker python -m app.sop_grading_cli ... --steps 15,17
 python sop-video-grading/scripts/eval_grading.py --labels 標註表.csv sop-video-grading/runs/VID_0083/<版本>/grading.json
 python sop-video-grading/scripts/run_record.py   # 列出所有評分紀錄（影片、版本、評過的步驟、誰、哪天）
-python sop-video-grading/scripts/compare_arms.py --labels 標註表.csv --arm 舊=<版本資料夾> --arm 新=<版本資料夾>   [--group 驗證=VID_0091,VID_0095] [--exclude-steps 2,3,4,29] [--merge-faults-steps 10]   # 比較兩個版本
+python sop-video-grading/scripts/compare_arms.py --labels 標註表.csv --arm 舊=<版本資料夾> --arm 新=<版本資料夾>   [--group 驗證=VID_0091,VID_0095] [--corrections review/fix.json] [--exclude-steps 2,3,4,29] [--merge-faults-steps 10] [--runs-dir DIR] [--json out.json]   # 比較兩個版本（--corrections：人工更正的標記表判定）
 ```
 
 評分紀錄的 token 用量：

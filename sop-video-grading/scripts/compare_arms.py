@@ -5,9 +5,9 @@ usage: python compare_arms.py --labels LABELS.csv --arm NAME=RECORD_FOLDER [--ar
            [--merge-faults-steps 10] [--runs-dir DIR] [--json out.json]
 
 An arm is a record folder name under runs/VID_*/ (e.g. rubric1.12_skill0.22_gemini-4-argon_seg-skill1.4.7_
-gemini-4-argon, or a later rubric / SKILL / model version of the same videos). Each run of an arm is
-runN/grading.json when the run kept one (sop_grading_cli does since 2026-10-25), else the record's
-grading.json as run 1.
+gemini-4-argon, or a later rubric / SKILL / model version of the same videos). The runs of an arm are
+runN/grading.json when every run of the record kept one (sop_grading_cli does since 2026-10-25), else the
+record's grading.json (its latest result) as the only run.
 Only videos every arm graded are compared. Labels are read like eval_grading.py; --corrections is a JSON
 {"VID_0095": {"10": "部分正確"}} of label verdicts a person corrected (kept in the gitignored review/).
 --exclude-steps leaves those steps out of every number (e.g. 2,3,4,29: the old videos did not film the
@@ -20,11 +20,12 @@ Prints, on run 1 of every arm:
   - paired with the first arm: steps only it got right vs only the other got right, with an exact McNemar
     p-value (two-sided binomial; few videos, so read it as a hint, not a verdict);
   - every step where the arms disagree with each other or all miss the label;
-and per arm: run-to-run verdict flips (videos with two or more runs), input / cached input / output tokens
-per video (grading usage plus the segmentation's: the run's segmentation_usage, else its segmentation
-transcript, following segmentation_from when it was copied; cached input only where the record has it) and
-seconds per video (record usage wall_seconds when present, else the sum of the transcripts' per-turn model
-seconds).
+and per arm: run-to-run verdict flips (videos with two or more runs; only the steps every run graded,
+since a --steps rerun carries the other steps over), and run 1's input / cached input / output tokens per
+video (grading usage plus the segmentation's: the run's segmentation_usage, else its segmentation
+transcript, following segmentation_from when it was copied; cached input only where every part has it) and
+model seconds per video (the sum of the transcripts' per-turn seconds; grading tasks run concurrently, so
+this is more than the wall time). Cost is run 1's only: compare arms whose run 1 graded every step.
 """
 import argparse
 import json
@@ -38,27 +39,35 @@ from eval_grading import DEFAULT_EXCLUDE, FAULTS, compare, load_labels, summariz
 RUNS_DIR = Path(__file__).resolve().parent.parent / "runs"
 
 
-def arm_runs(runs_dir: Path, folder: str) -> dict[str, list[dict]]:
-    """{video_id: [grading of run 1, run 2, ...]} of one arm."""
+def arm_runs(runs_dir: Path, folder: str) -> dict[str, list[tuple[dict, set[int] | None]]]:
+    """{video_id: [(grading, steps graded in that run), ...]} of one arm, run 1 first. A record with
+    runs that kept no runN/grading.json gives only its latest grading.json, with steps None (unknown)."""
     found = {}
-    for record in sorted(runs_dir.glob(f"VID_*/{folder}/record.json")):
-        base = record.parent
-        kept = sorted(base.glob("run*/grading.json"), key=lambda p: int(p.parent.name[3:]))
-        paths = kept or ([base / "grading.json"] if (base / "grading.json").exists() else [])
-        if paths:
-            found[base.parent.name] = [json.loads(p.read_text(encoding="utf-8")) for p in paths]
+    for path in sorted(runs_dir.glob(f"VID_*/{folder}/record.json")):
+        base = path.parent
+        runs = json.loads(path.read_text(encoding="utf-8")).get("runs", [])
+        kept = [base / f"run{n}" / "grading.json" for n in range(1, len(runs) + 1)]
+        if runs and all(p.exists() for p in kept):
+            found[base.parent.name] = [(json.loads(p.read_text(encoding="utf-8")), set(run.get("steps", [])))
+                                       for p, run in zip(kept, runs)]
+        elif (base / "grading.json").exists():
+            found[base.parent.name] = [(json.loads((base / "grading.json").read_text(encoding="utf-8")), None)]
     return found
 
 
-def _transcript_cost(paths) -> tuple[int, int, float]:
+def _transcript_cost(paths) -> tuple[int, int | None, int, float]:
+    """(input, cached input or None when a turn predates cached-token accounting, output, seconds)."""
     tin = tout = 0
+    cached = 0
     secs = 0.0
     for path in paths:
         for turn in json.loads(path.read_text(encoding="utf-8")):
             tin += turn.get("input_tokens", 0)
             tout += turn.get("output_tokens", 0)
             secs += turn.get("seconds", 0.0)
-    return tin, tout, secs
+            if cached is not None:
+                cached = cached + turn["cached_input_tokens"] if "cached_input_tokens" in turn else None
+    return tin, cached, tout, secs
 
 
 def run_cost(runs_dir: Path, folder: str, video_id: str) -> dict:
@@ -68,22 +77,19 @@ def run_cost(runs_dir: Path, folder: str, video_id: str) -> dict:
     run = record["runs"][0]
     grading_in, grading_out = run["usage"]["input_tokens"], run["usage"]["output_tokens"]
     cached = run["usage"].get("cached_input_tokens")  # None: the record predates cached-token accounting
-    _, _, grading_secs = _transcript_cost(sorted((base / "run1" / "grading").glob("transcript_task_*.json")))
+    *_, grading_secs = _transcript_cost(sorted((base / "run1" / "grading").glob("transcript_task_*.json")))
     seg = base / "run1" / "seg" / "transcript.json"
     source = record.get("segmentation_from")
     while not seg.exists() and source:  # copied: count the record that paid for it
         seg = runs_dir / video_id / source["record"] / f"run{source['run']}" / "seg" / "transcript.json"
         source = source.get("copied_from")
-    seg_in, seg_out, seg_secs = _transcript_cost([seg]) if seg.exists() else (0, 0, 0.0)
+    seg_in, seg_cached, seg_out, seg_secs = _transcript_cost([seg]) if seg.exists() else (0, 0, 0, 0.0)
     if run.get("segmentation_usage"):  # recorded since 2026-10-25, with the cached tokens
-        seg_in, seg_out = run["segmentation_usage"]["input_tokens"], run["segmentation_usage"]["output_tokens"]
-        if cached is not None:
-            cached += run["segmentation_usage"].get("cached_input_tokens", 0)
-    wall = run["usage"].get("wall_seconds")
+        usage = run["segmentation_usage"]
+        seg_in, seg_out, seg_cached = usage["input_tokens"], usage["output_tokens"], usage.get("cached_input_tokens")
     return {"input": grading_in + seg_in, "output": grading_out + seg_out, "segmentation_input": seg_in,
-            "cached_input": cached,
-            "seconds": wall if wall is not None else round(grading_secs + seg_secs, 1),
-            "seconds_kind": "wall" if wall is not None else "model"}
+            "cached_input": None if cached is None or seg_cached is None else cached + seg_cached,
+            "seconds": round(grading_secs + seg_secs, 1)}
 
 
 def mcnemar(b: int, c: int) -> float:
@@ -104,12 +110,15 @@ def merge_faults(rows: list[dict], merged: set[int]) -> list[dict]:
     return [{**r, "match": same_verdict(r["step_id"], r["human"], r["model"], merged)} for r in rows]
 
 
-def flips(runs: list[dict], skip: set[int] = frozenset(), merged: set[int] = frozenset()) -> tuple[int, int]:
-    """(steps whose verdict differs between any two runs, steps compared), without the `skip` steps."""
+def flips(runs: list[tuple[dict, set[int] | None]], skip: set[int] = frozenset(),
+          merged: set[int] = frozenset()) -> tuple[int, int]:
+    """(steps whose verdict differs between any two runs, steps compared) of arm_runs' runs, without the
+    `skip` steps and only on the steps every run graded (None: all of its steps)."""
     if len(runs) < 2:
         return 0, 0
     verdicts = [{s["step_id"]: ("錯誤" if s["step_id"] in merged and s["verdict"] in FAULTS else s["verdict"])
-                 for s in g["steps"] if s["step_id"] not in skip} for g in runs]
+                 for s in g["steps"] if s["step_id"] not in skip and (graded is None or s["step_id"] in graded)}
+                for g, graded in runs]
     common = set.intersection(*(set(v) for v in verdicts))
     return sum(len({v[sid] for v in verdicts}) > 1 for sid in common), len(common)
 
@@ -124,7 +133,7 @@ def report(labels: dict, arms: dict[str, dict[str, list[dict]]], groups: dict[st
            merged: set[int] = frozenset()) -> tuple[str, dict]:
     names = list(arms)
     videos = sorted(set.intersection(*(set(a) for a in arms.values())) & set(labels))
-    rows = {n: {v: {r["step_id"]: r for r in merge_faults(compare(arms[n][v][0], labels[v]), merged)}
+    rows = {n: {v: {r["step_id"]: r for r in merge_faults(compare(arms[n][v][0][0], labels[v]), merged)}
                 for v in videos} for n in names}
     groups = {g: [v for v in vids if v in videos] for g, vids in groups.items()} or {"全部": videos}
     title = (f"比對影片（{len(videos)} 支）：{', '.join(videos)}"
@@ -151,7 +160,8 @@ def report(labels: dict, arms: dict[str, dict[str, list[dict]]], groups: dict[st
         data["arms"][n]["paired"] = {"only_this": b, "only_first": c, "p": mcnemar(b, c)}
         out.append(f"| {n} | {b} | {c} | {mcnemar(b, c):.3f} |")
 
-    out += ["", "## 穩定性與成本", "", "| 組 | run 間判定翻轉 | input／支 | 快取／支 | output／支 | 秒／支 |",
+    out += ["", "## 穩定性與成本（成本是 run 1）", "",
+            "| 組 | run 間判定翻轉 | input／支 | 快取／支 | output／支 | 模型秒數／支 |",
             "|---|---|---|---|---|---|"]
     for n in names:
         f = [flips(arms[n][v], skip, merged) for v in videos]
@@ -160,15 +170,13 @@ def report(labels: dict, arms: dict[str, dict[str, list[dict]]], groups: dict[st
         avg = lambda k: sum(c[k] for c in cs) / len(cs) if cs else 0  # noqa: E731
         known = cs and all(c["cached_input"] is not None for c in cs)
         cached_avg = sum(c["cached_input"] for c in cs) / len(cs) if known else None
-        kind = "、".join(sorted({c["seconds_kind"] for c in cs}))
         data["arms"][n]["flips"] = {"changed": changed, "compared": compared}
         data["arms"][n]["cost"] = {"input": avg("input"), "cached_input": cached_avg, "output": avg("output"),
-                                   "seconds": avg("seconds"), "segmentation_input": avg("segmentation_input"),
-                                   "seconds_kind": kind}
+                                   "seconds": avg("seconds"), "segmentation_input": avg("segmentation_input")}
         out.append(f"| {n} | {f'{changed}/{compared}' if compared else '（只有 1 次）'} | {avg('input'):,.0f}"
                    f"（切分 {avg('segmentation_input'):,.0f}） | {'—' if cached_avg is None else f'{cached_avg:,.0f}'} | "
                    f"{avg('output'):,.0f} | "
-                   f"{avg('seconds'):,.0f}（{kind}） |")
+                   f"{avg('seconds'):,.0f} |")
 
     out += ["", "## 不一致的步驟（各組判定不同，或都和標記表不同）", "",
             "| 影片 | 步驟 | 類型 | 標記表 | " + " | ".join(names) + " |", "|---" * (4 + len(names)) + "|"]
@@ -213,14 +221,14 @@ def main(argv: list[str]) -> int:
     apply_corrections(labels, a.corrections)
     skip = {int(s) for s in a.exclude_steps.split(",") if s.strip()}
     labels = {v: {sid: x for sid, x in steps.items() if sid not in skip} for v, steps in labels.items()}
-    arms = {}
-    costs = {}
+    arms, folders = {}, {}
     for spec in a.arm:
         name, _, folder = spec.partition("=")
-        arms[name] = arm_runs(a.runs_dir, folder)
-        costs[name] = {v: run_cost(a.runs_dir, folder, v) for v in arms[name]}
+        arms[name], folders[name] = arm_runs(a.runs_dir, folder), folder
         if not arms[name]:
             ap.error(f"no records named {folder} in {a.runs_dir}")
+    videos = set.intersection(*(set(runs) for runs in arms.values())) & set(labels)
+    costs = {n: {v: run_cost(a.runs_dir, folders[n], v) for v in videos} for n in arms}  # compared videos only
     groups = {g.partition("=")[0]: g.partition("=")[2].split(",") for g in a.group}
     merged = {int(s) for s in a.merge_faults_steps.split(",") if s.strip()}
     text, data = report(labels, arms, groups, costs, skip, merged)

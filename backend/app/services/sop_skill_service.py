@@ -348,7 +348,7 @@ async def run_skill_loop(video_path: Path, video_id: str, workdir: Path, model_c
         state.output_tokens += reply.output_tokens
         add_usage(state.usage, reply)
         entry = {"turn": turn, "seconds": round(time.monotonic() - started, 1),
-                 "stop_reason": reply.stop_reason, **{k: getattr(reply, k) for k in USAGE_KEYS},
+                 "stop_reason": reply.stop_reason, **{k: getattr(reply, k, 0) for k in USAGE_KEYS},
                  "reply": reply.text}
         transcript.append(entry)
         _write_transcript(workdir / "transcript.json", transcript)
