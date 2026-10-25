@@ -143,3 +143,13 @@ async def test_gemini_empty_candidate_is_an_invalid_action_not_a_crash(monkeypat
 def test_gemini_parts_rejects_unknown_blocks():
     with pytest.raises(ValueError, match="unsupported content block"):
         skill._gemini_parts([{"type": "vidoe", "path": "clip.mp4"}])
+
+
+async def test_gemini_call_reports_cached_and_thinking_tokens(monkeypatch):
+    reply_with_cache = response()
+    reply_with_cache.usage_metadata.cached_content_token_count = 500
+    fake_client(monkeypatch, reply_with_cache)
+    reply = await skill.gemini_call("SYSTEM", CONTENT)
+    # input_tokens counts every input token; cached_input_tokens says how many of them came from the cache
+    assert (reply.input_tokens, reply.cached_input_tokens) == (1200, 500)
+    assert (reply.output_tokens, reply.thinking_tokens) == (100, 70)

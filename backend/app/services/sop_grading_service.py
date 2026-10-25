@@ -28,9 +28,9 @@ from typing import Awaitable, Callable
 
 from app.config import settings
 from app.services import gcs_service, sop_skill_service
-from app.services.sop_skill_service import (Image, ModelCall, ScriptRunner, SkillRunError, _fmt_box,
-                                            _fmt_t, _image_block, _strip_frontmatter, gemini_call,
-                                            parse_action, skill_dir)
+from app.services.sop_skill_service import (USAGE_KEYS, Image, ModelCall, ScriptRunner, SkillRunError,
+                                            _fmt_box, _fmt_t, _image_block, _strip_frontmatter, add_usage,
+                                            gemini_call, parse_action, skill_dir)
 
 GRADING_CONCURRENCY = 3
 MAX_TASK_TURNS = 8
@@ -204,8 +204,7 @@ class GradingRunner(ScriptRunner):
 class TaskState:
     used: dict = field(default_factory=lambda: {"overview": 0, "zoom": 0, "burst": 0, "clip": 0})
     log: list[str] = field(default_factory=list)
-    input_tokens: int = 0
-    output_tokens: int = 0
+    usage: dict = field(default_factory=dict)  # USAGE_KEYS totals
 
 
 def _segment_lines(task: dict, segmentation: dict) -> list[str]:
@@ -395,10 +394,9 @@ async def run_task(task: dict, video_id: str, runner: GradingRunner, boxes: dict
         content = build_task_content(task, video_id, duration, state, materials, feedback, segmentation)
         started = time.monotonic()
         reply = await model_call(system, content)
-        state.input_tokens += reply.input_tokens
-        state.output_tokens += reply.output_tokens
+        add_usage(state.usage, reply)
         entry = {"turn": turn, "seconds": round(time.monotonic() - started, 1), "stop_reason": reply.stop_reason,
-                 "input_tokens": reply.input_tokens, "output_tokens": reply.output_tokens,
+                 **{k: getattr(reply, k, 0) for k in USAGE_KEYS},
                  "materials": [m.label for m in materials], "reply": reply.text}
         transcript.append(entry)
         log_path.write_text(json.dumps(transcript, ensure_ascii=False, indent=1), encoding="utf-8")
@@ -518,8 +516,10 @@ async def run_grading(video_path: Path, segmentation: dict, workdir: Path, model
 
     failed = [{"task": t["key"], "error": f"{type(exc).__name__}: {exc}"[:500]} for t, _, _, exc in outcomes if exc]
     errors = validate.validate_grading(result, rubric, final=not failed)
-    usage = {"input_tokens": sum(s.input_tokens for _, _, s, _ in outcomes if s),
-             "output_tokens": sum(s.output_tokens for _, _, s, _ in outcomes if s)}
+    usage = dict.fromkeys(USAGE_KEYS, 0)
+    for _, _, s, _ in outcomes:
+        for key, value in (s.usage if s else {}).items():
+            usage[key] = usage.get(key, 0) + value
     (workdir / "grading.json").write_text(json.dumps(result, ensure_ascii=False, indent=1), encoding="utf-8")
     if stop is not None:
         raise GradingIncomplete(f"grading stopped: {type(stop).__name__}: {stop}"[:1000],

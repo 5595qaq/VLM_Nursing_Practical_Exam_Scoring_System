@@ -157,3 +157,24 @@ def test_main_lists_records(tmp_path, capsys):
     rr.main(["run_record.py", str(tmp_path)])
     assert ("VID_0083  rubric 1.7  SKILL 0.11  gemini-4-argon  切分 skill1.4.5_gemini-4-argon  步驟 1,2  （5595QAQ 2026-10-21）"
             in capsys.readouterr().out)
+
+
+def test_segmentation_usage_is_kept_only_when_the_run_segmented():
+    usage = {"input_tokens": 500, "cached_input_tokens": 200, "output_tokens": 40, "thinking_tokens": 10}
+    record = rr.add_run(None, "VID_0083", VERSIONS, "abc", steps=None, failed_tasks=[], by="x", date="d",
+                        commit="c", segmentation="sop-video-skill", usage={"input_tokens": 1},
+                        segmentation_usage=usage)
+    assert record["runs"][0]["segmentation_usage"] == usage
+    record = add(record)  # a later run that reused the segmentation
+    assert "segmentation_usage" not in record["runs"][1]
+
+
+def test_save_keeps_each_runs_grading(tmp_path):
+    folder = tmp_path / "VID_0083" / "v"
+    record = add(None)
+    rr.save(folder, record, {"steps": []}, {"video_id": "VID_0083", "n": 1}, {})
+    record = add(record, steps={17})
+    rr.save(folder, record, {"steps": []}, {"video_id": "VID_0083", "n": 2}, {})
+    assert json.loads((folder / "run1" / "grading.json").read_text(encoding="utf-8"))["n"] == 1
+    assert json.loads((folder / "run2" / "grading.json").read_text(encoding="utf-8"))["n"] == 2
+    assert json.loads((folder / "grading.json").read_text(encoding="utf-8"))["n"] == 2

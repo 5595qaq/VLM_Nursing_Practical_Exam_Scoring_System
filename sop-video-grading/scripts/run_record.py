@@ -8,7 +8,8 @@ sop_grading_cli writes one folder per video and version, committed to Git:
                        segmentation_from when the segmentation was copied from another record
     segmentation.json  the segmentation every run of this record graded (fixed by the first run)
     grading.json       the latest grading result (later runs regrade on top of it)
-    run1/ run2/ ...    that run's model conversations: grading/transcript_task_*.json, probe.json,
+    run1/ run2/ ...    that run's grading.json (the result after that run; records before 2026-10-25 lack
+                       it), model conversations: grading/transcript_task_*.json, probe.json,
                        and seg/transcript.json, motion.json when the run also segmented the video
 The version is rubric.json's version + SKILL.md's version + the grading model + the segmentation source:
 seg-skill<sop-video-skill version>_<segmentation model>, or seg-labels-<hash of the label sheet's times
@@ -132,11 +133,15 @@ def failed_steps(failed_tasks: list[dict]) -> set[int]:
 
 def add_run(record: dict | None, video_id: str, versions: dict, video_sha256: str, *, steps: set[int] | None,
             failed_tasks: list[dict], by: str, date: str, commit: str, segmentation: str,
-            usage: dict, segmentation_from: dict | None = None) -> dict:
+            usage: dict, segmentation_from: dict | None = None,
+            segmentation_usage: dict | None = None) -> dict:
     """Append one run. Its "steps" are the steps graded in it, minus the steps of failed tasks
     (those can be rerun without --force). Each run keeps the SHA-256 of the video it used, which can
     differ from the record's after --force. segmentation_from (segmentation_source) is written once,
-    by the run that creates the record: its segmentation was copied, not made by this record."""
+    by the run that creates the record: its segmentation was copied, not made by this record.
+    usage is the grading's tokens: input_tokens (cached ones included), cached_input_tokens (of those),
+    output_tokens (thinking included), thinking_tokens; older records have only input / output.
+    segmentation_usage (same keys) is set when this run segmented the video."""
     if not record:
         record = {"video_id": video_id, "versions": versions, "video_sha256": video_sha256, "runs": []}
         if segmentation_from:
@@ -145,6 +150,8 @@ def add_run(record: dict | None, video_id: str, versions: dict, video_sha256: st
     record["runs"].append({"run": len(record["runs"]) + 1, "by": by, "date": date, "commit": commit,
                            "video_sha256": video_sha256, "steps": sorted(ran), "failed_tasks": failed_tasks,
                            "segmentation": segmentation, "usage": usage})
+    if segmentation_usage:
+        record["runs"][-1]["segmentation_usage"] = segmentation_usage
     return record
 
 
@@ -166,11 +173,14 @@ def _give_to_owner(paths: list[Path], runs_dir: Path) -> None:
 
 def save(folder: Path, record: dict, segmentation: dict, grading: dict, files: dict[str, Path]) -> Path:
     """Write the record, the segmentation and latest grading, and copy `files` (path inside the run
-    folder -> source) into run<N>/. Returns the run folder."""
+    folder -> source) into run<N>/. run<N>/grading.json keeps the grading as it stood after that run
+    (the folder's grading.json is overwritten by later runs), so runs can be compared. Returns the run folder."""
     run = folder / f"run{record['runs'][-1]['run']}"
     for name, source in files.items():
         (run / name).parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(source, run / name)
+    run.mkdir(parents=True, exist_ok=True)
+    (run / "grading.json").write_text(json.dumps(grading, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     folder.mkdir(parents=True, exist_ok=True)
     for name, data in ((RECORD, record), ("segmentation.json", segmentation), ("grading.json", grading)):
         (folder / name).write_text(json.dumps(data, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")

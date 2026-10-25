@@ -550,3 +550,19 @@ async def test_tasks_get_only_the_segmentation_times(video, tmp_path):
     text = "\n".join(r[0]["text"] for r in model.requests)
     assert "  步驟 12：00:21.6–00:23.1" in text and "大約在 00:02.0–00:05.0 之間" in text
     assert "global #" not in text and "依據" not in text and "detected" not in text
+
+
+async def test_usage_counts_cached_and_thinking_tokens(video, tmp_path):
+    class CachedModel(FakeModel):
+        async def __call__(self, system, content):
+            reply = await super().__call__(system, content)
+            return ModelReply(reply.text, reply.stop_reason, 100, 10, cached_input_tokens=40, thinking_tokens=3)
+
+    model = CachedModel()
+    outcome = await grading.run_grading(video, segmentation(), tmp_path, model)
+    n = len(model.requests)
+    assert outcome["usage"] == {"input_tokens": 100 * n, "cached_input_tokens": 40 * n,
+                                "output_tokens": 10 * n, "thinking_tokens": 3 * n}
+    turn = json.loads((tmp_path / "transcript_task_15-16-17.json").read_text(encoding="utf-8"))[0]
+    assert {k: turn[k] for k in ("input_tokens", "cached_input_tokens", "output_tokens", "thinking_tokens")} == {
+        "input_tokens": 100, "cached_input_tokens": 40, "output_tokens": 10, "thinking_tokens": 3}

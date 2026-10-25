@@ -2,6 +2,18 @@
 
 ## 未發布（評分 agent 服務端修正，SKILL／rubric 版本不變）
 
+- **評分紀錄的 token 用量（2026-10-25）：**
+  - `record.json` 每次執行的 `usage`，以及每回合的對話紀錄（評分與切分），都多記 `cached_input_tokens` 與 `thinking_tokens`。`input_tokens` 仍是全部的輸入、含快取；`output_tokens` 含 thinking。
+  - 這次執行有切分時，另記 `segmentation_usage`（同樣的欄位），和前端紀錄 ZIP 一致。之前切分用量只在 `runN/seg/transcript.json`，而且命令列的紀錄完全沒有快取數字。
+  - 每個 `runN/` 另存那次執行後的 `grading.json`，可以比較重跑的穩定性；版本資料夾的 `grading.json` 仍是最新的。
+  - 2026-10-25 之前的紀錄沒有這些欄位。
+- **新增 `scripts/compare_arms.py`（2026-10-25）：**
+  - 在同一批影片上比較多份評分紀錄（不同規則、模型或做法），和標記表比一致率、錯誤召回、誤報（全部／V／P、可分組）。
+  - 另有成對比較（exact McNemar）、重跑的判定翻轉、每支的 token（含切分、有資料時含快取）與時間，並列出各組判定不同的步驟。
+  - 重跑翻轉只算每次執行都評過的步驟（`--steps` 重跑沿用的步驟不算）；早期執行沒有 `runN/grading.json` 的紀錄只取最新的 `grading.json`。
+  - 成本只算 run 1；時間是各回合模型秒數的加總，評分任務同時進行，所以比實際經過的時間長。
+  - `--corrections` 套用人工更正，`--exclude-steps` 排除步驟（例如舊影片沒拍到給藥紀錄單的 2／3／4／29），`--merge-faults-steps` 讓指定步驟的錯誤和部分正確視為相同（例如標準暫定的 10）。
+  - 這是在「評分看影片 vs 看圖片」的對照實驗（見 `EXPERIMENTS.md`）中寫的，實驗本身的程式沒有合併。
 - **10b 轉人工只列第一次使用空針前的片段（使用者決定，2026-10-24）：** `review_reason` 只列在步驟 13（拔針套、插入稀釋液瓶）開始前開始的 `package_spans`；之後的是空針放回包裝、再取出或步驟 30 放回包裝（0.29 的 VID_0098 列了 9 段到 06:25）。步驟 13 沒有時間時不過濾。只影響程式寫的轉人工說明，評分 agent 的輸入與判定不變；0.29 的紀錄是過濾前產生的。
 - code review 修正：`validate_grading.py` 的「需人工複核要有 ≥ 2 個 mm:ss」只有 10b 可以算進 `review_reason` 的時間（其他標準仍要寫在 explanation），`review_reason` 為 null 時不會出錯；10b 轉人工時保留評分 agent 自己寫的 `review_reason`（接在程式的說明後面）；沒有 `package_spans` 時的說明改成「切分步驟 9、10 的時間範圍」。
 

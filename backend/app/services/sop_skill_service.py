@@ -55,8 +55,19 @@ class Image:
 class ModelReply:
     text: str
     stop_reason: str | None = None
-    input_tokens: int = 0
-    output_tokens: int = 0
+    input_tokens: int = 0  # every input token, cached ones included
+    output_tokens: int = 0  # thinking included
+    cached_input_tokens: int = 0  # of input_tokens: read from the cache (Gemini implicit / Claude cache read)
+    thinking_tokens: int = 0  # of output_tokens
+
+
+def add_usage(usage: dict, reply) -> None:
+    """Add one reply's tokens to a run's usage (the keys of USAGE_KEYS; record.json and transcripts)."""
+    for key in USAGE_KEYS:
+        usage[key] = usage.get(key, 0) + getattr(reply, key, 0)
+
+
+USAGE_KEYS = ("input_tokens", "cached_input_tokens", "output_tokens", "thinking_tokens")
 
 
 ModelCall = Callable[[str, list[dict]], Awaitable[ModelReply]]
@@ -218,6 +229,7 @@ class LoopState:
     images_produced: int = 0
     input_tokens: int = 0
     output_tokens: int = 0
+    usage: dict = field(default_factory=dict)  # USAGE_KEYS totals
 
     def validator_state(self) -> dict:
         return {"used": dict(self.used), "box": self.box, "hands_box": self.hands_box}
@@ -334,9 +346,10 @@ async def run_skill_loop(video_path: Path, video_id: str, workdir: Path, model_c
         reply = await model_call(system, content)
         state.input_tokens += reply.input_tokens
         state.output_tokens += reply.output_tokens
+        add_usage(state.usage, reply)
         entry = {"turn": turn, "seconds": round(time.monotonic() - started, 1),
-                 "stop_reason": reply.stop_reason, "input_tokens": reply.input_tokens,
-                 "output_tokens": reply.output_tokens, "reply": reply.text}
+                 "stop_reason": reply.stop_reason, **{k: getattr(reply, k, 0) for k in USAGE_KEYS},
+                 "reply": reply.text}
         transcript.append(entry)
         _write_transcript(workdir / "transcript.json", transcript)
 
@@ -380,7 +393,7 @@ async def run_skill_loop(video_path: Path, video_id: str, workdir: Path, model_c
                 "result": result,
                 "sequence_check": sequence_check.check(result),
                 "turns": turn,
-                "usage": {"input_tokens": state.input_tokens, "output_tokens": state.output_tokens},
+                "usage": {**dict.fromkeys(USAGE_KEYS, 0), **state.usage},
             }
 
         warn = ("\n警告：" + "；".join(warnings)) if warnings else ""
@@ -461,7 +474,7 @@ async def claude_call(system: str, content: list[dict]) -> ModelReply:
         text="".join(block.text for block in message.content if block.type == "text"),
         stop_reason=message.stop_reason,
         input_tokens=counts["input_tokens"] + counts["cached_input_tokens"] + counts["cache_write_tokens"],
-        output_tokens=counts["output_tokens"],
+        output_tokens=counts["output_tokens"], cached_input_tokens=counts["cached_input_tokens"],
     )
 
 
@@ -547,14 +560,16 @@ async def gemini_call(system: str, content: list[dict]) -> ModelReply:
     output_tokens = counts["output_tokens"]
     feedback = getattr(response, "prompt_feedback", None)
     if feedback is not None and _name(feedback.block_reason) in _GEMINI_REFUSALS:
-        return ModelReply("", "refusal", input_tokens, output_tokens)
+        return ModelReply("", "refusal", input_tokens, output_tokens, counts["cached_input_tokens"],
+                          counts["thinking_tokens"])
     candidate = (response.candidates or [None])[0]
     finish = _name(getattr(candidate, "finish_reason", None))
     parts = (candidate.content.parts or []) if candidate is not None and candidate.content else []
     text = "".join(part.text for part in parts if part.text and not part.thought)
     stop_reason = ("refusal" if finish in _GEMINI_REFUSALS
                    else "max_tokens" if finish == "MAX_TOKENS" else "end_turn")
-    return ModelReply(text, stop_reason, input_tokens, output_tokens)
+    return ModelReply(text, stop_reason, input_tokens, output_tokens, counts["cached_input_tokens"],
+                      counts["thinking_tokens"])
 
 
 def model_name() -> str:
