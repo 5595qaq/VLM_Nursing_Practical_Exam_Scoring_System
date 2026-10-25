@@ -47,7 +47,7 @@ def valid_result(video_id="model-guess"):
         "video_id": video_id,
         "meta": {"duration": DURATION, "crop": {"box": BOX, "hands_box": HANDS, "rounds": 1, "notes": ""},
                  "budget": {"crop_rounds": 99}},
-        "steps": steps, "unassigned_spans": [], "observations": [],
+        "steps": steps, "unassigned_spans": [], "package_spans": [], "observations": [],
         "zoom_log": [{"times": [10.0, 12.0], "region": [0.2, 0.3, 0.6, 0.7], "for_steps": [7], "finding": "vial"}],
     }
 

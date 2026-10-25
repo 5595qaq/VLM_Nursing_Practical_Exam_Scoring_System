@@ -1,8 +1,10 @@
 """Cut a short clip (with audio when the source has it) for the grading agent.
 
-usage: python clip.py ORIGINAL_VIDEO --start 120 --end 150 [--box x0,y0,x1,y1] [--width 640] --out clip.mp4
+usage: python clip.py ORIGINAL_VIDEO --start 120 --end 150 [--box x0,y0,x1,y1 [--rel-to-crop CONTEXT_BOX]]
+           [--width 640] --out clip.mp4
   Reads the ORIGINAL video (the `_src.mp4` keeps the audio track; the proxy has none), crops to
-  --box (normalized to the full frame, normally the context box) and scales to --width.
+  --box (normalized to the full frame, normally the context box; or to CONTEXT_BOX, like zoom.region,
+  when --rel-to-crop is given) and scales to --width.
   Prints {"clip": path, "has_audio": bool, "start": s, "end": e, "bytes": n}.
   Exit code 2 = bad request (span outside the video, too long, end <= start).
 """
@@ -11,6 +13,8 @@ import json
 import os
 import subprocess
 import sys
+
+from burst import compose
 
 MAX_SECONDS = 60.0
 
@@ -55,10 +59,13 @@ def main(argv: list[str]) -> int:
     ap.add_argument("--start", type=float, required=True)
     ap.add_argument("--end", type=float, required=True)
     ap.add_argument("--box")
+    ap.add_argument("--rel-to-crop")
     ap.add_argument("--width", type=int, default=640)
     ap.add_argument("--out", required=True)
     a = ap.parse_args(argv[1:])
     box = [float(v) for v in a.box.split(",")] if a.box else None
+    if box and a.rel_to_crop:
+        box = list(compose([float(v) for v in a.rel_to_crop.split(",")], box))
     try:
         info = cut(a.video, a.start, a.end, a.out, box, a.width)
     except ValueError as exc:

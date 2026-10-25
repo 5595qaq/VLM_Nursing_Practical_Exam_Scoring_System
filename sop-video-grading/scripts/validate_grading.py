@@ -27,6 +27,9 @@ SCHEMA_PATH = Path(__file__).resolve().parent.parent / "schema.json"
 ALLOWED_SOURCES = {"program": {"rule"}, "visual": {"vlm", "rule"}, "not_visible": {"fixed"}}
 EVIDENCE_PREFIXES = ("global #", "ov@", "zoom@", "burst@", "clip@", "seg:step ")
 TIMESTAMP = re.compile(r"\d{2}:\d{2}")
+# Fixing the needle (10b): judged only once the syringe is out; a 無法判定 goes to a person with the
+# spans the hands held the wrapper, which the backend writes into review_reason.
+AFTER_REMOVAL = {"10b"}
 
 
 def load_schema() -> dict:
@@ -139,7 +142,8 @@ def check_criterion(where: str, c: dict, rule: dict, final: bool) -> list[str]:
             errors.append(f"{where}: needs_review is only for criteria graded by the grading agent")
         if not c.get("review_reason"):
             errors.append(f"{where}: review_reason is required when needs_review is true")
-        if len(TIMESTAMP.findall(c["explanation"])) < 2:
+        timed = c["explanation"] + ((c.get("review_reason") or "") if c["criterion_id"] in AFTER_REMOVAL else "")
+        if len(TIMESTAMP.findall(timed)) < 2:
             errors.append(f"{where}: needs_review explanation must list each attempt with its time (≥ 2 mm:ss)")
     elif "review_reason" in c:
         errors.append(f"{where}: review_reason is only for needs_review true")

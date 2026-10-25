@@ -137,11 +137,11 @@ async def test_script_rejection_goes_back_to_the_model(video, tmp_path, monkeypa
     real_clip = grading.GradingRunner.clip
     calls = []
 
-    def clip(self, start, end, box):
+    def clip(self, start, end, box, region=None):
         calls.append((start, end))
         if len(calls) == 1:  # task 12 opens with an overview, so this is the model's clip
             raise grading.SkillRunError("clip.py failed (2): REJECTED clip: end 25 is past the video")
-        return real_clip(self, start, end, box)
+        return real_clip(self, start, end, box, region)
 
     monkeypatch.setattr(grading.GradingRunner, "clip", clip)
     ask = {"action": "clip", "start": 20, "end": 25, "reason": "看連續動作"}
@@ -168,24 +168,35 @@ async def test_extra_material_actions_run(video, tmp_path):
     assert [b["fps"] for b in last if b["type"] == "video"] == [3]
 
 
-async def test_twist_wrong_is_accepted_only_after_a_fast_clip(video, tmp_path):
-    # 10b: the twist is a short back-and-forth; a 2 fps clip showed VID_0098's as tearing the wrapper
+@pytest.mark.parametrize("package_spans, reason", [
+    ([{"start": 12.0, "end": 17.5, "evidence": "ov"}, {"start": 40.0, "end": 41.0, "evidence": "ov"}],
+     "（切分標出的手拿空針包裝時段，第一次使用空針 00:23.4 之前）：00:12.0–00:17.5"),  # 40-41: put back after step 13
+    (None, "（切分沒有手拿包裝的時段，改看切分步驟 9、10 的時間範圍）：00:16.2–00:19.5"),
+])
+async def test_fixing_the_needle_not_seen_after_removal_goes_to_a_person(video, tmp_path, package_spans, reason):
+    # rubric 1.16: 10b is never 錯誤; 無法判定 gets needs_review with every span the hands held the wrapper
     wrong = {"action": "final", "criteria": [
-        {"criterion_id": "10b", "verdict": "錯誤", "confidence": 0.8, "reason": None, "evidence": ["clip@15-21"],
-         "explanation": "00:16–00:20 雙手只在撕包裝，沒有旋緊。"}]}
-    model = FakeModel({"10b": [
-        wrong,
-        {"action": "clip", "start": 15, "end": 21, "fps": 2, "reason": "看撕包裝到取出"},
-        wrong,
-        {"action": "clip", "start": 15, "end": 21, "fps": 5, "reason": "看撕包裝到取出"},
-        wrong,
-    ]})
-    outcome = await grading.run_grading(video, segmentation(), tmp_path, model, steps={10})
-    texts = [r[0]["text"] for r in requests_for(model, "10b")]
-    assert "fps 5" in texts[1] and "fps 5" in texts[3]  # rejected before any clip and after the 2 fps one
+        {"criterion_id": "10b", "verdict": "錯誤", "confidence": 0.8, "reason": None, "evidence": ["clip@16-21"],
+         "explanation": "00:18 空針離開包裝，之後沒有旋緊。"}]}
+    undetermined = {"action": "final", "criteria": [{**wrong["criteria"][0], "verdict": "無法判定", "reason": "資訊不足",
+                                                     "needs_review": True, "review_reason": "01:12 手被包裝擋住"}]}
+    seg = segmentation()
+    if package_spans:
+        seg["package_spans"] = package_spans
+    model = FakeModel({"10b": [wrong, undetermined]})
+    outcome = await grading.run_grading(video, seg, tmp_path, model, steps={10})
+    assert "only 正確" in requests_for(model, "10b")[1][0]["text"]
     step = next(s for s in outcome["result"]["steps"] if s["step_id"] == 10)
-    assert next(c for c in step["criteria"] if c["criterion_id"] == "10b")["verdict"] == "錯誤"
+    c = next(c for c in step["criteria"] if c["criterion_id"] == "10b")
+    assert c["verdict"] == "無法判定" and c["needs_review"] is True and step["needs_review"] is True
+    assert c["review_reason"] == "取出後沒看到固定；取出前有沒有隔著包裝固定要人工看" + reason + "；評分 agent：01:12 手被包裝擋住"
     assert outcome["failed_tasks"] == []
+
+
+async def test_fixing_the_needle_seen_after_removal_needs_no_person(video, tmp_path):
+    outcome = await grading.run_grading(video, segmentation(), tmp_path, FakeModel(), steps={10})
+    c = next(c for s in outcome["result"]["steps"] for c in s["criteria"] if c["criterion_id"] == "10b")
+    assert c["verdict"] == "正確" and "needs_review" not in c
 
 
 async def test_motion_peaks_are_listed_and_burst_runs(video, tmp_path):
@@ -528,6 +539,17 @@ async def test_invalid_graded_criteria_are_not_kept_for_the_next_attempt(video, 
         await grading.run_sop_grading("gs://test-bucket/videos/x_src.mp4", "vid", 0, segmentation(),
                                       model_call=model)
     assert failed.value.partial is None
+
+
+async def test_tasks_get_only_the_segmentation_times(video, tmp_path):
+    # The segmentation's evidence often states the answer (e.g. "單手持空針將針頭套回"); it stays out
+    seg = segmentation()
+    seg["steps"][1].update(status="not_visually_determinable", start=None, end=None, logical_window=[2.0, 5.0])
+    model = FakeModel()
+    await grading.run_grading(video, seg, tmp_path, model, steps={2, 12})
+    text = "\n".join(r[0]["text"] for r in model.requests)
+    assert "  步驟 12：00:21.6–00:23.1" in text and "大約在 00:02.0–00:05.0 之間" in text
+    assert "global #" not in text and "依據" not in text and "detected" not in text
 
 
 async def test_usage_counts_cached_and_thinking_tokens(video, tmp_path):
