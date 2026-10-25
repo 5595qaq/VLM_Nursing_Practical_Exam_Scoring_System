@@ -43,6 +43,7 @@ def make_valid_result() -> dict:
         },
         "steps": steps,
         "unassigned_spans": [{"start": 500.0, "end": 530.0, "note": "整理桌面"}],
+        "package_spans": [{"start": 88.0, "end": 108.0, "evidence": "ov@85-110 #1 拿起空針包裝；#8 空針抽出"}],
         "observations": [{
             "type": "extra_action", "start": 500.0, "end": 530.0, "steps": [],
             "confidence": 0.6, "description": "整理包裝紙", "evidence": "ov@500-530 #0-#8",
@@ -91,6 +92,26 @@ def test_missing_hands_box_is_rejected():
     result = make_valid_result()
     del result["meta"]["crop"]["hands_box"]
     assert_rejected(result, "'hands_box' is a required property")
+
+
+def test_package_spans_are_optional_for_older_results():
+    # sop-video-skill 1.5.0 added them; older segmentations and labels_to_segmentation.py have none
+    result = make_valid_result()
+    del result["package_spans"]
+    assert validate_result(result) == []
+
+
+@pytest.mark.parametrize("spans, expected", [
+    ([{"start": 108.0, "end": 88.0, "evidence": "ov"}], "is after end"),
+    ([{"start": 90.0, "end": 90.0, "evidence": "ov"}], "must be before end"),
+    ([{"start": 590.0, "end": 610.0, "evidence": "ov"}], "outside the video"),
+    ([{"start": 88.0, "end": 100.0, "evidence": "ov"}, {"start": 95.0, "end": 108.0, "evidence": "ov"}],
+     "package_spans[1]: spans must be in time order"),
+])
+def test_package_spans_must_be_ordered_spans_inside_the_video(spans, expected):
+    result = make_valid_result()
+    result["package_spans"] = spans
+    assert_rejected(result, expected)
 
 
 @pytest.mark.parametrize("field", ["unassigned_spans", "zoom_log", "observations"])

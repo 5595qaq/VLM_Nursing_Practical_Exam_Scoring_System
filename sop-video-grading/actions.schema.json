@@ -47,7 +47,8 @@
         "action": {"const": "clip"},
         "start": {"type": "number", "minimum": 0},
         "end": {"type": "number", "minimum": 0},
-        "fps": {"type": "number", "minimum": 1, "maximum": 5},
+        "fps": {"type": "number", "minimum": 1, "maximum": 10},
+        "region": {"type": "array", "items": {"type": "number", "minimum": 0, "maximum": 1}, "minItems": 4, "maxItems": 4},
         "reason": {"type": "string"}
       }
     },

@@ -66,3 +66,13 @@ def test_cli_exit_codes(videos, tmp_path, capsys):
     assert main(["clip.py", videos["audio"], "--start", "1", "--end", "2", "--out", str(out)]) == 0
     assert json.loads(capsys.readouterr().out)["has_audio"] is True
     assert main(["clip.py", videos["audio"], "--start", "3", "--end", "1", "--out", str(out)]) == 2
+
+
+def test_cli_region_is_relative_to_the_context_box(videos, tmp_path, monkeypatch):
+    import clip
+    seen = {}
+    monkeypatch.setattr(clip, "cut", lambda video, start, end, out, box, width: seen.setdefault("box", box) and {})
+    out = str(tmp_path / "c.mp4")
+    main(["clip.py", videos["audio"], "--start", "1", "--end", "2", "--box", "0.5,0,1,0.5",
+          "--rel-to-crop", "0.2,0.2,0.6,1.0", "--out", out])
+    assert seen["box"] == pytest.approx([0.4, 0.2, 0.6, 0.6])

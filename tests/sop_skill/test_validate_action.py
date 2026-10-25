@@ -31,6 +31,16 @@ def test_result_missing_required_field_is_rejected():
     assert any("zoom_log" in e for e in errors), errors
 
 
+def test_model_final_needs_package_spans():
+    # optional in schema.json for older results, but the segmentation model must always list them
+    result = make_valid_result()
+    del result["package_spans"]
+    errors, _ = validate(final(result), state={})
+    assert any("package_spans is required" in e for e in errors), errors
+    result["package_spans"] = []
+    assert validate(final(result), state={})[0] == []
+
+
 def test_error_points_inside_result():
     result = make_valid_result()
     result["steps"][0]["confidence"] = "high"
