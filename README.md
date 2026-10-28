@@ -86,6 +86,7 @@ PgQueuer 提供 at-least-once delivery。已提交結果會跳過重跑，重複
 | `schema.json` | `final` 結果格式，由 `scripts/validate_result.py` 驗證 |
 | `scripts/` | 抽幀／裁切（`prepare.py`、`crop.py`、`sheets.py`、`grid_overlay.py`）、動作能量（`motion.py`）、順序檢查（`sequence_check.py`）、與標準答案比對（`eval.py`）、Structured Outputs schema 轉換（`schema_tools.py`） |
 | `CHANGELOG.md` | 各版本的修改紀錄 |
+| `changelog.d/` | 還沒進正式版本的修改，一個分支一個檔（見 [AGENTS.md](AGENTS.md)「多人協作」） |
 
 抽幀、裁切與動作能量腳本需要 ffmpeg；結果驗證與 schema 轉換只需要 `jsonschema`，不需要資料庫或 ffmpeg：
 
@@ -161,8 +162,13 @@ Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499，或 Claude 回傳 429／529（o
 | `scripts/eval_grading.py` | 與人工標註表比對：每步的人工／模型判定與說明、一致率、錯誤召回、誤報（另外列出有看畫面標準的步驟） |
 | `scripts/compare_arms.py` | 在同一批影片上比較多份評分紀錄（不同規則、模型或做法）：一致率、成對差異（McNemar）、重跑翻轉、token 與時間，列出各組判定不同的步驟；可排除步驟（`--exclude-steps`）或讓指定步驟的錯誤＝部分正確（`--merge-faults-steps`），不呼叫模型 |
 | `scripts/labels_to_segmentation.py` | 用人工標註表的開始／結束秒數組出切分結果，調整評分 agent 時可跳過切分 skill |
+| `scripts/check_versions.py` | 合併前的版本檢查（CI 對每個 PR 執行）：版本必須是正式版本（不能是分支版本 `0.29-10b.1`）；PR 改了規則時版本要比目標分支大，`CHANGELOG.md` 要有新版本的標題 |
 | `CHANGELOG.md` | 各版本的修改紀錄 |
-| `EXPERIMENTS.md` | 調整評分 agent 的對照實驗、結論、已確認的標準定義與待辦 |
+| `changelog.d/` | 還沒進正式版本的修改，一個分支一個檔，合併前移進 `CHANGELOG.md` |
+| `EXPERIMENTS.md` | 2026-10-29 之前的對照實驗、結論、已確認的標準定義，以及「待老師確認」清單 |
+| `experiments/` | 2026-10-29 起每輪疊代一個檔（`YYYY-MM-DD-<主題>.md`） |
+
+多人同時修改規則時的分工、分支版本與合併前的步驟見 [AGENTS.md](AGENTS.md)「多人協作」。
 
 步驟定義沿用 `sop-video-skill/references/sop_steps.md`。
 
@@ -557,21 +563,23 @@ docker compose down
 
 | Workflow | 觸發 | 內容 |
 | --- | --- | --- |
-| `python-ci.yml` | push 或 PR 到 `main`、`release/**` | 先跑 `tests/sop_skill/`、`tests/sop_grading/` 與前端 Node 測試，再以 PostgreSQL 跑後端 pytest |
+| `python-ci.yml` | push 或 PR 到 `main`、`release/**` | 先檢查 SOP 規則版本（`check_versions.py`，PR 時和目標分支比），再跑 `tests/sop_skill/`、`tests/sop_grading/` 與前端 Node 測試，再以 PostgreSQL 跑後端 pytest |
 | `claude-code-review.yml` | PR 開啟、推送新提交、重新開啟或轉為可審查 | Claude 以 code-review 外掛審查 PR，結果以行內留言貼回（草稿與 fork 的 PR 不審查） |
 | `claude.yml` | issue／PR 留言、review 或新 issue 中提到 `@claude` | Claude 回應並可推送提交；只有具寫入權限的人能觸發 |
 
 兩個 Claude workflow 需要在 repo secrets 設定 `CLAUDE_CODE_OAUTH_TOKEN`。注意 `python-ci.yml` 只對目標為 `main`／`release/**` 的 PR 執行，疊在其他功能分支上的 PR 需要在本機自行跑測試。
 
-協作規則（溝通語言、模型權重不得提交、測試範圍）寫在 [AGENTS.md](AGENTS.md)，`CLAUDE.md` 會引用它。
+協作規則（溝通語言、模型權重不得提交、測試範圍、多人分工與版本號）寫在 [AGENTS.md](AGENTS.md)，`CLAUDE.md` 會引用它；開 PR 時 `.github/pull_request_template.md` 會帶出檢查清單。建議在 GitHub 的 branch protection 把 `python-ci` 設為合併 `main` 的必要檢查，版本檢查才真的擋得住。
 
 ## 目錄結構
 ```text
 my-awesome-project/
-├── .github/workflows/
-│   ├── python-ci.yml
-│   ├── claude-code-review.yml
-│   └── claude.yml
+├── .github/
+│   ├── pull_request_template.md
+│   └── workflows/
+│       ├── python-ci.yml
+│       ├── claude-code-review.yml
+│       └── claude.yml
 ├── docker-compose.yml
 ├── AGENTS.md
 ├── CLAUDE.md
@@ -630,6 +638,7 @@ my-awesome-project/
 ├── sop-video-skill/
 │   ├── SKILL.md
 │   ├── CHANGELOG.md
+│   ├── changelog.d/     # 未發布的修改，一個分支一個檔
 │   ├── schema.json
 │   ├── actions.schema.json
 │   ├── references/
@@ -638,7 +647,9 @@ my-awesome-project/
 ├── sop-video-grading/
 │   ├── SKILL.md
 │   ├── CHANGELOG.md
-│   ├── EXPERIMENTS.md
+│   ├── changelog.d/     # 未發布的修改，一個分支一個檔
+│   ├── EXPERIMENTS.md   # 2026-10-29 之前的實驗與「待老師確認」
+│   ├── experiments/     # 之後每輪疊代一個檔
 │   ├── rubric.json
 │   ├── schema.json
 │   ├── actions.schema.json
