@@ -24,6 +24,18 @@ def test_record_dir_names_the_version_and_segmentation(tmp_path):
     assert folder == tmp_path / "VID_0083" / "rubric1.7_skill0.11_models_gemini_4_seg-skill1.4.5_gemini-4-argon"
 
 
+def test_branch_versions_get_their_own_record(tmp_path):
+    # AGENTS.md: while iterating on a branch the version is <main version>-<topic>.<n>
+    path = tmp_path / "SKILL.md"
+    path.write_text("---\nname: x\nversion: 0.29-10b.1\n---\n# x\n", encoding="utf-8")
+    assert rr.skill_version(path) == "0.29-10b.1"
+    branch = {**VERSIONS, "rubric": "1.16-10b.1", "skill": "0.29-10b.1"}
+    folder = rr.record_dir(tmp_path, "VID_0083", branch)
+    assert folder.parent == tmp_path / "VID_0083"
+    assert folder.name.startswith("rubric1.16-10b.1_skill0.29-10b.1_")
+    assert folder != rr.record_dir(tmp_path, "VID_0083", {**branch, "skill": "0.29-20a.1"})
+
+
 def test_skill_tag_names_the_segmentation_model():
     assert rr.skill_tag("1.4.5", "gemini-4-argon") == "skill1.4.5_gemini-4-argon"
     assert rr.skill_tag("1.4.5", "models/gemini 4") == "skill1.4.5_models_gemini_4"

@@ -319,7 +319,10 @@ def test_system_prompt_includes_skill_steps_and_actions():
 
 def test_long_windows_are_analysed_in_pieces(tmp_path, monkeypatch):
     assert grading._spans(0, 100) == [(0, 100)]
-    assert grading._spans(10, 400) == pytest.approx([(10, 189.99), (189.99, 369.98), (369.98, 400)])
+    # flattened: pytest 9.2 approx rejects nested tuples
+    assert [t for span in grading._spans(10, 400) for t in span] == pytest.approx(
+        [10, 189.99, 189.99, 369.98, 369.98, 400])
+    assert len(grading._spans(10, 400)) == 3
 
     calls = []
 
@@ -337,8 +340,9 @@ def test_long_windows_are_analysed_in_pieces(tmp_path, monkeypatch):
     peaks = runner.motion_peaks(0, 400, HANDS)
     assert [p["t"] for p in peaks] == pytest.approx([1, 180.99, 360.98])
     audio = runner.audio_peaks(0, 400)
-    assert [c[1:] for c in calls if c[0] == "audio_peaks.py"] == pytest.approx(
-        [(0, 179.99), (179.99, 359.98), (359.98, 400)])
+    audio_calls = [c[1:] for c in calls if c[0] == "audio_peaks.py"]
+    assert [t for span in audio_calls for t in span] == pytest.approx([0, 179.99, 179.99, 359.98, 359.98, 400])
+    assert all(len(span) == 2 for span in audio_calls)
     # The flick at the end of the window (399 s) is no longer cut off at 180 s.
     assert audio["runs"][-1]["start"] == 399 and audio["max_db"] == -20.0 and audio["end"] == 400
 

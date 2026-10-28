@@ -1,5 +1,7 @@
 # CHANGELOG
 
+未發布的修改先寫在 `changelog.d/`（一個分支一個檔，見 `changelog.d/README.md`），合併前改成正式版本時才移到這裡；規則見 `AGENTS.md`「多人協作」。
+
 ## 未發布（不影響切分結果，SKILL 版本不變）
 
 - 後端（`sop_skill_service.py`）：每回合的對話紀錄與 `run_skill_loop` 回傳的 `usage` 多記 `cached_input_tokens` 與 `thinking_tokens`（`input_tokens` 仍含快取，`output_tokens` 仍含 thinking）。`sop_grading_cli` 把這次的切分用量寫進評分紀錄的 `segmentation_usage`。切分邏輯不變。

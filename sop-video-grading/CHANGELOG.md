@@ -1,5 +1,7 @@
 # CHANGELOG
 
+未發布的修改先寫在 `changelog.d/`（一個分支一個檔，見 `changelog.d/README.md`），合併前改成正式版本時才移到這裡；規則見 `AGENTS.md`「多人協作」。
+
 ## 未發布（評分 agent 服務端修正，SKILL／rubric 版本不變）
 
 - **評分紀錄的 token 用量（2026-10-25）：**

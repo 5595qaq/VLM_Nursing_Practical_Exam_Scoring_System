@@ -50,6 +50,12 @@ python sop-video-grading/scripts/eval_grading.py --labels 標註表.csv grading.
 python sop-video-grading/scripts/labels_to_segmentation.py --labels 標註表.csv --video-id VID_0083 --duration 424 -o seg.json  # 用標註時間組出切分結果
 ```
 
+合併 SOP 規則的 PR 前，CI 會跑版本檢查（分支版本要改成正式版本；改了規則要遞增版本、寫進 `CHANGELOG.md` 並移走 `changelog.d/` 的片段，見 AGENTS.md「多人協作」）。本機可以先跑；疊代中的分支版本（例如 `0.29-10b.1`）在這裡失敗是正常的：
+
+```bash
+python sop-video-grading/scripts/check_versions.py --base origin/main
+```
+
 `tests/sop_grading/test_clip.py`、`test_motion_burst.py` 與 `test_audio_peaks.py` 需要 ffmpeg／ffprobe（沒有時自動略過；burst 的圖片測試另外需要 OpenCV）。評分 agent 迴圈（`backend/tests/test_sop_grading_service.py`）用 ffmpeg 產生 60 秒帶聲音的合成影片，以真實腳本執行 overview／zoom／burst／clip／final（含「需人工複核」標記帶到結果、10b 判無法判定時轉人工並列出手拿包裝的時段、彈針任務列出聲音峰值、沒有聲音的影片不能判彈針錯誤、洗手計時沒填 span 會被退回、腳本拒絕的動作退回給模型而不讓任務失敗），模型以假回覆取代，不需資料庫與 Google 憑證：
 
 ```bash

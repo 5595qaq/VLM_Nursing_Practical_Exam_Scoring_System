@@ -249,6 +249,12 @@ def test_tree_digest_follows_rule_files_but_not_records(tmp_path):
     before = skill.tree_digest(tmp_path)
     (tmp_path / "runs" / "record.json").write_text("{}", encoding="utf-8")
     assert skill.tree_digest(tmp_path) == before  # a new record is not a rule change
+    for notes in ("experiments", "changelog.d"):
+        (tmp_path / notes).mkdir()
+        (tmp_path / notes / "10b.md").write_text("notes", encoding="utf-8")
+    for notes in ("CHANGELOG.md", "EXPERIMENTS.md"):
+        (tmp_path / notes).write_text("notes", encoding="utf-8")
+    assert skill.tree_digest(tmp_path) == before  # neither are experiment notes or changelog entries
     (tmp_path / ".DS_Store").write_bytes(b"x")
     (tmp_path / "SKILL.md~").write_text("backup", encoding="utf-8")
     assert skill.tree_digest(tmp_path) == before  # hidden files and editor backups are not rules
