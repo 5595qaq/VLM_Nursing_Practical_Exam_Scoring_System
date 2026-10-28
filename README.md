@@ -153,7 +153,10 @@ Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499，或 Claude 回傳 429／529（o
 | `scripts/rubric.py` | 讀取並檢查 rubric、彙整步驟判定 |
 | `scripts/rules.py` | 由切分結果判定 `program` 標準，並為 `visual` 標準算出要看的影片區間（先標為待判定） |
 | `scripts/validate_grading.py` | 驗證評分結果；`--final` 另外拒絕還在待判定的標準 |
-| `SKILL.md` | 評分 agent 的 system prompt（看畫面的標準怎麼判、說明怎麼寫） |
+| `SKILL.md` | 評分 agent 的 system prompt 中所有任務共用的部分（輸入、動作、final 格式、說明怎麼寫、不要做的事），版本號也在這裡 |
+| `criteria/` | 各組看畫面標準怎麼判，一組一個檔（清單見 `criteria/README.md`）；組 prompt 時依檔名順序放進 `SKILL.md` 的標記行 |
+| `scripts/git_commit.py` | 印出要記錄的 `GIT_COMMIT`：HEAD，有未 commit 的修改或還沒加入 Git 的 `criteria/*.md` 時加 `-dirty` |
+| `scripts/skill_doc.py` | 組出完整的評分 SKILL.md（`SKILL.md` + `criteria/`）：system prompt、`rules_SKILL.md` 與 `check_versions.py` 都用它；直接執行會印出全文 |
 | `actions.schema.json` | 評分 agent 的動作格式（`overview`、`zoom`、`burst`、`clip`、`final`），由 `scripts/validate_grading_action.py` 檢查 |
 | `scripts/clip.py` | 從原檔剪出帶聲音的片段（裁到 context box，或用 `--rel-to-crop` 只裁其中一塊，例如雙手），給彈針、洗手七個動作與旋緊針頭用 |
 | `scripts/motion_peaks.py` | 以每秒 15 格分析任務區間內 hands_box 的畫面變化，找出手有明顯動作的時間點（不呼叫模型） |
@@ -162,7 +165,7 @@ Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499，或 Claude 回傳 429／529（o
 | `scripts/eval_grading.py` | 與人工標註表比對：每步的人工／模型判定與說明、一致率、錯誤召回、誤報（另外列出有看畫面標準的步驟） |
 | `scripts/compare_arms.py` | 在同一批影片上比較多份評分紀錄（不同規則、模型或做法）：一致率、成對差異（McNemar）、重跑翻轉、token 與時間，列出各組判定不同的步驟；可排除步驟（`--exclude-steps`）或讓指定步驟的錯誤＝部分正確（`--merge-faults-steps`），不呼叫模型 |
 | `scripts/labels_to_segmentation.py` | 用人工標註表的開始／結束秒數組出切分結果，調整評分 agent 時可跳過切分 skill |
-| `scripts/check_versions.py` | 合併前的版本檢查（CI 對每個 PR 執行）：版本必須是正式版本（不能是分支版本 `0.29-10b.1`）；PR 改了規則時版本要比目標分支大，`CHANGELOG.md` 要有新版本的標題，`changelog.d/` 的片段要全部移走 |
+| `scripts/check_versions.py` | 合併前的版本檢查（CI 對每個 PR 執行）：版本必須是正式版本（不能是分支版本 `0.29-10b.1`）；PR 改了規則（評分 SKILL.md 以加上 `criteria/` 的全文比對）時版本要比目標分支大，`CHANGELOG.md` 要有新版本的標題，`changelog.d/` 的片段要全部移走 |
 | `CHANGELOG.md` | 各版本的修改紀錄 |
 | `changelog.d/` | 還沒進正式版本的修改，一個分支一個檔，合併前移進 `CHANGELOG.md` |
 | `EXPERIMENTS.md` | 2026-10-29 之前的對照實驗、結論、已確認的標準定義，以及「待老師確認」清單 |
@@ -225,7 +228,7 @@ VID_0083/rubric<版本>_skill<版本>_<模型>_seg-skill<切分版本>_<切分�
 - `video_id` 由前端從原始檔名取出 `VID_xxxx`（只送這個 ID，不送檔名），並顯示在下載按鈕上，下載前請確認。前後接著英數字（`VID_00831`、`XVID_0083`）或重拍編號（`VID_0083-2`、`VID_0083_2`）時不採用；這時資料夾改用 `job<工作編號>_<序號>`，`record.json` 的 `video_id` 為空。
 - 影片 SHA-256 取自 `_src.mp4` 的檔名，就是上傳原檔的 SHA-256，與命令列紀錄可以直接比對。
 - `commit` 來自 worker 的 `GIT_COMMIT`，啟動時帶入（PowerShell 寫法同上方命令列）：
-  `GIT_COMMIT=$(git rev-parse HEAD)$(git diff --quiet HEAD -- || echo -dirty) docker compose up -d --build`。skill 與規則目錄是即時掛載的，啟動後才改或 `git pull` 的規則與腳本不會反映在 commit 上，所以每次執行另存 `rules_*` 副本，並記下兩個目錄全部檔案的 `rules_digest`（`runs/`、`review/`、隱藏檔與 `~` 備份檔除外，換行一律當 LF，Windows 與 Linux 的 checkout 結果相同）：digest 不同就表示規則或腳本不同，即使 commit 一樣；讀檔時檔案剛好被換掉則記為空字串（不知道），不會讓評分失敗。執行中規則被改，`rules_changed_during_run` 為 true；續跑時前後兩次的規則不同，`mixed_rules` 為 true，前一次的規則副本保留為 `rules_rubric.attempt<N>.json`、`rules_SKILL.attempt<N>.md`。這兩種結果都不該拿來比較版本。在這些欄位加入前跑完的工作，版本與 commit 寫 `unknown`。
+  `GIT_COMMIT=$(python sop-video-grading/scripts/git_commit.py) docker compose up -d --build`。skill 與規則目錄是即時掛載的，啟動後才改或 `git pull` 的規則與腳本不會反映在 commit 上，所以每次執行另存 `rules_*` 副本，並記下兩個目錄全部檔案的 `rules_digest`（`runs/`、`review/`、`experiments/`、`changelog.d/`、`CHANGELOG.md`、`EXPERIMENTS.md`、隱藏檔與 `~` 備份檔除外，換行一律當 LF，Windows 與 Linux 的 checkout 結果相同）：digest 不同就表示規則或腳本不同，即使 commit 一樣；讀檔時檔案剛好被換掉則記為空字串（不知道），不會讓評分失敗。執行中規則被改，`rules_changed_during_run` 為 true；續跑時前後兩次的規則不同，`mixed_rules` 為 true，前一次的規則副本保留為 `rules_rubric.attempt<N>.json`、`rules_SKILL.attempt<N>.md`。這兩種結果都不該拿來比較版本。在這些欄位加入前跑完的工作，版本與 commit 寫 `unknown`。
 - 解壓到 `sop-video-grading/runs/` 後，`run_record.py`、`eval_grading.py`、`review_page.py` 都能直接使用。資料夾名稱帶工作編號，所以不會覆蓋同版本的命令列紀錄或其他工作的紀錄；`sop_grading_cli` 的重複檢查會一併看同版本的 `<版本資料夾>_job*`，前端評過的步驟一樣要加 `--force` 才會重跑。圖片（`*.jpg`、`*.png`）已被 `.gitignore` 忽略：畫面有學生，只留在本機，commit 時只會帶到 JSON 與 Markdown。
 
 #### 命令列
@@ -234,7 +237,7 @@ VID_0083/rubric<版本>_skill<版本>_<模型>_seg-skill<切分版本>_<切分�
 
 ```bash
 docker compose run --rm --build -e SOP_RUN_BY=你的名字 \
-  -e GIT_COMMIT=$(git rev-parse HEAD)$(git diff --quiet HEAD -- || echo -dirty) \
+  -e GIT_COMMIT=$(python sop-video-grading/scripts/git_commit.py) \
   -v /path/to/videos:/data:ro -v /path/to/work:/work worker \
   python -m app.sop_grading_cli /data/影片.mp4 --video-id VID_0083 --out /work/VID_0083
 # 加 --labels 時改用標註表的時間當切分結果，不跑 sop-video-skill（較快、較省）
@@ -255,7 +258,7 @@ python sop-video-grading/scripts/compare_arms.py --labels 標註表.csv --arm �
 - `runN/grading.json` 是那次執行後的結果，版本資料夾的 `grading.json` 只保留最新的一次。
 - 2026-10-25 之前的紀錄只有 input／output。
 
-PowerShell 的 commit 寫法：`-e GIT_COMMIT=$(git rev-parse HEAD)$(if (git status --porcelain --untracked-files=no) { '-dirty' })`；也可以改用 `--by`、`--commit` 參數。`--build` 讓容器跑的是目前的後端程式（映像檔不會自動更新，舊映像檔會和紀錄的 commit 不符）。
+PowerShell 的寫法相同：`-e GIT_COMMIT=$(python sop-video-grading/scripts/git_commit.py)`。`git_commit.py` 印出 HEAD，有未 commit 的修改，或 `criteria/` 裡有還沒加入 Git 的 `*.md`（它們也會被放進 prompt）時加上 `-dirty`；也可以改用 `--by`、`--commit` 參數。`--build` 讓容器跑的是目前的後端程式（映像檔不會自動更新，舊映像檔會和紀錄的 commit 不符）。
 
 `--out` 目錄會留下轉檔後的 `source.mp4`、`segmentation.json`、`grading.json` 與每組的對話紀錄；已有 `segmentation.json` 時不會重新切分（寫評分紀錄時例外，見下方）。
 
@@ -575,6 +578,7 @@ docker compose down
 ```text
 my-awesome-project/
 ├── .github/
+│   ├── CODEOWNERS               # 各組標準的負責人（範本，認領後填入）
 │   ├── pull_request_template.md
 │   └── workflows/
 │       ├── python-ci.yml
@@ -646,6 +650,7 @@ my-awesome-project/
 │   └── scripts/
 ├── sop-video-grading/
 │   ├── SKILL.md
+│   ├── criteria/        # 各組標準怎麼判，一組一個檔
 │   ├── CHANGELOG.md
 │   ├── changelog.d/     # 未發布的修改，一個分支一個檔
 │   ├── EXPERIMENTS.md   # 2026-10-29 之前的實驗與「待老師確認」

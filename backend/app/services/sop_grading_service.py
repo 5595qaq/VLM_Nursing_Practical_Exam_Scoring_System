@@ -66,7 +66,7 @@ def load_grading_module(name: str):
 def build_system_prompt() -> str:
     path = grading_dir()
     return "\n\n".join([
-        _strip_frontmatter((path / "SKILL.md").read_text(encoding="utf-8")),
+        _strip_frontmatter(load_grading_module("skill_doc").assemble_dir(path)),
         "---\n\n" + (skill_dir() / "references" / "sop_steps.md").read_text(encoding="utf-8"),
         "---\n\n# 附錄：actions.schema.json（每回合的動作格式）\n\n```json\n"
         + (path / "actions.schema.json").read_text(encoding="utf-8") + "\n```",
@@ -565,7 +565,7 @@ RULES_HISTORY = "rules_history.json"
 
 
 def _snapshot_rules(workdir: Path, resumed: bool) -> tuple[list[dict], dict]:
-    """Copy the live rubric.json and SKILL.md into workdir (they go into artifacts.zip) and append this
+    """Copy the live rubric.json and SKILL.md (with criteria/) into workdir (they go into artifacts.zip) and append this
     attempt to rules_history.json. A resumed attempt restores that file and the earlier copies with the
     earlier zip: those copies are kept as rules_*.attempt<N>.* (N = the attempt that read them), so the
     rules of kept criteria stay in the archive. A resumed attempt without that history (the restore
@@ -582,7 +582,8 @@ def _snapshot_rules(workdir: Path, resumed: bool) -> tuple[list[dict], dict]:
         if earlier.exists() and not kept.exists():
             earlier.replace(kept)
     shutil.copyfile(root / "rubric.json", workdir / "rules_rubric.json")
-    shutil.copyfile(root / "SKILL.md", workdir / "rules_SKILL.md")
+    # SKILL.md with criteria/*.md put in (skill_doc.py): the whole text the model read
+    (workdir / "rules_SKILL.md").write_bytes(load_grading_module("skill_doc").assemble_dir(root).encode("utf-8"))
     rubric = load_grading_module("rubric").load_rubric(workdir / "rules_rubric.json")
     history.append({"versions": {"rubric": rubric["version"],
                                  "skill": sop_skill_service.skill_version(workdir / "rules_SKILL.md")},

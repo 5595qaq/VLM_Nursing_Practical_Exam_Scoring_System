@@ -227,11 +227,14 @@ def test_checks_before_any_model_call(tmp_path, video, fake):
 
 
 def test_git_commit_marks_uncommitted_changes(monkeypatch):
-    outputs = {"rev-parse": "abc123\n", "status": " M sop-video-grading/SKILL.md\n"}
+    outputs = {"rev-parse": "abc123\n", "status": " M sop-video-grading/SKILL.md\n", "ls-files": ""}
     monkeypatch.setattr(cli.subprocess, "check_output", lambda cmd, **kw: outputs[cmd[1]])
     assert cli._git_commit() == "abc123-dirty"
     outputs["status"] = ""
     assert cli._git_commit() == "abc123"
+    # an untracked criteria file goes into the prompt, so it makes the run dirty too
+    outputs["ls-files"] = "sop-video-grading/criteria/10-draft.md\n"
+    assert cli._git_commit() == "abc123-dirty"
 
 
 def test_segmentation_tag_names_the_segmentation_model(monkeypatch):
