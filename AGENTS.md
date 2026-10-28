@@ -36,9 +36,9 @@
 - **合併前**（一次完成）：
   1. `git rebase origin/main`，解完衝突。
   2. 把版本改成下一個正式版本（`main` 的版本 +1，例如 `0.30`）。期間有別人先合併，就再 rebase 並往上加。
-  3. 把自己的 `changelog.d/` 片段移到 `CHANGELOG.md` 的新版本標題下，刪除片段檔。
+  3. 把 `changelog.d/` 裡的所有片段（包括別人不改版本的修改留下的）移到 `CHANGELOG.md` 的新版本標題下，刪除片段檔。
   4. 用正式版本對這個 PR 負責的步驟重跑最後一輪的影片並 commit 紀錄。rebase 沒帶進別人對同一段或共用段落的修改時，可以只跑 1 支確認，在 PR 寫明理由。
-- 版本只改自己動到的那一個（評分 SKILL.md、rubric.json、sop-video-skill SKILL.md 各自獨立）。
+- 評分端的 `CHANGELOG.md` 以評分 SKILL.md 版本為標題（例如 `## 0.30（rubric 1.17）`），所以改 rubric 時評分 SKILL.md 也要遞增；只改 SKILL.md 時 rubric 不動。sop-video-skill 的版本獨立。
 
 ### 不會衝突的紀錄方式
 

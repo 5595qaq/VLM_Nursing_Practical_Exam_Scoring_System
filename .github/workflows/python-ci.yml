@@ -19,7 +19,13 @@ jobs:
       with:
         fetch-depth: 0  # check_versions.py 要找 PR 與目標分支的 merge-base
 
-    # 1b. SOP 規則版本（見 AGENTS.md「多人協作」）：分支版本（例如 0.29-10b.1）要改成正式版本才能合併；
+    # 2. 安裝 Python 環境 (建議指定你開發用的版本，例如 3.10)
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    # 2b. SOP 規則版本（見 AGENTS.md「多人協作」）：分支版本（例如 0.29-10b.1）要改成正式版本才能合併；
     #     PR 改了 SKILL.md／rubric.json／切分 references 時，版本要比目標分支大，CHANGELOG 要有該版本的標題
     - name: Check SOP rule versions
       run: |
@@ -28,12 +34,6 @@ jobs:
         else
           python sop-video-grading/scripts/check_versions.py
         fi
-
-    # 2. 安裝 Python 環境 (建議指定你開發用的版本，例如 3.10)
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'
 
     # 3. 安裝必要套件 (pytest, fastapi, sqlalchemy 等)
     - name: Install dependencies

@@ -31,13 +31,14 @@ def write(root, grading="0.29", rubric="1.16", skill="1.5.0", grading_body="rule
 @pytest.fixture
 def repo(tmp_path):
     """A repo whose main has grading 0.29 / rubric 1.16 / skill 1.5.0, checked out on a branch."""
-    run(tmp_path, "init", "-q", "-b", "main")
+    run(tmp_path, "init", "-q")
+    run(tmp_path, "checkout", "-q", "-b", "main")  # not init -b / switch: older git has neither
     run(tmp_path, "config", "user.email", "t@example.com")
     run(tmp_path, "config", "user.name", "t")
     write(tmp_path)
     run(tmp_path, "add", ".")
     run(tmp_path, "commit", "-q", "-m", "main")
-    run(tmp_path, "switch", "-q", "-c", "topic")
+    run(tmp_path, "checkout", "-q", "-b", "topic")
     return tmp_path
 
 
@@ -82,12 +83,33 @@ def test_segmentation_references_count_as_rules(repo):
 
 
 def test_a_version_main_moved_past_must_be_bumped_again(repo):
-    run(repo, "switch", "-q", "main")
+    run(repo, "checkout", "-q", "main")
     write(repo, grading="0.30", grading_body="main rules", changelog="## 0.30（rubric 1.16）\n")
     run(repo, "commit", "-q", "-am", "0.30")
-    run(repo, "switch", "-q", "topic")
+    run(repo, "checkout", "-q", "topic")
     write(repo, grading="0.30", grading_body="topic rules", changelog="## 0.30（rubric 1.16）\n")
     assert "not greater than 0.30 on main" in cv.check(repo, "main")[0]
+
+
+def test_a_release_takes_every_changelog_fragment(repo):
+    fragments = repo / "sop-video-grading" / "changelog.d"
+    fragments.mkdir()
+    (fragments / "README.md").write_text("how to\n", encoding="utf-8")
+    (fragments / "20a.md").write_text("- pending\n", encoding="utf-8")
+    (repo / "README.md").write_text("docs\n", encoding="utf-8")
+    assert cv.check(repo, "main") == []  # no release: fragments wait
+    write(repo, grading="0.30", grading_body="new rules", changelog="## 0.30（rubric 1.16）\n")
+    errors = cv.check(repo, "main")
+    assert len(errors) == 1 and "still has 20a.md" in errors[0]
+    (fragments / "20a.md").unlink()
+    assert cv.check(repo, "main") == []
+
+
+def test_an_unreadable_version_is_an_error_not_a_traceback(repo):
+    (repo / "sop-video-grading" / "rubric.json").write_text("{", encoding="utf-8")
+    (repo / "sop-video-skill" / "SKILL.md").write_text("no frontmatter\n", encoding="utf-8")
+    errors = cv.check(repo, "main")
+    assert len(errors) == 2 and all("cannot read the version" in e for e in errors)
 
 
 def test_an_unknown_base_is_reported(repo):

@@ -5,7 +5,9 @@ usage: python check_versions.py [--base REF]
 - Every version is a release number (digits and dots). A branch version such as 0.29-10b.1 must be
   changed to the next release number before the PR is merged.
 - With --base (the PR's target, e.g. origin/main): a rule file this branch changed (the working tree
-  against the merge-base with REF) needs a version greater than REF's, and its CHANGELOG needs a heading for that version.
+  against the merge-base with REF) needs a version greater than REF's, its CHANGELOG needs a heading
+  for that version, and that package's changelog.d/ must be empty (README.md aside): the release takes
+  every pending entry.
 Only the standard library and git are needed.
 """
 import argparse
@@ -60,7 +62,11 @@ def check(root: Path = ROOT, base: str | None = None) -> list[str]:
             return [f"cannot find the merge-base of {base} and HEAD: {found.stderr.strip()}"]
         merge_base = found.stdout.strip()
     for name, path, read, files, changelog, heading in RULES:
-        version = read((root / path).read_text(encoding="utf-8"))
+        try:
+            version = read((root / path).read_text(encoding="utf-8"))
+        except (OSError, ValueError, KeyError) as error:  # JSONDecodeError is a ValueError
+            errors.append(f"{name}: cannot read the version of {path}: {error!r}")
+            continue
         if release(version) is None:
             errors.append(f"{name}: version {version} is not a release number; change it to the next "
                           "release (digits and dots) before merging")
@@ -68,14 +74,22 @@ def check(root: Path = ROOT, base: str | None = None) -> list[str]:
         if not merge_base or git(root, "diff", "--quiet", merge_base, "--", *files).returncode == 0:
             continue
         old = git(root, "show", f"{base}:{path}")
-        if old.returncode == 0:
-            base_version = read(old.stdout)
-            if release(base_version) and release(version) <= release(base_version):
-                errors.append(f"{name}: changed on this branch, but version {version} is not greater than "
-                              f"{base_version} on {base}")
+        try:
+            base_version = read(old.stdout) if old.returncode == 0 else None
+        except (ValueError, KeyError):
+            base_version = None
+        if base_version and release(base_version) and release(version) <= release(base_version):
+            errors.append(f"{name}: changed on this branch, but version {version} is not greater than "
+                          f"{base_version} on {base}")
         pattern = re.compile(heading.format(v=re.escape(version)), re.MULTILINE)
         if not pattern.search((root / changelog).read_text(encoding="utf-8")):
             errors.append(f"{name}: {changelog} has no heading for {version}; move the changelog.d entries there")
+        # a release takes every pending entry, so none is filed again under a later version
+        fragments = (root / changelog).parent / "changelog.d"
+        left = sorted(f.name for f in fragments.glob("*.md") if f.name != "README.md")
+        if version != base_version and left:
+            errors.append(f"{name}: version {version} is a release, but {fragments.relative_to(root).as_posix()}/ "
+                          f"still has {', '.join(left)}; move them into {changelog} and delete them")
     return errors
 
 

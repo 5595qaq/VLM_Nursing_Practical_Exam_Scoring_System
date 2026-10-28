@@ -50,7 +50,7 @@ python sop-video-grading/scripts/eval_grading.py --labels 標註表.csv grading.
 python sop-video-grading/scripts/labels_to_segmentation.py --labels 標註表.csv --video-id VID_0083 --duration 424 -o seg.json  # 用標註時間組出切分結果
 ```
 
-合併 SOP 規則的 PR 前，CI 會跑版本檢查（分支版本要改成正式版本、改了規則要遞增版本並寫進 `CHANGELOG.md`，見 AGENTS.md「多人協作」）。本機可以先跑；疊代中的分支版本（例如 `0.29-10b.1`）在這裡失敗是正常的：
+合併 SOP 規則的 PR 前，CI 會跑版本檢查（分支版本要改成正式版本；改了規則要遞增版本、寫進 `CHANGELOG.md` 並移走 `changelog.d/` 的片段，見 AGENTS.md「多人協作」）。本機可以先跑；疊代中的分支版本（例如 `0.29-10b.1`）在這裡失敗是正常的：
 
 ```bash
 python sop-video-grading/scripts/check_versions.py --base origin/main

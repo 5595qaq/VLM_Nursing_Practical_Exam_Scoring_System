@@ -599,19 +599,20 @@ def run_facts() -> dict:
     return {"commit": settings.GIT_COMMIT, "finished_at": now_iso()}
 
 
-def tree_digest(root: Path, skip: tuple[str, ...] = ("runs", "review", "experiments", "changelog.d",
-                                                    "__pycache__")) -> str:
+def tree_digest(root: Path, skip: tuple[str, ...] = ("runs", "review", "experiments", "changelog.d", "__pycache__",
+                                                    "CHANGELOG.md", "EXPERIMENTS.md")) -> str:
     """SHA-256 over the files under root (relative path and content). GIT_COMMIT is fixed when the
     worker starts, but the skill folders are mounted live: this shows which rules and scripts a run
-    really read, and whether they changed during it. runs/, review/, experiments/ and changelog.d/ are
-    records and notes, not rules, and are not walked; hidden files and editor backups (~) are not rules either. Line endings are compared as
+    really read, and whether they changed during it. runs/, review/, experiments/, changelog.d/ and the
+    CHANGELOG / EXPERIMENTS notes are records, not rules, and are skipped; hidden files and editor backups (~) are not rules either. Line endings are compared as
     LF, so a Windows (autocrlf) and a Linux checkout of one commit give the same digest.
     Returns "" when a file vanished mid-walk (an editor's atomic save): unknown, not a failed run."""
     digest = hashlib.sha256()
     files = []
     for folder, dirnames, filenames in os.walk(root):
         dirnames[:] = [d for d in dirnames if d not in skip and not d.startswith(".")]
-        files += [Path(folder) / f for f in filenames if not f.startswith(".") and not f.endswith("~")]
+        files += [Path(folder) / f for f in filenames
+                  if f not in skip and not f.startswith(".") and not f.endswith("~")]
     try:
         for path in sorted(files, key=lambda p: p.relative_to(root).as_posix()):
             content = path.read_bytes().replace(b"\r\n", b"\n")

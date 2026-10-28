@@ -1,7 +1,7 @@
 - **多人協作（2026-10-29，SKILL／rubric 版本不變）：**
   - 新增 `scripts/check_versions.py`，`python-ci.yml` 對每個 PR 執行：
     - SKILL.md、rubric.json 與 sop-video-skill 的 SKILL.md 版本必須是正式版本（只有數字和點）；分支版本（例如 `0.29-10b.1`）合併前要改掉。
-    - PR 改了 `sop-video-grading/SKILL.md`、`rubric.json`、`sop-video-skill/SKILL.md` 或 `sop-video-skill/references/` 時，版本要比目標分支大，`CHANGELOG.md` 要有新版本的標題。
+    - PR 改了 `sop-video-grading/SKILL.md`、`rubric.json`、`sop-video-skill/SKILL.md` 或 `sop-video-skill/references/` 時，版本要比目標分支大，`CHANGELOG.md` 要有新版本的標題，`changelog.d/` 不能留下片段（正式版本要收走所有片段）。版本讀不到時印出錯誤，不丟 traceback。
   - 未發布的修改改寫在 `changelog.d/`，每輪實驗改寫在 `experiments/`，規則見 `AGENTS.md`「多人協作」。
-  - 規則摘要（`rules_digest`）不再計入 `experiments/` 與 `changelog.d/`：評分執行中有人寫實驗筆記，不會被當成規則改過。
+  - 規則摘要（`rules_digest`）不再計入 `experiments/`、`changelog.d/`、`CHANGELOG.md` 與 `EXPERIMENTS.md`：評分執行中有人寫實驗筆記或「待老師確認」，不會被當成規則改過。這次部署前後的摘要不同，跨部署續跑的評分會標 `mixed_rules`（和其他改到規則資料夾的部署相同）。
   - `EXPERIMENTS.md` 中的學生姓名改成影片 ID（VID_0003、VID_0098）。
