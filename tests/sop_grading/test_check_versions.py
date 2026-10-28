@@ -82,6 +82,39 @@ def test_segmentation_references_count_as_rules(repo):
     assert cv.check(repo, "main") == []
 
 
+def split(repo, criteria: dict, skill_body: str):
+    """Move the grading SKILL.md body into criteria/ (as sop-video-grading is laid out since 0.29)."""
+    folder = repo / "sop-video-grading"
+    (folder / "criteria").mkdir(exist_ok=True)
+    for name, text in criteria.items():
+        (folder / "criteria" / name).write_text(text, encoding="utf-8")
+    (folder / "SKILL.md").write_text(f"---\nname: g\nversion: 0.29\n---\n{skill_body}", encoding="utf-8")
+
+
+def test_moving_text_into_criteria_is_no_rule_change(repo):
+    # main's SKILL.md body is "rules\n"; the same text assembled from criteria/ is not a change
+    split(repo, {"01-a.md": "ru", "02-b.md": "les\n"}, cv.skill_doc.MARKER + " -->\n")
+    assert cv.check(repo, "main") == []
+    run(repo, "add", ".")
+    run(repo, "commit", "-q", "-m", "split")
+    (repo / "sop-video-grading" / "criteria" / "02-b.md").write_text("les, changed\n", encoding="utf-8")
+    errors = cv.check(repo, "main")
+    assert len(errors) == 1 and "not greater than 0.29" in errors[0]
+
+
+def test_a_new_criteria_file_is_a_rule_change(repo):
+    split(repo, {"01-a.md": "rules\n"}, cv.skill_doc.MARKER + " -->\n")
+    run(repo, "add", ".")
+    run(repo, "commit", "-q", "-m", "split")
+    run(repo, "checkout", "-q", "-b", "next")
+    assert cv.check(repo, "topic") == []
+    (repo / "sop-video-grading" / "criteria" / "03-c.md").write_text("more\n", encoding="utf-8")
+    assert "not greater than 0.29" in cv.check(repo, "topic")[0]
+    (repo / "sop-video-grading" / "criteria" / "03-c.md").unlink()
+    (repo / "sop-video-grading" / "criteria" / "README.md").write_text("how to\n", encoding="utf-8")
+    assert cv.check(repo, "topic") == []  # the README is not a rule
+
+
 def test_a_version_main_moved_past_must_be_bumped_again(repo):
     run(repo, "checkout", "-q", "main")
     write(repo, grading="0.30", grading_body="main rules", changelog="## 0.30（rubric 1.16）\n")

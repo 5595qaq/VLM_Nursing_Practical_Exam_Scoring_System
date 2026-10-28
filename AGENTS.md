@@ -24,8 +24,8 @@
 
 ### 分工
 
-- **依步驟分工，不依檔案**：每人認領一組步驟（例如 10b、16a／17b、20a），用 GitHub issue 登記（標題如 `[SOP] 步驟 10b`），開始前先看有沒有人認領。同一組步驟同時只能有一個進行中的分支。
-- 只改自己步驟的 `rubric.json` 條目與 `SKILL.md` 小節。**共用段落**——評分 `SKILL.md` 第 1–3、5 節、手部姿勢的通用規則、`sop-video-skill/SKILL.md` 的共通流程——要改時先在 issue 說明，PR 標出並通知其他步驟的負責人。
+- **依標準組分工**：每人認領 `sop-video-grading/criteria/` 的一個檔（一組標準，例如 `08-hand-posture.md`、`06-plunger.md`；清單見 `criteria/README.md`），用 GitHub issue 登記（標題如 `[SOP] criteria/06-plunger`），開始前先看有沒有人認領。同一個檔同時只能有一個進行中的分支。`.github/CODEOWNERS` 填上負責人後，GitHub 會自動請他 review 改到該檔的 PR。
+- 只改自己的 `criteria/` 檔與 `rubric.json` 裡那些標準的條目。**共用部分**——評分 `SKILL.md`（輸入、動作、final 格式、不要做的事；評分 agent 每個任務都會讀）、`sop-video-skill/SKILL.md` 與 `references/`——要改時先在 issue 說明，PR 標出並通知其他標準組的負責人。
 - 一個 PR 只處理一組步驟，一輪疊代就開 PR，不要累積多輪。
 - 每人用自己的 clone 或 `git worktree`，不要共用工作目錄；分支從最新的 `main` 開。
 
@@ -37,7 +37,7 @@
   1. `git rebase origin/main`，解完衝突。
   2. 把版本改成下一個正式版本（`main` 的版本 +1，例如 `0.30`）。期間有別人先合併，就再 rebase 並往上加。
   3. 把 `changelog.d/` 裡的所有片段（包括別人不改版本的修改留下的）移到 `CHANGELOG.md` 的新版本標題下，刪除片段檔。
-  4. 用正式版本對這個 PR 負責的步驟重跑最後一輪的影片並 commit 紀錄。rebase 沒帶進別人對同一段或共用段落的修改時，可以只跑 1 支確認，在 PR 寫明理由。
+  4. 用正式版本對這個 PR 負責的步驟重跑最後一輪的影片並 commit 紀錄。rebase 沒帶進別人對同一個 criteria 檔或共用部分的修改時，可以只跑 1 支確認，在 PR 寫明理由。
 - 評分端的 `CHANGELOG.md` 以評分 SKILL.md 版本為標題（例如 `## 0.30（rubric 1.17）`），所以改 rubric 時評分 SKILL.md 也要遞增；只改 SKILL.md 時 rubric 不動。sop-video-skill 的版本獨立。
 
 ### 不會衝突的紀錄方式

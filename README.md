@@ -153,7 +153,9 @@ Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499，或 Claude 回傳 429／529（o
 | `scripts/rubric.py` | 讀取並檢查 rubric、彙整步驟判定 |
 | `scripts/rules.py` | 由切分結果判定 `program` 標準，並為 `visual` 標準算出要看的影片區間（先標為待判定） |
 | `scripts/validate_grading.py` | 驗證評分結果；`--final` 另外拒絕還在待判定的標準 |
-| `SKILL.md` | 評分 agent 的 system prompt（看畫面的標準怎麼判、說明怎麼寫） |
+| `SKILL.md` | 評分 agent 的 system prompt 中所有任務共用的部分（輸入、動作、final 格式、說明怎麼寫、不要做的事），版本號也在這裡 |
+| `criteria/` | 各組看畫面標準怎麼判，一組一個檔（清單見 `criteria/README.md`）；組 prompt 時依檔名順序放進 `SKILL.md` 的標記行 |
+| `scripts/skill_doc.py` | 組出完整的評分 SKILL.md（`SKILL.md` + `criteria/`）：system prompt、`rules_SKILL.md` 與 `check_versions.py` 都用它；直接執行會印出全文 |
 | `actions.schema.json` | 評分 agent 的動作格式（`overview`、`zoom`、`burst`、`clip`、`final`），由 `scripts/validate_grading_action.py` 檢查 |
 | `scripts/clip.py` | 從原檔剪出帶聲音的片段（裁到 context box，或用 `--rel-to-crop` 只裁其中一塊，例如雙手），給彈針、洗手七個動作與旋緊針頭用 |
 | `scripts/motion_peaks.py` | 以每秒 15 格分析任務區間內 hands_box 的畫面變化，找出手有明顯動作的時間點（不呼叫模型） |
@@ -162,7 +164,7 @@ Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499，或 Claude 回傳 429／529（o
 | `scripts/eval_grading.py` | 與人工標註表比對：每步的人工／模型判定與說明、一致率、錯誤召回、誤報（另外列出有看畫面標準的步驟） |
 | `scripts/compare_arms.py` | 在同一批影片上比較多份評分紀錄（不同規則、模型或做法）：一致率、成對差異（McNemar）、重跑翻轉、token 與時間，列出各組判定不同的步驟；可排除步驟（`--exclude-steps`）或讓指定步驟的錯誤＝部分正確（`--merge-faults-steps`），不呼叫模型 |
 | `scripts/labels_to_segmentation.py` | 用人工標註表的開始／結束秒數組出切分結果，調整評分 agent 時可跳過切分 skill |
-| `scripts/check_versions.py` | 合併前的版本檢查（CI 對每個 PR 執行）：版本必須是正式版本（不能是分支版本 `0.29-10b.1`）；PR 改了規則時版本要比目標分支大，`CHANGELOG.md` 要有新版本的標題，`changelog.d/` 的片段要全部移走 |
+| `scripts/check_versions.py` | 合併前的版本檢查（CI 對每個 PR 執行）：版本必須是正式版本（不能是分支版本 `0.29-10b.1`）；PR 改了規則（評分 SKILL.md 以加上 `criteria/` 的全文比對）時版本要比目標分支大，`CHANGELOG.md` 要有新版本的標題，`changelog.d/` 的片段要全部移走 |
 | `CHANGELOG.md` | 各版本的修改紀錄 |
 | `changelog.d/` | 還沒進正式版本的修改，一個分支一個檔，合併前移進 `CHANGELOG.md` |
 | `EXPERIMENTS.md` | 2026-10-29 之前的對照實驗、結論、已確認的標準定義，以及「待老師確認」清單 |
@@ -575,6 +577,7 @@ docker compose down
 ```text
 my-awesome-project/
 ├── .github/
+│   ├── CODEOWNERS               # 各組標準的負責人（範本，認領後填入）
 │   ├── pull_request_template.md
 │   └── workflows/
 │       ├── python-ci.yml
@@ -646,6 +649,7 @@ my-awesome-project/
 │   └── scripts/
 ├── sop-video-grading/
 │   ├── SKILL.md
+│   ├── criteria/        # 各組標準怎麼判，一組一個檔
 │   ├── CHANGELOG.md
 │   ├── changelog.d/     # 未發布的修改，一個分支一個檔
 │   ├── EXPERIMENTS.md   # 2026-10-29 之前的實驗與「待老師確認」

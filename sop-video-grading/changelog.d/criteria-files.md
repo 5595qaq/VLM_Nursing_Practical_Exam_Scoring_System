@@ -1,0 +1,6 @@
+- **SKILL.md 第 4 節拆成 `criteria/`（2026-10-29，SKILL／rubric 版本不變）：**
+  - 「各類標準怎麼判」的 10 個小節搬到 `criteria/01-hand-washing.md` … `09-disposal.md`（洗手 1a、1b 同一個檔），`SKILL.md` 原處留一行 `<!-- criteria/*.md ... -->` 標記。
+  - 新增 `scripts/skill_doc.py`：依檔名順序把 `criteria/*.md` 放回標記行。評分 agent 的 system prompt 和 `rules_SKILL.md` 都用組裝後的全文，和拆檔前的 0.29 `SKILL.md` 逐位元組相同，所以版本不變、評分結果與紀錄照用。
+  - `check_versions.py` 以組裝後的全文判斷評分 SKILL 有沒有改：文字在 `SKILL.md` 與 `criteria/` 之間搬動不算修改，改了或新增 `criteria/` 的檔要遞增 `SKILL.md` 版本。
+  - `rules_digest` 會包含 `criteria/`，所以拆檔前後的摘要不同，跨這次部署續跑的評分會標 `mixed_rules`。
+  - 新增 `.github/CODEOWNERS` 範本（還沒填負責人）。
