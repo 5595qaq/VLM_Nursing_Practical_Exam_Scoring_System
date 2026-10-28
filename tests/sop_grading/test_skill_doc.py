@@ -38,10 +38,24 @@ def test_the_real_skill_has_every_visual_criterion():
         assert path.read_text(encoding="utf-8").endswith("\n\n")  # a blank line before the next section
     rubric = json.loads((skill_doc.ROOT / "rubric.json").read_text(encoding="utf-8"))
     visual = [c["id"] for step in rubric["steps"] for c in step["criteria"] if c["category"] == "visual"]
-    assert visual and [c for c in visual if c not in text] == []
+    # each visual criterion has a "### ...（ids）" heading in a criteria file, not just a mention somewhere
+    headings = [line for path in skill_doc.criteria_files()
+                for line in path.read_text(encoding="utf-8").splitlines() if line.startswith("### ")]
+    assert visual and [c for c in visual if not any(c in h for h in headings)] == []
 
 
 def test_main_writes_the_assembled_text(tmp_path):
     out = tmp_path / "SKILL.full.md"
     assert skill_doc.main(["-o", str(out)]) == 0
     assert out.read_bytes().decode("utf-8") == skill_doc.assemble_dir()
+
+
+def test_other_markdown_in_criteria_is_an_error(tmp_path):
+    (tmp_path / "criteria").mkdir()
+    (tmp_path / "SKILL.md").write_text(SKILL, encoding="utf-8")
+    (tmp_path / "criteria" / "01-a.md").write_text("### a\n\n", encoding="utf-8")
+    (tmp_path / "criteria" / "NOTES.md").write_text("draft\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="NOTES.md"):
+        skill_doc.assemble_dir(tmp_path)
+    assert skill_doc.is_criteria("06-plunger.md") and not skill_doc.is_criteria("6-plunger.md")
+    assert not skill_doc.is_criteria("08-hand-posture.bak.md")

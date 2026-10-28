@@ -4,3 +4,5 @@
   - `check_versions.py` 以組裝後的全文判斷評分 SKILL 有沒有改：文字在 `SKILL.md` 與 `criteria/` 之間搬動不算修改，改了或新增 `criteria/` 的檔要遞增 `SKILL.md` 版本。
   - `rules_digest` 會包含 `criteria/`，所以拆檔前後的摘要不同，跨這次部署續跑的評分會標 `mixed_rules`。
   - 新增 `.github/CODEOWNERS` 範本（還沒填負責人）。
+  - `criteria/` 只收 `NN-名稱.md`（兩位數前綴決定順序）；其他 `.md`（草稿、備份）會讓組裝失敗，不會不知不覺放進 prompt。
+  - 新增 `scripts/git_commit.py` 產生 `GIT_COMMIT`：除了未 commit 的修改，`criteria/` 裡還沒加入 Git 的 `*.md` 也會加上 `-dirty`（它們同樣會被放進 prompt）。README 的 bash／PowerShell 寫法都改成呼叫它，`sop_grading_cli` 的預設 commit 也做同樣的檢查。

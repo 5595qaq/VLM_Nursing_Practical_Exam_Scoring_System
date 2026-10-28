@@ -55,12 +55,14 @@ def _duration(path: Path) -> float:
 
 
 def _git_commit() -> str:
-    """HEAD, with -dirty when tracked files have uncommitted changes (the recorded commit would not
-    reproduce the run)."""
+    """HEAD, with -dirty when tracked files have uncommitted changes or an untracked criteria/*.md would
+    go into the prompt (the recorded commit would not reproduce the run; as scripts/git_commit.py)."""
+    def git(*args: str) -> str:
+        return subprocess.check_output(["git", *args], text=True, stderr=subprocess.DEVNULL).strip()
     try:
-        head = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True, stderr=subprocess.DEVNULL).strip()
-        dirty = subprocess.check_output(["git", "status", "--porcelain", "--untracked-files=no"], text=True,
-                                        stderr=subprocess.DEVNULL).strip()
+        head = git("rev-parse", "HEAD")
+        dirty = git("status", "--porcelain", "--untracked-files=no") or git(
+            "ls-files", "--others", "--exclude-standard", "--", ":/sop-video-grading/criteria")
     except (OSError, subprocess.CalledProcessError):
         return ""
     return head + ("-dirty" if dirty else "")

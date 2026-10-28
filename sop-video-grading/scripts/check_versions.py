@@ -53,7 +53,7 @@ def grading_skill_text(root: Path, rev: str | None) -> str | None:
         names = [p.name for p in skill_doc.criteria_files(root / folder)]
     else:
         listed = git(root, "ls-tree", "--name-only", f"{rev}:{folder}/{skill_doc.CRITERIA_DIR}").stdout.split()
-        names = sorted(n for n in listed if n.endswith(".md") and n != "README.md")
+        names = sorted(n for n in listed if skill_doc.is_criteria(n))
     return skill_doc.assemble(skill, [(n, show(f"{folder}/{skill_doc.CRITERIA_DIR}/{n}") or "") for n in names])
 
 
@@ -61,7 +61,7 @@ def grading_skill_text(root: Path, rev: str | None) -> str | None:
 # CHANGELOG, and the heading that must name the new version
 RULES = [
     ("sop-video-grading SKILL.md", "sop-video-grading/SKILL.md", frontmatter_version,
-     ["sop-video-grading/SKILL.md", "sop-video-grading/criteria"], "sop-video-grading/CHANGELOG.md",
+     [], "sop-video-grading/CHANGELOG.md",  # judged by TEXT_OF (SKILL.md + criteria/), not by files
      r"^## {v}(?![\d.])"),
     ("sop-video-grading rubric.json", "sop-video-grading/rubric.json", rubric_version,
      ["sop-video-grading/rubric.json"], "sop-video-grading/CHANGELOG.md", r"^## .*rubric {v}(?![\d.])"),

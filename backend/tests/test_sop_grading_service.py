@@ -316,7 +316,7 @@ def test_system_prompt_includes_skill_steps_and_actions():
     system = grading.build_system_prompt()
     assert "SOP 影片評分" in system and "30 步驟定義" in system and '"const": "clip"' in system
     # SKILL.md's marker line is replaced by every criteria/*.md, in file-name order
-    criteria = sorted((grading.grading_dir() / "criteria").glob("[0-9]*.md"))
+    criteria = grading.load_grading_module("skill_doc").criteria_files(grading.grading_dir())
     assert criteria and "<!-- criteria/" not in system
     texts = [c.read_text(encoding="utf-8") for c in criteria]
     assert "".join(texts) in system
