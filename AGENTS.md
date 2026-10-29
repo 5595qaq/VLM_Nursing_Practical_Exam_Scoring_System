@@ -93,6 +93,7 @@
    - 共用的工作目錄常有別人未 commit 的修改，`GIT_COMMIT` 會帶 `-dirty` 而被拒絕。不要為了跑評分而 commit、stash 或還原別人的修改，也不要用 `--allow-dirty` 繞過；先告訴使用者，由使用者決定等對方 commit，或改在乾淨的 `git worktree` 跑（worktree 裡沒有被忽略的 `.env` 與 `secrets/`，要另外指定 `--env-file` 與 `GCP_SA_KEY_PATH`；紀錄會寫在 worktree 的 `sop-video-grading/runs/`，跑完複製回原工作目錄再 commit）。
    - commit 紀錄時只加 `sop-video-grading/runs/<影片ID>/`，不要連同工作目錄裡其他人的修改一起提交。
 3. **比對**：用 `sop-video-grading/scripts/eval_grading.py` 比對評分結果與標記表，再逐一比對與參考答案不一致的步驟。
+   - **時間證據對不上也算錯誤**：判定一致，但切分給該步的區間（或評分說明引用的時間）和參考答案的時間沒有重疊、起點也差超過 3 秒，這一步算錯誤。一致率用這個標準計算。`eval_grading.py` 不比時間，要另外比對。
 4. **歸因**：每個不一致先判斷原因，再決定改什麼：
    - 評分 agent 看錯、漏看 → 改 SKILL.md 的作法（取樣、放大、聲音等）。
    - 標準本身不清楚或沒寫 → 改 `rubric.json` 的標準文字，並列入人工核對。
