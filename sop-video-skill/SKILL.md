@@ -1,7 +1,7 @@
 ---
 name: sop-video-segmentation
 description: 把護理技術操作影片（無菌抽藥技術－vial 粉劑，30 步驟）切分成「每個時間區段正在做哪個 SOP 步驟」的 JSON。只做前處理切分，不評分。輸入為抽好的影格圖片（模型不直接讀影片）。
-version: 1.5.0-segfix.1
+version: 1.5.0-segfix.2
 ---
 
 # SOP 影片步驟切分（前處理，不評分）
@@ -181,7 +181,7 @@ zoom 規則：
 
 - **`detected` 要看到定義動作本身**，不是前後的動作或結果：5／8 要看到瓶蓋／瓶頂和瓶身分開；6／7 要看到棉片在瓶口擦拭；15／25 要看到棉片墊在針頭與針筒接頭處。只看到拿起器材、撕棉片包裝、把棉片蓋在瓶口上，都不算。
 - **`not_performed` 前要密集確認**：短步驟（≤ 5 s）只靠 2–8 s 一格的影格會整段漏掉。要標 `not_performed`，必須對這一步的邏輯區間（前一個錨點 → 下一個錨點）做過 ≤ 1.5 s／格的 overview（區間長就分段），並 zoom 過相關器材；`evidence` 引用這些影格。沒做到就標 `not_visually_determinable`。
-- **考前已打開的瓶子（5、8）**：第一次拿起 vial／稀釋液瓶時 zoom 瓶口。瓶口已經沒有蓋／瓶頂，之後也沒看到蓋子分開 → `not_visually_determinable`，`evidence` 寫「考前已打開：zoom@t 第一次拿起時瓶口已無蓋」。不要標 `not_performed`（不是考生漏做），也不要把之後的擦拭或轉動瓶口當成開瓶。
+- **考前已打開的瓶子（5、8）**：第一次拿起 vial／稀釋液瓶時 zoom 瓶口，之後消毒前再 zoom 一次，比較兩次的瓶頂（vial 的翻蓋可能是深紅或褐色，看起來像橡皮塞，判斷方法見 sop_steps.md 步驟 5）。瓶頂有變化 → 變化的那段時間就是開瓶（`detected`）；第一次就是開口狀態、之後也沒有變化 → `not_visually_determinable`，`evidence` 寫「考前已打開：zoom@t 第一次拿起時瓶口已無蓋」。不要標 `not_performed`（不是考生漏做），也不要把之後的擦拭或轉動瓶口當成開瓶。
 
 注意：
 - 不要因為「找不到」就標 `not_performed`；找不到但可能被遮擋 → `not_visually_determinable`。
