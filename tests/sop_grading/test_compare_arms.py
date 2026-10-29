@@ -35,6 +35,8 @@ def test_merge_faults_only_on_the_given_steps():
             {"step_id": 13, "human": "錯誤", "model": "部分正確", "match": False},
             {"step_id": 10, "human": "正確", "model": "部分正確", "match": False}]
     assert [r["match"] for r in ca.merge_faults(rows, {10})] == [True, False, False]
+    rows[0]["time_match"] = False  # a merged verdict match is still wrong when the time does not match
+    assert [r["strict_match"] for r in ca.merge_faults(rows, {10})] == [False, False, False]
 
 
 def write_record(folder, runs):

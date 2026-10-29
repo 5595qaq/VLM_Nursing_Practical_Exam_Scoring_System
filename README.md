@@ -162,7 +162,7 @@ Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499，或 Claude 回傳 429／529（o
 | `scripts/motion_peaks.py` | 以每秒 15 格分析任務區間內 hands_box 的畫面變化，找出手有明顯動作的時間點（不呼叫模型） |
 | `scripts/audio_peaks.py` | 找出任務區間內短促的響聲與連續響聲（彈針聲），並判斷影片有沒有可用的聲音（不呼叫模型） |
 | `scripts/burst.py` | 在 0.3–3 秒內平均取 3–12 張原始解析度的局部畫面，看不到 1 秒的短動作 |
-| `scripts/eval_grading.py` | 與人工標註表比對：每步的人工／模型判定與說明、一致率、錯誤召回、誤報（另外列出有看畫面標準的步驟） |
+| `scripts/eval_grading.py` | 與人工標註表比對：每步的人工／模型判定與說明、一致率、錯誤召回、誤報（另外列出有看畫面標準的步驟）。時間也比：紀錄裡切分的區間（沒有時用 `logical_window`）和標註時間沒有重疊、起點也差超過 3 秒，或標註有時間但切分沒有，判定一致也算錯（一致率以這個為準，括號內是只比判定的結果）；找不到同一支影片的 `segmentation.json` 或標註沒有時間時只比判定 |
 | `scripts/compare_arms.py` | 在同一批影片上比較多份評分紀錄（不同規則、模型或做法）：一致率、成對差異（McNemar）、重跑翻轉、token 與時間，列出各組判定不同的步驟；可排除步驟（`--exclude-steps`）或讓指定步驟的錯誤＝部分正確（`--merge-faults-steps`），不呼叫模型 |
 | `scripts/labels_to_segmentation.py` | 用人工標註表的開始／結束秒數組出切分結果，調整評分 agent 時可跳過切分 skill |
 | `scripts/check_versions.py` | 合併前的版本檢查（CI 對每個 PR 執行）：版本必須是正式版本（不能是分支版本 `0.29-10b.1`）；PR 改了規則（評分 SKILL.md 以加上 `criteria/` 的全文比對）時版本要比目標分支大，`CHANGELOG.md` 要有新版本的標題，`changelog.d/` 的片段要全部移走 |
