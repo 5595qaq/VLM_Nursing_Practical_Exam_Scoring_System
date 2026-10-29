@@ -1,0 +1,42 @@
+{
+ "video_id": "VID_0100",
+ "versions": {
+  "rubric": "1.16",
+  "skill": "0.29",
+  "model": "gemini-4-argon",
+  "segmentation": "skill1.5.2_gemini-4-argon"
+ },
+ "video_sha256": "3df2b9c90c8d9213c391f9ba9148c65453725b55fff9550e7518b0b81edb5aa2",
+ "runs": [
+  {
+   "run": 1,
+   "by": "5595QAQ",
+   "date": "2026-10-29",
+   "commit": "b0cc7838f4309faa6f0fce595c985fb7ac8d4ce8",
+   "video_sha256": "3df2b9c90c8d9213c391f9ba9148c65453725b55fff9550e7518b0b81edb5aa2",
+   "steps": [
+    5,
+    6,
+    7,
+    8,
+    15,
+    25,
+    30
+   ],
+   "failed_tasks": [],
+   "segmentation": "sop-video-skill 1.5.2 gemini-4-argon",
+   "usage": {
+    "input_tokens": 137691,
+    "cached_input_tokens": 0,
+    "output_tokens": 3204,
+    "thinking_tokens": 1957
+   },
+   "segmentation_usage": {
+    "input_tokens": 664664,
+    "cached_input_tokens": 343813,
+    "output_tokens": 61313,
+    "thinking_tokens": 4662
+   }
+  }
+ ]
+}
