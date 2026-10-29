@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 5.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 15165,
+  "cached_input_tokens": 0,
+  "output_tokens": 88,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@300-306.5（hands_box，n=9）#0=05:00.0、#1=05:00.8、#2=05:01.6、#3=05:02.4、#4=05:03.2、#5=05:04.1、#6=05:04.9、#7=05:05.7、#8=05:06.5"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [303.2, 303.6, 304.1, 304.9], \"region\": [0.15, 0.55, 0.55, 0.98], \"reason\": \"確認右手持空針部位及將空針放入針架的過程\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 14.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 16416,
+  "cached_input_tokens": 0,
+  "output_tokens": 278,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@300-306.5（hands_box，n=9）#0=05:00.0、#1=05:00.8、#2=05:01.6、#3=05:02.4、#4=05:03.2、#5=05:04.1、#6=05:04.9、#7=05:05.7、#8=05:06.5",
+   "zoom@303.2/303.6/304.1/304.9 region=[0.150, 0.550, 0.550, 0.980]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"30a\", \"verdict\": \"正確\", \"explanation\": \"05:03.2–05:04.9 右手將空針垂直插入桌上的針架（針頭套置於針架內）並放手，空針立於針架上。\", \"evidence\": [\"ov@300-306.5 #4\", \"ov@300-306.5 #5\", \"ov@300-306.5 #6\", \"zoom@303.2\", \"zoom@304.1\", \"zoom@304.9\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"30b\", \"verdict\": \"正確\", \"explanation\": \"05:03.2–05:04.1 右手握住空針外筒（針柄處），未碰觸針頭部位，將空針放入針架。\", \"evidence\": [\"zoom@303.2\", \"zoom@303.6\", \"zoom@304.1\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
