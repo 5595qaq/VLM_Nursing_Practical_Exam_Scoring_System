@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 6.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 19500,
+  "cached_input_tokens": 0,
+  "output_tokens": 105,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@250.5-277（context box，有聲音；片段內 00:00 ＝ 影片 04:10.5）"
+  ],
+  "reply": "{\"action\": \"burst\", \"start\": 257.0, \"end\": 260.0, \"n\": 9, \"region\": [0.45, 0.25, 0.75, 0.6], \"reason\": \"確認 04:17–04:20 連續響聲時是否有彈針動作，以及針頭與針筒接合處是否已墊上酒精棉片\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 15.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 20928,
+  "cached_input_tokens": 0,
+  "output_tokens": 538,
+  "thinking_tokens": 426,
+  "materials": [
+   "clip@250.5-277（context box，有聲音；片段內 00:00 ＝ 影片 04:10.5）",
+   "burst@257-260（原始解析度，9 格，每 0.38 s）#0=04:17.0、#1=04:17.4、#2=04:17.8、#3=04:18.1、#4=04:18.5、#5=04:18.9、#6=04:19.2、#7=04:19.6、#8=04:20.0 region=[0.450, 0.250, 0.750, 0.600]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [253.0, 254.0, 256.0, 258.0], \"region\": [0.45, 0.2, 0.75, 0.55], \"reason\": \"確認在04:13–04:14將白色酒精棉片墊在針頭與針筒接合處，且早於04:17的彈針動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 7.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 22162,
+  "cached_input_tokens": 0,
+  "output_tokens": 278,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@250.5-277（context box，有聲音；片段內 00:00 ＝ 影片 04:10.5）",
+   "burst@257-260（原始解析度，9 格，每 0.38 s）#0=04:17.0、#1=04:17.4、#2=04:17.8、#3=04:18.1、#4=04:18.5、#5=04:18.9、#6=04:19.2、#7=04:19.6、#8=04:20.0 region=[0.450, 0.250, 0.750, 0.600]",
+   "zoom@253/254/256/258 region=[0.450, 0.200, 0.750, 0.550]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"25b\", \"verdict\": \"正確\", \"explanation\": \"04:13.0–04:14.0（clip@250.5-277 片段內 00:02.5–00:03.5）拿起白色方形酒精棉片墊在針頭與針筒交接處（zoom@254、zoom@256 清楚可見左手手指捏著白色棉片包住針頭接頭處），接著在 04:17.0–04:19.2（burst@257-260 #0–#6）右手手指連續彈針筒並伴隨連續彈擊聲（04:17.9–04:19.0），符合先墊酒精棉片才彈針。\", \"evidence\": [\"clip@250.5-277\", \"zoom@254\", \"zoom@256\", \"zoom@258\", \"burst@257-260 #1\", \"burst@257-260 #4\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
