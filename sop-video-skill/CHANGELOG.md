@@ -2,10 +2,31 @@
 
 未發布的修改先寫在 `changelog.d/`（一個分支一個檔，見 `changelog.d/README.md`），合併前改成正式版本時才移到這裡；規則見 `AGENTS.md`「多人協作」。
 
-## 未發布（不影響切分結果，SKILL 版本不變）
+## 1.5.2
 
-- 後端（`sop_skill_service.py`）：每回合的對話紀錄與 `run_skill_loop` 回傳的 `usage` 多記 `cached_input_tokens` 與 `thinking_tokens`（`input_tokens` 仍含快取，`output_tokens` 仍含 thinking）。`sop_grading_cli` 把這次的切分用量寫進評分紀錄的 `segmentation_usage`。切分邏輯不變。
-- `sequence_check.py`：`--write` 判斷模型有沒有提過重複時，時間涵蓋重複那幾筆的 `interrupted` 也算涵蓋 `repeated`（沒涵蓋到的仍視為真的重做）。1.4.6 起被打斷的步驟 10 要輸出兩筆並寫 `interrupted`，原本會再自動補一筆 `repeated`（「步驟 10 出現 2 次」）。後端只把 `check()` 的結果另存成 `sequence_check.json`，不寫進切分結果。
+規則文字前後一致（1.5.1 的 code review）。動作格式與 schema 不變。
+
+- 步驟 8 的開始統一為「開始扭轉（或折）瓶頂」，手握住瓶頂擦拭的時間屬於 7（1.5.1 同時寫了「開始＝手握住稀釋液瓶頂」與「從開始扭轉算」）。
+- 步驟 7 拿掉「常很短（1–3 s），並直接接 8」與「可合併為 7–8 段」，SKILL.md 合併規則的例子刪掉 7–8：合併規則會給 7、8 同一個區間，把 7 對齊到扭開（VID_0100 步驟 7、VID_0095 步驟 8 的時間跳動）。定 7 的起點時，密集 overview 從拿起稀釋液瓶開始取（VID_0100 的 overview 從 01:18 才開始，漏掉 01:13–01:17 的擦拭）。
+- 棉片包住稀釋液瓶頂直接扭開、沒有另外擦，也算 7（1.5.1 第 5 節只寫「要看到棉片在瓶口擦拭」）。
+- 步驟 5：手或棉片擋住推蓋動作時，看到瓶頂從有色圓蓋變成銀色鋁圈也算看到動作（1.5.1 第 5 節與步驟 5 的寫法不一致）。
+
+## 1.5.1
+
+切分端修正：「有沒有做」的步驟要看到動作本身、步驟 6／7 的時段、步驟 30 只看給藥前那次（issue #87）。依 2026-10-27 組員核對 0.22 的 11 支影片，切分是最大的錯誤來源；疊代過程（分支版本 segfix.1–.6）見 `sop-video-grading/experiments/2026-10-29-segfix.md`。動作格式與 schema 不變。
+
+- `SKILL.md` 第 5 節：評分程式對 5、6、7、8、15、25 直接用切分的 `status` 給分，所以 `detected` 要看到動作本身（推開瓶蓋、扭開或折斷瓶頂、棉片在瓶口擦拭、棉片墊在接頭）；`not_performed` 前要對邏輯區間做 ≤ 1.5 s／格的 overview 並 zoom 相關器材，否則標 `not_visually_determinable`（VID_0083 步驟 5、7 原本用 4 s／格判沒做）。
+- `references/sop_steps.md`：
+  - 器材慣例與步驟 5：vial 翻蓋可能是深紅或褐色，不要看成橡皮塞；手擋住時看瓶頂從有色圓蓋變成銀色鋁圈的時間。
+  - 步驟 6：開始＝棉片碰到瓶口（撕棉片包裝不算）；只把棉片蓋在瓶口不是消毒，之後任何一次擦 vial 瓶口都輸出步驟 6、不寫 `extra_action`（VID_0091、0100）。
+  - 步驟 7／8：7 從棉片第一次碰到稀釋液瓶頂開始，8 從開始扭轉開始；隔著棉片扭開時兩者重疊，但 7 常比 8 早幾秒，不要把 7 對齊到扭開（VID_0091／0095／0098／0099）。8＝看到扭開或折斷瓶頂的動作，空手或隔著棉片都算；只有棉片在瓶口擦、手沒有捏住瓶頂扭轉是 7。
+  - 步驟 15／25：要在 zoom 看到棉片墊在針頭與針筒接頭處，不因 16／26 有做而推定；清楚看到沒有才標 `not_performed`（VID_0096 步驟 25）。
+  - 步驟 30：只標抽藥流程結束、拿去給藥之前的那次放下（**暫定，待老師確認**，見 `EXPERIMENTS.md`「待老師確認」）；24 之前或之後又拿起來做 25–28 的放置不是 30；給藥後的處置寫 `other`；沒放下就拿去給藥 → `not_visually_determinable` 並給 `logical_window`（VID_0074 原本標出沒發生的「放入針架」）。
+- 不處理考前已打開的瓶子（使用者決定，2026-10-29：之後的影片不會再出現）；segfix.1–.4 曾為它加規則，結果在對錯之間來回，已全部拿掉。
+- 評分紀錄的 seg 版本變了，評分會重新切分，不沿用 1.5.0 的切分。
+- 不影響切分結果的修改（原「未發布」）：
+  - 後端（`sop_skill_service.py`）：每回合的對話紀錄與 `run_skill_loop` 回傳的 `usage` 多記 `cached_input_tokens` 與 `thinking_tokens`（`input_tokens` 仍含快取，`output_tokens` 仍含 thinking）。`sop_grading_cli` 把這次的切分用量寫進評分紀錄的 `segmentation_usage`。切分邏輯不變。
+  - `sequence_check.py`：`--write` 判斷模型有沒有提過重複時，時間涵蓋重複那幾筆的 `interrupted` 也算涵蓋 `repeated`（沒涵蓋到的仍視為真的重做）。1.4.6 起被打斷的步驟 10 要輸出兩筆並寫 `interrupted`，原本會再自動補一筆 `repeated`（「步驟 10 出現 2 次」）。後端只把 `check()` 的結果另存成 `sequence_check.json`，不寫進切分結果。
 
 ## 1.5.0
 

@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 25.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 18768,
+  "cached_input_tokens": 0,
+  "output_tokens": 760,
+  "thinking_tokens": 638,
+  "materials": [
+   "clip@275.4-300.5（context box，有聲音；片段內 00:00 ＝ 影片 04:35.4）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [280.4, 283.9, 290.0, 296.9], \"region\": [0.32, 0.3, 0.55, 0.65], \"reason\": \"確認 04:40.4 尚未墊棉片時的手部動作，以及 04:43.9 墊上酒精棉片後針頭接合處是否有白色方形酒精棉片與後續排氣動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 6.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 20010,
+  "cached_input_tokens": 0,
+  "output_tokens": 162,
+  "thinking_tokens": 69,
+  "materials": [
+   "clip@275.4-300.5（context box，有聲音；片段內 00:00 ＝ 影片 04:35.4）",
+   "zoom@280.4/283.9/290/296.9 region=[0.320, 0.300, 0.550, 0.650]"
+  ],
+  "reply": "{\"action\": \"burst\", \"start\": 296.0, \"end\": 298.5, \"n\": 9, \"region\": [0.32, 0.25, 0.55, 0.6], \"reason\": \"確認 04:56.0–04:58.5 連續響聲期間是否有彈針動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 12.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 21467,
+  "cached_input_tokens": 0,
+  "output_tokens": 587,
+  "thinking_tokens": 316,
+  "materials": [
+   "clip@275.4-300.5（context box，有聲音；片段內 00:00 ＝ 影片 04:35.4）",
+   "zoom@280.4/283.9/290/296.9 region=[0.320, 0.300, 0.550, 0.650]",
+   "burst@296-298.5（原始解析度，9 格，每 0.31 s）#0=04:56.0、#1=04:56.3、#2=04:56.6、#3=04:56.9、#4=04:57.2、#5=04:57.6、#6=04:57.9、#7=04:58.2、#8=04:58.5 region=[0.320, 0.250, 0.550, 0.600]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"25b\", \"verdict\": \"正確\", \"explanation\": \"04:43.4（clip@275.4-300.5 片段內 00:08.0）拿起白色方形酒精棉片墊在針頭與針筒接合處（zoom@283.9、zoom@290、zoom@296.9 確認有白色酒精棉片），並在 04:45.4–04:56.4（片段內 00:10.0–00:21.0）排氣過程中全程墊著酒精棉片，直到 04:58.2（burst@296-298.5 #7）排氣完成後才拿開棉片；整段過程沒有彈針。\", \"evidence\": [\"clip@275.4-300.5\", \"zoom@283.9\", \"zoom@290\", \"zoom@296.9\", \"burst@296-298.5 #7\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]
