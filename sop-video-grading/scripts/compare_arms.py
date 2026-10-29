@@ -108,7 +108,11 @@ def same_verdict(step: int, a: str, b: str, merged: set[int] = frozenset()) -> b
 
 def merge_faults(rows: list[dict], merged: set[int]) -> list[dict]:
     """eval_grading.compare rows with 錯誤 = 部分正確 on the `merged` steps."""
-    return [{**r, "match": same_verdict(r["step_id"], r["human"], r["model"], merged)} for r in rows]
+    out = []
+    for r in rows:
+        match = same_verdict(r["step_id"], r["human"], r["model"], merged)
+        out.append({**r, "match": match, "strict_match": match and r.get("time_match") is not False})
+    return out
 
 
 def flips(runs: list[tuple[dict, set[int] | None]], skip: set[int] = frozenset(),

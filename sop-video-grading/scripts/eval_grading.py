@@ -4,7 +4,8 @@ usage: python eval_grading.py --labels LABELS.csv GRADING.json [GRADING.json ...
 
 The label sheet is the CSV export of 影片標記表 (gitignored; it contains student names). Columns used:
   B 步驟編號, D 判定, E 問題說明, F 問題類型, G 開始秒數, H 結束秒數, O 影片ID, P 備注.
-G/H are mm:ss; several spans are written 01:47/02:49 in G and 01:51/02:50 in H (paired by position).
+G/H are mm:ss; several spans are written 01:47/02:49 in G and 01:51/02:50 in H (paired by position;
+different counts in G and H, or a time that cannot be read, leave the step without a label time).
 The human explanation shown next to the model's is E + F + P joined (most rows only fill F,
 e.g. 步驟遺漏). Rows are skipped when the verdict is blank or 不適用, when E mentions "AI判定"
 (not a human judgement), or when the video is in --exclude.
@@ -16,10 +17,11 @@ when it was built from the label times they say nothing about the grading agent:
   error recall  human 錯誤/部分正確 that the model also marked 錯誤/部分正確
   false alarms  human 正確 that the model marked 錯誤/部分正確
   time          the segmentation's detected spans of the step against the label times: they match when a pair
-                overlaps or the starts differ by at most 3 s (AGENTS.md: a step whose time does not match is
-                wrong even when the verdicts agree). The segmentation is the segmentation.json next to the
-                grading file or one folder up (runs/<video>/<version>/runN/grading.json); without it, or when
-                either side has no time, the time is not checked (–) and only the verdict counts.
+                overlaps or the starts differ by at most 3 s (a step without one uses its logical_window),
+                and a label time with no span at all is a mismatch (a step whose time does not match is wrong even when the verdicts agree). The
+                segmentation is the segmentation.json next to the grading file or one folder up
+                (runs/<video>/<version>/runN/grading.json), used only when its video_id is the grading's;
+                without it, or without a label time, the time is not checked (–) and only the verdict counts.
   strict        agreement with time mismatches counted as wrong
 """
 import argparse
@@ -40,23 +42,20 @@ _TIME_RE = re.compile(r"^(\d+):(\d{0,2}(?:\.\d+)?)$")
 
 
 def parse_time(text: str) -> float | None:
-    """mm:ss or mm:ss.s; tolerates the sheet's typos 00;47, 08：59 and 06: (= 06:00)."""
+    """mm:ss or mm:ss.s; tolerates the sheet's typos 00;47, 08：59 and 06: (read as 06:00)."""
     m = _TIME_RE.match(text.strip().replace("：", ":").replace(";", ":"))
-    if not m:
+    if not m or float(m.group(2) or 0) >= 60:
         return None
     return int(m.group(1)) * 60 + float(m.group(2) or 0)
 
 
 def parse_spans(start: str, end: str) -> list[tuple[float, float]]:
-    """Label spans from columns G/H; a/b in both is two spans paired by position, other mixes become one
-    span from the earliest to the latest time. Unreadable cells give []."""
-    starts = [parse_time(t) for t in start.split("/") if t.strip()]
-    ends = [parse_time(t) for t in end.split("/") if t.strip()]
-    if not starts or not ends or None in starts or None in ends:
+    """Label spans from columns G/H; a/b in both is two spans paired by position. Different counts or an
+    unreadable cell give [] (no label time) rather than a guessed span."""
+    starts = [parse_time(t) for t in start.replace("／", "/").split("/") if t.strip()]
+    ends = [parse_time(t) for t in end.replace("／", "/").split("/") if t.strip()]
+    if not starts or len(starts) != len(ends) or None in starts or None in ends:
         return []
-    if len(starts) != len(ends):
-        times = starts + ends
-        return [(min(times), max(times))]
     return [(min(a, b), max(a, b)) for a, b in zip(starts, ends)]
 
 
@@ -65,18 +64,29 @@ def spans_match(model: list[tuple[float, float]], human: list[tuple[float, float
 
 
 def segmentation_spans(segmentation: dict) -> dict[int, list[tuple[float, float]]]:
-    spans: dict[int, list[tuple[float, float]]] = {}
+    """Detected spans per step; a step with none falls back to its logical windows (what the grading
+    agent is shown for it, e.g. step 29)."""
+    detected: dict[int, list[tuple[float, float]]] = {}
+    windows: dict[int, list[tuple[float, float]]] = {}
     for e in segmentation["steps"]:
         if e["status"] == "detected" and e.get("start") is not None and e.get("end") is not None:
-            spans.setdefault(e["step_id"], []).append((e["start"], e["end"]))
-    return spans
+            detected.setdefault(e["step_id"], []).append((e["start"], e["end"]))
+        elif e.get("logical_window"):
+            windows.setdefault(e["step_id"], []).append(tuple(e["logical_window"]))
+    return {**windows, **detected}
 
 
-def find_segmentation(grading_path: Path) -> Path | None:
+def find_segmentation(grading_path: Path, video_id: str) -> tuple[dict | None, str]:
+    """(segmentation, note): the segmentation.json next to the grading file or one folder up, when it is
+    for the same video; otherwise None and why the time is not checked."""
     for folder in (grading_path.parent, grading_path.parent.parent):
-        if (folder / "segmentation.json").is_file():
-            return folder / "segmentation.json"
-    return None
+        path = folder / "segmentation.json"
+        if path.is_file():
+            segmentation = json.loads(path.read_text(encoding="utf-8"))
+            if segmentation.get("video_id") != video_id:
+                return None, f"{path} 是 {segmentation.get('video_id')} 的切分，只比判定，不比時間"
+            return segmentation, ""
+    return None, "找不到 segmentation.json，只比判定，不比時間"
 
 
 def load_labels(path: Path, exclude: set[str]) -> dict[str, dict[int, dict]]:
@@ -103,8 +113,8 @@ def visual_steps() -> set[int]:
 
 
 def compare(grading: dict, labels: dict[int, dict], segmentation: dict | None = None) -> list[dict]:
-    """One row per labelled step. `time_match` is None when the time was not checked (no segmentation,
-    or no time on either side)."""
+    """One row per labelled step. `time_match` is None when the time was not checked (no segmentation or
+    no label time); a label time without a detected span is False."""
     visual = visual_steps()
     seg = segmentation_spans(segmentation) if segmentation else {}
     rows = []
@@ -113,7 +123,7 @@ def compare(grading: dict, labels: dict[int, dict], segmentation: dict | None = 
         if human is None:
             continue
         model_spans, human_spans = seg.get(step["step_id"], []), human.get("spans", [])
-        time_match = spans_match(model_spans, human_spans) if model_spans and human_spans else None
+        time_match = spans_match(model_spans, human_spans) if segmentation and human_spans else None
         match = human["verdict"] == step["verdict"]
         rows.append({"step_id": step["step_id"], "kind": "V" if step["step_id"] in visual else "P",
                      "human": human["verdict"], "human_why": human["why"],
@@ -145,6 +155,7 @@ def _short(text: str, limit: int = 140) -> str:
 
 
 def _mmss(t: float) -> str:
+    t = round(t, 1)
     return f"{int(t // 60):02d}:{t % 60:04.1f}"
 
 
@@ -167,8 +178,8 @@ def _totals(rows: list[dict]) -> str:
             + _line(summarize([r for r in rows if r["kind"] == "V"])))
 
 
-def render(video_id: str, rows: list[dict]) -> str:
-    out = [f"## {video_id}", "", "| 步驟 | 類型 | 人工 | 模型 | 一致 | 時間（人工／切分） | 人工說明 | 模型說明 |",
+def render(video_id: str, rows: list[dict], note: str = "") -> str:
+    out = [f"## {video_id}", "", *([f"（{note}）", ""] if note else []), "| 步驟 | 類型 | 人工 | 模型 | 一致 | 時間（人工／切分） | 人工說明 | 模型說明 |",
            "|---|---|---|---|---|---|---|---|"]
     for r in rows:
         model = r["model"] + ("（需人工複核）" if r.get("review") else "")
@@ -197,15 +208,12 @@ def main(argv: list[str]) -> int:
         if vid not in labels:
             print(f"## {vid}\n\n沒有可比對的人工標註（未標記或已排除）\n")
             continue
-        seg_path = find_segmentation(path)
-        if seg_path is None:
-            print(f"（{vid}：找不到 segmentation.json，只比判定，不比時間）")
-        segmentation = json.loads(seg_path.read_text(encoding="utf-8")) if seg_path else None
+        segmentation, note = find_segmentation(path, vid)
         rows = compare(grading, labels[vid], segmentation)
         all_rows += rows
-        report[vid] = {"rows": rows, "summary": summarize(rows),
-                       "visual_summary": summarize([r for r in rows if r["kind"] == "V"])}
-        print(render(vid, rows))
+        report[vid] = {"rows": rows, "summary": summarize(rows), "time_checked": segmentation is not None,
+                       "time_note": note, "visual_summary": summarize([r for r in rows if r["kind"] == "V"])}
+        print(render(vid, rows, note))
     if len(report) > 1:
         print("## 合計\n\n" + _totals(all_rows))
     if a.json:

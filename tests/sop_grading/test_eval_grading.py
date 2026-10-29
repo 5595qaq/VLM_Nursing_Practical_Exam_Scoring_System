@@ -42,12 +42,14 @@ def test_parse_time_tolerates_sheet_typos():
     assert parse_time("01:03") == 63.0 and parse_time("0:05") == 5.0 and parse_time("00:54.5") == 54.5
     assert parse_time("00;47") == 47.0 and parse_time("08：59") == 539.0 and parse_time("06:") == 360.0
     assert parse_time("") is None and parse_time("-") is None and parse_time("約1分") is None
+    assert parse_time("01:75") is None
 
 
 def test_parse_spans():
     assert parse_spans("01:03", "01:04") == [(63.0, 64.0)]
     assert parse_spans("01:47/02:49", "01:51/02:50") == [(107.0, 111.0), (169.0, 170.0)]
-    assert parse_spans("01:00/01:30", "02:00") == [(60.0, 120.0)]  # counts differ: one span over all times
+    assert parse_spans("01:47／02:49", "01:51／02:50") == [(107.0, 111.0), (169.0, 170.0)]
+    assert parse_spans("01:00/09:00", "09:10") == []  # counts differ: no label time rather than a guess
     assert parse_spans("01:10", "01:05") == [(65.0, 70.0)]
     assert parse_spans("", "01:04") == [] and parse_spans("x", "01:04") == []
 
@@ -63,14 +65,35 @@ def test_time_mismatch_counts_as_wrong():
     seg = make_segmentation()
     grading = fill_visual(grade_from_segmentation(seg))
     s5 = next(e for e in seg["steps"] if e["step_id"] == 5)
+    s6 = next(e for e in seg["steps"] if e["step_id"] == 6)
     labels = {5: {"verdict": "正確", "why": "", "spans": [(s5["start"] + 100, s5["end"] + 100)]},
-              6: {"verdict": "正確", "why": "", "spans": []}}
+              6: {"verdict": "正確", "why": "", "spans": []},
+              7: {"verdict": "正確", "why": "", "spans": [(s6["start"], s6["end"])]}}
+    seg["steps"] = [e for e in seg["steps"] if e["step_id"] != 7]  # label time, no detected span
+    grading["steps"][6]["verdict"] = "正確"
     rows = compare(grading, labels, seg)
-    assert [r["time_match"] for r in rows] == [False, None]
-    assert [r["strict_match"] for r in rows] == [False, True]
+    assert [r["time_match"] for r in rows] == [False, None, False]
+    assert [r["strict_match"] for r in rows] == [False, True, False]
     s = summarize(rows)
-    assert s["agreement"] == 2 and s["strict_agreement"] == 1 and s["time_mismatch"] == [5]
-    assert [r["time_match"] for r in compare(grading, labels)] == [None, None]  # no segmentation
+    assert s["agreement"] == 3 and s["strict_agreement"] == 1 and s["time_mismatch"] == [5, 7]
+    assert [r["time_match"] for r in compare(grading, labels)] == [None, None, None]  # no segmentation
+    seg["steps"].append({"step_id": 7, "status": "not_visually_determinable", "start": None, "end": None,
+                         "confidence": 0.0, "evidence": "", "logical_window": [s6["start"], s6["end"]]})
+    assert compare(grading, labels, seg)[2]["time_match"] is True  # logical_window when nothing detected
+
+
+def test_cli_skips_another_videos_segmentation(tmp_path, capsys):
+    labels = write_labels(tmp_path / "l.csv", [row("VID_0001", 5, "正確", start="59:00", end="59:01")])
+    (tmp_path / "segmentation.json").write_text(json.dumps({**make_segmentation(), "video_id": "VID_0002"}),
+                                                encoding="utf-8")
+    grading = tmp_path / "g.json"
+    grading.write_text(json.dumps(fill_visual(grade_from_segmentation(make_segmentation())), ensure_ascii=False),
+                       encoding="utf-8")
+    out_json = tmp_path / "r.json"
+    assert main(["eval_grading.py", str(grading), "--labels", str(labels), "--json", str(out_json)]) == 0
+    text = capsys.readouterr().out
+    assert text.index("## VID_0001") < text.index("是 VID_0002 的切分") and "全部：一致 1/1" in text
+    assert json.loads(out_json.read_text(encoding="utf-8"))["VID_0001"]["time_checked"] is False
 
 
 def test_compare_and_summary():
