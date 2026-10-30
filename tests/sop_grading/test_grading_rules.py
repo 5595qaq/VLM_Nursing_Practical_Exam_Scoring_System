@@ -115,6 +115,30 @@ def test_step_not_found_is_searched_between_search_steps(segmentation):
     assert validate_grading(result) == []
 
 
+def test_search_covers_the_steps_between_first_and_last(segmentation):
+    # code review: with only the endpoints, a missing step 4 or 18 shrank the window to the other end
+    seg_step(segmentation, 6).update(start=None, end=None, status="not_performed", evidence="只把棉片蓋上")
+    seg_step(segmentation, 5).update(start=None, end=None, status="not_visually_determinable", evidence="手擋住")
+    seg_step(segmentation, 18).update(start=None, end=None, status="not_visually_determinable", evidence="手擋住")
+    c = criterion(grade_from_segmentation(segmentation), "6a")
+    assert c["window"] == [68.0, 180.0]  # step 7 start - 2 to step 17 end + 2
+    assert "步驟 5–18" in c["explanation"]
+
+
+def test_not_performed_still_decides_program_criteria_of_a_searched_step(segmentation):
+    import copy
+
+    from rubric import load_rubric
+    rubric = copy.deepcopy(load_rubric())
+    step = rubric["steps"][14]  # 15: 15a has search_steps
+    step["criteria"].append({"id": "15c", "text": "測試用", "category": "program", "key": False,
+                             "rule": {"type": "detected"}})
+    seg_step(segmentation, 15).update(start=None, end=None, status="not_performed", evidence="未見棉片")
+    result = grade_from_segmentation(segmentation, rubric)
+    assert criterion(result, "15c")["verdict"] == "錯誤"
+    assert criterion(result, "15a")["verdict"] == "待判定"
+
+
 def test_not_performed_does_not_decide_the_other_criteria_of_a_searched_step(segmentation):
     seg_step(segmentation, 15).update(start=None, end=None, status="not_performed", evidence="未見棉片")
     result = grade_from_segmentation(segmentation)

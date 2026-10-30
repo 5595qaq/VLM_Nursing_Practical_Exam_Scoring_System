@@ -5,8 +5,8 @@ No model call. For every step it:
   - visual criteria: computes the window the grading agent must look at and leaves them 待判定
     (or decides them directly when segmentation says the step was not performed / has no span);
     in a step with a `search_steps` criterion the agent checks whether the step was done, so
-    not_performed decides nothing there and a criterion whose step segmentation did not find is
-    searched for between the `search_steps`;
+    not_performed decides none of its visual criteria, and a criterion whose step segmentation did
+    not find is searched for over every step from the first to the last of `search_steps`;
   - not_visible criteria: fixed 無法判定 with the rubric's reason;
 then aggregates the step verdict (rubric.aggregate) and joins the explanations.
 
@@ -19,7 +19,7 @@ import sys
 from pathlib import Path
 
 from rubric import (CORRECT, NOT_APPLICABLE, PENDING, SOURCE_FOR, UNDETERMINED, WRONG, aggregate,
-                    fmt_time, load_rubric)
+                    fmt_time, load_rubric, search_range)
 
 WINDOW_MARGIN = 2.0  # seconds added on both sides of a visual criterion's window
 
@@ -97,7 +97,7 @@ def _grade(c: dict, sid: int, entries: dict[int, list[dict]], duration: float, m
         return _criterion(c, UNDETERMINED, f"{c['note']}，無法判定。", confidence=1.0,
                           reason=c["reason"])
 
-    if status == "not_performed" and not searched:
+    if status == "not_performed" and not (searched and c["category"] == "visual"):
         conf = max(e["confidence"] for e in own)
         return _criterion(c, WRONG, f"切分結果：步驟 {sid} 未執行（{_seg_evidence(own)}）。",
                           source="rule", evidence=seg_ref, confidence=conf)
@@ -113,13 +113,13 @@ def _grade(c: dict, sid: int, entries: dict[int, list[dict]], duration: float, m
                           evidence=seg_ref, confidence=conf)
 
     search = bool(c.get("search_steps")) and status != "detected"
-    window_steps = c["search_steps"] if search else c["window_steps"]
+    window_steps = search_range(c) if search else c["window_steps"]
     window = _window(window_steps, entries, duration, margin)
     if window is None:
         return _criterion(c, UNDETERMINED,
                           f"切分結果未定位步驟 {'、'.join(map(str, window_steps))}，無法取得要看的畫面區間。",
                           source="rule", evidence=seg_ref, reason="切分未定位")
-    where = (f"切分未找到步驟 {sid}，在步驟 {'、'.join(map(str, window_steps))} 的區間內找；" if search else "")
+    where = f"切分未找到步驟 {sid}，在步驟 {window_steps[0]}–{window_steps[-1]} 的區間內找；" if search else ""
     return _criterion(c, PENDING, f"等待評分 agent 看畫面判定（{where}區間 {fmt_time(window[0])}–{fmt_time(window[1])}）。",
                       window=window)
 

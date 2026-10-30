@@ -92,8 +92,9 @@ def test_search_steps_needs_a_visual_criterion_and_step_numbers():
                for e in broken(lambda r: r["steps"][8]["criteria"][0].update(search_steps=[8, 10])))  # 9a (program)
     assert any("search_steps needs" in e
                for e in broken(lambda r: r["steps"][5]["criteria"][0].update(search_steps=[5, 31])))  # 6a
-    assert any("search_steps needs" in e
-               for e in broken(lambda r: r["steps"][5]["criteria"][0].update(search_steps=[])))
+    for bad in ([], 18, [5, 18, 20], [True, 18], [7, 18], [1, 5], [5.0, 18]):  # 6a must lie between first and last
+        assert any("search_steps needs" in e
+                   for e in broken(lambda r: r["steps"][5]["criteria"][0].update(search_steps=bad))), bad
 
 
 def test_not_visible_criterion_cannot_be_key():
