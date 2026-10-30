@@ -16,7 +16,7 @@ rolling the vial: overview frames 2–4 s apart cannot show the hands moving) is
 of this task was seen, either the opening clip (task["opening_clip"]) or a clip action. Fixing the
 needle (10b, rubric package_spans): actions may also look at the spans the hands held the syringe wrapper
 (the task lists them, each ±WINDOW_SLACK); 正確, 錯誤 or 無法判定, never 部分正確, and 錯誤 only after a
-clip action (a twist lasts a second or two). The backend sends a 無法判定 to a person with those spans.
+clip action overlapping a listed span (any clip when none is listed; a twist lasts a second or two). The backend sends a 無法判定 to a person with those spans.
 A clip above 5 fps may last at most 8 s.
 
 A rejected action is NOT executed and does NOT consume budget.
@@ -94,9 +94,25 @@ def validate(action, task: dict, used: dict, duration: float,
 
 
 def allowed_ranges(task: dict, duration: float) -> list[tuple[float, float]]:
-    """The task window and each wrapper span listed for a criterion (10b), all ±WINDOW_SLACK."""
+    """The task window and each wrapper span listed for a criterion (10b), all ±WINDOW_SLACK; overlapping
+    ranges are merged, so a clip across the syringe coming out may start in a span and end in the window."""
     spans = [task["window"]] + [s for c in task["criteria"] for s in c.get("package_spans") or []]
-    return [(max(0.0, a - WINDOW_SLACK), min(duration, b + WINDOW_SLACK)) for a, b in spans]
+    ranges = sorted((max(0.0, a - WINDOW_SLACK), min(duration, b + WINDOW_SLACK)) for a, b in spans)
+    merged = [ranges[0]]
+    for lo, hi in ranges[1:]:
+        if lo <= merged[-1][1]:
+            merged[-1] = (merged[-1][0], max(merged[-1][1], hi))
+        else:
+            merged.append((lo, hi))
+    return merged
+
+
+def _clipped_wrapper(task: dict, cid: str) -> bool:
+    """A clip of this task (task["clips"], kept by the backend) overlapped a wrapper span listed for cid;
+    with no spans listed, any clip."""
+    spans = next((c.get("package_spans") for c in task["criteria"] if c["criterion_id"] == cid), None)
+    clips = task.get("clips") or []
+    return any(a < e and s < b for a, b in clips for s, e in spans) if spans else bool(clips)
 
 
 def _check_final(action: dict, task: dict, used: dict, rubric: dict) -> list[str]:
@@ -121,9 +137,9 @@ def _check_final(action: dict, task: dict, used: dict, rubric: dict) -> list[str
                           "lasts under a second and looks like the hands changing grip)")
         if cid in WRAPPER and c["verdict"] == "部分正確":
             errors.append(f"criterion {cid}: 正確, 錯誤 or 無法判定 only (fixing is seen or it is not)")
-        if cid in WRAPPER and c["verdict"] == "錯誤" and used.get("clip", 0) == 0:
+        if cid in WRAPPER and c["verdict"] == "錯誤" and not _clipped_wrapper(task, cid):
             errors.append(f"criterion {cid}: before marking 錯誤, use clip with a region on both hands and the "
-                          "syringe (fps up to 10, ≤ 8 s) on the wrapper span where it comes out and after it: "
+                          "syringe (fps up to 10, ≤ 8 s) on a listed wrapper span (where it comes out) and after it: "
                           "a twist lasts a second or two and frames 2–4 s apart miss it")
     return errors
 

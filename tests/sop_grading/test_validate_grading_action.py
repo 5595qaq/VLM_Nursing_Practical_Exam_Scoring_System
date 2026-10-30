@@ -158,8 +158,19 @@ def test_fixing_the_needle_verdicts(verdict, reason, clips, error):
     action = {"action": "final", "criteria": [
         {"criterion_id": "10b", "verdict": verdict, "confidence": 0.8, "reason": reason,
          "explanation": "01:16 空針離開包裝，01:17–01:19 一手握針座、另一手旋緊。", "evidence": ["clip@74-81"]}]}
-    errors = validate(action, task, {**FRESH, "clip": clips}, DURATION)
+    errors = validate(action, {**task, "clips": [[74.0, 81.0]] * clips}, {**FRESH, "clip": clips}, DURATION)
     assert (errors == []) if error is None else any(error in e for e in errors), errors
+
+
+def test_fixing_the_needle_wrong_needs_a_clip_on_a_wrapper_span():
+    task = {"window": [74.0, 81.0], "criteria": [
+        {"criterion_id": "10b", "window": [74.0, 81.0], "package_spans": [[25.6, 35.0], [66.0, 74.0]]}]}
+    action = {"action": "final", "criteria": [
+        {"criterion_id": "10b", "verdict": "錯誤", "confidence": 0.8, "reason": None,
+         "explanation": "01:14 取出後試活塞，沒有旋緊。", "evidence": ["clip@76-84"]}]}
+    used = {**FRESH, "clip": 1}
+    assert any("before marking 錯誤" in e for e in validate(action, {**task, "clips": [[76.0, 84.0]]}, used, DURATION))
+    assert validate(action, {**task, "clips": [[68.0, 76.0]]}, used, DURATION) == []
 
 
 def test_wrapper_spans_open_the_action_range():
@@ -171,9 +182,12 @@ def test_wrapper_spans_open_the_action_range():
     assert validate({"action": "zoom", "times": [20.0, 78.0], "region": [0.3, 0.4, 0.6, 0.7], "reason": "x"},
                     task, FRESH, DURATION) == []
     errors = validate({**clip, "start": 48, "end": 55}, task, FRESH, DURATION)  # between the two ranges
-    assert any("must stay within 64-91s、15.6-45s" in e for e in errors), errors
+    assert any("must stay within 15.6-45s、64-91s" in e for e in errors), errors
     errors = validate({**clip, "start": 40, "end": 48, "fps": 5}, task, FRESH, DURATION)  # straddles both
     assert any("must stay within" in e for e in errors), errors
+    # overlapping ranges merge: a span 50–62 (40–72) and the window (64–91) allow a clip across 68–76
+    merged = {**task, "criteria": [{**task["criteria"][0], "package_spans": [[50.0, 62.0]]}]}
+    assert validate({**clip, "start": 68, "end": 76}, merged, FRESH, DURATION) == []
 
 
 def test_clip_region_and_high_fps_limits():

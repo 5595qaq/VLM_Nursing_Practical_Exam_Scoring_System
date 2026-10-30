@@ -398,12 +398,14 @@ FIRST_SYRINGE_USE_STEP = 13  # uncapping the syringe to draw the diluent
 
 
 def package_spans(segmentation: dict) -> tuple[float | None, list[list[float]]]:
-    """The syringe's first use (step 13's start) and the segmentation's package_spans starting before it;
-    the later ones are putting it back in the wrapper (VID_0098 listed 9 spans up to 06:25)."""
+    """The syringe's first use (step 13's start) and the segmentation's package_spans starting before it,
+    cut at the first use; the later ones are putting it back in the wrapper (VID_0098 listed 9 spans up to
+    06:25)."""
     first_use = min((e["start"] if e["start"] is not None else e["logical_window"][0]
                      for e in segmentation["steps"] if e["step_id"] == FIRST_SYRINGE_USE_STEP
                      and (e["start"] is not None or e.get("logical_window"))), default=None)
-    return first_use, [[s["start"], s["end"]] for s in segmentation.get("package_spans") or []
+    return first_use, [[s["start"], s["end"] if first_use is None else min(s["end"], first_use)]
+                       for s in segmentation.get("package_spans") or []
                        if first_use is None or s["start"] < first_use]
 
 
@@ -478,6 +480,8 @@ async def run_task(task: dict, video_id: str, runner: GradingRunner, boxes: dict
         if not errors:
             try:
                 feedback = await _run_material_action(action, runner, boxes, materials, state)
+                if action["action"] == "clip":  # validate_grading_action: 10b 錯誤 needs one on a wrapper span
+                    task.setdefault("clips", []).append([action["start"], action["end"]])
                 rejects = 0
                 continue
             except SkillRunError as exc:
