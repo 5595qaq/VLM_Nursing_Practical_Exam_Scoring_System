@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 46.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 15616,
+  "cached_input_tokens": 0,
+  "output_tokens": 104,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@98-104.5（context box，有聲音；片段內 00:00 ＝ 影片 01:38.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [99.5, 100.0, 100.5, 101.0], \"region\": [0.25, 0.55, 0.55, 0.85], \"reason\": \"確認學生在 01:39.5–01:41.0 使用酒精棉片擦拭稀釋液瓶口之細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 50.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 16839,
+  "cached_input_tokens": 0,
+  "output_tokens": 278,
+  "thinking_tokens": 115,
+  "materials": [
+   "clip@98-104.5（context box，有聲音；片段內 00:00 ＝ 影片 01:38.0）",
+   "zoom@99.5/100/100.5/101 region=[0.250, 0.550, 0.550, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"7a\", \"verdict\": \"正確\", \"explanation\": \"01:40.0–01:41.5（clip@98-104.5 片段內 00:02.0–00:03.5）左手握住細長透明稀釋液瓶，右手持白色酒精棉片包住並來回擦拭稀釋液瓶口進行消毒。\", \"evidence\": [\"clip@98-104.5\", \"zoom@100\", \"zoom@100.5\", \"zoom@101\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
