@@ -157,18 +157,24 @@
   },
   {
    "step_id": 5,
-   "verdict": "待判定",
-   "explanation": "5a「將 vial 瓶口打開」待判定：等待評分 agent 看畫面判定（切分未找到步驟 5，要在整個區間（步驟 4–18 之間）內找；區間 00:20–03:32）。",
-   "confidence": 0.0,
+   "verdict": "正確",
+   "explanation": "5a「將 vial 瓶口打開」正確：00:55.0 vial 瓶頂仍為深褐色塑膠圓蓋，於 01:03.0–01:04.5（clip@25-75 片段內 00:38.0–00:39.5）隔著酒精棉片將塑膠翻蓋推開，01:05.5 清楚可見深褐色蓋子已掉落於桌面左側，vial 瓶頂露出銀色鋁圈。",
+   "confidence": 0.95,
    "criteria": [
     {
      "criterion_id": "5a",
-     "verdict": "待判定",
-     "source": "vlm",
-     "explanation": "等待評分 agent 看畫面判定（切分未找到步驟 5，要在整個區間（步驟 4–18 之間）內找；區間 00:20–03:32）。",
-     "evidence": [],
-     "confidence": 0.0,
+     "verdict": "正確",
+     "explanation": "00:55.0 vial 瓶頂仍為深褐色塑膠圓蓋，於 01:03.0–01:04.5（clip@25-75 片段內 00:38.0–00:39.5）隔著酒精棉片將塑膠翻蓋推開，01:05.5 清楚可見深褐色蓋子已掉落於桌面左側，vial 瓶頂露出銀色鋁圈。",
+     "evidence": [
+      "clip@25-75",
+      "zoom@55",
+      "zoom@63",
+      "zoom@64.5",
+      "zoom@65.5"
+     ],
+     "confidence": 0.95,
      "reason": null,
+     "source": "vlm",
      "window": [
       20.0,
       212.0
