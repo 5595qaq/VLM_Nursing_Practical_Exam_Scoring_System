@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 6.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 21375,
+  "cached_input_tokens": 0,
+  "output_tokens": 108,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@118.2-154（context box，有聲音；片段內 00:00 ＝ 影片 01:58.2）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [123.5, 127.0, 136.0, 147.0], \"region\": [0.45, 0.25, 0.78, 0.6], \"reason\": \"確認針頭與針筒交接處是否有墊酒精棉片，以及在拉針心、彈針與推針心排氣時的手部與針心位置\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 27.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 22609,
+  "cached_input_tokens": 0,
+  "output_tokens": 108,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@118.2-154（context box，有聲音；片段內 00:00 ＝ 影片 01:58.2）",
+   "zoom@123.5/127/136/147 region=[0.450, 0.250, 0.780, 0.600]"
+  ],
+  "reply": "{\"action\": \"burst\", \"start\": 120.5, \"end\": 123.5, \"n\": 12, \"region\": [0.45, 0.25, 0.80, 0.65], \"reason\": \"檢查 02:00.5–02:03.5 針頭朝上並墊棉片時，是否有將針心往後抽的短暫動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 22.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 24150,
+  "cached_input_tokens": 0,
+  "output_tokens": 789,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@118.2-154（context box，有聲音；片段內 00:00 ＝ 影片 01:58.2）",
+   "zoom@123.5/127/136/147 region=[0.450, 0.250, 0.780, 0.600]",
+   "burst@120.5-123.5（原始解析度，12 格，每 0.27 s）#0=02:00.5、#1=02:00.8、#2=02:01.0、#3=02:01.3、#4=02:01.6、#5=02:01.9、#6=02:02.1、#7=02:02.4、#8=02:02.7、#9=02:03.0、#10=02:03.2、#11=02:03.5 region=[0.450, 0.250, 0.800, 0.650]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"15b\", \"verdict\": \"正確\", \"explanation\": \"02:00.8（burst@120.5-123.5 #1）先將白色酒精棉片墊在針頭與針筒交接處，之後於 02:06.6–02:07.8（clip@118.2-154 片段內 00:08.4–00:09.6，zoom@127）才開始第一次彈針，符合先墊棉片才彈針。\", \"evidence\": [\"burst@120.5-123.5 #1\", \"zoom@127\", \"clip@118.2-154\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"16a\", \"verdict\": \"正確\", \"explanation\": \"02:02.4–02:03.2（burst@120.5-123.5 #7–#10）針頭朝上時，右手手指捏住針心尾端圓盤往下拉，且外露推桿長度在 02:07.0（zoom@127）明顯比 02:03.5（zoom@123.5）變長。\", \"evidence\": [\"burst@120.5-123.5 #7\", \"burst@120.5-123.5 #9\", \"zoom@123.5\", \"zoom@127\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"17a\", \"verdict\": \"正確\", \"explanation\": \"02:06.6–02:07.8、02:11.6–02:13.0、02:18.1–02:18.7（clip@118.2-154 片段內 00:08.4–00:09.6、00:13.4–00:14.8、00:19.9–00:20.5）皆聽到連續彈擊聲，並看到右手食指彈擊針筒（如 zoom@127）。\", \"evidence\": [\"clip@118.2-154\", \"zoom@127\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"17b\", \"verdict\": \"正確\", \"explanation\": \"02:14.7–02:17.7 及 02:25.2–02:30.7（clip@118.2-154 片段內 00:16.5–00:19.5 及 00:27.0–00:32.5）針筒直立，右手拇指壓住針心尾端圓盤往上推排氣，且 02:27.0（zoom@147）外露推桿長度明顯比 02:16.0（zoom@136）變短。\", \"evidence\": [\"clip@118.2-154\", \"zoom@136\", \"zoom@147\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
