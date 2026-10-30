@@ -4,6 +4,9 @@ No model call. For every step it:
   - program criteria: decides 正確／錯誤／無法判定 from the step's segmentation status and span;
   - visual criteria: computes the window the grading agent must look at and leaves them 待判定
     (or decides them directly when segmentation says the step was not performed / has no span);
+    in a step with a `search_steps` criterion the agent checks whether the step was done, so
+    not_performed decides nothing there and a criterion whose step segmentation did not find is
+    searched for between the `search_steps`;
   - not_visible criteria: fixed 無法判定 with the rubric's reason;
 then aggregates the step verdict (rubric.aggregate) and joins the explanations.
 
@@ -31,7 +34,8 @@ def grade_from_segmentation(seg: dict, rubric: dict | None = None,
 
     steps = []
     for step in rubric["steps"]:
-        criteria = [_grade(c, step["step_id"], entries, duration, margin) for c in step["criteria"]]
+        searched = any(c.get("search_steps") for c in step["criteria"])
+        criteria = [_grade(c, step["step_id"], entries, duration, margin, searched) for c in step["criteria"]]
         steps.append(build_step(step, criteria))
     return {"video_id": seg["video_id"], "rubric_version": rubric["version"], "steps": steps}
 
@@ -83,7 +87,8 @@ def _criterion(c: dict, verdict: str, explanation: str, *, source: str | None = 
             "reason": reason, "window": window}
 
 
-def _grade(c: dict, sid: int, entries: dict[int, list[dict]], duration: float, margin: float) -> dict:
+def _grade(c: dict, sid: int, entries: dict[int, list[dict]], duration: float, margin: float,
+           searched: bool = False) -> dict:
     own = entries.get(sid, [])
     status = _status(own)
     seg_ref = [f"seg:step {sid}"]
@@ -92,7 +97,7 @@ def _grade(c: dict, sid: int, entries: dict[int, list[dict]], duration: float, m
         return _criterion(c, UNDETERMINED, f"{c['note']}，無法判定。", confidence=1.0,
                           reason=c["reason"])
 
-    if status == "not_performed":
+    if status == "not_performed" and not searched:
         conf = max(e["confidence"] for e in own)
         return _criterion(c, WRONG, f"切分結果：步驟 {sid} 未執行（{_seg_evidence(own)}）。",
                           source="rule", evidence=seg_ref, confidence=conf)
@@ -107,12 +112,15 @@ def _grade(c: dict, sid: int, entries: dict[int, list[dict]], duration: float, m
         return _criterion(c, CORRECT, f"切分結果：步驟 {sid} 於 {_spans_text(found)}（{_seg_evidence(found)}）。",
                           evidence=seg_ref, confidence=conf)
 
-    window = _window(c["window_steps"], entries, duration, margin)
+    search = bool(c.get("search_steps")) and status != "detected"
+    window_steps = c["search_steps"] if search else c["window_steps"]
+    window = _window(window_steps, entries, duration, margin)
     if window is None:
         return _criterion(c, UNDETERMINED,
-                          f"切分結果未定位步驟 {'、'.join(map(str, c['window_steps']))}，無法取得要看的畫面區間。",
+                          f"切分結果未定位步驟 {'、'.join(map(str, window_steps))}，無法取得要看的畫面區間。",
                           source="rule", evidence=seg_ref, reason="切分未定位")
-    return _criterion(c, PENDING, f"等待評分 agent 看畫面判定（區間 {fmt_time(window[0])}–{fmt_time(window[1])}）。",
+    where = (f"切分未找到步驟 {sid}，在步驟 {'、'.join(map(str, window_steps))} 的區間內找；" if search else "")
+    return _criterion(c, PENDING, f"等待評分 agent 看畫面判定（{where}區間 {fmt_time(window[0])}–{fmt_time(window[1])}）。",
                       window=window)
 
 

@@ -72,7 +72,7 @@ def test_criterion_id_must_match_step():
 
 def test_program_criterion_needs_known_rule():
     assert any("rule.type" in e
-               for e in broken(lambda r: r["steps"][4]["criteria"][0].update(rule={"type": "guess"})))
+               for e in broken(lambda r: r["steps"][8]["criteria"][0].update(rule={"type": "guess"})))
 
 
 def test_visual_criterion_needs_window_steps():
@@ -82,9 +82,18 @@ def test_visual_criterion_needs_window_steps():
 
 def test_clip_flag_needs_a_visual_criterion():
     assert any("clip needs a visual criterion" in e
-               for e in broken(lambda r: r["steps"][4]["criteria"][0].update(clip=True)))  # 5a (program)
+               for e in broken(lambda r: r["steps"][8]["criteria"][0].update(clip=True)))  # 9a (program)
     assert any("clip needs a visual criterion" in e
                for e in broken(lambda r: r["steps"][19]["criteria"][0].update(clip="yes")))  # 20a
+
+
+def test_search_steps_needs_a_visual_criterion_and_step_numbers():
+    assert any("search_steps needs" in e
+               for e in broken(lambda r: r["steps"][8]["criteria"][0].update(search_steps=[8, 10])))  # 9a (program)
+    assert any("search_steps needs" in e
+               for e in broken(lambda r: r["steps"][5]["criteria"][0].update(search_steps=[5, 31])))  # 6a
+    assert any("search_steps needs" in e
+               for e in broken(lambda r: r["steps"][5]["criteria"][0].update(search_steps=[])))
 
 
 def test_not_visible_criterion_cannot_be_key():

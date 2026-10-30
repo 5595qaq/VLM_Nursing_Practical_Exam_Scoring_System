@@ -58,6 +58,9 @@ def check_rubric(rubric: dict) -> list[str]:
                 errors.append(f"criterion {cid}: clip needs a visual criterion and true/false")
             if cat == "visual" and not c.get("window_steps"):
                 errors.append(f"criterion {cid}: visual criterion needs window_steps")
+            if "search_steps" in c and (cat != "visual" or not c["search_steps"] or not all(
+                    isinstance(s, int) and 1 <= s <= STEP_COUNT for s in c["search_steps"])):
+                errors.append(f"criterion {cid}: search_steps needs a visual criterion and step numbers")
             if cat == "not_visible" and (c.get("key") or not c.get("reason")):
                 errors.append(f"criterion {cid}: not_visible criterion needs a reason and cannot be key")
     return errors

@@ -1,0 +1,2 @@
+- **實驗（agentpresence，issue #90，暫定）**：5a、6a、7a、8a、15a、25a 從 `program`（`rules.py` 直接用切分的 `status` 給分）改成 `visual`，由評分 agent 看畫面判定（每條一個任務，`clip: true`）；寫法在新的 `criteria/10-presence.md`。原因：PR #89 VID_0100 步驟 6 切分漏看 03:03 的擦拭，程式直接判錯誤，評分端沒有機會再看。
+- rubric 新增 `search_steps`（只能用在 visual 標準，`rubric.py` 檢查）：有這種標準的步驟，切分說 `not_performed` 不再直接判錯誤；切分沒找到這一步時，改把 `search_steps` 各步的區間（從最早開始到最晚結束）交給評分 agent 找。5a [4, 18]、6a [5, 18]、7a／8a [4, 13]、15a [14, 18]、25a [24, 28]。
