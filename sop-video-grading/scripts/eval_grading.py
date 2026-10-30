@@ -19,8 +19,9 @@ when it was built from the label times they say nothing about the grading agent:
   time          the model's times of the step against the label times: they match when a pair overlaps or the
                 starts differ by at most 3 s, and a label time with no model time at all is a mismatch (a step
                 whose time does not match is wrong even when the verdicts agree). The model's times are the
-                mm:ss the grading agent cited in the step's explanations (its own criteria, 待判定 aside; times
-                in parentheses are clip-relative and dropped; a lone mm:ss is a point), or, when it cited none,
+                mm:ss the grading agent cited in the step's explanations (its own criteria, 待判定 aside; a timed
+                criterion's span instead; times after 片段內 are clip-relative and dropped; a lone mm:ss is a
+                point), or, when it cited none,
                 the segmentation's detected spans (a step without one uses its logical_window). The
                 segmentation is the segmentation.json next to the grading file or one folder up
                 (runs/<video>/<version>/runN/grading.json), used only when its video_id is the grading's;
@@ -43,9 +44,8 @@ FAULTS = {"錯誤", "部分正確"}
 TIME_SLACK = 3.0  # seconds between starts that still count as the same span
 _TIME_RE = re.compile(r"^(\d+):(\d{0,2}(?:\.\d+)?)$")
 _CITED = r"(\d{2}):(\d{2}(?:\.\d+)?)"
-_CITED_SPAN_RE = re.compile(_CITED + r"\s*[–\-~～]\s*" + _CITED)
-_CITED_POINT_RE = re.compile(_CITED)
-_PAREN_RE = re.compile(r"（[^（）]*）|\([^()]*\)")
+_CITED_RE = re.compile(_CITED + r"(?:\s*(?:[–\-~～至到])\s*" + _CITED + r")?")  # a range or a point
+_CLIP_TIME_RE = re.compile(r"片段內[^\d]{0,3}" + _CITED_RE.pattern)  # time inside a clip, not the video
 
 
 def parse_time(text: str) -> float | None:
@@ -71,19 +71,24 @@ def spans_match(model: list[tuple[float, float]], human: list[tuple[float, float
 
 
 def cited_spans(text: str) -> list[tuple[float, float]]:
-    """mm:ss ranges and points an explanation cites; parentheses hold clip-relative times
-    (「clip@27-35 片段內 00:02.5–00:05.0」), so they are dropped first."""
-    def sec(m, i):
-        return int(m.group(i)) * 60 + float(m.group(i + 1))
-    text = _PAREN_RE.sub("", text)
-    spans = [(sec(m, 1), sec(m, 3)) for m in _CITED_SPAN_RE.finditer(text)]
-    spans += [(sec(m, 1), sec(m, 1)) for m in _CITED_POINT_RE.finditer(_CITED_SPAN_RE.sub("", text))]
-    return sorted(spans)
+    """mm:ss ranges (–, -, ~, 至, 到) and points an explanation cites. Times after 片段內 are relative to a
+    clip (「clip@27-35 片段內 00:02.5–00:05.0」) and dropped; a time with seconds >= 60 is a typo and dropped."""
+    spans = []
+    for m in _CITED_RE.finditer(_CLIP_TIME_RE.sub("", text)):
+        a = int(m.group(1)) * 60 + float(m.group(2))
+        b = int(m.group(3)) * 60 + float(m.group(4)) if m.group(3) else a
+        if float(m.group(2)) < 60 and (not m.group(3) or float(m.group(4)) < 60):
+            spans.append((min(a, b), max(a, b)))
+    return spans
 
 
 def agent_spans(step: dict) -> list[tuple[float, float]]:
-    return sorted({span for c in step.get("criteria", []) if c.get("source") == "vlm" and c["verdict"] != "待判定"
-                   for span in cited_spans(c["explanation"])})
+    """Times of the criteria the grading agent decided: a timed criterion's span, else the cited times."""
+    spans = set()
+    for c in step.get("criteria", []):
+        if c.get("source") == "vlm" and c["verdict"] != "待判定":
+            spans.update([tuple(c["span"])] if c.get("span") else cited_spans(c["explanation"]))
+    return sorted(spans)
 
 
 def segmentation_spans(segmentation: dict) -> dict[int, list[tuple[float, float]]]:
@@ -155,7 +160,7 @@ def compare(grading: dict, labels: dict[int, dict], segmentation: dict | None = 
                      "human": human["verdict"], "human_why": human["why"],
                      "model": step["verdict"], "model_why": step["explanation"],
                      "match": match, "human_spans": human_spans, "model_spans": model_spans,
-                     "time_source": "agent" if cited else "segmentation",
+                     "time_source": "agent" if cited else "segmentation" if model_spans else None,
                      "time_match": time_match, "strict_match": match and time_match is not False,
                      "review": bool(step.get("needs_review"))})
     return rows

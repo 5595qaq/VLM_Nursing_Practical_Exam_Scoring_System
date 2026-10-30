@@ -89,6 +89,23 @@ def test_cited_spans_drop_clip_relative_times():
     assert cited_spans("沒有時間") == []
 
 
+def test_cited_spans_keep_video_times_in_parentheses_and_other_separators():
+    # code review: only 片段內 times are clip-relative; 至／到 are ranges; reversed and 03:75 typos
+    assert cited_spans("連續彈擊聲（04:47.5–04:50.1）") == [(287.5, 290.1)]
+    assert cited_spans("02:15.2 至 02:29，02:40到02:42") == [(135.2, 149.0), (160.0, 162.0)]
+    assert cited_spans("03:05.0–03:00.5；03:75 看不清；片段內第 00:12.0") == [(180.5, 185.0)]
+
+
+def test_agent_spans_use_the_agents_own_graded_criteria():
+    from eval_grading import agent_spans
+    step = {"criteria": [
+        {"source": "vlm", "verdict": "正確", "explanation": "00:02 開始互搓", "span": [2.0, 18.5]},  # timed
+        {"source": "vlm", "verdict": "待判定", "explanation": "等待評分 agent 看畫面判定（區間 00:00–00:20）。"},
+        {"source": "rule", "verdict": "正確", "explanation": "切分結果：步驟 1 於 00:00–00:18。"},
+        {"source": "vlm", "verdict": "錯誤", "explanation": "00:05–00:07 只做了內、外。"}]}
+    assert agent_spans(step) == [(2.0, 18.5), (5.0, 7.0)]
+
+
 def test_agent_cited_time_is_used_before_the_segmentation():
     # VID_0100 0.30: the agent found the step at a time the segmentation did not give it
     seg = make_segmentation()  # step 18 at 03:00–03:08, step 19 at 03:10–03:18
@@ -106,6 +123,8 @@ def test_agent_cited_time_is_used_before_the_segmentation():
     assert rows[18]["time_match"] is True  # the segmentation's 03:00–03:08 would not match
     assert rows[19]["time_source"] == "segmentation" and rows[19]["time_match"] is True
     assert "03:30.0–03:35.0（說明）" in render("VID_0001", list(rows.values()))
+    seg["steps"] = [e for e in seg["steps"] if e["step_id"] != 19]
+    assert {r["step_id"]: r for r in compare(grading, labels, seg)}[19]["time_source"] is None  # no time at all
 
 
 def test_cli_skips_another_videos_segmentation(tmp_path, capsys):
