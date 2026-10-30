@@ -172,6 +172,8 @@ async def test_extra_material_actions_run(video, tmp_path):
     ([{"start": 12.0, "end": 17.5, "evidence": "ov"}, {"start": 40.0, "end": 41.0, "evidence": "ov"}],
      "（切分標出的手拿空針包裝時段，第一次使用空針 00:23.4 之前）：00:12.0–00:17.5"),  # 40-41: put back after step 13
     (None, "（切分沒有手拿包裝的時段，改看切分步驟 9、10 的時間範圍）：00:16.2–00:19.5"),
+    ([{"start": 12.0, "end": 30.0, "evidence": "ov"}],  # runs past the first use: cut there
+     "（切分標出的手拿空針包裝時段，第一次使用空針 00:23.4 之前）：00:12.0–00:23.4"),
 ])
 async def test_fixing_the_needle_not_seen_goes_to_a_person(video, tmp_path, package_spans, reason):
     # 10b 錯誤 needs a clip first; 無法判定 gets needs_review with every span the hands held the wrapper
@@ -207,7 +209,7 @@ async def test_fixing_the_needle_task_lists_the_wrapper_spans(video, tmp_path):
     first, rejected, final = requests_for(model, "10b")
     assert "手拿空針包裝時段，第一次使用空針 00:23.4 之前：00:00.5–00:03.0（0.5–3 s）" in first[0]["text"]
     assert "00:40.0" not in first[0]["text"].split("要判定的標準")[1].split("切分結果")[0]
-    assert "must stay within 6-31.5s、0-13s" in rejected[0]["text"]
+    assert "must stay within 0-31.5s" in rejected[0]["text"]  # 0–13 and 6–31.5 merged
     assert "clip@0.5-3" in final[0]["text"]
     c = next(c for s in outcome["result"]["steps"] for c in s["criteria"] if c["criterion_id"] == "10b")
     assert c["verdict"] == "錯誤" and "needs_review" not in c and outcome["failed_tasks"] == []
