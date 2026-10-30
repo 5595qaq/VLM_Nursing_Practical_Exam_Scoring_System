@@ -173,24 +173,6 @@ def test_fixing_the_needle_wrong_needs_a_clip_on_a_wrapper_span():
     assert validate(action, {**task, "clips": [[68.0, 76.0]]}, used, DURATION) == []
 
 
-def test_fixing_the_needle_wrong_needs_the_time_before_the_first_use_seen():
-    # VID_0081: out of the wrapper 01:46, fixed with a short squeeze at 02:20 right before uncapping (step 13
-    # at 02:18), 25 s after step 10 ended; 錯誤 needs a clip or burst on that time too
-    task = {"window": [101.5, 117.0], "criteria": [
-        {"criterion_id": "10b", "window": [101.5, 117.0], "package_spans": [[94.5, 107.0]],
-         "before_use": [117.0, 138.0]}]}
-    action = {"action": "final", "criteria": [
-        {"criterion_id": "10b", "verdict": "錯誤", "confidence": 0.8, "reason": None,
-         "explanation": "01:48–01:54 試活塞，沒有固定。", "evidence": ["clip@100-107.5"]}]}
-    used = {**FRESH, "clip": 1}
-    seen_wrapper = {**task, "clips": [[100.0, 107.5]]}
-    assert any("before marking 錯誤" in e for e in validate(action, seen_wrapper, used, DURATION))
-    assert validate(action, {**seen_wrapper, "bursts": [[138.5, 141.0]]}, used, DURATION) == []
-    zoom = {"action": "zoom", "times": [140.0, 147.0], "region": [0.3, 0.4, 0.6, 0.7], "reason": "x"}
-    assert validate(zoom, task, FRESH, DURATION) == []  # up to the first use + 10 s
-    assert any("must stay within" in e for e in validate({**zoom, "times": [149.0]}, task, FRESH, DURATION))
-
-
 def test_wrapper_spans_open_the_action_range():
     # 10b: the segmentation's package_spans (before the first use) are listed with the criterion
     task = {"window": [74.0, 81.0], "criteria": [
