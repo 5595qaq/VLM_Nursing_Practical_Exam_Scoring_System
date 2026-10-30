@@ -1,0 +1,958 @@
+{
+ "video_id": "VID_0097",
+ "rubric_version": "1.17",
+ "steps": [
+  {
+   "step_id": 1,
+   "verdict": "待判定",
+   "explanation": "1a「洗手至少 15 秒（從雙手開始互搓到雙手分開）」待判定：等待評分 agent 看畫面判定（區間 00:00–00:26）；1b「內、外、夾、弓、大、立、腕七個動作都有做到」待判定：等待評分 agent 看畫面判定（區間 00:00–00:26）。",
+   "confidence": 0.0,
+   "criteria": [
+    {
+     "criterion_id": "1a",
+     "verdict": "待判定",
+     "source": "vlm",
+     "explanation": "等待評分 agent 看畫面判定（區間 00:00–00:26）。",
+     "evidence": [],
+     "confidence": 0.0,
+     "reason": null,
+     "window": [
+      0.0,
+      26.0
+     ]
+    },
+    {
+     "criterion_id": "1b",
+     "verdict": "待判定",
+     "source": "vlm",
+     "explanation": "等待評分 agent 看畫面判定（區間 00:00–00:26）。",
+     "evidence": [],
+     "confidence": 0.0,
+     "reason": null,
+     "window": [
+      0.0,
+      26.0
+     ]
+    }
+   ]
+  },
+  {
+   "step_id": 2,
+   "verdict": "待判定",
+   "explanation": "2a「目光注視給藥紀錄單累計至少 10 秒」待判定：等待評分 agent 看畫面判定（區間 00:22–00:50）；2b「明顯用手指指出給藥紀錄單」待判定：等待評分 agent 看畫面判定（區間 00:22–00:50）；2c「取出的是紀錄單上所需的藥物」無法判定：鏡頭看不到藥瓶標籤與紀錄單內容，無法判定。",
+   "confidence": 0.0,
+   "criteria": [
+    {
+     "criterion_id": "2a",
+     "verdict": "待判定",
+     "source": "vlm",
+     "explanation": "等待評分 agent 看畫面判定（區間 00:22–00:50）。",
+     "evidence": [],
+     "confidence": 0.0,
+     "reason": null,
+     "window": [
+      22.0,
+      50.0
+     ]
+    },
+    {
+     "criterion_id": "2b",
+     "verdict": "待判定",
+     "source": "vlm",
+     "explanation": "等待評分 agent 看畫面判定（區間 00:22–00:50）。",
+     "evidence": [],
+     "confidence": 0.0,
+     "reason": null,
+     "window": [
+      22.0,
+      50.0
+     ]
+    },
+    {
+     "criterion_id": "2c",
+     "verdict": "無法判定",
+     "source": "fixed",
+     "explanation": "鏡頭看不到藥瓶標籤與紀錄單內容，無法判定。",
+     "evidence": [],
+     "confidence": 1.0,
+     "reason": "資訊不足",
+     "window": null
+    }
+   ]
+  },
+  {
+   "step_id": 3,
+   "verdict": "錯誤",
+   "explanation": "3a「學生有拿起藥物檢視（舉到眼前、轉動看標籤或粉末）」錯誤：切分結果：步驟 3 未執行（ov@24-52 #6-#8 (45.0-52.0s) 及 ov@48-88 #0 (48.0s) 考生直接在治療車桌面上推開 vial 塑膠頂蓋，全程未將藥瓶舉到眼前檢視有無變質或過期）；3b「確實檢查出藥物有無變質、過期」無法判定：影片限制，無法得知學生的檢查是否正確；本步驟暫以是否有看藥物為標準，無法判定。",
+   "confidence": 0.85,
+   "criteria": [
+    {
+     "criterion_id": "3a",
+     "verdict": "錯誤",
+     "source": "rule",
+     "explanation": "切分結果：步驟 3 未執行（ov@24-52 #6-#8 (45.0-52.0s) 及 ov@48-88 #0 (48.0s) 考生直接在治療車桌面上推開 vial 塑膠頂蓋，全程未將藥瓶舉到眼前檢視有無變質或過期）。",
+     "evidence": [
+      "seg:step 3"
+     ],
+     "confidence": 0.85,
+     "reason": null,
+     "window": null
+    },
+    {
+     "criterion_id": "3b",
+     "verdict": "無法判定",
+     "source": "fixed",
+     "explanation": "影片限制，無法得知學生的檢查是否正確；本步驟暫以是否有看藥物為標準，無法判定。",
+     "evidence": [],
+     "confidence": 1.0,
+     "reason": "資訊不足",
+     "window": null
+    }
+   ]
+  },
+  {
+   "step_id": 4,
+   "verdict": "待判定",
+   "explanation": "4a「目光注視給藥紀錄單累計至少 10 秒」待判定：等待評分 agent 看畫面判定（區間 00:43–00:54）；4b「明顯用手指指出給藥紀錄單」待判定：等待評分 agent 看畫面判定（區間 00:43–00:54）；4c「確認的藥物與紀錄單相符」無法判定：鏡頭看不到藥瓶標籤與紀錄單內容，無法判定。",
+   "confidence": 0.0,
+   "criteria": [
+    {
+     "criterion_id": "4a",
+     "verdict": "待判定",
+     "source": "vlm",
+     "explanation": "等待評分 agent 看畫面判定（區間 00:43–00:54）。",
+     "evidence": [],
+     "confidence": 0.0,
+     "reason": null,
+     "window": [
+      43.0,
+      54.0
+     ]
+    },
+    {
+     "criterion_id": "4b",
+     "verdict": "待判定",
+     "source": "vlm",
+     "explanation": "等待評分 agent 看畫面判定（區間 00:43–00:54）。",
+     "evidence": [],
+     "confidence": 0.0,
+     "reason": null,
+     "window": [
+      43.0,
+      54.0
+     ]
+    },
+    {
+     "criterion_id": "4c",
+     "verdict": "無法判定",
+     "source": "fixed",
+     "explanation": "鏡頭看不到藥瓶標籤與紀錄單內容，無法判定。",
+     "evidence": [],
+     "confidence": 1.0,
+     "reason": "資訊不足",
+     "window": null
+    }
+   ]
+  },
+  {
+   "step_id": 5,
+   "verdict": "正確",
+   "explanation": "5a「將 vial 瓶口打開」正確：00:45.0 拿起桌面帶有深褐色塑膠蓋的 vial，00:46.0–00:47.0（clip@43-51.6 片段內 00:03.0–00:04.0）右手將 vial 上的塑膠蓋撬開取下，00:48.0–00:49.5 將打開後露出銀色鋁圈與橡皮塞的 vial 及取下的深褐色瓶蓋放回治療車上。",
+   "confidence": 0.95,
+   "criteria": [
+    {
+     "criterion_id": "5a",
+     "verdict": "正確",
+     "explanation": "00:45.0 拿起桌面帶有深褐色塑膠蓋的 vial，00:46.0–00:47.0（clip@43-51.6 片段內 00:03.0–00:04.0）右手將 vial 上的塑膠蓋撬開取下，00:48.0–00:49.5 將打開後露出銀色鋁圈與橡皮塞的 vial 及取下的深褐色瓶蓋放回治療車上。",
+     "evidence": [
+      "clip@43-51.6",
+      "zoom@45",
+      "zoom@46.5",
+      "zoom@49.5"
+     ],
+     "confidence": 0.95,
+     "reason": null,
+     "source": "vlm",
+     "window": [
+      43.0,
+      51.6
+     ]
+    }
+   ]
+  },
+  {
+   "step_id": 6,
+   "verdict": "正確",
+   "explanation": "6a「以酒精棉片消毒 vial 瓶口」正確：00:50–00:53（clip@48-63.5 片段內 00:02–00:05）撕開酒精棉片包裝取出棉片，00:54.5–00:57.5（片段內 00:06.5–00:09.5）左手拿起 vial 瓶，右手持酒精棉片在 vial 瓶口來回擦拭消毒，隨後於 00:58.5–01:01.0 將 vial 放回車上並把酒精棉片覆蓋在瓶口上。",
+   "confidence": 0.95,
+   "criteria": [
+    {
+     "criterion_id": "6a",
+     "verdict": "正確",
+     "explanation": "00:50–00:53（clip@48-63.5 片段內 00:02–00:05）撕開酒精棉片包裝取出棉片，00:54.5–00:57.5（片段內 00:06.5–00:09.5）左手拿起 vial 瓶，右手持酒精棉片在 vial 瓶口來回擦拭消毒，隨後於 00:58.5–01:01.0 將 vial 放回車上並把酒精棉片覆蓋在瓶口上。",
+     "evidence": [
+      "clip@48-63.5",
+      "zoom@54.5",
+      "zoom@55",
+      "zoom@56",
+      "zoom@57",
+      "zoom@59.5",
+      "zoom@60"
+     ],
+     "confidence": 0.95,
+     "reason": null,
+     "source": "vlm",
+     "window": [
+      48.0,
+      63.5
+     ]
+    }
+   ]
+  },
+  {
+   "step_id": 7,
+   "verdict": "正確",
+   "explanation": "7a「消毒稀釋液瓶口」正確：於 01:02.0–01:05.5 撕開酒精棉片包裝，並於 01:07.0–01:09.0 左手拿起細長透明塑膠稀釋液瓶，右手持酒精棉片包住並擦拭稀釋液瓶口進行消毒。",
+   "confidence": 0.95,
+   "criteria": [
+    {
+     "criterion_id": "7a",
+     "verdict": "正確",
+     "explanation": "於 01:02.0–01:05.5 撕開酒精棉片包裝，並於 01:07.0–01:09.0 左手拿起細長透明塑膠稀釋液瓶，右手持酒精棉片包住並擦拭稀釋液瓶口進行消毒。",
+     "evidence": [
+      "clip@60-69.5",
+      "zoom@67",
+      "zoom@67.5",
+      "zoom@68",
+      "zoom@68.5"
+     ],
+     "confidence": 0.95,
+     "reason": null,
+     "source": "vlm",
+     "window": [
+      60.0,
+      69.5
+     ]
+    }
+   ]
+  },
+  {
+   "step_id": 8,
+   "verdict": "無法判定",
+   "explanation": "8a「打開稀釋液瓶口」無法判定：切分標示的 01:07.5–01:12.0 期間（M1 片段內 00:02.0–00:06.5），學生僅拿取已打開瓶頂的稀釋液瓶並以酒精棉片消毒瓶口（步驟 7），並未做出扭開或折斷稀釋液瓶頂的動作；往前與往後各看 10 秒（00:55.5–01:06.0 為撕棉片與擦拭 vial 瓶口，01:14.0–01:24.0 為拔針套並插入已開啟的稀釋液瓶抽液），皆未看到打開稀釋液瓶口的動作（應已在 00:55.5 之前打開）。",
+   "confidence": 0.9,
+   "criteria": [
+    {
+     "criterion_id": "8a",
+     "verdict": "無法判定",
+     "explanation": "切分標示的 01:07.5–01:12.0 期間（M1 片段內 00:02.0–00:06.5），學生僅拿取已打開瓶頂的稀釋液瓶並以酒精棉片消毒瓶口（步驟 7），並未做出扭開或折斷稀釋液瓶頂的動作；往前與往後各看 10 秒（00:55.5–01:06.0 為撕棉片與擦拭 vial 瓶口，01:14.0–01:24.0 為拔針套並插入已開啟的稀釋液瓶抽液），皆未看到打開稀釋液瓶口的動作（應已在 00:55.5 之前打開）。",
+     "evidence": [
+      "clip@65.5-74",
+      "zoom@67.5",
+      "zoom@68.5",
+      "zoom@69.5",
+      "zoom@70",
+      "clip@55.5-66",
+      "clip@74-84"
+     ],
+     "confidence": 0.9,
+     "reason": "資訊不足",
+     "source": "vlm",
+     "window": [
+      65.5,
+      74.0
+     ]
+    }
+   ]
+  },
+  {
+   "step_id": 9,
+   "verdict": "正確",
+   "explanation": "9a「撕開空針包裝袋」正確：切分結果：步驟 9 於 00:27–00:34（ov@24-52 #1 (27.5s) 從治療車拿起空針包裝袋，#2 (31.0s) 雙手撕開空針包裝袋，#3 (34.5s) 包裝袋口已撕開）。",
+   "confidence": 0.85,
+   "criteria": [
+    {
+     "criterion_id": "9a",
+     "verdict": "正確",
+     "source": "rule",
+     "explanation": "切分結果：步驟 9 於 00:27–00:34（ov@24-52 #1 (27.5s) 從治療車拿起空針包裝袋，#2 (31.0s) 雙手撕開空針包裝袋，#3 (34.5s) 包裝袋口已撕開）。",
+     "evidence": [
+      "seg:step 9"
+     ],
+     "confidence": 0.85,
+     "reason": null,
+     "window": null
+    }
+   ]
+  },
+  {
+   "step_id": 10,
+   "verdict": "待判定",
+   "explanation": "10a「取出空針」正確：切分結果：步驟 10 於 00:34–00:44、01:12–01:15（固定針頭與針心（與取出分開）：ov@24-52 #3-#5 (34.5-41.5s) 及 global #4 (36.0s) 隔著包裝袋捏住針頭套並旋轉針筒固定針頭與針心，global #5 (44.0s) 將連同包裝的空針放回車上；取出空針並再次固定針頭（與前段固定分開）：ov@62-82 #4 (72.0s) 伸手拿空針包裝，ov@48-88 #5 (73.0s) 從包裝抽出空針，ov@44-84 #6 (74.0s) 及 ov@62-82 #5 (74.5s) 左手握針頭蓋、右手旋緊針筒固定）；10b「固定針頭與針心（只判空針完全離開包裝之後）：一手握住針頭蓋與針筒接合處、另一手握針筒或針心（常見為旋緊針頭）；取出前隔著包裝或在包裝上方固定也合法，但不由評分 agent 判，取出後沒看到固定就判無法判定並轉人工，人工看切分標出的手拿空針包裝時段」待判定：等待評分 agent 看畫面判定（區間 00:32–01:17）。",
+   "confidence": 0.0,
+   "criteria": [
+    {
+     "criterion_id": "10a",
+     "verdict": "正確",
+     "source": "rule",
+     "explanation": "切分結果：步驟 10 於 00:34–00:44、01:12–01:15（固定針頭與針心（與取出分開）：ov@24-52 #3-#5 (34.5-41.5s) 及 global #4 (36.0s) 隔著包裝袋捏住針頭套並旋轉針筒固定針頭與針心，global #5 (44.0s) 將連同包裝的空針放回車上；取出空針並再次固定針頭（與前段固定分開）：ov@62-82 #4 (72.0s) 伸手拿空針包裝，ov@48-88 #5 (73.0s) 從包裝抽出空針，ov@44-84 #6 (74.0s) 及 ov@62-82 #5 (74.5s) 左手握針頭蓋、右手旋緊針筒固定）。",
+     "evidence": [
+      "seg:step 10"
+     ],
+     "confidence": 0.85,
+     "reason": null,
+     "window": null
+    },
+    {
+     "criterion_id": "10b",
+     "verdict": "待判定",
+     "source": "vlm",
+     "explanation": "等待評分 agent 看畫面判定（區間 00:32–01:17）。",
+     "evidence": [],
+     "confidence": 0.0,
+     "reason": null,
+     "window": [
+      32.5,
+      77.5
+     ]
+    }
+   ]
+  },
+  {
+   "step_id": 11,
+   "verdict": "不適用",
+   "explanation": "評分表已移除此步驟，不評分。",
+   "confidence": 1.0,
+   "criteria": []
+  },
+  {
+   "step_id": 12,
+   "verdict": "待判定",
+   "explanation": "12a「以左手中指及食指夾住稀釋液瓶」待判定：等待評分 agent 看畫面判定（區間 01:15–01:23）。",
+   "confidence": 0.0,
+   "criteria": [
+    {
+     "criterion_id": "12a",
+     "verdict": "待判定",
+     "source": "vlm",
+     "explanation": "等待評分 agent 看畫面判定（區間 01:15–01:23）。",
+     "evidence": [],
+     "confidence": 0.0,
+     "reason": null,
+     "window": [
+      75.5,
+      83.0
+     ]
+    }
+   ]
+  },
+  {
+   "step_id": 13,
+   "verdict": "待判定",
+   "explanation": "13a「右手將針頭插入稀釋液瓶，左手其餘手指固定針筒」待判定：等待評分 agent 看畫面判定（區間 01:13–01:23）；13b「針頭斜面朝下（斜面看不清，以插針時針頭朝下判斷）」待判定：等待評分 agent 看畫面判定（區間 01:13–01:23）。",
+   "confidence": 0.0,
+   "criteria": [
+    {
+     "criterion_id": "13a",
+     "verdict": "待判定",
+     "source": "vlm",
+     "explanation": "等待評分 agent 看畫面判定（區間 01:13–01:23）。",
+     "evidence": [],
+     "confidence": 0.0,
+     "reason": null,
+     "window": [
+      73.5,
+      83.0
+     ]
+    },
+    {
+     "criterion_id": "13b",
+     "verdict": "待判定",
+     "source": "vlm",
+     "explanation": "等待評分 agent 看畫面判定（區間 01:13–01:23）。",
+     "evidence": [],
+     "confidence": 0.0,
+     "reason": null,
+     "window": [
+      73.5,
+      83.0
+     ]
+    }
+   ]
+  },
+  {
+   "step_id": 14,
+   "verdict": "待判定",
+   "explanation": "14a「右手持針心尾端環狀處，未碰觸外露的針心推桿（手指在外筒或翼緣上不算碰觸）」待判定：等待評分 agent 看畫面判定（區間 01:19–01:47）；14b「抽出稀釋液至所需量之刻度」無法判定：看不清針筒刻度，無法判定。",
+   "confidence": 0.0,
+   "criteria": [
+    {
+     "criterion_id": "14a",
+     "verdict": "待判定",
+     "source": "vlm",
+     "explanation": "等待評分 agent 看畫面判定（區間 01:19–01:47）。",
+     "evidence": [],
+     "confidence": 0.0,
+     "reason": null,
+     "window": [
+      79.0,
+      107.4
+     ]
+    },
+    {
+     "criterion_id": "14b",
+     "verdict": "無法判定",
+     "source": "fixed",
+     "explanation": "看不清針筒刻度，無法判定。",
+     "evidence": [],
+     "confidence": 1.0,
+     "reason": "資訊不足",
+     "window": null
+    }
+   ]
+  },
+  {
+   "step_id": 15,
+   "verdict": "錯誤",
+   "explanation": "15a「酒精棉片墊在針心與針頭交接處」錯誤：檢視整個任務區間 01:19.0–02:17.0（clip@79-137）：01:19.0–01:44.5（片段 00:00.0–00:25.5）學生手持稀釋液瓶與空針抽取稀釋液並放下稀釋液瓶；01:45.0–01:54.5（片段 00:26.0–00:35.5）將針筒直立、拉推針心及彈針排氣，經 zoom@107、zoom@111、zoom@114.5 確認針頭與針筒交接處及雙手皆無酒精棉片；01:55.0–01:58.0（片段 00:36.0–00:39.0）移開 vial 瓶口上的酒精棉片放到檯面；01:58.5–02:15.0（片段 00:39.5–00:56.0）將針頭插入 vial 打入稀釋液並拔出針頭；02:15.0–02:17.0（片段 00:56.0–00:58.0）準備回套針頭。全程雙手清楚可見，未將酒精棉片墊在針心與針頭交接處；15b「先墊酒精棉片才彈針」錯誤：01:45.8–01:46.9（clip@103.4-116.5 片段內 00:02.4–00:03.5）右手手指輕彈針筒並有連續彈擊聲，01:47.2–01:54.5 推針心排氣，但經 zoom 與 burst 確認針頭與針筒接合處全程未墊酒精棉片。",
+   "confidence": 0.95,
+   "criteria": [
+    {
+     "criterion_id": "15a",
+     "verdict": "錯誤",
+     "explanation": "檢視整個任務區間 01:19.0–02:17.0（clip@79-137）：01:19.0–01:44.5（片段 00:00.0–00:25.5）學生手持稀釋液瓶與空針抽取稀釋液並放下稀釋液瓶；01:45.0–01:54.5（片段 00:26.0–00:35.5）將針筒直立、拉推針心及彈針排氣，經 zoom@107、zoom@111、zoom@114.5 確認針頭與針筒交接處及雙手皆無酒精棉片；01:55.0–01:58.0（片段 00:36.0–00:39.0）移開 vial 瓶口上的酒精棉片放到檯面；01:58.5–02:15.0（片段 00:39.5–00:56.0）將針頭插入 vial 打入稀釋液並拔出針頭；02:15.0–02:17.0（片段 00:56.0–00:58.0）準備回套針頭。全程雙手清楚可見，未將酒精棉片墊在針心與針頭交接處。",
+     "evidence": [
+      "clip@79-137",
+      "zoom@107",
+      "zoom@111",
+      "zoom@114.5"
+     ],
+     "confidence": 0.95,
+     "reason": null,
+     "source": "vlm",
+     "window": [
+      79.0,
+      137.0
+     ]
+    },
+    {
+     "criterion_id": "15b",
+     "verdict": "錯誤",
+     "explanation": "01:45.8–01:46.9（clip@103.4-116.5 片段內 00:02.4–00:03.5）右手手指輕彈針筒並有連續彈擊聲，01:47.2–01:54.5 推針心排氣，但經 zoom 與 burst 確認針頭與針筒接合處全程未墊酒精棉片。",
+     "evidence": [
+      "clip@103.4-116.5",
+      "burst@105.5-107.8 #1",
+      "burst@105.5-107.8 #3",
+      "zoom@106.4",
+      "zoom@111"
+     ],
+     "confidence": 0.95,
+     "reason": null,
+     "source": "vlm",
+     "window": [
+      103.4,
+      116.5
+     ]
+    }
+   ]
+  },
+  {
+   "step_id": 16,
+   "verdict": "待判定",
+   "explanation": "16a「針心往後抽（外露的推桿變長）」待判定：等待評分 agent 看畫面判定（區間 01:43–01:56）。",
+   "confidence": 0.0,
+   "criteria": [
+    {
+     "criterion_id": "16a",
+     "verdict": "待判定",
+     "source": "vlm",
+     "explanation": "等待評分 agent 看畫面判定（區間 01:43–01:56）。",
+     "evidence": [],
+     "confidence": 0.0,
+     "reason": null,
+     "window": [
+      103.4,
+      116.5
+     ]
+    }
+   ]
+  },
+  {
+   "step_id": 17,
+   "verdict": "待判定",
+   "explanation": "17a「手指輕彈空針（聽到彈擊聲且看到手指彈針筒）」待判定：等待評分 agent 看畫面判定（區間 01:43–01:56）；17b「推針心排出空針內空氣（外露的推桿變短）」待判定：等待評分 agent 看畫面判定（區間 01:43–01:56）。",
+   "confidence": 0.0,
+   "criteria": [
+    {
+     "criterion_id": "17a",
+     "verdict": "待判定",
+     "source": "vlm",
+     "explanation": "等待評分 agent 看畫面判定（區間 01:43–01:56）。",
+     "evidence": [],
+     "confidence": 0.0,
+     "reason": null,
+     "window": [
+      103.4,
+      116.5
+     ]
+    },
+    {
+     "criterion_id": "17b",
+     "verdict": "待判定",
+     "source": "vlm",
+     "explanation": "等待評分 agent 看畫面判定（區間 01:43–01:56）。",
+     "evidence": [],
+     "confidence": 0.0,
+     "reason": null,
+     "window": [
+      103.4,
+      116.5
+     ]
+    }
+   ]
+  },
+  {
+   "step_id": 18,
+   "verdict": "待判定",
+   "explanation": "18a「將稀釋液打入 vial」正確：切分結果：步驟 18 於 01:59–02:15（ov@100-148 #4 (124.0s) 及 global #15 (124.0s) 持毛筆方式將針頭垂直刺入車上 vial 並推入稀釋液，ov@100-148 #5 (130.0s)、global #16 (132.0s) 及 ov@134-142 #0 (134.0s) 舉起 vial 繼續注入稀釋液並回抽氣體，#1 (135.0s) 拔出針頭）；18b「以持毛筆方式持針：拇指與食指、中指握住針筒外管，針筒垂直向下插入，手指不碰觸針頭、針座及活塞柄內側（只判插針那一刻，vial 可拿在手上）」待判定：等待評分 agent 看畫面判定（區間 01:57–02:17）；18c「針頭插入 vial 中心」待判定：等待評分 agent 看畫面判定（區間 01:57–02:17）。",
+   "confidence": 0.0,
+   "criteria": [
+    {
+     "criterion_id": "18a",
+     "verdict": "正確",
+     "source": "rule",
+     "explanation": "切分結果：步驟 18 於 01:59–02:15（ov@100-148 #4 (124.0s) 及 global #15 (124.0s) 持毛筆方式將針頭垂直刺入車上 vial 並推入稀釋液，ov@100-148 #5 (130.0s)、global #16 (132.0s) 及 ov@134-142 #0 (134.0s) 舉起 vial 繼續注入稀釋液並回抽氣體，#1 (135.0s) 拔出針頭）。",
+     "evidence": [
+      "seg:step 18"
+     ],
+     "confidence": 0.9,
+     "reason": null,
+     "window": null
+    },
+    {
+     "criterion_id": "18b",
+     "verdict": "待判定",
+     "source": "vlm",
+     "explanation": "等待評分 agent 看畫面判定（區間 01:57–02:17）。",
+     "evidence": [],
+     "confidence": 0.0,
+     "reason": null,
+     "window": [
+      117.0,
+      137.0
+     ]
+    },
+    {
+     "criterion_id": "18c",
+     "verdict": "待判定",
+     "source": "vlm",
+     "explanation": "等待評分 agent 看畫面判定（區間 01:57–02:17）。",
+     "evidence": [],
+     "confidence": 0.0,
+     "reason": null,
+     "window": [
+      117.0,
+      137.0
+     ]
+    }
+   ]
+  },
+  {
+   "step_id": 19,
+   "verdict": "待判定",
+   "explanation": "19a「抽出針頭並套回針頭套」正確：切分結果：步驟 19 於 02:15–02:21（ov@134-142 #1-#5 (135.0-139.0s) 針頭離開 vial 後右手單手持空針將針頭套入桌面針套，#6 (140.0s) 雙手壓緊針頭套，#7 (141.0s) 放下空針（候選點 141.0s））；19b「單手套回（另一手未扶針頭套）」待判定：等待評分 agent 看畫面判定（區間 02:13–02:23）。",
+   "confidence": 0.0,
+   "criteria": [
+    {
+     "criterion_id": "19a",
+     "verdict": "正確",
+     "source": "rule",
+     "explanation": "切分結果：步驟 19 於 02:15–02:21（ov@134-142 #1-#5 (135.0-139.0s) 針頭離開 vial 後右手單手持空針將針頭套入桌面針套，#6 (140.0s) 雙手壓緊針頭套，#7 (141.0s) 放下空針（候選點 141.0s））。",
+     "evidence": [
+      "seg:step 19"
+     ],
+     "confidence": 0.9,
+     "reason": null,
+     "window": null
+    },
+    {
+     "criterion_id": "19b",
+     "verdict": "待判定",
+     "source": "vlm",
+     "explanation": "等待評分 agent 看畫面判定（區間 02:13–02:23）。",
+     "evidence": [],
+     "confidence": 0.0,
+     "reason": null,
+     "window": [
+      133.0,
+      143.0
+     ]
+    }
+   ]
+  },
+  {
+   "step_id": 20,
+   "verdict": "待判定",
+   "explanation": "20a「雙手旋轉 vial 讓稀釋液與粉劑融合（雙手掌心夾住 vial 來回搓滾或旋轉）」待判定：等待評分 agent 看畫面判定（區間 02:19–02:51）。",
+   "confidence": 0.0,
+   "criteria": [
+    {
+     "criterion_id": "20a",
+     "verdict": "待判定",
+     "source": "vlm",
+     "explanation": "等待評分 agent 看畫面判定（區間 02:19–02:51）。",
+     "evidence": [],
+     "confidence": 0.0,
+     "reason": null,
+     "window": [
+      139.0,
+      171.8
+     ]
+    }
+   ]
+  },
+  {
+   "step_id": 21,
+   "verdict": "正確",
+   "explanation": "21a「空針拔蓋後抽取空氣」正確：切分結果：步驟 21 於 02:55–03:00（ov@174-190 #1-#2 (176.0-178.0s) 拿起空針並拔除針頭套（空針內於步驟 18 結尾已抽有空氣），#3 (180.0s) 右手持空針接近 vial）。",
+   "confidence": 0.8,
+   "criteria": [
+    {
+     "criterion_id": "21a",
+     "verdict": "正確",
+     "source": "rule",
+     "explanation": "切分結果：步驟 21 於 02:55–03:00（ov@174-190 #1-#2 (176.0-178.0s) 拿起空針並拔除針頭套（空針內於步驟 18 結尾已抽有空氣），#3 (180.0s) 右手持空針接近 vial）。",
+     "evidence": [
+      "seg:step 21"
+     ],
+     "confidence": 0.8,
+     "reason": null,
+     "window": null
+    }
+   ]
+  },
+  {
+   "step_id": 22,
+   "verdict": "待判定",
+   "explanation": "22a「將空氣打入 vial」正確：切分結果：步驟 22 於 03:01–03:05、03:55–04:05（ov@174-190 #4-#5 (182.0-184.0s) 右手持毛筆方式將空針垂直刺入車上 vial 中心並推入空氣，至候選點 185.2s 準備倒舉 vial；第二次（重抽）：ov@230-238 #6-#8 (236.0-238.0s)、ov@238-302 #0 (238.0s) 及 global #29-#30 (236.0-244.0s) 再次持毛筆方式將針頭垂直刺入車上 vial 中心並打入空氣，至候選點 245.4s）；22b「以持毛筆方式持針：拇指與食指、中指握住針筒外管，針筒垂直向下插入，手指不碰觸針頭、針座及活塞柄內側（只判插針那一刻，vial 可拿在手上）」待判定：等待評分 agent 看畫面判定（區間 02:59–04:07）；22c「針頭插入 vial 中心」待判定：等待評分 agent 看畫面判定（區間 02:59–04:07）。",
+   "confidence": 0.0,
+   "criteria": [
+    {
+     "criterion_id": "22a",
+     "verdict": "正確",
+     "source": "rule",
+     "explanation": "切分結果：步驟 22 於 03:01–03:05、03:55–04:05（ov@174-190 #4-#5 (182.0-184.0s) 右手持毛筆方式將空針垂直刺入車上 vial 中心並推入空氣，至候選點 185.2s 準備倒舉 vial；第二次（重抽）：ov@230-238 #6-#8 (236.0-238.0s)、ov@238-302 #0 (238.0s) 及 global #29-#30 (236.0-244.0s) 再次持毛筆方式將針頭垂直刺入車上 vial 中心並打入空氣，至候選點 245.4s）。",
+     "evidence": [
+      "seg:step 22"
+     ],
+     "confidence": 0.85,
+     "reason": null,
+     "window": null
+    },
+    {
+     "criterion_id": "22b",
+     "verdict": "待判定",
+     "source": "vlm",
+     "explanation": "等待評分 agent 看畫面判定（區間 02:59–04:07）。",
+     "evidence": [],
+     "confidence": 0.0,
+     "reason": null,
+     "window": [
+      179.0,
+      247.4
+     ]
+    },
+    {
+     "criterion_id": "22c",
+     "verdict": "待判定",
+     "source": "vlm",
+     "explanation": "等待評分 agent 看畫面判定（區間 02:59–04:07）。",
+     "evidence": [],
+     "confidence": 0.0,
+     "reason": null,
+     "window": [
+      179.0,
+      247.4
+     ]
+    }
+   ]
+  },
+  {
+   "step_id": 23,
+   "verdict": "正確",
+   "explanation": "23a「將 vial 舉起倒置，空針朝上、瓶口朝下」正確：切分結果：步驟 23 於 03:05–03:38、04:05–04:30（ov@174-190 #6-#8 (186.0-190.0s)、global #23-#26 (188.0-212.0s) 及 ov@164-236 #3-#6 (191.0-218.0s) 將 vial 翻轉倒舉於眼前、空針朝上瓶口朝下，至 218.5s 拔針放下 vial；第二次（重抽）：ov@238-302 #1-#3 (246.0-262.0s) 及 global #31-#33 (252.0-268.0s) 再次將 vial 倒舉於眼前、空針朝上瓶口朝下，ov@238-302 #4 (270.0s) 放下 vial 並拔出針頭（候選點 270.4s））。",
+   "confidence": 0.9,
+   "criteria": [
+    {
+     "criterion_id": "23a",
+     "verdict": "正確",
+     "source": "rule",
+     "explanation": "切分結果：步驟 23 於 03:05–03:38、04:05–04:30（ov@174-190 #6-#8 (186.0-190.0s)、global #23-#26 (188.0-212.0s) 及 ov@164-236 #3-#6 (191.0-218.0s) 將 vial 翻轉倒舉於眼前、空針朝上瓶口朝下，至 218.5s 拔針放下 vial；第二次（重抽）：ov@238-302 #1-#3 (246.0-262.0s) 及 global #31-#33 (252.0-268.0s) 再次將 vial 倒舉於眼前、空針朝上瓶口朝下，ov@238-302 #4 (270.0s) 放下 vial 並拔出針頭（候選點 270.4s））。",
+     "evidence": [
+      "seg:step 23"
+     ],
+     "confidence": 0.9,
+     "reason": null,
+     "window": null
+    }
+   ]
+  },
+  {
+   "step_id": 24,
+   "verdict": "待判定",
+   "explanation": "24a「右手持針心尾端環狀處，未碰觸外露的針心推桿（手指在外筒或翼緣上不算碰觸）」待判定：等待評分 agent 看畫面判定（區間 03:05–04:31）；24b「抽出藥液至所需藥量之刻度」無法判定：看不清針筒刻度，無法判定。",
+   "confidence": 0.0,
+   "criteria": [
+    {
+     "criterion_id": "24a",
+     "verdict": "待判定",
+     "source": "vlm",
+     "explanation": "等待評分 agent 看畫面判定（區間 03:05–04:31）。",
+     "evidence": [],
+     "confidence": 0.0,
+     "reason": null,
+     "window": [
+      185.5,
+      271.2
+     ]
+    },
+    {
+     "criterion_id": "24b",
+     "verdict": "無法判定",
+     "source": "fixed",
+     "explanation": "看不清針筒刻度，無法判定。",
+     "evidence": [],
+     "confidence": 1.0,
+     "reason": "資訊不足",
+     "window": null
+    }
+   ]
+  },
+  {
+   "step_id": 25,
+   "verdict": "部分正確",
+   "explanation": "25a「酒精棉片墊在針柄」正確：於 03:45.0–03:53.0（clip@218-236 片段內 00:07.0–00:15.0）及 04:39.2，透過 zoom@226.6 與 zoom@279.2 清楚看到白色方形酒精棉片墊在針頭與針筒接合處（針柄）；25b「先墊酒精棉片才彈針」部分正確：學生進行了兩次抽藥後排氣：第一次在 03:40.0–03:41.5（clip@218-236 片段內 00:02.0–00:03.5，zoom@220.5）針頭與針筒接合處未墊酒精棉片即先以右手指彈針筒並有彈擊聲，之後才於 03:45.0–03:45.5 墊上白色方形酒精棉片，並於 03:46.0–03:48.0（zoom@226.5）再次彈針及推針心排氣，屬先彈針後墊棉片；第二次重抽藥液後，於 04:36.5–04:37.0（clip@270-287 片段內 00:06.5–00:07.0）先在針頭與針筒接合處墊上白色方形酒精棉片，接著才於 04:37.5–04:39.5（zoom@278）彈針並推針心排氣，符合先墊棉片才彈針（需人工複核：學生進行兩次排氣彈針，第一次先彈針後墊棉片，第二次先墊棉片才彈針）。",
+   "confidence": 0.9,
+   "criteria": [
+    {
+     "criterion_id": "25a",
+     "verdict": "正確",
+     "explanation": "於 03:45.0–03:53.0（clip@218-236 片段內 00:07.0–00:15.0）及 04:39.2，透過 zoom@226.6 與 zoom@279.2 清楚看到白色方形酒精棉片墊在針頭與針筒接合處（針柄）。",
+     "evidence": [
+      "clip@218-236",
+      "zoom@226.6",
+      "zoom@279.2"
+     ],
+     "confidence": 0.95,
+     "reason": null,
+     "source": "vlm",
+     "window": [
+      217.8,
+      288.0
+     ]
+    },
+    {
+     "criterion_id": "25b",
+     "verdict": "部分正確",
+     "explanation": "學生進行了兩次抽藥後排氣：第一次在 03:40.0–03:41.5（clip@218-236 片段內 00:02.0–00:03.5，zoom@220.5）針頭與針筒接合處未墊酒精棉片即先以右手指彈針筒並有彈擊聲，之後才於 03:45.0–03:45.5 墊上白色方形酒精棉片，並於 03:46.0–03:48.0（zoom@226.5）再次彈針及推針心排氣，屬先彈針後墊棉片；第二次重抽藥液後，於 04:36.5–04:37.0（clip@270-287 片段內 00:06.5–00:07.0）先在針頭與針筒接合處墊上白色方形酒精棉片，接著才於 04:37.5–04:39.5（zoom@278）彈針並推針心排氣，符合先墊棉片才彈針。",
+     "evidence": [
+      "clip@218-236",
+      "clip@270-287",
+      "zoom@220.5",
+      "zoom@226.5",
+      "zoom@278"
+     ],
+     "confidence": 0.9,
+     "reason": null,
+     "needs_review": true,
+     "review_reason": "學生進行兩次排氣彈針，第一次先彈針後墊棉片，第二次先墊棉片才彈針",
+     "source": "vlm",
+     "window": [
+      217.8,
+      288.0
+     ]
+    }
+   ],
+   "needs_review": true
+  },
+  {
+   "step_id": 26,
+   "verdict": "待判定",
+   "explanation": "26a「針心往後抽（外露的推桿變長）」待判定：等待評分 agent 看畫面判定（區間 03:37–04:48）；26b「針筒垂直、針頭向上」待判定：等待評分 agent 看畫面判定（區間 03:37–04:48）。",
+   "confidence": 0.0,
+   "criteria": [
+    {
+     "criterion_id": "26a",
+     "verdict": "待判定",
+     "source": "vlm",
+     "explanation": "等待評分 agent 看畫面判定（區間 03:37–04:48）。",
+     "evidence": [],
+     "confidence": 0.0,
+     "reason": null,
+     "window": [
+      217.8,
+      288.0
+     ]
+    },
+    {
+     "criterion_id": "26b",
+     "verdict": "待判定",
+     "source": "vlm",
+     "explanation": "等待評分 agent 看畫面判定（區間 03:37–04:48）。",
+     "evidence": [],
+     "confidence": 0.0,
+     "reason": null,
+     "window": [
+      217.8,
+      288.0
+     ]
+    }
+   ]
+  },
+  {
+   "step_id": 27,
+   "verdict": "待判定",
+   "explanation": "27a「手指輕彈空針（聽到彈擊聲且看到手指彈針筒）」待判定：等待評分 agent 看畫面判定（區間 03:37–04:48）；27b「推針心排出空針內空氣（外露的推桿變短）」待判定：等待評分 agent 看畫面判定（區間 03:37–04:48）。",
+   "confidence": 0.0,
+   "criteria": [
+    {
+     "criterion_id": "27a",
+     "verdict": "待判定",
+     "source": "vlm",
+     "explanation": "等待評分 agent 看畫面判定（區間 03:37–04:48）。",
+     "evidence": [],
+     "confidence": 0.0,
+     "reason": null,
+     "window": [
+      217.8,
+      288.0
+     ]
+    },
+    {
+     "criterion_id": "27b",
+     "verdict": "待判定",
+     "source": "vlm",
+     "explanation": "等待評分 agent 看畫面判定（區間 03:37–04:48）。",
+     "evidence": [],
+     "confidence": 0.0,
+     "reason": null,
+     "window": [
+      217.8,
+      288.0
+     ]
+    }
+   ]
+  },
+  {
+   "step_id": 28,
+   "verdict": "待判定",
+   "explanation": "28a「套回針頭套」正確：切分結果：步驟 28 於 04:46–04:51（ov@284-296 #2-#3 (287.0-288.5s) 右手單手持空針將針頭套入治療車桌面上的針頭套，#4 (290.0s) 壓緊針頭套並拿起空針）；28b「單手套回（另一手未扶針頭套）」待判定：等待評分 agent 看畫面判定（區間 04:44–04:53）。",
+   "confidence": 0.0,
+   "criteria": [
+    {
+     "criterion_id": "28a",
+     "verdict": "正確",
+     "source": "rule",
+     "explanation": "切分結果：步驟 28 於 04:46–04:51（ov@284-296 #2-#3 (287.0-288.5s) 右手單手持空針將針頭套入治療車桌面上的針頭套，#4 (290.0s) 壓緊針頭套並拿起空針）。",
+     "evidence": [
+      "seg:step 28"
+     ],
+     "confidence": 0.9,
+     "reason": null,
+     "window": null
+    },
+    {
+     "criterion_id": "28b",
+     "verdict": "待判定",
+     "source": "vlm",
+     "explanation": "等待評分 agent 看畫面判定（區間 04:44–04:53）。",
+     "evidence": [],
+     "confidence": 0.0,
+     "reason": null,
+     "window": [
+      284.5,
+      293.0
+     ]
+    }
+   ]
+  },
+  {
+   "step_id": 29,
+   "verdict": "錯誤",
+   "explanation": "29a「目光注視給藥紀錄單累計至少 10 秒」錯誤：切分結果：步驟 29 未執行（ov@296-384 #0-#8 (296.0-384.0s) 及 global #36-#47 (292.0-380.0s) 治療車左前角的 vial 空瓶與紅色瓶蓋始終留在原處，直到影片結束皆未拿起或丟入收集筒）；29b「明顯用手指指出給藥紀錄單」錯誤：切分結果：步驟 29 未執行（ov@296-384 #0-#8 (296.0-384.0s) 及 global #36-#47 (292.0-380.0s) 治療車左前角的 vial 空瓶與紅色瓶蓋始終留在原處，直到影片結束皆未拿起或丟入收集筒）；29c「丟棄藥物空瓶」錯誤：切分結果：步驟 29 未執行（ov@296-384 #0-#8 (296.0-384.0s) 及 global #36-#47 (292.0-380.0s) 治療車左前角的 vial 空瓶與紅色瓶蓋始終留在原處，直到影片結束皆未拿起或丟入收集筒）。",
+   "confidence": 0.95,
+   "criteria": [
+    {
+     "criterion_id": "29a",
+     "verdict": "錯誤",
+     "source": "rule",
+     "explanation": "切分結果：步驟 29 未執行（ov@296-384 #0-#8 (296.0-384.0s) 及 global #36-#47 (292.0-380.0s) 治療車左前角的 vial 空瓶與紅色瓶蓋始終留在原處，直到影片結束皆未拿起或丟入收集筒）。",
+     "evidence": [
+      "seg:step 29"
+     ],
+     "confidence": 0.95,
+     "reason": null,
+     "window": null
+    },
+    {
+     "criterion_id": "29b",
+     "verdict": "錯誤",
+     "source": "rule",
+     "explanation": "切分結果：步驟 29 未執行（ov@296-384 #0-#8 (296.0-384.0s) 及 global #36-#47 (292.0-380.0s) 治療車左前角的 vial 空瓶與紅色瓶蓋始終留在原處，直到影片結束皆未拿起或丟入收集筒）。",
+     "evidence": [
+      "seg:step 29"
+     ],
+     "confidence": 0.95,
+     "reason": null,
+     "window": null
+    },
+    {
+     "criterion_id": "29c",
+     "verdict": "錯誤",
+     "source": "rule",
+     "explanation": "切分結果：步驟 29 未執行（ov@296-384 #0-#8 (296.0-384.0s) 及 global #36-#47 (292.0-380.0s) 治療車左前角的 vial 空瓶與紅色瓶蓋始終留在原處，直到影片結束皆未拿起或丟入收集筒）。",
+     "evidence": [
+      "seg:step 29"
+     ],
+     "confidence": 0.95,
+     "reason": null,
+     "window": null
+    }
+   ]
+  },
+  {
+   "step_id": 30,
+   "verdict": "待判定",
+   "explanation": "30a「空針放入空針包裝或針架（放在桌上或丟棄為錯誤）」待判定：等待評分 agent 看畫面判定（區間 04:49–04:57）；30b「由針心處或針柄處放入空針包裝（兩種都給分）」待判定：等待評分 agent 看畫面判定（區間 04:49–04:57）。",
+   "confidence": 0.0,
+   "criteria": [
+    {
+     "criterion_id": "30a",
+     "verdict": "待判定",
+     "source": "vlm",
+     "explanation": "等待評分 agent 看畫面判定（區間 04:49–04:57）。",
+     "evidence": [],
+     "confidence": 0.0,
+     "reason": null,
+     "window": [
+      289.0,
+      297.5
+     ]
+    },
+    {
+     "criterion_id": "30b",
+     "verdict": "待判定",
+     "source": "vlm",
+     "explanation": "等待評分 agent 看畫面判定（區間 04:49–04:57）。",
+     "evidence": [],
+     "confidence": 0.0,
+     "reason": null,
+     "window": [
+      289.0,
+      297.5
+     ]
+    }
+   ]
+  }
+ ]
+}

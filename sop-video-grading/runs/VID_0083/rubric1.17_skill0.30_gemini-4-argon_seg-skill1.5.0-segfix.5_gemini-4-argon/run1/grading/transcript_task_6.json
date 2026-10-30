@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 4.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 15847,
+  "cached_input_tokens": 0,
+  "output_tokens": 80,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@64-71（context box，有聲音；片段內 00:00 ＝ 影片 01:04.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [66.0, 66.5, 67.0, 67.5], \"region\": [0.3, 0.65, 0.6, 0.95], \"reason\": \"確認以酒精棉片消毒 vial 瓶口的動作及物件\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 6.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 17090,
+  "cached_input_tokens": 0,
+  "output_tokens": 209,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@64-71（context box，有聲音；片段內 00:00 ＝ 影片 01:04.0）",
+   "zoom@66/66.5/67/67.5 region=[0.300, 0.650, 0.600, 0.950]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"6a\", \"verdict\": \"正確\", \"explanation\": \"於 01:06.0–01:08.0（clip@64-71 片段內 00:02.0–00:04.0），左手扶著 vial 粉劑瓶，右手持酒精棉片在 vial 瓶口上來回擦拭消毒，zoom@66、zoom@66.5、zoom@67、zoom@67.5 可清楚看到白色方形酒精棉片於 vial 瓶口移動擦拭，隨後將棉片覆蓋於瓶口上。\", \"evidence\": [\"clip@64-71\", \"zoom@66\", \"zoom@66.5\", \"zoom@67\", \"zoom@67.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

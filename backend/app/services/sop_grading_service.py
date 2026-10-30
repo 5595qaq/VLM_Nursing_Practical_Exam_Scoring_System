@@ -99,7 +99,8 @@ def build_tasks(result: dict, rubric: dict, steps: set[int] | None = None) -> li
                                       "audio": spec.get("audio", False),
                                       "min_seconds": spec.get("min_seconds"),
                                       "dense": spec.get("sample_interval") is not None,
-                                      "clip": spec.get("clip", False)})
+                                      "clip": spec.get("clip", False),
+                                      "search_steps": spec.get("search_steps")})
     tasks = list(groups.values())
     for task in tasks:
         task["window"] = [min(c["window"][0] for c in task["criteria"]),
@@ -207,13 +208,22 @@ class TaskState:
     usage: dict = field(default_factory=dict)  # USAGE_KEYS totals
 
 
+def _searching(c: dict, segmentation: dict) -> bool:
+    """rules.py gave this criterion its search range (same test: rules.searched)."""
+    return load_grading_module("rules").searched(
+        c, [e for e in segmentation["steps"] if e["step_id"] == c["step_id"]])
+
+
 def _segment_lines(task: dict, segmentation: dict) -> list[str]:
     """Only the segmentation's times. Its status and evidence are another model's description of the
     same frames, often already stating the answer ("單手持空針將針頭套回", "由針心處放回"); the
     grading agent echoed it instead of judging the frames (10b on VID_0098), and the two models
-    stop being independent checks of each other."""
+    stop being independent checks of each other. A searched criterion also lists every step of its
+    search range, so the agent knows what happens where."""
+    search_range = load_grading_module("rubric").search_range
+    searched = {s for c in task["criteria"] if _searching(c, segmentation) for s in search_range(c)}
     lines = []
-    for sid in sorted({*task["window_steps"], *(c["step_id"] for c in task["criteria"])}):
+    for sid in sorted({*task["window_steps"], *(c["step_id"] for c in task["criteria"]), *searched}):
         for e in (e for e in segmentation["steps"] if e["step_id"] == sid):
             if e["start"] is not None:
                 lines.append(f"  步驟 {sid}：{_fmt_t(e['start'])}–{_fmt_t(e['end'])}")
@@ -258,6 +268,8 @@ def build_task_content(task: dict, video_id: str, duration: float, state: TaskSt
         *(f"  {c['criterion_id']}（步驟 {c['step_id']}）：{c['text']}；window={c['window']}"
           + ("；要聽聲音" if c["audio"] else "") + ("；要每 0.5 秒一格" if c["dense"] else "")
           + ("；要看 clip 的連續動作" if c["clip"] else "")
+          + ("；" + load_grading_module("rules").search_note(c["step_id"], c["search_steps"])
+             if _searching(c, segmentation) else "")
           + (f"；要計時：final 填 span=[開始, 結束]（影片秒數），滿 {c['min_seconds']:g} 秒才是正確"
              if c.get("min_seconds") else "")
           for c in task["criteria"]),

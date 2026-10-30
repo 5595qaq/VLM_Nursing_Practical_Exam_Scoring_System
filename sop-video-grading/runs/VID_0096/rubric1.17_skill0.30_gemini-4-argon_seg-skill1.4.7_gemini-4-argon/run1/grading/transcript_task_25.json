@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 6.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 16241,
+  "cached_input_tokens": 0,
+  "output_tokens": 87,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@358-371（context box，有聲音；片段內 00:00 ＝ 影片 05:58.0）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 348.0, \"end\": 358.0, \"fps\": 2, \"reason\": \"在 358-371 區間內學生在消毒 vial 與插針，往前看 348-358 確認步驟 25 墊棉片是否在更早的時間。\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 6.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 18182,
+  "cached_input_tokens": 0,
+  "output_tokens": 59,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@358-371（context box，有聲音；片段內 00:00 ＝ 影片 05:58.0）",
+   "clip@348-358（context box，有聲音；片段內 00:00 ＝ 影片 05:48.0）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 371.0, \"end\": 381.0, \"fps\": 2, \"reason\": \"檢查 371–381 秒是否有墊酒精棉片於針柄\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 7.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 20133,
+  "cached_input_tokens": 0,
+  "output_tokens": 274,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@358-371（context box，有聲音；片段內 00:00 ＝ 影片 05:58.0）",
+   "clip@348-358（context box，有聲音；片段內 00:00 ＝ 影片 05:48.0）",
+   "clip@371-381（context box，有聲音；片段內 00:00 ＝ 影片 06:11.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"25a\", \"verdict\": \"無法判定\", \"explanation\": \"切分標示的區間（05:58.0–06:11.0，M1）及前後各 10 秒（05:48.0–05:58.0，M2；06:11.0–06:21.0，M3）內，學生在調整點滴管路與加藥（05:48.0–05:56.0 在看點滴管路，05:57.0–06:08.0 撕酒精棉片擦拭點滴加藥口並拔空針針蓋，06:09.0–06:21.0 將藥液注入點滴袋），並非抽藥後的排氣墊棉片步驟，區間內未看到步驟 25 的動作。\", \"evidence\": [\"clip@358-371\", \"clip@348-358\", \"clip@371-381\"], \"confidence\": 0.9, \"reason\": \"資訊不足\"}]}",
+  "errors": []
+ }
+]

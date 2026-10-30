@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 63.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 18705,
+  "cached_input_tokens": 0,
+  "output_tokens": 73,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@76-98（context box，有聲音；片段內 00:00 ＝ 影片 01:16.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [78.5, 79.5, 80.5], \"region\": [0.4, 0.3, 0.7, 0.6], \"reason\": \"確認以酒精棉片擦拭稀釋液瓶頂端的動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 7.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 19894,
+  "cached_input_tokens": 0,
+  "output_tokens": 193,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@76-98（context box，有聲音；片段內 00:00 ＝ 影片 01:16.0）",
+   "zoom@78.5/79.5/80.5 region=[0.400, 0.300, 0.700, 0.600]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"7a\", \"verdict\": \"正確\", \"explanation\": \"於 01:17.5–01:21.0（clip@76-98 片段內 00:01.5–00:05.0），右手持細長綠色標籤的稀釋液瓶，左手用酒精棉片包住稀釋液瓶頂端來回擦拭消毒（zoom@78.5、zoom@79.5、zoom@80.5 清楚可見棉片擦拭稀釋液瓶頂）。\", \"evidence\": [\"clip@76-98\", \"zoom@78.5\", \"zoom@79.5\", \"zoom@80.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

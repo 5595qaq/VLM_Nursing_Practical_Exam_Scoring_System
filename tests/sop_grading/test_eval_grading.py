@@ -143,11 +143,11 @@ def test_cli_skips_another_videos_segmentation(tmp_path, capsys):
 
 def test_compare_and_summary():
     grading = fill_visual(grade_from_segmentation(make_segmentation()))
-    labels = {1: {"verdict": "錯誤", "why": "洗手時間不足15秒"}, 5: {"verdict": "正確", "why": ""},
+    labels = {1: {"verdict": "錯誤", "why": "洗手時間不足15秒"}, 21: {"verdict": "正確", "why": ""},
               19: {"verdict": "部分正確", "why": ""}}
     rows = compare(grading, labels)
-    assert [r["step_id"] for r in rows] == [1, 5, 19]
-    assert [r["kind"] for r in rows] == ["V", "P", "V"]  # step 5 has only a program criterion
+    assert [r["step_id"] for r in rows] == [1, 19, 21]
+    assert [r["kind"] for r in rows] == ["V", "V", "P"]  # step 21 has only a program criterion
     s = summarize(rows)
     assert s["agreement"] == 1 and s["error_recall"] == "0/2" and s["false_alarms"] == "0/1"
     assert s["confusion"] == {"錯誤→正確": 1, "部分正確→正確": 1}
@@ -162,7 +162,7 @@ def test_review_flag_is_reported():
 
 
 def test_cli_prints_report(tmp_path, capsys):
-    labels = write_labels(tmp_path / "l.csv", [row("VID_0001", 5, "正確", start="59:00", end="59:01"),
+    labels = write_labels(tmp_path / "l.csv", [row("VID_0001", 21, "正確", start="59:00", end="59:01"),
                                                row("VID_0001", 9, "錯誤", kind="步驟遺漏")])
     (tmp_path / "segmentation.json").write_text(json.dumps(make_segmentation(), ensure_ascii=False), encoding="utf-8")
     grading = tmp_path / "g.json"
@@ -172,6 +172,6 @@ def test_cli_prints_report(tmp_path, capsys):
     assert main(["eval_grading.py", str(grading), "--labels", str(labels), "--json", str(out_json)]) == 0
     text = capsys.readouterr().out
     assert "## VID_0001" in text and "全部：一致 0/2（只比判定 1/2）" in text and "錯誤召回 0/1" in text
-    assert "判定一致但時間對不上：步驟 5" in text and "| ✗ 59:00.0–59:01.0／" in text
-    assert "看畫面的步驟（V）：一致 0/0" in text  # steps 5 and 9 are program-only
+    assert "判定一致但時間對不上：步驟 21" in text and "| ✗ 59:00.0–59:01.0／" in text
+    assert "看畫面的步驟（V）：一致 0/0" in text  # steps 9 and 21 are program-only
     assert json.loads(out_json.read_text(encoding="utf-8"))["VID_0001"]["summary"]["compared"] == 2

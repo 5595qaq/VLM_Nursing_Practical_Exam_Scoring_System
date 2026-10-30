@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 5.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 15515,
+  "cached_input_tokens": 0,
+  "output_tokens": 81,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@57-62.5（context box，有聲音；片段內 00:00 ＝ 影片 00:57.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [59.5, 60.0, 62.0], \"region\": [0.42, 0.55, 0.72, 0.92], \"reason\": \"確認vial瓶蓋狀態，是否已將翻蓋打開變成銀色鋁圈\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 5.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 16732,
+  "cached_input_tokens": 14174,
+  "output_tokens": 189,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@57-62.5（context box，有聲音；片段內 00:00 ＝ 影片 00:57.0）",
+   "zoom@59.5/60/62 region=[0.420, 0.550, 0.720, 0.920]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"00:59.5 桌上 vial 瓶口為完整的深褐色塑膠翻蓋，01:00.0–01:00.5（clip@57-62.5 片段內 00:03.0–00:03.5）拿起 vial 並隔著酒精棉片將塑膠翻蓋打開，01:02.0 zoom 清楚看到 vial 瓶頂已變成銀白色鋁圈與中央橡皮塞。\", \"evidence\": [\"clip@57-62.5\", \"zoom@59.5\", \"zoom@60\", \"zoom@62\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

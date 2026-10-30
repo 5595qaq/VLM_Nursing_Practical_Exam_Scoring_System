@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 100.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 16194,
+  "cached_input_tokens": 0,
+  "output_tokens": 96,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@20.8-30.2（context box，有聲音；片段內 00:00 ＝ 影片 00:20.8）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [21.8, 25.8, 27.8, 28.8], \"region\": [0.35, 0.35, 0.65, 0.85], \"reason\": \"確認vial瓶口翻蓋是否被推開，以及桌上拆下的褐色瓶蓋與開蓋後的vial瓶頂\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 9.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 17435,
+  "cached_input_tokens": 0,
+  "output_tokens": 189,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@20.8-30.2（context box，有聲音；片段內 00:00 ＝ 影片 00:20.8）",
+   "zoom@21.8/25.8/27.8/28.8 region=[0.350, 0.350, 0.650, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"00:21.8 可見 vial 瓶頂為整片褐色翻蓋；00:24.8–00:27.8（clip@20.8-30.2 片段內 00:04.0–00:07.0）雙手將 vial 塑膠翻蓋推開並取下，00:28.8 放回桌面時瓶頂已變成銀色鋁圈。\", \"evidence\": [\"clip@20.8-30.2\", \"zoom@21.8\", \"zoom@27.8\", \"zoom@28.8\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

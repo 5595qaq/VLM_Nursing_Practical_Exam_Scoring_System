@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 23.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 16251,
+  "cached_input_tokens": 14017,
+  "output_tokens": 77,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@40-50（context box，有聲音；片段內 00:00 ＝ 影片 00:40.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [42.0, 46.5, 48.0], \"region\": [0.35, 0.35, 0.6, 0.88], \"reason\": \"確認 vial 瓶蓋打開動作與瓶頂變成銀色鋁圈\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 68.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 17451,
+  "cached_input_tokens": 0,
+  "output_tokens": 337,
+  "thinking_tokens": 142,
+  "materials": [
+   "clip@40-50（context box，有聲音；片段內 00:00 ＝ 影片 00:40.0）",
+   "zoom@42/46.5/48 region=[0.350, 0.350, 0.600, 0.880]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"00:42.0 時 vial 瓶頂為整片褐色塑膠翻蓋，00:45.0–00:46.5（clip@40-50 片段內 00:05.0–00:06.5）雙手將 vial 瓶蓋推開，00:47.5–00:48.0 將打開後的 vial 與脫落的褐色塑膠蓋放回治療車上，可見 vial 瓶頂已露出銀色鋁圈。\", \"evidence\": [\"clip@40-50\", \"zoom@42\", \"zoom@46.5\", \"zoom@48\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 8.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 14985,
+  "cached_input_tokens": 0,
+  "output_tokens": 96,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@183-190（context box，有聲音；片段內 00:00 ＝ 影片 03:03.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [185.0, 186.0, 186.5, 187.5], \"region\": [0.35, 0.52, 0.58, 0.78], \"reason\": \"確認打開 vial 瓶口（推掉塑膠翻蓋）的細節與瓶蓋掉落至桌面的畫面\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 8.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 16227,
+  "cached_input_tokens": 0,
+  "output_tokens": 354,
+  "thinking_tokens": 174,
+  "materials": [
+   "clip@183-190（context box，有聲音；片段內 00:00 ＝ 影片 03:03.0）",
+   "zoom@185/186/186.5/187.5 region=[0.350, 0.520, 0.580, 0.780]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"03:05.5–03:07.0（clip@183-190 片段內 00:02.5–00:04.0）右手握住 vial 瓶身，左手推掉 vial 頂端的深紅色塑膠翻蓋，03:07.5–03:08.0 將打開後的 vial 與取下的瓶蓋放回治療車上。\", \"evidence\": [\"clip@183-190\", \"zoom@185\", \"zoom@186\", \"zoom@186.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

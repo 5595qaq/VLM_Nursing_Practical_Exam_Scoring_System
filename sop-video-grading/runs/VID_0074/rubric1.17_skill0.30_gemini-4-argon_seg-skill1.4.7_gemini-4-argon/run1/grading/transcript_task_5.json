@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 39.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 15749,
+  "cached_input_tokens": 0,
+  "output_tokens": 116,
+  "thinking_tokens": 34,
+  "materials": [
+   "clip@20.5-30.8（context box，有聲音；片段內 00:00 ＝ 影片 00:20.5）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [21.5, 25.5, 26.5, 27.5], \"region\": [0.35, 0.28, 0.65, 0.68], \"reason\": \"確認打開 vial 塑膠瓶蓋的動作及瓶頂變化\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 6.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 16971,
+  "cached_input_tokens": 0,
+  "output_tokens": 195,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@20.5-30.8（context box，有聲音；片段內 00:00 ＝ 影片 00:20.5）",
+   "zoom@21.5/25.5/26.5/27.5 region=[0.350, 0.280, 0.650, 0.680]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"於 00:25.5–00:27.5（clip@20.5-30.8 片段內 00:05.0–00:07.0）看到學生以手指扳開 vial 上的深褐色塑膠翻蓋，00:27.5 時蓋子已脫離，露出下方的銀色鋁圈，00:28.0 將蓋子放到治療車上。\", \"evidence\": [\"clip@20.5-30.8\", \"zoom@21.5\", \"zoom@25.5\", \"zoom@26.5\", \"zoom@27.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

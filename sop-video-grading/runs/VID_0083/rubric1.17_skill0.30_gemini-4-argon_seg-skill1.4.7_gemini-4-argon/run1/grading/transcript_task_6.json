@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 5.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 17225,
+  "cached_input_tokens": 0,
+  "output_tokens": 75,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@53.2-71.8（context box，有聲音；片段內 00:00 ＝ 影片 00:53.2）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [63.2, 66.2, 68.2], \"region\": [0.3, 0.7, 0.55, 0.98], \"reason\": \"確認擦拭的是 vial 瓶口以及酒精棉片的接觸情形\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 6.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 18474,
+  "cached_input_tokens": 0,
+  "output_tokens": 201,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@53.2-71.8（context box，有聲音；片段內 00:00 ＝ 影片 00:53.2）",
+   "zoom@63.2/66.2/68.2 region=[0.300, 0.700, 0.550, 0.980]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"6a\", \"verdict\": \"正確\", \"explanation\": \"於 01:02.7–01:08.7（clip@53.2-71.8 片段內 00:09.5–00:15.5），學生左手扶住桌上的 vial 粉劑瓶，右手持酒精棉片在 vial 瓶口上來回擦拭與旋轉消毒，並由 zoom@63.2、zoom@66.2、zoom@68.2 清楚確認擦拭對象為 vial 瓶口。\", \"evidence\": [\"clip@53.2-71.8\", \"zoom@63.2\", \"zoom@66.2\", \"zoom@68.2\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

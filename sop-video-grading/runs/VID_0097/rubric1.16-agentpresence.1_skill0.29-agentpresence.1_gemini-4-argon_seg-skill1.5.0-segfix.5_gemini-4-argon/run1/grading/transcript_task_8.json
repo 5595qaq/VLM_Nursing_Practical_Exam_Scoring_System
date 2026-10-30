@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 16.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 15897,
+  "cached_input_tokens": 0,
+  "output_tokens": 86,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@64.8-73（context box，有聲音；片段內 00:00 ＝ 影片 01:04.8）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [67.3, 68.3, 69.3, 70.3], \"region\": [0.25, 0.35, 0.65, 0.85], \"reason\": \"確認稀釋液瓶口是否被扭開或只進行了擦拭消毒\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 8.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 17134,
+  "cached_input_tokens": 0,
+  "output_tokens": 306,
+  "thinking_tokens": 121,
+  "materials": [
+   "clip@64.8-73（context box，有聲音；片段內 00:00 ＝ 影片 01:04.8）",
+   "zoom@67.3/68.3/69.3/70.3 region=[0.250, 0.350, 0.650, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"8a\", \"verdict\": \"正確\", \"explanation\": \"01:07.3–01:09.8（clip@64.8-73 片段內 00:02.5–00:05.0）左手握住稀釋液瓶身，右手隔著酒精棉片包住瓶頂扭開，01:10.3 瓶頂已脫離並將打開的稀釋液瓶放回桌上。\", \"evidence\": [\"clip@64.8-73\", \"zoom@67.3\", \"zoom@68.3\", \"zoom@69.3\", \"zoom@70.3\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

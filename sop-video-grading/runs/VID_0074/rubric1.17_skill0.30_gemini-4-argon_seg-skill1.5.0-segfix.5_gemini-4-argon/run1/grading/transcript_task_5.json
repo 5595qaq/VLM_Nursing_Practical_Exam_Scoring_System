@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 5.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 16351,
+  "cached_input_tokens": 0,
+  "output_tokens": 87,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@20.8-30.2（context box，有聲音；片段內 00:00 ＝ 影片 00:20.8）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [21.3, 25.3, 27.8, 28.8], \"region\": [0.35, 0.35, 0.65, 0.9], \"reason\": \"確認vial瓶口塑膠翻蓋被打開的過程與開蓋後的瓶頂狀態\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 6.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 17600,
+  "cached_input_tokens": 0,
+  "output_tokens": 176,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@20.8-30.2（context box，有聲音；片段內 00:00 ＝ 影片 00:20.8）",
+   "zoom@21.3/25.3/27.8/28.8 region=[0.350, 0.350, 0.650, 0.900]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"00:21.3 時 vial 瓶頂為深褐色塑膠圓蓋，00:25.3–00:27.8 雙手將瓶蓋剝開取下，00:28.8 放在桌上的 vial 瓶頂已呈現銀色鋁圈（中間為橡皮塞），成功將 vial 瓶口打開。\", \"evidence\": [\"clip@20.8-30.2\", \"zoom@21.3\", \"zoom@25.3\", \"zoom@27.8\", \"zoom@28.8\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

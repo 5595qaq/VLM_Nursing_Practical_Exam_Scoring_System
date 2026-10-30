@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 7.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 16153,
+  "cached_input_tokens": 0,
+  "output_tokens": 81,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@43-51.6（context box，有聲音；片段內 00:00 ＝ 影片 00:43.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [45.0, 46.5, 48.0, 49.0], \"region\": [0.2, 0.4, 0.6, 0.9], \"reason\": \"確認 vial 瓶蓋被打開並放到桌上的過程與瓶頂變化\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 9.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 17378,
+  "cached_input_tokens": 0,
+  "output_tokens": 421,
+  "thinking_tokens": 231,
+  "materials": [
+   "clip@43-51.6（context box，有聲音；片段內 00:00 ＝ 影片 00:43.0）",
+   "zoom@45/46.5/48/49 region=[0.200, 0.400, 0.600, 0.900]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"00:45.0–00:48.5（clip@43-51.6 片段內 00:02.0–00:05.5）學生拿起 vial 粉劑瓶，於 00:46.0–00:47.5 用手指推開瓶口深紅色塑膠翻蓋，00:48.0 左手拿著已露出銀色鋁圈瓶口的 vial、右手將取下的塑膠蓋放到治療車桌面上。\", \"evidence\": [\"clip@43-51.6\", \"zoom@46.5\", \"zoom@48\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

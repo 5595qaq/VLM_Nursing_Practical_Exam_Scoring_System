@@ -1,0 +1,64 @@
+[
+ {
+  "turn": 1,
+  "seconds": 5.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 15249,
+  "cached_input_tokens": 0,
+  "output_tokens": 139,
+  "thinking_tokens": 47,
+  "materials": [
+   "clip@65.5-74（context box，有聲音；片段內 00:00 ＝ 影片 01:05.5）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [67.5, 68.5, 69.5, 70.0], \"region\": [0.2, 0.45, 0.65, 0.85], \"reason\": \"確認以酒精棉片包住稀釋液瓶頂並扭開瓶口的動作與脫離的瓶頂\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 12.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 16504,
+  "cached_input_tokens": 0,
+  "output_tokens": 302,
+  "thinking_tokens": 202,
+  "materials": [
+   "clip@65.5-74（context box，有聲音；片段內 00:00 ＝ 影片 01:05.5）",
+   "zoom@67.5/68.5/69.5/70 region=[0.200, 0.450, 0.650, 0.850]"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 55.5, \"end\": 66.0, \"fps\": 2, \"reason\": \"在 01:07.5–01:10.0 學生僅以酒精棉片擦拭稀釋液瓶口（瓶頂已打開），往前查看 55.5–66.0 秒確認是否在更早時間打開稀釋液瓶口\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 4.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 18393,
+  "cached_input_tokens": 0,
+  "output_tokens": 63,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@65.5-74（context box，有聲音；片段內 00:00 ＝ 影片 01:05.5）",
+   "zoom@67.5/68.5/69.5/70 region=[0.200, 0.450, 0.650, 0.850]",
+   "clip@55.5-66（context box，有聲音；片段內 00:00 ＝ 影片 00:55.5）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 74.0, \"end\": 84.0, \"fps\": 2, \"reason\": \"檢查區間後 10 秒（74–84 秒）是否有打開稀釋液瓶口的動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 4,
+  "seconds": 9.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 20176,
+  "cached_input_tokens": 0,
+  "output_tokens": 503,
+  "thinking_tokens": 207,
+  "materials": [
+   "clip@65.5-74（context box，有聲音；片段內 00:00 ＝ 影片 01:05.5）",
+   "zoom@67.5/68.5/69.5/70 region=[0.200, 0.450, 0.650, 0.850]",
+   "clip@55.5-66（context box，有聲音；片段內 00:00 ＝ 影片 00:55.5）",
+   "clip@74-84（context box，有聲音；片段內 00:00 ＝ 影片 01:14.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"8a\", \"verdict\": \"無法判定\", \"explanation\": \"切分標示的 01:07.5–01:12.0 期間（M1 片段內 00:02.0–00:06.5），學生僅拿取已打開瓶頂的稀釋液瓶並以酒精棉片消毒瓶口（步驟 7），並未做出扭開或折斷稀釋液瓶頂的動作；往前與往後各看 10 秒（00:55.5–01:06.0 為撕棉片與擦拭 vial 瓶口，01:14.0–01:24.0 為拔針套並插入已開啟的稀釋液瓶抽液），皆未看到打開稀釋液瓶口的動作（應已在 00:55.5 之前打開）。\", \"evidence\": [\"clip@65.5-74\", \"zoom@67.5\", \"zoom@68.5\", \"zoom@69.5\", \"zoom@70\", \"clip@55.5-66\", \"clip@74-84\"], \"confidence\": 0.9, \"reason\": \"資訊不足\"}]}",
+  "errors": []
+ }
+]
