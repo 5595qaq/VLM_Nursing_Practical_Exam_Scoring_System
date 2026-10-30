@@ -106,6 +106,8 @@ def build_tasks(result: dict, rubric: dict, steps: set[int] | None, segmentation
                     "search_steps": spec.get("search_steps")}
             if spec.get("package_spans"):
                 crit["first_use"], crit["package_spans"] = package_spans(segmentation)
+                if crit["first_use"] is not None and crit["first_use"] > c["window"][1]:
+                    crit["before_use"] = [c["window"][1], crit["first_use"]]  # out of the wrapper, not used yet
             crit["searching"] = _searching(crit, segmentation)
             if crit["searching"]:
                 key = ("search", c["criterion_id"])
@@ -311,6 +313,7 @@ def build_task_content(task: dict, video_id: str, duration: float, state: TaskSt
         "動作峰值（程式依 hands_box 內的畫面變化算出，只表示這些時間手有明顯動作，不代表是哪個動作；"
         "短動作請用 burst 或相鄰時間點的 zoom 在峰值附近確認）："
         + ("、".join(f"{_fmt_t(p['t'])}" for p in task.get("peaks", [])) or "（無）"),
+        *_extra_peaks_line(task),
         *_audio_line(task),
         f"剩餘預算：{budget}",
         "已執行動作：" + ("；".join(state.log) if state.log else "（無）"),
@@ -342,6 +345,12 @@ async def _opening(task: dict, runner: GradingRunner, boxes: dict) -> tuple[list
         task["peaks"] = await asyncio.to_thread(runner.motion_peaks, start, end, boxes["hands"])
     except SkillRunError:
         task["peaks"] = []  # hints only; grading goes on without them
+    task["extra_peaks"] = []  # 10b: the wrapper spans and the time before the first use, outside the window
+    for a, b in _extra_ranges(task):
+        try:
+            task["extra_peaks"].append((a, b, await asyncio.to_thread(runner.motion_peaks, a, b, boxes["hands"])))
+        except SkillRunError:
+            pass
     if any(c["audio"] for c in task["criteria"]):
         try:
             task["audio"] = await asyncio.to_thread(runner.audio_peaks, start, end)
@@ -409,16 +418,36 @@ def package_spans(segmentation: dict) -> tuple[float | None, list[list[float]]]:
                        if first_use is None or s["start"] < first_use]
 
 
+def _extra_ranges(task: dict) -> list[list[float]]:
+    """The wrapper spans and the time before the first use (10b) not already inside the task window."""
+    lo, hi = task["window"]
+    ranges = [r for c in task["criteria"] for r in (c.get("package_spans") or []) + ([c["before_use"]] if c.get("before_use") else [])]
+    return [[max(a, hi) if a < hi <= b else a, b] for a, b in ranges if not (lo <= a and b <= hi) and b - a >= 1]
+
+
+def _extra_peaks_line(task: dict) -> list[str]:
+    if not task.get("extra_peaks"):
+        return []
+    parts = [f"{_fmt_t(a)}–{_fmt_t(b)}：" + ("、".join(_fmt_t(p["t"]) for p in peaks) or "（無）")
+             for a, b, peaks in task["extra_peaks"]]
+    return ["任務區間外的動作峰值（手拿包裝時段、取出後到第一次使用空針；固定常是一兩秒的短暫用力，"
+            "在峰值附近用 burst 或 10 fps 的 clip 看）：" + "；".join(parts)]
+
+
 def _package_note(c: dict) -> str:
     """Task line for a criterion with rubric package_spans (10b): where the hands held the wrapper."""
     if "package_spans" not in c:
         return ""
     use = f"，第一次使用空針 {_fmt_t(c['first_use'])} 之前" if c["first_use"] is not None else ""
-    if not c["package_spans"]:
-        return f"；切分沒有標出手拿空針包裝的時段{use}"
     spans = "、".join(f"{_fmt_t(a)}–{_fmt_t(b)}（{a:g}–{b:g} s）" for a, b in c["package_spans"])
+    slack = load_grading_module("validate_grading_action").WINDOW_SLACK
+    after = (f"；取出後到第一次使用空針：{_fmt_t(c['before_use'][0])}–{_fmt_t(c['before_use'][1])}"
+             f"（{c['before_use'][0]:g}–{c['before_use'][1]:g} s，前後 {slack:g} 秒內也可以用動作；"
+             "有些學生拔針頭蓋前一刻才固定）" if c.get("before_use") else "")
+    if not spans:
+        return f"；切分沒有標出手拿空針包裝的時段{use}{after}"
     return (f"；切分標出的手拿空針包裝時段{use}：{spans}（只有時間，做了什麼要自己看；"
-            f"這些時段前後 {load_grading_module('validate_grading_action').WINDOW_SLACK:g} 秒內也可以用動作）")
+            f"這些時段前後 {slack:g} 秒內也可以用動作）{after}")
 
 
 def _package_review(c: dict, segmentation: dict) -> dict:
@@ -480,8 +509,8 @@ async def run_task(task: dict, video_id: str, runner: GradingRunner, boxes: dict
         if not errors:
             try:
                 feedback = await _run_material_action(action, runner, boxes, materials, state)
-                if action["action"] == "clip":  # validate_grading_action: 10b 錯誤 needs one on a wrapper span
-                    task.setdefault("clips", []).append([action["start"], action["end"]])
+                if action["action"] in ("clip", "burst"):  # validate_grading_action: what 10b 錯誤 needs seen
+                    task.setdefault(action["action"] + "s", []).append([action["start"], action["end"]])
                 rejects = 0
                 continue
             except SkillRunError as exc:

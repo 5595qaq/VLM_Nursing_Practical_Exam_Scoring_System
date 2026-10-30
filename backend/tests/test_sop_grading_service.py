@@ -196,7 +196,8 @@ async def test_fixing_the_needle_not_seen_goes_to_a_person(video, tmp_path, pack
 
 
 async def test_fixing_the_needle_task_lists_the_wrapper_spans(video, tmp_path):
-    # 10b's window is step 10 (00:16–00:21.5); the wrapper span 00:00.5–00:03 is listed and open to actions
+    # 10b's window is step 10 (00:16–00:21.5); the wrapper span 00:00.5–00:03 and the time out of the wrapper
+    # before the first use (00:21.5–00:23.4, step 13) are listed with their motion peaks and open to actions
     seg = segmentation()
     seg["package_spans"] = [{"start": 0.5, "end": 3.0, "evidence": "ov"}, {"start": 40.0, "end": 41.0, "evidence": "ov"}]
     clip = {"action": "clip", "start": 0.5, "end": 3.0, "fps": 10, "region": [0.2, 0.2, 0.6, 0.6], "reason": "看包裝"}
@@ -204,13 +205,19 @@ async def test_fixing_the_needle_task_lists_the_wrapper_spans(video, tmp_path):
     wrong = {"action": "final", "criteria": [
         {"criterion_id": "10b", "verdict": "錯誤", "confidence": 0.7, "reason": None, "evidence": ["clip@0.5-3"],
          "explanation": "00:01–00:03 雙手撕包裝，00:18 取出後直接拔針頭蓋，沒有旋緊。"}]}
-    model = FakeModel({"10b": [far, clip, wrong]})
+    burst = {"action": "burst", "start": 22.0, "end": 23.0, "n": 4, "region": [0.2, 0.2, 0.6, 0.6], "reason": "拔蓋前"}
+    model = FakeModel({"10b": [far, clip, wrong, burst, wrong]})
     outcome = await grading.run_grading(video, seg, tmp_path, model, steps={10})
-    first, rejected, final = requests_for(model, "10b")
-    assert "手拿空針包裝時段，第一次使用空針 00:23.4 之前：00:00.5–00:03.0（0.5–3 s）" in first[0]["text"]
-    assert "00:40.0" not in first[0]["text"].split("要判定的標準")[1].split("切分結果")[0]
-    assert "must stay within 0-31.5s" in rejected[0]["text"]  # 0–13 and 6–31.5 merged
-    assert "clip@0.5-3" in final[0]["text"]
+    first, rejected, clipped, bursted, final = requests_for(model, "10b")
+    text = first[0]["text"]
+    assert "手拿空針包裝時段，第一次使用空針 00:23.4 之前：00:00.5–00:03.0（0.5–3 s）" in text
+    assert "取出後到第一次使用空針：00:21.5–00:23.4（21.5–23.4 s" in text
+    assert "00:40.0" not in text.split("要判定的標準")[1].split("切分結果")[0]
+    extra = next(line for line in text.splitlines() if line.startswith("任務區間外的動作峰值"))
+    assert "00:00.5–00:03.0：" in extra and "00:21.5–00:23.4：" in extra
+    assert "must stay within 0-33.4s" in rejected[0]["text"]  # 0–13, 6–31.5 and 11.5–33.4 merged
+    assert "before marking 錯誤" in bursted[0]["text"]  # the clip saw the wrapper, not the time before the first use
+    assert "clip@0.5-3" in final[0]["text"] and "burst@22-23" in final[0]["text"]
     c = next(c for s in outcome["result"]["steps"] for c in s["criteria"] if c["criterion_id"] == "10b")
     assert c["verdict"] == "錯誤" and "needs_review" not in c and outcome["failed_tasks"] == []
 

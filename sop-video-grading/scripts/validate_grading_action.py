@@ -16,7 +16,8 @@ rolling the vial: overview frames 2–4 s apart cannot show the hands moving) is
 of this task was seen, either the opening clip (task["opening_clip"]) or a clip action. Fixing the
 needle (10b, rubric package_spans): actions may also look at the spans the hands held the syringe wrapper
 (the task lists them, each ±WINDOW_SLACK); 正確, 錯誤 or 無法判定, never 部分正確, and 錯誤 only after a
-clip action overlapping a listed span (any clip when none is listed; a twist lasts a second or two). The backend sends a 無法判定 to a person with those spans.
+clip action overlapping a listed span (any clip when none is listed; a twist lasts a second or two) and,
+when the first use is after the window (before_use), a clip or burst overlapping that time too. The backend sends a 無法判定 to a person with those spans.
 A clip above 5 fps may last at most 8 s.
 
 A rejected action is NOT executed and does NOT consume budget.
@@ -94,9 +95,11 @@ def validate(action, task: dict, used: dict, duration: float,
 
 
 def allowed_ranges(task: dict, duration: float) -> list[tuple[float, float]]:
-    """The task window and each wrapper span listed for a criterion (10b), all ±WINDOW_SLACK; overlapping
+    """The task window, each wrapper span listed for a criterion (10b) and its time out of the wrapper before
+    the first use (before_use), all ±WINDOW_SLACK; overlapping
     ranges are merged, so a clip across the syringe coming out may start in a span and end in the window."""
-    spans = [task["window"]] + [s for c in task["criteria"] for s in c.get("package_spans") or []]
+    spans = [task["window"]] + [s for c in task["criteria"]
+                                for s in (c.get("package_spans") or []) + ([c["before_use"]] if c.get("before_use") else [])]
     ranges = sorted((max(0.0, a - WINDOW_SLACK), min(duration, b + WINDOW_SLACK)) for a, b in spans)
     merged = [ranges[0]]
     for lo, hi in ranges[1:]:
@@ -108,11 +111,18 @@ def allowed_ranges(task: dict, duration: float) -> list[tuple[float, float]]:
 
 
 def _clipped_wrapper(task: dict, cid: str) -> bool:
-    """A clip of this task (task["clips"], kept by the backend) overlapped a wrapper span listed for cid;
-    with no spans listed, any clip."""
-    spans = next((c.get("package_spans") for c in task["criteria"] if c["criterion_id"] == cid), None)
-    clips = task.get("clips") or []
-    return any(a < e and s < b for a, b in clips for s, e in spans) if spans else bool(clips)
+    """A clip of this task (task["clips"], kept by the backend) overlapped a wrapper span listed for cid
+    (with no spans listed, any clip), and a clip or burst (task["bursts"]) overlapped its time before the
+    first use when there is one, up to WINDOW_SLACK after it (VID_0081 fixed the needle 2 s after the first
+    use started, 25 s after step 10 ended)."""
+    c = next(c for c in task["criteria"] if c["criterion_id"] == cid)
+    clips, bursts = task.get("clips") or [], task.get("bursts") or []
+    overlaps = lambda seen, s, e: any(a < e and s < b for a, b in seen)  # noqa: E731
+    spans = c.get("package_spans")
+    wrapper = any(overlaps(clips, s, e) for s, e in spans) if spans else bool(clips)
+    # the segmentation's step 13 start can come a little before the squeeze (VID_0081: 02:18 vs 02:20)
+    after = not c.get("before_use") or overlaps(clips + bursts, c["before_use"][0], c["before_use"][1] + WINDOW_SLACK)
+    return wrapper and after
 
 
 def _check_final(action: dict, task: dict, used: dict, rubric: dict) -> list[str]:
@@ -139,8 +149,9 @@ def _check_final(action: dict, task: dict, used: dict, rubric: dict) -> list[str
             errors.append(f"criterion {cid}: 正確, 錯誤 or 無法判定 only (fixing is seen or it is not)")
         if cid in WRAPPER and c["verdict"] == "錯誤" and not _clipped_wrapper(task, cid):
             errors.append(f"criterion {cid}: before marking 錯誤, use clip with a region on both hands and the "
-                          "syringe (fps up to 10, ≤ 8 s) on a listed wrapper span (where it comes out) and after it: "
-                          "a twist lasts a second or two and frames 2–4 s apart miss it")
+                          "syringe (fps up to 10, ≤ 8 s) on a listed wrapper span (where it comes out), and clip or "
+                          "burst the listed time out of the wrapper before the first use: a twist or squeeze lasts a "
+                          "second or two and frames 2–4 s apart miss it")
     return errors
 
 
