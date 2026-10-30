@@ -41,11 +41,11 @@ def test_rubric_classification_matches_the_plan():
     # rubric 1.16: the agent judges only after the syringe is out; the time in the wrapper goes to a person
     assert "只判空針完全離開包裝之後" in by_id["10b"]["text"] and "轉人工" in by_id["10b"]["text"]
     assert by_id["10b"]["window_steps"] == [10]
-    # pushing the air out is its own non-key criterion, in the same task as the flick (rubric 1.7)
     # 5a and 6a share one task but keep their own windows; 7a and 8a stay apart (rubric 1.18)
     assert by_id["5a"]["task"] == by_id["6a"]["task"] == "5-6"
     assert by_id["5a"]["window_steps"] == [5] and by_id["6a"]["window_steps"] == [6]
     assert "task" not in by_id["7a"] and "task" not in by_id["8a"]
+    # pushing the air out is its own non-key criterion, in the same task as the flick (rubric 1.7)
     for flick, expel in (("17a", "17b"), ("27a", "27b")):
         assert by_id[flick]["key"] is True and by_id[expel]["key"] is False
         assert by_id[expel]["category"] == "visual" and by_id[expel]["window_steps"] == by_id[flick]["window_steps"]
@@ -107,6 +107,8 @@ def test_task_needs_a_visual_criterion_and_a_name():
     assert any("task needs" in e for e in broken(lambda r: r["steps"][8]["criteria"][0].update(task="9")))  # 9a
     for bad in ("", 5, None):
         assert any("task needs" in e for e in broken(lambda r: r["steps"][4]["criteria"][0].update(task=bad))), bad
+    assert any("task 5–6 has only" in e  # a typo leaves each name with one criterion
+               for e in broken(lambda r: r["steps"][5]["criteria"][0].update(task="5–6")))
 
 
 def test_not_visible_criterion_cannot_be_key():

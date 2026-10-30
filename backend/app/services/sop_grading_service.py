@@ -43,6 +43,7 @@ MOTION_MAX_SPAN = 180.0
 # (e.g. 76.1 + 180), which the scripts reject, and the whole task would then get no peaks.
 MOTION_PIECE_SECONDS = MOTION_MAX_SPAN - 0.01
 OPENING_CLIP_MAX_SECONDS = 60.0
+TASK_MERGE_GAP = 10.0  # criteria sharing a rubric `task` are graded together only when this close (s)
 
 logger = logging.getLogger(__name__)
 GradingProgress = Callable[[int, int, str], Awaitable[None]]  # (tasks done, task count, task key)
@@ -85,8 +86,9 @@ class Material:
 def build_tasks(result: dict, rubric: dict, steps: set[int] | None, segmentation: dict) -> list[dict]:
     """Group the 待判定 criteria into model conversations, one per window_steps. Criteria with the same
     rubric `task` (5a and 6a, rubric 1.18) share one when their windows lie within WINDOW_SLACK of each
-    other. A criterion searching its range (rules.searched) gets a task of its own: sharing would
-    stretch the other criteria's few seconds to the whole range."""
+    other (TASK_MERGE_GAP). A criterion searching its range (rules.searched) gets a task of its own:
+    sharing would stretch the other criteria's few seconds to the whole range. Task names (the
+    transcript file names) are the window steps, plus "-search" or, if still taken, the criterion ids."""
     specs = load_grading_module("rubric").criteria_by_id(rubric)
     groups: dict[tuple, list[dict]] = {}
     for step in result["steps"]:
@@ -110,12 +112,15 @@ def build_tasks(result: dict, rubric: dict, steps: set[int] | None, segmentation
             else:
                 key = ("window", *spec["window_steps"])
             groups.setdefault(key, []).append(crit)
-    tasks = []
+    tasks, names = [], set()
     for key, crits in groups.items():
         clusters = _near_clusters(crits) if key[0] == "task" else [crits]
         for cluster in clusters:
             window_steps = sorted({s for c in cluster for s in c["window_steps"]})
             name = "-".join(map(str, window_steps)) + ("-search" if key[0] == "search" else "")
+            if name in names:
+                name += "-" + "-".join(c["criterion_id"] for c in cluster)
+            names.add(name)
             tasks.append({"key": name, "window_steps": window_steps, "criteria": cluster,
                           "window": [min(c["window"][0] for c in cluster), max(c["window"][1] for c in cluster)],
                           "needs_clip": any(c["audio"] or c["dense"] or c["clip"] for c in cluster)})
@@ -123,12 +128,11 @@ def build_tasks(result: dict, rubric: dict, steps: set[int] | None, segmentation
 
 
 def _near_clusters(crits: list[dict]) -> list[list[dict]]:
-    """Split criteria into runs whose windows are at most WINDOW_SLACK apart (a mis-segmented step 5 at
-    00:30 and step 6 at 03:00 would otherwise make both look over 2.5 minutes)."""
-    slack = load_grading_module("validate_grading_action").WINDOW_SLACK
+    """Split criteria into runs whose windows are at most TASK_MERGE_GAP apart (step 5 at 00:30 and step 6
+    at 03:00 would otherwise make one task over 2.5 minutes)."""
     clusters: list[list[dict]] = []
     for c in sorted(crits, key=lambda c: c["window"][0]):
-        if clusters and c["window"][0] - max(x["window"][1] for x in clusters[-1]) <= slack:
+        if clusters and c["window"][0] - max(x["window"][1] for x in clusters[-1]) <= TASK_MERGE_GAP:
             clusters[-1].append(c)
         else:
             clusters.append([c])
