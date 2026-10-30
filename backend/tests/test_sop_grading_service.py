@@ -170,11 +170,13 @@ async def test_extra_material_actions_run(video, tmp_path):
 
 @pytest.mark.parametrize("package_spans, reason", [
     ([{"start": 12.0, "end": 17.5, "evidence": "ov"}, {"start": 40.0, "end": 41.0, "evidence": "ov"}],
-     "（切分標出的手拿空針包裝時段，第一次使用空針 00:23.4 之前）：00:12.0–00:17.5"),  # 40-41: put back after step 13
-    (None, "（切分沒有手拿包裝的時段，改看切分步驟 9、10 的時間範圍）：00:16.2–00:19.5"),
+     "（切分標出的手拿空針包裝時段，第一次使用空針 00:23.4 之前）：00:12.0–00:17.5；取出後到拔針頭蓋：00:17.5–00:33.4"),
+    (None, "（切分沒有手拿包裝的時段，改看切分步驟 9、10 的時間範圍）：00:16.2–00:19.5；取出後到拔針頭蓋：00:19.5–00:33.4"),
+    ([{"start": 12.0, "end": 30.0, "evidence": "ov"}],  # runs past the first use: cut there
+     "（切分標出的手拿空針包裝時段，第一次使用空針 00:23.4 之前）：00:12.0–00:23.4；取出後到拔針頭蓋：00:23.4–00:33.4"),
 ])
-async def test_fixing_the_needle_not_seen_after_removal_goes_to_a_person(video, tmp_path, package_spans, reason):
-    # rubric 1.16: 10b is never 錯誤; 無法判定 gets needs_review with every span the hands held the wrapper
+async def test_fixing_the_needle_not_seen_goes_to_a_person(video, tmp_path, package_spans, reason):
+    # 10b 錯誤 needs a clip first; 無法判定 gets needs_review with every span the hands held the wrapper
     wrong = {"action": "final", "criteria": [
         {"criterion_id": "10b", "verdict": "錯誤", "confidence": 0.8, "reason": None, "evidence": ["clip@16-21"],
          "explanation": "00:18 空針離開包裝，之後沒有旋緊。"}]}
@@ -185,12 +187,50 @@ async def test_fixing_the_needle_not_seen_after_removal_goes_to_a_person(video, 
         seg["package_spans"] = package_spans
     model = FakeModel({"10b": [wrong, undetermined]})
     outcome = await grading.run_grading(video, seg, tmp_path, model, steps={10})
-    assert "only 正確" in requests_for(model, "10b")[1][0]["text"]
+    assert "before marking 錯誤, use clip" in requests_for(model, "10b")[1][0]["text"]
     step = next(s for s in outcome["result"]["steps"] if s["step_id"] == 10)
     c = next(c for c in step["criteria"] if c["criterion_id"] == "10b")
     assert c["verdict"] == "無法判定" and c["needs_review"] is True and step["needs_review"] is True
-    assert c["review_reason"] == "取出後沒看到固定；取出前有沒有隔著包裝固定要人工看" + reason + "；評分 agent：01:12 手被包裝擋住"
+    assert c["review_reason"] == ("評分 agent 看不清楚有沒有固定針頭，要人工看" + reason
+                                  + "；評分 agent：01:12 手被包裝擋住")
     assert outcome["failed_tasks"] == []
+
+
+async def test_fixing_the_needle_task_lists_the_wrapper_spans(video, tmp_path):
+    # 10b's window is step 10 (00:16–00:21.5); the wrapper span 00:00.5–00:03 is listed and open to actions
+    seg = segmentation()
+    seg["package_spans"] = [{"start": 0.5, "end": 3.0, "evidence": "ov"}, {"start": 40.0, "end": 41.0, "evidence": "ov"}]
+    clip = {"action": "clip", "start": 0.5, "end": 3.0, "fps": 10, "region": [0.2, 0.2, 0.6, 0.6], "reason": "看包裝"}
+    far = {**clip, "start": 40.0, "end": 41.0}  # after the first use (step 13 at 00:23.4): not listed
+    wrong = {"action": "final", "criteria": [
+        {"criterion_id": "10b", "verdict": "錯誤", "confidence": 0.7, "reason": None, "evidence": ["clip@0.5-3"],
+         "explanation": "00:01–00:03 雙手撕包裝，00:18 取出後直接拔針頭蓋，沒有旋緊。"}]}
+    model = FakeModel({"10b": [far, clip, wrong]})
+    outcome = await grading.run_grading(video, seg, tmp_path, model, steps={10})
+    first, rejected, final = requests_for(model, "10b")
+    assert "手拿空針包裝時段，第一次使用空針 00:23.4 之前：00:00.5–00:03.0（0.5–3 s）" in first[0]["text"]
+    assert "00:40.0" not in first[0]["text"].split("要判定的標準")[1].split("切分結果")[0]
+    assert "must stay within 0-31.5s" in rejected[0]["text"]  # 0–13 and 6–31.5 merged
+    assert "clip@0.5-3" in final[0]["text"]
+    c = next(c for s in outcome["result"]["steps"] for c in s["criteria"] if c["criterion_id"] == "10b")
+    assert c["verdict"] == "錯誤" and c["needs_review"] is True and outcome["failed_tasks"] == []  # a person checks
+    assert c["review_reason"].startswith("評分 agent 判沒有固定針頭（錯誤），要人工確認沒有漏看")
+    assert "00:00.5–00:03.0；取出後到拔針頭蓋：00:03.0–00:33.4" in c["review_reason"]
+
+
+async def test_fixing_the_needle_review_without_a_first_use(video, tmp_path):
+    # step 13 not found: the time after the wrapper runs to 10b's window end (00:21.5)
+    seg = segmentation()
+    seg["steps"][12] = {"step_id": 13, "start": None, "end": None, "confidence": 0.3,
+                        "status": "not_performed", "evidence": "沒看到"}
+    seg["package_spans"] = [{"start": 12.0, "end": 17.5, "evidence": "ov"}]
+    undetermined = {"action": "final", "criteria": [
+        {"criterion_id": "10b", "verdict": "無法判定", "confidence": 0.5, "reason": "資訊不足", "evidence": ["clip@16-21.5"],
+         "explanation": "00:17 取出後手被擋住，00:20 看不清楚。"}]}
+    outcome = await grading.run_grading(video, seg, tmp_path, FakeModel({"10b": [undetermined]}), steps={10})
+    c = next(c for s in outcome["result"]["steps"] for c in s["criteria"] if c["criterion_id"] == "10b")
+    assert c["review_reason"] == ("評分 agent 看不清楚有沒有固定針頭，要人工看（切分標出的手拿空針包裝時段）："
+                                  "00:12.0–00:17.5；取出後到拔針頭蓋：00:17.5–00:21.5")
 
 
 async def test_fixing_the_needle_seen_after_removal_needs_no_person(video, tmp_path):
