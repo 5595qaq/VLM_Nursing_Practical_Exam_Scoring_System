@@ -100,7 +100,7 @@ def test_visual_window_uses_logical_window(segmentation):
 def test_presence_criterion_goes_to_the_agent_even_when_detected(segmentation):
     # agentpresence: 6a is checked on the frames, not taken from the segmentation status
     c = criterion(grade_from_segmentation(segmentation), "6a")
-    assert c["verdict"] == "待判定" and c["source"] == "vlm" and c["window"] == [58.0, 70.0]
+    assert c["verdict"] == "待判定" and c["source"] == "vlm" and c["window"] == [48.0, 70.0]  # steps 5-6 (presmerge)
     assert "切分未找到" not in c["explanation"]
 
 
