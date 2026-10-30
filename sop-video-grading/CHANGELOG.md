@@ -2,6 +2,13 @@
 
 未發布的修改先寫在 `changelog.d/`（一個分支一個檔，見 `changelog.d/README.md`），合併前改成正式版本時才移到這裡；規則見 `AGENTS.md`「多人協作」。
 
+## 0.31（rubric 1.18）
+
+- **5a、6a 合成一個評分任務（使用者決定，2026-10-30，issue #90）：**
+  - 5a（打開 vial）與 6a（消毒 vial 瓶口）的 `window_steps` 都改成 [5, 6]，共用一個任務（原本各一個任務、看同一段影片）；`search_steps` 不變。`criteria/10-presence.md` 補一句：兩條分開判，各自寫出看到的時間。
+  - 實驗（`experiments/2026-10-30-presmerge.md`，presmerge.1：5a／6a 與 7a／8a 都合併，segfix.5 的切分 11 支）：判定和 0.30 完全相同（60/62），input tokens 少約 21%（每支 37 萬 → 29 萬）；但 7a／8a 合併後 7a 引用的時間被拉到 8a（VID_0096、0099），嚴格一致 58 → 56。5a／6a 合併沒有看到影響，所以只合併 5a／6a，7a／8a 維持分開。
+- **切分有標出、但 agent 看不到時維持無法判定（使用者決定，2026-10-30）**：1.4.7 的切分把 VID_0091、0100 步驟 6 標在錯的時間，agent 判無法判定交給人工；不改成整段搜尋（`experiments/2026-10-30-agentpresence.md`）。規則不變。
+
 ## 0.30（rubric 1.17，切分 sop-video-skill 1.5.2）
 
 - **5a、6a、7a、8a、15a、25a 改由評分 agent 判定（使用者決定，2026-10-30，issue #90）：**
