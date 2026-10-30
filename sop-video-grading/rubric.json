@@ -1,5 +1,5 @@
 {
-  "version": "1.16-agentpresence.1",
+  "version": "1.17",
   "description": "無菌抽藥技術－vial 粉劑 30 步評分標準。category：program＝由切分結果以程式判定；visual＝評分 agent 看畫面（audio=true 時連聲音一起聽）；not_visible＝影片看不到，固定輸出「無法判定」且不影響步驟判定。visual 的 window_steps＝要看的步驟區間；search_steps＝切分沒找到該步時，改在這些步驟的區間內找，且該步的切分 not_performed 不直接判錯誤。key=true 的標準錯誤時整步判「錯誤」。",
   "steps": [
     {"step_id": 1, "text": "洗手。", "criteria": [
@@ -21,16 +21,16 @@
       {"id": "4c", "text": "確認的藥物與紀錄單相符", "category": "not_visible", "reason": "資訊不足", "note": "鏡頭看不到藥瓶標籤與紀錄單內容"}
     ]},
     {"step_id": 5, "text": "將vial瓶口打開。", "criteria": [
-      {"id": "5a", "text": "將 vial 瓶口打開", "category": "visual", "key": true, "window_steps": [5], "search_steps": [4, 18], "clip": true, "note": "實驗（agentpresence，issue #90，暫定）：原本是 program（rules.py 直接用切分的 status 給分），PR #89 VID_0100 步驟 6 切分漏看 03:03 的擦拭就判錯誤；改由評分 agent 看畫面，切分沒找到時在 search_steps 的區間內找"}
+      {"id": "5a", "text": "將 vial 瓶口打開", "category": "visual", "key": true, "window_steps": [5], "search_steps": [4, 18], "clip": true, "note": "使用者決定（2026-10-30，rubric 1.17，issue #90）：原本是 program（rules.py 直接用切分的 status 給分），PR #89 VID_0100 步驟 6 切分漏看 03:03 的擦拭就判錯誤；改由評分 agent 看畫面，切分沒找到時在 search_steps 的區間內找。實驗見 experiments/2026-10-30-agentpresence.md"}
     ]},
     {"step_id": 6, "text": "以酒精棉片消毒瓶口。", "criteria": [
-      {"id": "6a", "text": "以酒精棉片消毒 vial 瓶口", "category": "visual", "key": true, "window_steps": [6], "search_steps": [5, 18], "clip": true, "note": "實驗（agentpresence，issue #90，暫定）：原本是 program（rules.py 直接用切分的 status 給分），PR #89 VID_0100 步驟 6 切分漏看 03:03 的擦拭就判錯誤；改由評分 agent 看畫面，切分沒找到時在 search_steps 的區間內找"}
+      {"id": "6a", "text": "以酒精棉片消毒 vial 瓶口", "category": "visual", "key": true, "window_steps": [6], "search_steps": [5, 18], "clip": true, "note": "使用者決定（2026-10-30，rubric 1.17，issue #90）：原本是 program（rules.py 直接用切分的 status 給分），PR #89 VID_0100 步驟 6 切分漏看 03:03 的擦拭就判錯誤；改由評分 agent 看畫面，切分沒找到時在 search_steps 的區間內找。實驗見 experiments/2026-10-30-agentpresence.md"}
     ]},
     {"step_id": 7, "text": "將稀釋液瓶口消毒。", "criteria": [
-      {"id": "7a", "text": "消毒稀釋液瓶口", "category": "visual", "key": true, "window_steps": [7], "search_steps": [4, 13], "clip": true, "note": "實驗（agentpresence，issue #90，暫定）：原本是 program（rules.py 直接用切分的 status 給分），PR #89 VID_0100 步驟 6 切分漏看 03:03 的擦拭就判錯誤；改由評分 agent 看畫面，切分沒找到時在 search_steps 的區間內找"}
+      {"id": "7a", "text": "消毒稀釋液瓶口", "category": "visual", "key": true, "window_steps": [7], "search_steps": [4, 13], "clip": true, "note": "使用者決定（2026-10-30，rubric 1.17，issue #90）：原本是 program（rules.py 直接用切分的 status 給分），PR #89 VID_0100 步驟 6 切分漏看 03:03 的擦拭就判錯誤；改由評分 agent 看畫面，切分沒找到時在 search_steps 的區間內找。實驗見 experiments/2026-10-30-agentpresence.md"}
     ]},
     {"step_id": 8, "text": "將稀釋液瓶口打開。", "criteria": [
-      {"id": "8a", "text": "打開稀釋液瓶口", "category": "visual", "key": true, "window_steps": [8], "search_steps": [4, 13], "clip": true, "note": "實驗（agentpresence，issue #90，暫定）：原本是 program（rules.py 直接用切分的 status 給分），PR #89 VID_0100 步驟 6 切分漏看 03:03 的擦拭就判錯誤；改由評分 agent 看畫面，切分沒找到時在 search_steps 的區間內找"}
+      {"id": "8a", "text": "打開稀釋液瓶口", "category": "visual", "key": true, "window_steps": [8], "search_steps": [4, 13], "clip": true, "note": "使用者決定（2026-10-30，rubric 1.17，issue #90）：原本是 program（rules.py 直接用切分的 status 給分），PR #89 VID_0100 步驟 6 切分漏看 03:03 的擦拭就判錯誤；改由評分 agent 看畫面，切分沒找到時在 search_steps 的區間內找。實驗見 experiments/2026-10-30-agentpresence.md"}
     ]},
     {"step_id": 9, "text": "撕開空針包裝袋。", "criteria": [
       {"id": "9a", "text": "撕開空針包裝袋", "category": "program", "key": true, "rule": {"type": "detected"}}
@@ -52,7 +52,7 @@
       {"id": "14b", "text": "抽出稀釋液至所需量之刻度", "category": "not_visible", "reason": "資訊不足", "note": "看不清針筒刻度"}
     ]},
     {"step_id": 15, "text": "酒棉墊在針心和針頭交接處。", "criteria": [
-      {"id": "15a", "text": "酒精棉片墊在針心與針頭交接處", "category": "visual", "key": true, "window_steps": [15], "search_steps": [14, 18], "clip": true, "note": "實驗（agentpresence，issue #90，暫定）：原本是 program（rules.py 直接用切分的 status 給分），PR #89 VID_0100 步驟 6 切分漏看 03:03 的擦拭就判錯誤；改由評分 agent 看畫面，切分沒找到時在 search_steps 的區間內找"},
+      {"id": "15a", "text": "酒精棉片墊在針心與針頭交接處", "category": "visual", "key": true, "window_steps": [15], "search_steps": [14, 18], "clip": true, "note": "使用者決定（2026-10-30，rubric 1.17，issue #90）：原本是 program（rules.py 直接用切分的 status 給分），PR #89 VID_0100 步驟 6 切分漏看 03:03 的擦拭就判錯誤；改由評分 agent 看畫面，切分沒找到時在 search_steps 的區間內找。實驗見 experiments/2026-10-30-agentpresence.md"},
       {"id": "15b", "text": "先墊酒精棉片才彈針", "category": "visual", "key": false, "window_steps": [15, 16, 17], "audio": true}
     ]},
     {"step_id": 16, "text": "針心往後抽。", "criteria": [
@@ -90,7 +90,7 @@
       {"id": "24b", "text": "抽出藥液至所需藥量之刻度", "category": "not_visible", "reason": "資訊不足", "note": "看不清針筒刻度"}
     ]},
     {"step_id": 25, "text": "備用酒精棉片墊針柄。", "criteria": [
-      {"id": "25a", "text": "酒精棉片墊在針柄", "category": "visual", "key": true, "window_steps": [25], "search_steps": [24, 28], "clip": true, "note": "實驗（agentpresence，issue #90，暫定）：原本是 program（rules.py 直接用切分的 status 給分），PR #89 VID_0100 步驟 6 切分漏看 03:03 的擦拭就判錯誤；改由評分 agent 看畫面，切分沒找到時在 search_steps 的區間內找"},
+      {"id": "25a", "text": "酒精棉片墊在針柄", "category": "visual", "key": true, "window_steps": [25], "search_steps": [24, 28], "clip": true, "note": "使用者決定（2026-10-30，rubric 1.17，issue #90）：原本是 program（rules.py 直接用切分的 status 給分），PR #89 VID_0100 步驟 6 切分漏看 03:03 的擦拭就判錯誤；改由評分 agent 看畫面，切分沒找到時在 search_steps 的區間內找。實驗見 experiments/2026-10-30-agentpresence.md"},
       {"id": "25b", "text": "先墊酒精棉片才彈針", "category": "visual", "key": false, "window_steps": [25, 26, 27], "audio": true}
     ]},
     {"step_id": 26, "text": "將針筒垂直拿起，針頭向上，針心往後抽。", "criteria": [
