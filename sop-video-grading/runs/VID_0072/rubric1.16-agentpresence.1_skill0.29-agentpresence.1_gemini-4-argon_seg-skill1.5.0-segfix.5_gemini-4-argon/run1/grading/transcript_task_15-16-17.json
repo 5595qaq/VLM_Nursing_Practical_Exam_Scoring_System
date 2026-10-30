@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 41.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 21252,
+  "cached_input_tokens": 14017,
+  "output_tokens": 403,
+  "thinking_tokens": 299,
+  "materials": [
+   "clip@134-169（context box，有聲音；片段內 00:00 ＝ 影片 02:14.0）"
+  ],
+  "reply": "{\"action\": \"burst\", \"start\": 137.5, \"end\": 140.2, \"n\": 9, \"region\": [0.32, 0.28, 0.62, 0.58], \"reason\": \"確認 02:17.5–02:20.2 針頭與針筒接合處已墊有酒精棉片且右手正在彈針\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 16.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 22704,
+  "cached_input_tokens": 14017,
+  "output_tokens": 500,
+  "thinking_tokens": 394,
+  "materials": [
+   "clip@134-169（context box，有聲音；片段內 00:00 ＝ 影片 02:14.0）",
+   "burst@137.5-140.2（原始解析度，9 格，每 0.34 s）#0=02:17.5、#1=02:17.8、#2=02:18.2、#3=02:18.5、#4=02:18.8、#5=02:19.2、#6=02:19.5、#7=02:19.9、#8=02:20.2 region=[0.320, 0.280, 0.620, 0.580]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [135.5, 138.0], \"region\": [0.32, 0.28, 0.62, 0.58], \"reason\": \"以 zoom 確認 02:15.5 墊上白色方形酒精棉片於針頭與針筒接合處，以及 02:18.0 彈針時棉片已在接合處\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 81.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 23932,
+  "cached_input_tokens": 14017,
+  "output_tokens": 392,
+  "thinking_tokens": 170,
+  "materials": [
+   "clip@134-169（context box，有聲音；片段內 00:00 ＝ 影片 02:14.0）",
+   "burst@137.5-140.2（原始解析度，9 格，每 0.34 s）#0=02:17.5、#1=02:17.8、#2=02:18.2、#3=02:18.5、#4=02:18.8、#5=02:19.2、#6=02:19.5、#7=02:19.9、#8=02:20.2 region=[0.320, 0.280, 0.620, 0.580]",
+   "zoom@135.5/138 region=[0.320, 0.280, 0.620, 0.580]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"15b\", \"verdict\": \"正確\", \"explanation\": \"於 02:15.5（clip@134-169 片段內 00:01.5）先將白色方形酒精棉片墊在針頭與針筒接合處，隨後於 02:17.8–02:20.2（片段內 00:03.8–00:06.2）右手手指輕彈針筒並伴隨連續彈擊聲，符合先墊酒精棉片才彈針。\", \"evidence\": [\"clip@134-169\", \"zoom@135.5\", \"zoom@138\", \"burst@137.5-140.2 #1\", \"burst@137.5-140.2 #6\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 43.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 16363,
+  "cached_input_tokens": 0,
+  "output_tokens": 82,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@51-60.5（context box，有聲音；片段內 00:00 ＝ 影片 00:51.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [53.0, 54.5, 56.0, 57.5], \"region\": [0.35, 0.55, 0.65, 0.95], \"reason\": \"確認打開vial瓶蓋的動作與瓶口狀態變化\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 10.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 17577,
+  "cached_input_tokens": 0,
+  "output_tokens": 398,
+  "thinking_tokens": 218,
+  "materials": [
+   "clip@51-60.5（context box，有聲音；片段內 00:00 ＝ 影片 00:51.0）",
+   "zoom@53/54.5/56/57.5 region=[0.350, 0.550, 0.650, 0.950]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"00:53.0–00:56.0（clip@51-60.5 片段內 00:02.0–00:05.0）雙手拿起 vial 並以拇指推開深褐色塑膠翻蓋，00:57.5（zoom@57.5）清楚看到 vial 瓶頂已露出銀色鋁圈與橡皮塞，右手拿著拆下的褐色瓶蓋放到桌上。\", \"evidence\": [\"clip@51-60.5\", \"zoom@53\", \"zoom@57.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

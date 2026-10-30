@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 15.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 15892,
+  "cached_input_tokens": 0,
+  "output_tokens": 398,
+  "thinking_tokens": 335,
+  "materials": [
+   "ov@76-190（hands_box，n=9）#0=01:16.0、#1=01:30.2、#2=01:44.5、#3=01:58.8、#4=02:13.0、#5=02:27.2、#6=02:41.5、#7=02:55.8、#8=03:10.0"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 175.0, \"end\": 190.0, \"fps\": 2, \"reason\": \"查看 02:55–03:10 將 vial 瓶口打開的連續動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 33.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 18718,
+  "cached_input_tokens": 0,
+  "output_tokens": 262,
+  "thinking_tokens": 166,
+  "materials": [
+   "ov@76-190（hands_box，n=9）#0=01:16.0、#1=01:30.2、#2=01:44.5、#3=01:58.8、#4=02:13.0、#5=02:27.2、#6=02:41.5、#7=02:55.8、#8=03:10.0",
+   "clip@175-190（context box，有聲音；片段內 00:00 ＝ 影片 02:55.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [185.5, 186.5, 187.5], \"region\": [0.3, 0.5, 0.65, 0.85], \"reason\": \"確認 03:05.5–03:07.5 推開 vial 塑膠瓶蓋的動作與脫落的瓶蓋\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 12.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 19980,
+  "cached_input_tokens": 0,
+  "output_tokens": 179,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@76-190（hands_box，n=9）#0=01:16.0、#1=01:30.2、#2=01:44.5、#3=01:58.8、#4=02:13.0、#5=02:27.2、#6=02:41.5、#7=02:55.8、#8=03:10.0",
+   "clip@175-190（context box，有聲音；片段內 00:00 ＝ 影片 02:55.0）",
+   "zoom@185.5/186.5/187.5 region=[0.300, 0.500, 0.650, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"於 03:05.5–03:07.5（clip@175-190 片段內 00:10.5–00:12.5），右手扶住 vial 瓶身，左手拇指與食指推開 vial 上的深褐色塑膠翻蓋並將蓋子放在治療車上，瓶頂露出銀色鋁圈與橡皮塞。\", \"evidence\": [\"clip@175-190\", \"zoom@185.5\", \"zoom@186.5\", \"zoom@187.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

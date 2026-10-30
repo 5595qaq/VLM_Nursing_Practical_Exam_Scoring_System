@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 5.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 15562,
+  "cached_input_tokens": 0,
+  "output_tokens": 73,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@81-90.5（context box，有聲音；片段內 00:00 ＝ 影片 01:21.0）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 89.0, \"end\": 100.5, \"fps\": 2, \"reason\": \"在 01:27-01:30 正在扭開稀釋液瓶頂，往後看確認瓶頂完全脫離打開\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 9.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 17792,
+  "cached_input_tokens": 0,
+  "output_tokens": 453,
+  "thinking_tokens": 371,
+  "materials": [
+   "clip@81-90.5（context box，有聲音；片段內 00:00 ＝ 影片 01:21.0）",
+   "clip@89-100.5（context box，有聲音；片段內 00:00 ＝ 影片 01:29.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [86.0, 88.5, 92.5, 93.5], \"region\": [0.35, 0.45, 0.7, 0.8], \"reason\": \"確認扭開稀釋液瓶頂並取下瓶蓋的細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 7.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 19035,
+  "cached_input_tokens": 0,
+  "output_tokens": 167,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@81-90.5（context box，有聲音；片段內 00:00 ＝ 影片 01:21.0）",
+   "clip@89-100.5（context box，有聲音；片段內 00:00 ＝ 影片 01:29.0）",
+   "zoom@86/88.5/92.5/93.5 region=[0.350, 0.450, 0.700, 0.800]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"8a\", \"verdict\": \"正確\", \"explanation\": \"01:27.5–01:29.5 左手握住稀釋液塑膠瓶身、右手徒手扭轉瓶頂，隨後於 01:30.5–01:33.0 隔著酒精棉片將稀釋液瓶頂完全扭開取下。\", \"evidence\": [\"clip@81-90.5\", \"clip@89-100.5\", \"zoom@88.5\", \"zoom@92.5\", \"zoom@93.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

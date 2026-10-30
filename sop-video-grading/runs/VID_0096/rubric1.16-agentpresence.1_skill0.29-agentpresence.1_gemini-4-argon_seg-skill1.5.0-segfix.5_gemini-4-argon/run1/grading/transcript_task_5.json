@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 5.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 15994,
+  "cached_input_tokens": 0,
+  "output_tokens": 81,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@50.2-58.8（context box，有聲音；片段內 00:00 ＝ 影片 00:50.2）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [52.2, 53.2, 54.7, 56.2], \"region\": [0.25, 0.35, 0.65, 0.85], \"reason\": \"確認打開 vial 瓶蓋的動作與瓶頂變化\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 7.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 17231,
+  "cached_input_tokens": 0,
+  "output_tokens": 313,
+  "thinking_tokens": 135,
+  "materials": [
+   "clip@50.2-58.8（context box，有聲音；片段內 00:00 ＝ 影片 00:50.2）",
+   "zoom@52.2/53.2/54.7/56.2 region=[0.250, 0.350, 0.650, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"00:52.2 左手持 vial（瓶頂為深褐色塑膠圓蓋），00:53.2–00:54.7 右手將 vial 瓶口上的深褐色塑膠蓋推開，00:56.2 左手中的 vial 瓶頂已露出銀色鋁圈，右手將拔下的深褐色瓶蓋放到治療車上。\", \"evidence\": [\"clip@50.2-58.8\", \"zoom@52.2\", \"zoom@53.2\", \"zoom@54.7\", \"zoom@56.2\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

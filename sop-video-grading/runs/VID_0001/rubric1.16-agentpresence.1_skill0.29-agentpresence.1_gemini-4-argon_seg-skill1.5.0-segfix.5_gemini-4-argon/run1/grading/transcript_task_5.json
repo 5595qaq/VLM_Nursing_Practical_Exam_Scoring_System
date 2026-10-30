@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 8.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 15735,
+  "cached_input_tokens": 0,
+  "output_tokens": 317,
+  "thinking_tokens": 251,
+  "materials": [
+   "ov@76-190（hands_box，n=9）#0=01:16.0、#1=01:30.2、#2=01:44.5、#3=01:58.8、#4=02:13.0、#5=02:27.2、#6=02:41.5、#7=02:55.8、#8=03:10.0"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 180.0, \"end\": 190.0, \"fps\": 2, \"reason\": \"查看 03:00–03:10 將 vial 瓶口塑膠蓋推開的連續動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 6.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 17629,
+  "cached_input_tokens": 0,
+  "output_tokens": 208,
+  "thinking_tokens": 111,
+  "materials": [
+   "ov@76-190（hands_box，n=9）#0=01:16.0、#1=01:30.2、#2=01:44.5、#3=01:58.8、#4=02:13.0、#5=02:27.2、#6=02:41.5、#7=02:55.8、#8=03:10.0",
+   "clip@180-190（context box，有聲音；片段內 00:00 ＝ 影片 03:00.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [185.5, 186.5, 187.5], \"region\": [0.3, 0.55, 0.6, 0.85], \"reason\": \"確認 03:05.5–03:07.5 將 vial 瓶口塑膠翻蓋推開並放於桌面的動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 28.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 18891,
+  "cached_input_tokens": 0,
+  "output_tokens": 391,
+  "thinking_tokens": 218,
+  "materials": [
+   "ov@76-190（hands_box，n=9）#0=01:16.0、#1=01:30.2、#2=01:44.5、#3=01:58.8、#4=02:13.0、#5=02:27.2、#6=02:41.5、#7=02:55.8、#8=03:10.0",
+   "clip@180-190（context box，有聲音；片段內 00:00 ＝ 影片 03:00.0）",
+   "zoom@185.5/186.5/187.5 region=[0.300, 0.550, 0.600, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"於 03:05.5–03:07.5（clip@180-190 片段內 00:05.5–00:07.5）右手扶住桌上的 vial 藥瓶，左手將瓶口上的深褐色塑膠翻蓋推開並放置於桌面，vial 瓶頂露出銀色鋁圈。\", \"evidence\": [\"clip@180-190\", \"zoom@185.5\", \"zoom@186.5\", \"zoom@187.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

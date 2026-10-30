@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 21.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 15681,
+  "cached_input_tokens": 0,
+  "output_tokens": 87,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@191-202（context box，有聲音；片段內 00:00 ＝ 影片 03:11.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [194.0, 195.5, 198.5, 199.5], \"region\": [0.35, 0.25, 0.65, 0.6], \"reason\": \"確認稀釋液瓶口消毒後是否有扭開折斷瓶頂\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 15.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 16926,
+  "cached_input_tokens": 0,
+  "output_tokens": 184,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@191-202（context box，有聲音；片段內 00:00 ＝ 影片 03:11.0）",
+   "zoom@194/195.5/198.5/199.5 region=[0.350, 0.250, 0.650, 0.600]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"8a\", \"verdict\": \"正確\", \"explanation\": \"於 03:15.5–03:19.0（clip@191-202 片段內 00:04.5–00:08.0）左手握住細長稀釋液塑膠瓶瓶身，右手隔著酒精棉片包住瓶頂扭轉並折斷打開瓶口，03:19.5 右手取下折斷的瓶頂。\", \"evidence\": [\"clip@191-202\", \"zoom@195.5\", \"zoom@198.5\", \"zoom@199.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 6.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 16254,
+  "cached_input_tokens": 0,
+  "output_tokens": 85,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@67-76（context box，有聲音；片段內 00:00 ＝ 影片 01:07.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [70.5, 71.5, 73.0, 73.5], \"region\": [0.45, 0.45, 0.78, 0.88], \"reason\": \"確認打開 vial 深紅色翻蓋並將翻蓋放回桌面的細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 99.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 17472,
+  "cached_input_tokens": 0,
+  "output_tokens": 123,
+  "thinking_tokens": 38,
+  "materials": [
+   "clip@67-76（context box，有聲音；片段內 00:00 ＝ 影片 01:07.0）",
+   "zoom@70.5/71.5/73/73.5 region=[0.450, 0.450, 0.780, 0.880]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [70.5, 71.0, 72.5, 73.5], \"region\": [0.42, 0.35, 0.78, 0.85], \"reason\": \"放大確認將 vial 塑膠翻蓋推開及放回桌上的過程\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 80.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 18697,
+  "cached_input_tokens": 14174,
+  "output_tokens": 201,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@67-76（context box，有聲音；片段內 00:00 ＝ 影片 01:07.0）",
+   "zoom@70.5/71.5/73/73.5 region=[0.450, 0.450, 0.780, 0.880]",
+   "zoom@70.5/71/72.5/73.5 region=[0.420, 0.350, 0.780, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"於 01:10.5（clip@67-76 片段內 00:03.5）拿起帶有深褐色塑膠圓蓋的 vial，01:11.0–01:12.5 隔著酒精棉片將塑膠翻蓋推開，01:13.5 清楚看到 vial 瓶頂已變成銀色鋁圈，取下的深褐色塑膠翻蓋則放到治療車桌面上，完成將 vial 瓶口打開的動作。\", \"evidence\": [\"clip@67-76\", \"zoom@70.5\", \"zoom@71\", \"zoom@72.5\", \"zoom@73.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 5.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 15860,
+  "cached_input_tokens": 0,
+  "output_tokens": 84,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@27-34（context box，有聲音；片段內 00:00 ＝ 影片 00:27.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [29.5, 30.5, 31.5, 32.5], \"region\": [0.45, 0.5, 0.85, 0.85], \"reason\": \"確認學生打開 vial 塑膠瓶蓋的動作與打開後的瓶頂狀態\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 4.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 17073,
+  "cached_input_tokens": 0,
+  "output_tokens": 145,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@27-34（context box，有聲音；片段內 00:00 ＝ 影片 00:27.0）",
+   "zoom@29.5/30.5/31.5/32.5 region=[0.450, 0.500, 0.850, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"於 00:30–00:32（clip@27-34 片段內 00:03–00:05）雙手拿起 vial 瓶，以拇指推掉 vial 上的深紅色塑膠翻蓋，並將瓶子與蓋子放回治療車上。\", \"evidence\": [\"clip@27-34\", \"zoom@30.5\", \"zoom@31.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

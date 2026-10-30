@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 133.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 17092,
+  "cached_input_tokens": 0,
+  "output_tokens": 90,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@99.5-113（context box，有聲音；片段內 00:00 ＝ 影片 01:39.5）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [101.0, 103.5, 108.0, 110.5], \"region\": [0.22, 0.25, 0.5, 0.55], \"reason\": \"確認稀釋液瓶口消毒與用酒精棉片包住扭開的細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 8.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 18330,
+  "cached_input_tokens": 0,
+  "output_tokens": 204,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@99.5-113（context box，有聲音；片段內 00:00 ＝ 影片 01:39.5）",
+   "zoom@101/103.5/108/110.5 region=[0.220, 0.250, 0.500, 0.550]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"7a\", \"verdict\": \"正確\", \"explanation\": \"於 01:41.0–01:51.5（clip@99.5-113 片段內 00:01.5–00:12.0），學生左手持細長透明稀釋液瓶，右手以酒精棉片包住稀釋液瓶頂端扭開並擦拭消毒瓶口（zoom@101, zoom@103.5, zoom@108, zoom@110.5）。\", \"evidence\": [\"clip@99.5-113\", \"zoom@101\", \"zoom@103.5\", \"zoom@108\", \"zoom@110.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

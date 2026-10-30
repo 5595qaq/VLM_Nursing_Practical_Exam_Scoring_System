@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 53.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 16778,
+  "cached_input_tokens": 0,
+  "output_tokens": 131,
+  "thinking_tokens": 56,
+  "materials": [
+   "clip@54-70（context box，有聲音；片段內 00:00 ＝ 影片 00:54.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [63.0, 64.5, 66.5], \"region\": [0.35, 0.45, 0.65, 0.78], \"reason\": \"確認使用酒精棉片擦拭消毒 vial 瓶口\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 9.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 17995,
+  "cached_input_tokens": 0,
+  "output_tokens": 244,
+  "thinking_tokens": 156,
+  "materials": [
+   "clip@54-70（context box，有聲音；片段內 00:00 ＝ 影片 00:54.0）",
+   "zoom@63/64.5/66.5 region=[0.350, 0.450, 0.650, 0.780]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [60.0, 62.5, 64.5, 66.5], \"region\": [0.35, 0.25, 0.65, 0.55], \"reason\": \"調整位置至胸前雙手區域，確認酒精棉片消毒 vial 瓶口的動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 8.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 19245,
+  "cached_input_tokens": 0,
+  "output_tokens": 323,
+  "thinking_tokens": 168,
+  "materials": [
+   "clip@54-70（context box，有聲音；片段內 00:00 ＝ 影片 00:54.0）",
+   "zoom@63/64.5/66.5 region=[0.350, 0.450, 0.650, 0.780]",
+   "zoom@60/62.5/64.5/66.5 region=[0.350, 0.250, 0.650, 0.550]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"6a\", \"verdict\": \"正確\", \"explanation\": \"於 00:59–01:06（clip@54-70 片段內 00:05–00:12）左手持 vial 藥瓶，右手持酒精棉片在 vial 瓶口來回旋轉擦拭消毒，並將棉片蓋在瓶口後放回桌面。\", \"evidence\": [\"clip@54-70\", \"zoom@60\", \"zoom@62.5\", \"zoom@64.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

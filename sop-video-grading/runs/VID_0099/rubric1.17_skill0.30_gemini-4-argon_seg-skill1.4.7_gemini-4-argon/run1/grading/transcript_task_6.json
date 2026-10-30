@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 7.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 16132,
+  "cached_input_tokens": 0,
+  "output_tokens": 265,
+  "thinking_tokens": 186,
+  "materials": [
+   "clip@54-66.5（context box，有聲音；片段內 00:00 ＝ 影片 00:54.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [60.0, 60.5, 61.0, 61.5], \"region\": [0.45, 0.52, 0.72, 0.78], \"reason\": \"確認以酒精棉片消毒 vial 瓶口\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 7.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 17362,
+  "cached_input_tokens": 0,
+  "output_tokens": 184,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@54-66.5（context box，有聲音；片段內 00:00 ＝ 影片 00:54.0）",
+   "zoom@60/60.5/61/61.5 region=[0.450, 0.520, 0.720, 0.780]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"6a\", \"verdict\": \"正確\", \"explanation\": \"於 00:57.5–00:59.0 撕開酒精棉片包裝並取出棉片，01:00.0–01:02.0（clip@54-66.5 片段內 00:06.0–00:08.0）左手持 vial、右手拿白色方形酒精棉片在 vial 瓶口旋轉擦拭消毒。\", \"evidence\": [\"clip@54-66.5\", \"zoom@60\", \"zoom@60.5\", \"zoom@61\", \"zoom@61.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

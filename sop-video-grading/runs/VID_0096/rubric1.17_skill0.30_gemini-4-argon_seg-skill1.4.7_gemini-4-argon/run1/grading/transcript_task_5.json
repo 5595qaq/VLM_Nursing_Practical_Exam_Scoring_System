@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 12.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 16023,
+  "cached_input_tokens": 0,
+  "output_tokens": 344,
+  "thinking_tokens": 268,
+  "materials": [
+   "clip@46-58（context box，有聲音；片段內 00:00 ＝ 影片 00:46.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [52.0, 54.0, 55.5], \"region\": [0.3, 0.3, 0.65, 0.75], \"reason\": \"確認推掉 vial 深色塑膠翻蓋及打開後的瓶口狀態\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 5.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 17221,
+  "cached_input_tokens": 0,
+  "output_tokens": 144,
+  "thinking_tokens": 57,
+  "materials": [
+   "clip@46-58（context box，有聲音；片段內 00:00 ＝ 影片 00:46.0）",
+   "zoom@52/54/55.5 region=[0.300, 0.300, 0.650, 0.750]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [53.5, 54.5, 55.5], \"region\": [0.25, 0.55, 0.65, 0.9], \"reason\": \"對準下半部治療車與雙手位置，確認將 vial 紅褐色塑膠瓶蓋打開並放下的過程\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 6.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 18486,
+  "cached_input_tokens": 0,
+  "output_tokens": 194,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@46-58（context box，有聲音；片段內 00:00 ＝ 影片 00:46.0）",
+   "zoom@52/54/55.5 region=[0.300, 0.300, 0.650, 0.750]",
+   "zoom@53.5/54.5/55.5 region=[0.250, 0.550, 0.650, 0.900]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"00:52.0 看到左手拿著 vial，瓶頂有深紅色圓形翻蓋；00:53.0–00:55.0（clip@46-58 片段內 00:07.0–00:09.0）右手將瓶蓋推開；00:55.5 左手 vial 瓶頂已露出銀色鋁圈與中間橡皮塞，右手拿著推下的深紅色瓶蓋放到治療車上。\", \"evidence\": [\"clip@46-58\", \"zoom@52\", \"zoom@54.5\", \"zoom@55.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

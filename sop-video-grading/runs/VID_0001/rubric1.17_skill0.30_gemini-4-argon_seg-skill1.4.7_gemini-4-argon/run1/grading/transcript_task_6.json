@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 8.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 15336,
+  "cached_input_tokens": 0,
+  "output_tokens": 270,
+  "thinking_tokens": 188,
+  "materials": [
+   "clip@198-207（context box，有聲音；片段內 00:00 ＝ 影片 03:18.0）"
+  ],
+  "reply": "{\"action\": \"burst\", \"start\": 202.5, \"end\": 204.5, \"n\": 9, \"region\": [0.35, 0.5, 0.6, 0.75], \"reason\": \"確認以酒精棉片擦拭消毒 vial 瓶口的連續動作與細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 26.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 16785,
+  "cached_input_tokens": 0,
+  "output_tokens": 236,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@198-207（context box，有聲音；片段內 00:00 ＝ 影片 03:18.0）",
+   "burst@202.5-204.5（原始解析度，9 格，每 0.25 s）#0=03:22.5、#1=03:22.8、#2=03:23.0、#3=03:23.2、#4=03:23.5、#5=03:23.8、#6=03:24.0、#7=03:24.2、#8=03:24.5 region=[0.350, 0.500, 0.600, 0.750]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"6a\", \"verdict\": \"正確\", \"explanation\": \"於 03:23.2–03:24.2（clip@198-207 片段內 00:05.2–00:06.2 及 burst@202.5-204.5 #3–#7），左手扶住桌上的 vial 藥瓶，右手拿白色酒精棉片在 vial 瓶口橡皮塞處來回擦拭消毒，完成後將棉片留在瓶口上。\", \"evidence\": [\"clip@198-207\", \"burst@202.5-204.5 #4\", \"burst@202.5-204.5 #5\", \"burst@202.5-204.5 #6\", \"burst@202.5-204.5 #7\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

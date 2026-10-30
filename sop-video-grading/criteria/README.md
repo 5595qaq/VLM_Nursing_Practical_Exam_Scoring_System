@@ -18,3 +18,4 @@
 | `07-rolling-20a.md` | 雙手旋轉 vial 20a |
 | `08-hand-posture.md` | 手部姿勢 10b、12a、13a、14a、18b、18c、19b、22b、22c、24a、26b、28b |
 | `09-disposal.md` | 丟棄空瓶 29c、空針放入包裝 30a、30b |
+| `10-presence.md` | 開瓶、消毒、墊棉片 5a、6a、7a、8a、15a、25a |

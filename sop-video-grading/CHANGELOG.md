@@ -2,7 +2,32 @@
 
 未發布的修改先寫在 `changelog.d/`（一個分支一個檔，見 `changelog.d/README.md`），合併前改成正式版本時才移到這裡；規則見 `AGENTS.md`「多人協作」。
 
-## 未發布（評分 agent 服務端修正，SKILL／rubric 版本不變）
+## 0.30（rubric 1.17，切分 sop-video-skill 1.5.2）
+
+- **5a、6a、7a、8a、15a、25a 改由評分 agent 判定（使用者決定，2026-10-30，issue #90）：**
+  - 原本是 `program` 標準，`rules.py` 直接用切分的 `status` 給分，切分說 `not_performed` 就判錯誤。PR #89 用切分 1.5.2 重跑 VID_0100 時，切分把 03:03 的擦拭看成拿掉棉片，步驟 6 判錯誤，評分端沒有機會再看。
+  - 改成 `visual`，每條一個任務、`clip: true`；怎麼判寫在新的 `criteria/10-presence.md`（要看到動作本身；錯誤要整段看過、畫面清楚而動作沒出現）。
+  - rubric 新增 `search_steps`＝`[第一步, 最後一步]`（只能用在 visual 標準，且第一步 < 該步 < 最後一步，`rubric.py` 檢查）：有這種標準的步驟，切分 `not_performed` 不再直接判它的 visual 標準錯誤；切分沒找到這一步時，把兩步之間（含）所有步驟的區間（最早開始到最晚結束）交給評分 agent 找，任務說明寫出「切分未找到步驟 N」和這些步驟的時間。5a [4, 18]、6a [5, 18]、7a／8a [4, 13]、15a [14, 18]、25a [24, 28]。
+  - 切分有標出這一步時，區間仍是該步 ±2 秒；`criteria/10-presence.md` 要 agent 沒看到動作時先看區間前後各 10 秒，還是沒看到判無法判定（交給人工），不判錯誤：切分時間偏差時動作可能在更遠的地方，程式給分時這種情況是正確。錯誤只用在切分未找到、整段搜尋過的任務。
+  - 實驗（`experiments/2026-10-30-agentpresence.md`，agentpresence.1，segfix.5 的切分 11 支；之後依 code review 修正搜尋範圍、任務說明與上面的無法判定規則）：判定和程式給分完全相同（60/62），嚴格一致 57/62 vs 56/62；切分漏看的 VID_0100 步驟 6 由 agent 補回。每支影片評分多約 40 萬 input tokens。
+- **SKILL.md 第 4 節拆成 `criteria/`（2026-10-29，SKILL／rubric 版本不變）：**
+  - 「各類標準怎麼判」的 10 個小節搬到 `criteria/01-hand-washing.md` … `09-disposal.md`（洗手 1a、1b 同一個檔），`SKILL.md` 原處留一行 `<!-- criteria/*.md ... -->` 標記。
+  - 新增 `scripts/skill_doc.py`：依檔名順序把 `criteria/*.md` 放回標記行。評分 agent 的 system prompt 和 `rules_SKILL.md` 都用組裝後的全文，和拆檔前的 0.29 `SKILL.md` 逐位元組相同，所以版本不變、評分結果與紀錄照用。
+  - `check_versions.py` 以組裝後的全文判斷評分 SKILL 有沒有改：文字在 `SKILL.md` 與 `criteria/` 之間搬動不算修改，改了或新增 `criteria/` 的檔要遞增 `SKILL.md` 版本。
+  - `rules_digest` 會包含 `criteria/`，所以拆檔前後的摘要不同，跨這次部署續跑的評分會標 `mixed_rules`。
+  - 新增 `.github/CODEOWNERS` 範本（還沒填負責人）。
+  - `criteria/` 只收 `NN-名稱.md`（兩位數前綴決定順序）；其他 `.md`（草稿、備份）會讓組裝失敗，不會不知不覺放進 prompt。
+  - 新增 `scripts/git_commit.py` 產生 `GIT_COMMIT`：除了未 commit 的修改，`criteria/` 裡還沒加入 Git 的 `*.md` 也會加上 `-dirty`（它們同樣會被放進 prompt）。README 的 bash／PowerShell 寫法都改成呼叫它，`sop_grading_cli` 的預設 commit 也做同樣的檢查。
+- `eval_grading.py` 也比對時間（不影響評分結果，版本不變）：讀紀錄裡的 `segmentation.json`（和 `grading.json` 同一層或上一層，`video_id` 要相同），該步 `detected` 的區間（沒有時用 `logical_window`）和標記表的開始／結束秒數沒有重疊、起點也差超過 3 秒，或標記表有時間但切分沒有，判定一致也算錯（AGENTS.md「比對」）。摘要的一致率改用這個標準，括號內是只比判定的結果，並列出「判定一致但時間對不上」的步驟；表格多一欄人工／切分的時間，`--json` 多 `time_checked`、`time_note`。標記表的多段時間（開始欄 `01:47/02:49`、結束欄 `01:51/02:50`）依位置配對，也接受 `00;47`、`08：59`、`06:`、全形 `／` 這類寫法；兩欄段數不同或讀不出時間時不比時間。沒有切分時只比判定。`compare_arms.py` 不讀切分，仍只比判定（`merge_faults` 會一併更新 `strict_match`）。
+- **多人協作（2026-10-29，SKILL／rubric 版本不變）：**
+  - 新增 `scripts/check_versions.py`，`python-ci.yml` 對每個 PR 執行：
+    - SKILL.md、rubric.json 與 sop-video-skill 的 SKILL.md 版本必須是正式版本（只有數字和點）；分支版本（例如 `0.29-10b.1`）合併前要改掉。
+    - PR 改了 `sop-video-grading/SKILL.md`、`rubric.json`、`sop-video-skill/SKILL.md` 或 `sop-video-skill/references/` 時，版本要比目標分支大，`CHANGELOG.md` 要有新版本的標題，`changelog.d/` 不能留下片段（正式版本要收走所有片段）。版本讀不到時印出錯誤，不丟 traceback。
+  - 未發布的修改改寫在 `changelog.d/`，每輪實驗改寫在 `experiments/`，規則見 `AGENTS.md`「多人協作」。
+  - 規則摘要（`rules_digest`）不再計入 `experiments/`、`changelog.d/`、`CHANGELOG.md` 與 `EXPERIMENTS.md`：評分執行中有人寫實驗筆記或「待老師確認」，不會被當成規則改過。這次部署前後的摘要不同，跨部署續跑的評分會標 `mixed_rules`（和其他改到規則資料夾的部署相同）。
+  - `EXPERIMENTS.md` 中的學生姓名改成影片 ID（VID_0003、VID_0098）。
+
+以下是 0.29 之後、改用 `changelog.d/` 之前寫在這裡的服務端修正（當時 SKILL／rubric 版本不變）：
 
 - **評分紀錄的 token 用量（2026-10-25）：**
   - `record.json` 每次執行的 `usage`，以及每回合的對話紀錄（評分與切分），都多記 `cached_input_tokens` 與 `thinking_tokens`。`input_tokens` 仍是全部的輸入、含快取；`output_tokens` 含 thinking。

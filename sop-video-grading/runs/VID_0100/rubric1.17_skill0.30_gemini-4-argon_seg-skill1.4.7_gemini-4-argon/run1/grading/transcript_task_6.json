@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 21.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 15674,
+  "cached_input_tokens": 0,
+  "output_tokens": 95,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@31-42.2（context box，有聲音；片段內 00:00 ＝ 影片 00:31.0）"
+  ],
+  "reply": "{\"action\": \"burst\", \"start\": 38.0, \"end\": 40.0, \"n\": 9, \"region\": [0.55, 0.55, 0.85, 0.85], \"reason\": \"確認 00:38–00:40 將酒精棉片放在 vial 瓶口時是否有來回擦拭動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 5.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 17099,
+  "cached_input_tokens": 13381,
+  "output_tokens": 91,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@31-42.2（context box，有聲音；片段內 00:00 ＝ 影片 00:31.0）",
+   "burst@38-40（原始解析度，9 格，每 0.25 s）#0=00:38.0、#1=00:38.2、#2=00:38.5、#3=00:38.8、#4=00:39.0、#5=00:39.2、#6=00:39.5、#7=00:39.8、#8=00:40.0 region=[0.550, 0.550, 0.850, 0.850]"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 42.2, \"end\": 52.2, \"fps\": 2, \"reason\": \"在 00:38.5–00:39.5 學生只將酒精棉片蓋在 vial 瓶口上並未擦拭，依規定查看區間後 10 秒確認是否有後續擦拭動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 13.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 18899,
+  "cached_input_tokens": 0,
+  "output_tokens": 704,
+  "thinking_tokens": 445,
+  "materials": [
+   "clip@31-42.2（context box，有聲音；片段內 00:00 ＝ 影片 00:31.0）",
+   "burst@38-40（原始解析度，9 格，每 0.25 s）#0=00:38.0、#1=00:38.2、#2=00:38.5、#3=00:38.8、#4=00:39.0、#5=00:39.2、#6=00:39.5、#7=00:39.8、#8=00:40.0 region=[0.550, 0.550, 0.850, 0.850]",
+   "clip@42.2-52.2（context box，有聲音；片段內 00:00 ＝ 影片 00:42.2）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"6a\", \"verdict\": \"無法判定\", \"explanation\": \"切分標示的 00:33.0–00:40.2 內，學生於 00:33.5–00:38.5 撕開酒精棉片包裝取出棉片，00:39.0–00:39.5 將酒精棉片直接平放在 vial 瓶口上，未見來回擦拭或旋轉消毒的動作；後續 00:40.5–00:52.2 學生撕開另一包酒精棉片放在桌上並拿起空針包裝，棉片仍蓋在 vial 瓶口上未擦拭（可能於後續步驟才擦拭）。\", \"evidence\": [\"clip@31-42.2\", \"burst@38-40 #4\", \"burst@38-40 #5\", \"burst@38-40 #6\", \"clip@42.2-52.2\"], \"confidence\": 0.9, \"reason\": \"資訊不足\"}]}",
+  "errors": []
+ }
+]

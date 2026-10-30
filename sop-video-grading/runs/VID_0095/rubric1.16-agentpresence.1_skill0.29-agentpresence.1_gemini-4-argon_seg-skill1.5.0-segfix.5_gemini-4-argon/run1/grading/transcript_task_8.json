@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 80.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 16271,
+  "cached_input_tokens": 0,
+  "output_tokens": 329,
+  "thinking_tokens": 262,
+  "materials": [
+   "clip@81-91（context box，有聲音；片段內 00:00 ＝ 影片 01:21.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [84.5, 86.5], \"region\": [0.45, 0.45, 0.8, 0.78], \"reason\": \"確認手持稀釋液瓶並扭開瓶頂\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 31.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 17466,
+  "cached_input_tokens": 0,
+  "output_tokens": 361,
+  "thinking_tokens": 196,
+  "materials": [
+   "clip@81-91（context box，有聲音；片段內 00:00 ＝ 影片 01:21.0）",
+   "zoom@84.5/86.5 region=[0.450, 0.450, 0.800, 0.780]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"8a\", \"verdict\": \"正確\", \"explanation\": \"01:24.0–01:27.0（clip@81-91 片段內 00:03.0–00:06.0）右手握住稀釋液瓶身，左手捏住瓶頂扭開，01:26.5 瓶頂脫離瓶身並於 01:27.0 放到治療車上。\", \"evidence\": [\"clip@81-91\", \"zoom@84.5\", \"zoom@86.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

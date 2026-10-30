@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 7.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 16013,
+  "cached_input_tokens": 0,
+  "output_tokens": 124,
+  "thinking_tokens": 43,
+  "materials": [
+   "clip@86-94.5（context box，有聲音；片段內 00:00 ＝ 影片 01:26.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [88.5, 90.0, 91.5, 92.5], \"region\": [0.35, 0.45, 0.65, 0.85], \"reason\": \"確認稀釋液瓶頂被扭開並脫離\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 5.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 17231,
+  "cached_input_tokens": 0,
+  "output_tokens": 181,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@86-94.5（context box，有聲音；片段內 00:00 ＝ 影片 01:26.0）",
+   "zoom@88.5/90/91.5/92.5 region=[0.350, 0.450, 0.650, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"8a\", \"verdict\": \"正確\", \"explanation\": \"於 01:28.5–01:31.5（clip@86-94.5 片段內 00:02.5–00:05.5），學生右手握住稀釋液瓶身，左手隔著酒精棉片捏住瓶頂扭轉並將瓶口打開（zoom@90、zoom@91.5 可清楚看到瓶頂被扭開脫離）。\", \"evidence\": [\"clip@86-94.5\", \"zoom@88.5\", \"zoom@90\", \"zoom@91.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 9.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 16408,
+  "cached_input_tokens": 14174,
+  "output_tokens": 407,
+  "thinking_tokens": 326,
+  "materials": [
+   "clip@40-50（context box，有聲音；片段內 00:00 ＝ 影片 00:40.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [42.5, 46.5, 48.0], \"region\": [0.35, 0.35, 0.6, 0.85], \"reason\": \"確認打開 vial 塑膠瓶蓋的過程與打開後的瓶口及落下的瓶蓋\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 58.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 17603,
+  "cached_input_tokens": 14191,
+  "output_tokens": 421,
+  "thinking_tokens": 180,
+  "materials": [
+   "clip@40-50（context box，有聲音；片段內 00:00 ＝ 影片 00:40.0）",
+   "zoom@42.5/46.5/48 region=[0.350, 0.350, 0.600, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"00:42.5（zoom@42.5）vial 瓶頂為整片深褐色塑膠翻蓋；00:45.0–00:47.0（clip@40-50 片段內 00:05.0–00:07.0、zoom@46.5）雙手握住 vial 推開塑膠翻蓋；00:47.5–00:48.0（片段內 00:07.5–00:08.0、zoom@48）將vial與拆下的深褐色塑膠翻蓋放回治療車上，vial 瓶頂已露出銀色鋁圈。\", \"evidence\": [\"clip@40-50\", \"zoom@42.5\", \"zoom@46.5\", \"zoom@48\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

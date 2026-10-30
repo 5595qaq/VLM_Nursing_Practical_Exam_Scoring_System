@@ -36,13 +36,13 @@ def test_pending_is_allowed_before_final():
 
 def test_misspelled_field_is_rejected():
     result = graded()
-    criterion(result, "5a")["confidance"] = 0.9
+    criterion(result, "9a")["confidance"] = 0.9
     assert_rejected(result, "Additional properties are not allowed")
 
 
 def test_unknown_verdict_is_rejected():
     result = graded()
-    criterion(result, "5a")["verdict"] = "大致正確"
+    criterion(result, "9a")["verdict"] = "大致正確"
     assert_rejected(result, "'大致正確' is not one of")
 
 
@@ -54,7 +54,7 @@ def test_unknown_reason_is_rejected():
 
 def test_short_explanation_is_rejected():
     result = graded()
-    criterion(result, "5a")["explanation"] = "正確"
+    criterion(result, "9a")["explanation"] = "正確"
     assert_rejected(result, "is too short")
 
 
@@ -80,7 +80,7 @@ def test_criteria_must_follow_rubric():
 
 def test_source_must_match_category():
     result = graded()
-    criterion(result, "5a")["source"] = "vlm"
+    criterion(result, "9a")["source"] = "vlm"
     assert_rejected(result, "source 'vlm' not allowed for a program criterion")
 
 
@@ -98,19 +98,19 @@ def test_undetermined_needs_reason():
 
 def test_reason_only_for_undetermined():
     result = graded()
-    criterion(result, "5a")["reason"] = "資訊不足"
+    criterion(result, "9a")["reason"] = "資訊不足"
     assert_rejected(result, "reason is required")
 
 
 def test_not_applicable_only_for_removed_step():
     result = graded()
-    criterion(result, "5a")["verdict"] = "不適用"
+    criterion(result, "9a")["verdict"] = "不適用"
     assert_rejected(result, "only for removed steps")
 
 
 def test_removed_step_cannot_have_criteria():
     result = graded()
-    result_step(result, 11)["criteria"] = [dict(criterion(result, "5a"))]
+    result_step(result, 11)["criteria"] = [dict(criterion(result, "9a"))]
     assert_rejected(result, "removed step must be 不適用")
 
 
@@ -156,7 +156,7 @@ def test_vlm_criterion_needs_window():
 
 def test_rule_criterion_has_no_window():
     result = graded()
-    criterion(result, "5a")["window"] = [1.0, 2.0]
+    criterion(result, "9a")["window"] = [1.0, 2.0]
     assert_rejected(result, "window is only for criteria graded from frames")
 
 
@@ -168,14 +168,14 @@ def test_window_start_after_end():
 
 def test_step_verdict_must_match_criteria():
     result = graded()
-    result_step(result, 5)["verdict"] = "部分正確"
+    result_step(result, 9)["verdict"] = "部分正確"
     assert_rejected(result, "does not match its criteria (expected 正確)")
 
 
 def test_pending_on_program_criterion_is_rejected():
     result = graded()
-    criterion(result, "5a")["verdict"] = "待判定"
-    result_step(result, 5)["verdict"] = "待判定"
+    criterion(result, "9a")["verdict"] = "待判定"
+    result_step(result, 9)["verdict"] = "待判定"
     assert_rejected(result, "only a visual criterion")
 
 
@@ -210,8 +210,8 @@ def test_reason_without_flag_is_rejected():
 
 def test_flag_only_on_agent_criteria():
     result = graded()
-    criterion(result, "5a").update(needs_review=True, review_reason="重複做了兩次")
-    result_step(result, 5)["needs_review"] = True
+    criterion(result, "9a").update(needs_review=True, review_reason="重複做了兩次")
+    result_step(result, 9)["needs_review"] = True
     assert_rejected(result, "only for criteria graded by the grading agent")
 
 

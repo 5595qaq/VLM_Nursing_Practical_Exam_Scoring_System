@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 9.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 15711,
+  "cached_input_tokens": 0,
+  "output_tokens": 158,
+  "thinking_tokens": 60,
+  "materials": [
+   "clip@77-84（context box，有聲音；片段內 00:00 ＝ 影片 01:17.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [77.5, 79.0, 80.0, 80.5], \"region\": [0.35, 0.25, 0.65, 0.55], \"reason\": \"確認手中為酒精棉片與稀釋液瓶，並以酒精棉片包住稀釋液瓶頂擦拭／扭開\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 6.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 16932,
+  "cached_input_tokens": 0,
+  "output_tokens": 198,
+  "thinking_tokens": 107,
+  "materials": [
+   "clip@77-84（context box，有聲音；片段內 00:00 ＝ 影片 01:17.0）",
+   "zoom@77.5/79/80/80.5 region=[0.350, 0.250, 0.650, 0.550]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [77.5, 78.5, 79.5, 80.5], \"region\": [0.4, 0.3, 0.7, 0.6], \"reason\": \"調整放大區域以完整包含雙手與稀釋液瓶口，確認酒精棉片擦拭動作與瓶身種類\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 20.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 18177,
+  "cached_input_tokens": 0,
+  "output_tokens": 169,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@77-84（context box，有聲音；片段內 00:00 ＝ 影片 01:17.0）",
+   "zoom@77.5/79/80/80.5 region=[0.350, 0.250, 0.650, 0.550]",
+   "zoom@77.5/78.5/79.5/80.5 region=[0.400, 0.300, 0.700, 0.600]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"7a\", \"verdict\": \"正確\", \"explanation\": \"於 01:17.5–01:20.5（clip@77-84 片段內 00:00.5–00:03.5）左手握住細長稀釋液瓶，右手以白色酒精棉片包住稀釋液瓶頂端擦拭並直接扭開瓶頂。\", \"evidence\": [\"clip@77-84\", \"zoom@77.5\", \"zoom@78.5\", \"zoom@79.5\", \"zoom@80.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

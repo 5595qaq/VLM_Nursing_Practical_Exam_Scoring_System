@@ -19,10 +19,10 @@ def test_output_is_valid_but_not_final(segmentation):
 
 
 def test_detected_program_criterion_is_correct_and_cites_span(segmentation):
-    c = criterion(grade_from_segmentation(segmentation), "5a")
+    c = criterion(grade_from_segmentation(segmentation), "9a")
     assert c["verdict"] == "正確" and c["source"] == "rule"
-    assert "00:50–00:58" in c["explanation"] and "global #5" in c["explanation"]
-    assert c["evidence"] == ["seg:step 5"] and c["confidence"] == 0.8
+    assert "01:30–01:38" in c["explanation"] and "global #9" in c["explanation"]
+    assert c["evidence"] == ["seg:step 9"] and c["confidence"] == 0.8
 
 
 def test_washing_is_timed_by_the_grading_agent(segmentation):
@@ -85,9 +85,9 @@ def test_not_performed_step_is_wrong_for_program_and_visual_criteria(segmentatio
 
 
 def test_undetermined_program_criterion(segmentation):
-    seg_step(segmentation, 7).update(start=None, end=None, status="not_visually_determinable",
+    seg_step(segmentation, 9).update(start=None, end=None, status="not_visually_determinable",
                                      evidence="手被遮擋")
-    c = criterion(grade_from_segmentation(segmentation), "7a")
+    c = criterion(grade_from_segmentation(segmentation), "9a")
     assert c["verdict"] == "無法判定" and c["reason"] == "切分未定位"
 
 
@@ -95,6 +95,56 @@ def test_visual_window_uses_logical_window(segmentation):
     c = criterion(grade_from_segmentation(segmentation), "2a")
     assert c["verdict"] == "待判定" and c["source"] == "vlm"
     assert c["window"] == [18.0, 42.0]  # logical_window [20, 40] +- 2 s
+
+
+def test_presence_criterion_goes_to_the_agent_even_when_detected(segmentation):
+    # agentpresence: 6a is checked on the frames, not taken from the segmentation status
+    c = criterion(grade_from_segmentation(segmentation), "6a")
+    assert c["verdict"] == "待判定" and c["source"] == "vlm" and c["window"] == [58.0, 70.0]
+    assert "切分未找到" not in c["explanation"]
+
+
+def test_step_not_found_is_searched_between_search_steps(segmentation):
+    # VID_0100 1.5.2: segmentation missed the 03:03 wipe; the agent searches steps 5-18 instead of 錯誤
+    seg_step(segmentation, 6).update(start=None, end=None, status="not_performed", evidence="只把棉片蓋上")
+    result = grade_from_segmentation(segmentation)
+    c = criterion(result, "6a")
+    assert c["verdict"] == "待判定" and c["window"] == [48.0, 190.0]  # step 5 start - 2 to step 18 end + 2
+    assert "切分未找到步驟 6" in c["explanation"]
+    assert result_step(result, 6)["verdict"] == "待判定"
+    assert validate_grading(result) == []
+
+
+def test_search_covers_the_steps_between_first_and_last(segmentation):
+    # code review: with only the endpoints, a missing step 4 or 18 shrank the window to the other end
+    seg_step(segmentation, 6).update(start=None, end=None, status="not_performed", evidence="只把棉片蓋上")
+    seg_step(segmentation, 5).update(start=None, end=None, status="not_visually_determinable", evidence="手擋住")
+    seg_step(segmentation, 18).update(start=None, end=None, status="not_visually_determinable", evidence="手擋住")
+    c = criterion(grade_from_segmentation(segmentation), "6a")
+    assert c["window"] == [68.0, 180.0]  # step 7 start - 2 to step 17 end + 2
+    assert "步驟 5–18" in c["explanation"]
+
+
+def test_not_performed_still_decides_program_criteria_of_a_searched_step(segmentation):
+    import copy
+
+    from rubric import load_rubric
+    rubric = copy.deepcopy(load_rubric())
+    step = rubric["steps"][14]  # 15: 15a has search_steps
+    step["criteria"].append({"id": "15c", "text": "測試用", "category": "program", "key": False,
+                             "rule": {"type": "detected"}})
+    seg_step(segmentation, 15).update(start=None, end=None, status="not_performed", evidence="未見棉片")
+    result = grade_from_segmentation(segmentation, rubric)
+    assert criterion(result, "15c")["verdict"] == "錯誤"
+    assert criterion(result, "15a")["verdict"] == "待判定"
+
+
+def test_not_performed_does_not_decide_the_other_criteria_of_a_searched_step(segmentation):
+    seg_step(segmentation, 15).update(start=None, end=None, status="not_performed", evidence="未見棉片")
+    result = grade_from_segmentation(segmentation)
+    assert criterion(result, "15a")["window"] == [138.0, 190.0]  # search_steps 14-18
+    c = criterion(result, "15b")
+    assert c["verdict"] == "待判定" and c["window"] == [158.0, 180.0]  # its own window_steps 15-17
 
 
 def test_visual_without_any_span_is_undetermined(segmentation):

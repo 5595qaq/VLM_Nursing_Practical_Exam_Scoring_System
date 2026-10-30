@@ -561,6 +561,18 @@ async def test_tasks_get_only_the_segmentation_times(video, tmp_path):
     assert "global #" not in text and "依據" not in text and "detected" not in text
 
 
+async def test_step_not_found_is_searched_with_the_range_times(video, tmp_path):
+    # 0.30: segmentation missed step 6 (VID_0100 1.5.2); the agent is told to search steps 5-18
+    seg = segmentation()
+    seg["steps"][5].update(status="not_performed", start=None, end=None, evidence="只把棉片蓋上")
+    model = FakeModel()
+    await grading.run_grading(video, seg, tmp_path, model, steps={6, 7})
+    six, seven = requests_for(model, "6a")[0][0]["text"], requests_for(model, "7a")[0][0]["text"]
+    assert "切分未找到步驟 6，要在整個區間（步驟 5–18 之間）內找" in six
+    assert "  步驟 18：00:32.4–00:33.9" in six and "  步驟 6：沒有時間" in six
+    assert "切分未找到" not in seven and "步驟 18：" not in seven  # step 7 was found: only its own times
+
+
 async def test_usage_counts_cached_and_thinking_tokens(video, tmp_path):
     class CachedModel(FakeModel):
         async def __call__(self, system, content):

@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 5.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 17444,
+  "cached_input_tokens": 0,
+  "output_tokens": 82,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@289-303.4（context box，有聲音；片段內 00:00 ＝ 影片 04:49.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [293.0, 294.0, 296.0], \"region\": [0.42, 0.22, 0.72, 0.62], \"reason\": \"確認針頭與針筒交接處是否有墊白色方形酒精棉片\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 10.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 18647,
+  "cached_input_tokens": 0,
+  "output_tokens": 219,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@289-303.4（context box，有聲音；片段內 00:00 ＝ 影片 04:49.0）",
+   "zoom@293/294/296 region=[0.420, 0.220, 0.720, 0.620]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"25a\", \"verdict\": \"正確\", \"explanation\": \"於 04:52.0–04:53.0（clip@289-303.4 片段內 00:03.0–00:04.0）左手拿起酒精棉片，於 04:53.5–05:01.5（片段內 00:04.5–00:12.5）將白色方形酒精棉片墊在針頭與針筒接合處（zoom@294、zoom@296 可清楚看到白色棉片包住針頭接頭處）。\", \"evidence\": [\"clip@289-303.4\", \"zoom@293\", \"zoom@294\", \"zoom@296\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

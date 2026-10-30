@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 7.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 15731,
+  "cached_input_tokens": 0,
+  "output_tokens": 145,
+  "thinking_tokens": 62,
+  "materials": [
+   "clip@49.5-56.5（context box，有聲音；片段內 00:00 ＝ 影片 00:49.5）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [51.5, 52.0, 52.5, 53.5], \"region\": [0.25, 0.45, 0.65, 0.85], \"reason\": \"確認學生是否扭開稀釋液瓶頂（8a）\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 37.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 16978,
+  "cached_input_tokens": 0,
+  "output_tokens": 297,
+  "thinking_tokens": 104,
+  "materials": [
+   "clip@49.5-56.5（context box，有聲音；片段內 00:00 ＝ 影片 00:49.5）",
+   "zoom@51.5/52/52.5/53.5 region=[0.250, 0.450, 0.650, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"8a\", \"verdict\": \"正確\", \"explanation\": \"00:51.5–00:53.5（clip@49.5-56.5 片段內 00:02.0–00:04.0）左手握住細長稀釋液瓶身，右手隔著酒精棉片捏住瓶頂扭開，00:53.5 可見扭下的瓶頂拿在右手、左手將打開的稀釋液瓶放回桌上。\", \"evidence\": [\"clip@49.5-56.5\", \"zoom@51.5\", \"zoom@52\", \"zoom@52.5\", \"zoom@53.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
