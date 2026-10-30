@@ -63,23 +63,25 @@ def test_spans_match_overlap_or_starts_within_3s():
 
 
 def test_time_mismatch_counts_as_wrong():
+    # steps 9, 21, 23 have only program criteria: the times come from the segmentation (rubric 1.17 moved 5a–8a
+    # to the grading agent, whose cited times are used first)
     seg = make_segmentation()
     grading = fill_visual(grade_from_segmentation(seg))
-    s5 = next(e for e in seg["steps"] if e["step_id"] == 5)
-    s6 = next(e for e in seg["steps"] if e["step_id"] == 6)
-    labels = {5: {"verdict": "正確", "why": "", "spans": [(s5["start"] + 100, s5["end"] + 100)]},
-              6: {"verdict": "正確", "why": "", "spans": []},
-              7: {"verdict": "正確", "why": "", "spans": [(s6["start"], s6["end"])]}}
-    seg["steps"] = [e for e in seg["steps"] if e["step_id"] != 7]  # label time, no detected span
-    grading["steps"][6]["verdict"] = "正確"
+    s9 = next(e for e in seg["steps"] if e["step_id"] == 9)
+    s21 = next(e for e in seg["steps"] if e["step_id"] == 21)
+    labels = {9: {"verdict": "正確", "why": "", "spans": [(s9["start"] + 100, s9["end"] + 100)]},
+              21: {"verdict": "正確", "why": "", "spans": []},
+              23: {"verdict": "正確", "why": "", "spans": [(s21["start"], s21["end"])]}}
+    seg["steps"] = [e for e in seg["steps"] if e["step_id"] != 23]  # label time, no detected span
+    grading["steps"][22]["verdict"] = "正確"
     rows = compare(grading, labels, seg)
     assert [r["time_match"] for r in rows] == [False, None, False]
     assert [r["strict_match"] for r in rows] == [False, True, False]
     s = summarize(rows)
-    assert s["agreement"] == 3 and s["strict_agreement"] == 1 and s["time_mismatch"] == [5, 7]
+    assert s["agreement"] == 3 and s["strict_agreement"] == 1 and s["time_mismatch"] == [9, 23]
     assert [r["time_match"] for r in compare(grading, labels)] == [None, None, None]  # no segmentation
-    seg["steps"].append({"step_id": 7, "status": "not_visually_determinable", "start": None, "end": None,
-                         "confidence": 0.0, "evidence": "", "logical_window": [s6["start"], s6["end"]]})
+    seg["steps"].append({"step_id": 23, "status": "not_visually_determinable", "start": None, "end": None,
+                         "confidence": 0.0, "evidence": "", "logical_window": [s21["start"], s21["end"]]})
     assert compare(grading, labels, seg)[2]["time_match"] is True  # logical_window when nothing detected
 
 
