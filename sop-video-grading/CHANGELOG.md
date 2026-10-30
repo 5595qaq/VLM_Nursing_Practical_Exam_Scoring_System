@@ -8,8 +8,8 @@
   - 原本是 `program` 標準，`rules.py` 直接用切分的 `status` 給分，切分說 `not_performed` 就判錯誤。PR #89 用切分 1.5.2 重跑 VID_0100 時，切分把 03:03 的擦拭看成拿掉棉片，步驟 6 判錯誤，評分端沒有機會再看。
   - 改成 `visual`，每條一個任務、`clip: true`；怎麼判寫在新的 `criteria/10-presence.md`（要看到動作本身；錯誤要整段看過、畫面清楚而動作沒出現）。
   - rubric 新增 `search_steps`＝`[第一步, 最後一步]`（只能用在 visual 標準，且第一步 < 該步 < 最後一步，`rubric.py` 檢查）：有這種標準的步驟，切分 `not_performed` 不再直接判它的 visual 標準錯誤；切分沒找到這一步時，把兩步之間（含）所有步驟的區間（最早開始到最晚結束）交給評分 agent 找，任務說明寫出「切分未找到步驟 N」和這些步驟的時間。5a [4, 18]、6a [5, 18]、7a／8a [4, 13]、15a [14, 18]、25a [24, 28]。
-  - 切分有標出這一步時，區間仍是該步 ±2 秒；`criteria/10-presence.md` 要 agent 沒看到動作時先看區間前後各 10 秒再判斷，避免切分時間偏差幾秒就判錯誤。
-  - 實驗（`experiments/2026-10-30-agentpresence.md`，segfix.5 的切分 11 支）：判定和程式給分完全相同（60/62），嚴格一致 57/62 vs 56/62；切分漏看的 VID_0100 步驟 6 由 agent 補回。每支影片評分多約 40 萬 input tokens。
+  - 切分有標出這一步時，區間仍是該步 ±2 秒；`criteria/10-presence.md` 要 agent 沒看到動作時先看區間前後各 10 秒，還是沒看到判無法判定（交給人工），不判錯誤：切分時間偏差時動作可能在更遠的地方，程式給分時這種情況是正確。錯誤只用在切分未找到、整段搜尋過的任務。
+  - 實驗（`experiments/2026-10-30-agentpresence.md`，agentpresence.1，segfix.5 的切分 11 支；之後依 code review 修正搜尋範圍、任務說明與上面的無法判定規則）：判定和程式給分完全相同（60/62），嚴格一致 57/62 vs 56/62；切分漏看的 VID_0100 步驟 6 由 agent 補回。每支影片評分多約 40 萬 input tokens。
 - **SKILL.md 第 4 節拆成 `criteria/`（2026-10-29，SKILL／rubric 版本不變）：**
   - 「各類標準怎麼判」的 10 個小節搬到 `criteria/01-hand-washing.md` … `09-disposal.md`（洗手 1a、1b 同一個檔），`SKILL.md` 原處留一行 `<!-- criteria/*.md ... -->` 標記。
   - 新增 `scripts/skill_doc.py`：依檔名順序把 `criteria/*.md` 放回標記行。評分 agent 的 system prompt 和 `rules_SKILL.md` 都用組裝後的全文，和拆檔前的 0.29 `SKILL.md` 逐位元組相同，所以版本不變、評分結果與紀錄照用。

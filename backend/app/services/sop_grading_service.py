@@ -209,9 +209,9 @@ class TaskState:
 
 
 def _searching(c: dict, segmentation: dict) -> bool:
-    """rules.py gave this criterion the search_steps range: segmentation did not find its step."""
-    return bool(c.get("search_steps")) and not any(
-        e["step_id"] == c["step_id"] and e["status"] == "detected" for e in segmentation["steps"])
+    """rules.py gave this criterion its search range (same test: rules.searched)."""
+    return load_grading_module("rules").searched(
+        c, [e for e in segmentation["steps"] if e["step_id"] == c["step_id"]])
 
 
 def _segment_lines(task: dict, segmentation: dict) -> list[str]:
@@ -220,8 +220,8 @@ def _segment_lines(task: dict, segmentation: dict) -> list[str]:
     grading agent echoed it instead of judging the frames (10b on VID_0098), and the two models
     stop being independent checks of each other. A searched criterion also lists every step of its
     search range, so the agent knows what happens where."""
-    searched = {s for c in task["criteria"] if _searching(c, segmentation)
-                for s in range(c["search_steps"][0], c["search_steps"][1] + 1)}
+    search_range = load_grading_module("rubric").search_range
+    searched = {s for c in task["criteria"] if _searching(c, segmentation) for s in search_range(c)}
     lines = []
     for sid in sorted({*task["window_steps"], *(c["step_id"] for c in task["criteria"]), *searched}):
         for e in (e for e in segmentation["steps"] if e["step_id"] == sid):
@@ -268,7 +268,7 @@ def build_task_content(task: dict, video_id: str, duration: float, state: TaskSt
         *(f"  {c['criterion_id']}（步驟 {c['step_id']}）：{c['text']}；window={c['window']}"
           + ("；要聽聲音" if c["audio"] else "") + ("；要每 0.5 秒一格" if c["dense"] else "")
           + ("；要看 clip 的連續動作" if c["clip"] else "")
-          + (f"；切分未找到步驟 {c['step_id']}，要在整個區間（步驟 {c['search_steps'][0]}–{c['search_steps'][1]} 之間）內找"
+          + ("；" + load_grading_module("rules").search_note(c["step_id"], c["search_steps"])
              if _searching(c, segmentation) else "")
           + (f"；要計時：final 填 span=[開始, 結束]（影片秒數），滿 {c['min_seconds']:g} 秒才是正確"
              if c.get("min_seconds") else "")

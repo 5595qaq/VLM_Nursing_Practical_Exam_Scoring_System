@@ -95,6 +95,8 @@ def test_search_steps_needs_a_visual_criterion_and_step_numbers():
     for bad in ([], 18, [5, 18, 20], [True, 18], [7, 18], [1, 5], [5.0, 18]):  # 6a must lie between first and last
         assert any("search_steps needs" in e
                    for e in broken(lambda r: r["steps"][5]["criteria"][0].update(search_steps=bad))), bad
+    assert any("search_steps needs" in e  # the search range must cover the criterion's own window
+               for e in broken(lambda r: r["steps"][5]["criteria"][0].update(window_steps=[6, 20])))
 
 
 def test_not_visible_criterion_cannot_be_key():

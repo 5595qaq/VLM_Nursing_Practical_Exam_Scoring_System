@@ -58,7 +58,7 @@ def check_rubric(rubric: dict) -> list[str]:
                 errors.append(f"criterion {cid}: clip needs a visual criterion and true/false")
             if cat == "visual" and not c.get("window_steps"):
                 errors.append(f"criterion {cid}: visual criterion needs window_steps")
-            if "search_steps" in c and not _search_range_ok(c["search_steps"], sid, cat):
+            if "search_steps" in c and not _search_range_ok(c["search_steps"], sid, cat, c.get("window_steps") or []):
                 errors.append(f"criterion {cid}: search_steps needs a visual criterion and "
                               f"[first, last] step numbers around step {sid}")
             if cat == "not_visible" and (c.get("key") or not c.get("reason")):
@@ -66,11 +66,13 @@ def check_rubric(rubric: dict) -> list[str]:
     return errors
 
 
-def _search_range_ok(value, sid: int, category: str) -> bool:
-    """search_steps is [first, last] with first < sid < last: the steps the missing step must lie between."""
+def _search_range_ok(value, sid: int, category: str, window_steps: list[int]) -> bool:
+    """search_steps is [first, last] with first < sid < last (the steps the missing step must lie between),
+    and it covers the criterion's window_steps."""
     return (category == "visual" and isinstance(value, list) and len(value) == 2
             and all(isinstance(s, int) and not isinstance(s, bool) for s in value)
-            and 1 <= value[0] < sid < value[1] <= STEP_COUNT)
+            and 1 <= value[0] < sid < value[1] <= STEP_COUNT
+            and all(value[0] <= s <= value[1] for s in window_steps))
 
 
 def search_range(c: dict) -> list[int]:

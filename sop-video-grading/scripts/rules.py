@@ -34,8 +34,8 @@ def grade_from_segmentation(seg: dict, rubric: dict | None = None,
 
     steps = []
     for step in rubric["steps"]:
-        searched = any(c.get("search_steps") for c in step["criteria"])
-        criteria = [_grade(c, step["step_id"], entries, duration, margin, searched) for c in step["criteria"]]
+        search_step = any(c.get("search_steps") for c in step["criteria"])
+        criteria = [_grade(c, step["step_id"], entries, duration, margin, search_step) for c in step["criteria"]]
         steps.append(build_step(step, criteria))
     return {"video_id": seg["video_id"], "rubric_version": rubric["version"], "steps": steps}
 
@@ -87,8 +87,19 @@ def _criterion(c: dict, verdict: str, explanation: str, *, source: str | None = 
             "reason": reason, "window": window}
 
 
+def searched(c: dict, entries: list[dict]) -> bool:
+    """The criterion is looked for over its search range: it has search_steps and segmentation did not find
+    its step (`entries` are that step's segmentation entries). The grading service uses this too."""
+    return bool(c.get("search_steps")) and _status(entries) != "detected"
+
+
+def search_note(sid: int, steps: list[int]) -> str:
+    """How the window was chosen; criteria/10-presence.md keys off 「切分未找到步驟 N」."""
+    return f"切分未找到步驟 {sid}，要在整個區間（步驟 {steps[0]}–{steps[-1]} 之間）內找"
+
+
 def _grade(c: dict, sid: int, entries: dict[int, list[dict]], duration: float, margin: float,
-           searched: bool = False) -> dict:
+           search_step: bool = False) -> dict:
     own = entries.get(sid, [])
     status = _status(own)
     seg_ref = [f"seg:step {sid}"]
@@ -97,7 +108,7 @@ def _grade(c: dict, sid: int, entries: dict[int, list[dict]], duration: float, m
         return _criterion(c, UNDETERMINED, f"{c['note']}，無法判定。", confidence=1.0,
                           reason=c["reason"])
 
-    if status == "not_performed" and not (searched and c["category"] == "visual"):
+    if status == "not_performed" and not (search_step and c["category"] == "visual"):
         conf = max(e["confidence"] for e in own)
         return _criterion(c, WRONG, f"切分結果：步驟 {sid} 未執行（{_seg_evidence(own)}）。",
                           source="rule", evidence=seg_ref, confidence=conf)
@@ -112,14 +123,14 @@ def _grade(c: dict, sid: int, entries: dict[int, list[dict]], duration: float, m
         return _criterion(c, CORRECT, f"切分結果：步驟 {sid} 於 {_spans_text(found)}（{_seg_evidence(found)}）。",
                           evidence=seg_ref, confidence=conf)
 
-    search = bool(c.get("search_steps")) and status != "detected"
+    search = searched(c, own)
     window_steps = search_range(c) if search else c["window_steps"]
     window = _window(window_steps, entries, duration, margin)
     if window is None:
-        return _criterion(c, UNDETERMINED,
-                          f"切分結果未定位步驟 {'、'.join(map(str, window_steps))}，無法取得要看的畫面區間。",
+        steps = f"{window_steps[0]}–{window_steps[-1]}" if search else "、".join(map(str, window_steps))
+        return _criterion(c, UNDETERMINED, f"切分結果未定位步驟 {steps}，無法取得要看的畫面區間。",
                           source="rule", evidence=seg_ref, reason="切分未定位")
-    where = f"切分未找到步驟 {sid}，在步驟 {window_steps[0]}–{window_steps[-1]} 的區間內找；" if search else ""
+    where = f"{search_note(sid, window_steps)}；" if search else ""
     return _criterion(c, PENDING, f"等待評分 agent 看畫面判定（{where}區間 {fmt_time(window[0])}–{fmt_time(window[1])}）。",
                       window=window)
 
