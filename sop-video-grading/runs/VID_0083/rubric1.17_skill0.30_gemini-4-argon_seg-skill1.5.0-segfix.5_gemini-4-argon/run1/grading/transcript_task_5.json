@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 6.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 15753,
+  "cached_input_tokens": 0,
+  "output_tokens": 89,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@61-67.5（context box，有聲音；片段內 00:00 ＝ 影片 01:01.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [62.0, 63.5, 64.5, 65.5], \"region\": [0.3, 0.7, 0.6, 0.98], \"reason\": \"確認 vial 瓶蓋打開的動作以及瓶頂從有色塑膠蓋變成銀色鋁圈的變化\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 7.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 16990,
+  "cached_input_tokens": 0,
+  "output_tokens": 213,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@61-67.5（context box，有聲音；片段內 00:00 ＝ 影片 01:01.0）",
+   "zoom@62/63.5/64.5/65.5 region=[0.300, 0.700, 0.600, 0.980]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"01:02.0 時 vial 瓶頂為整片深紅褐色圓蓋，01:03.0–01:04.5（clip@61-67.5 片段內 00:02.0–00:03.5）左手握瓶身、右手隔著酒精棉片將塑膠翻蓋推開，01:04.5–01:05.5 可清楚看到瓶頂已變成銀色鋁圈，取下的深紅色瓶蓋放在左前方桌面。\", \"evidence\": [\"clip@61-67.5\", \"zoom@62\", \"zoom@63.5\", \"zoom@64.5\", \"zoom@65.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

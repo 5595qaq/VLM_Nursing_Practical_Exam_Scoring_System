@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 9.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 15546,
+  "cached_input_tokens": 0,
+  "output_tokens": 336,
+  "thinking_tokens": 246,
+  "materials": [
+   "clip@90-99.5（context box，有聲音；片段內 00:00 ＝ 影片 01:30.0）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 98.0, \"end\": 109.5, \"fps\": 2, \"reason\": \"在 01:38.5–01:39.0 看到學生剛撕開酒精棉片並伸手拿稀釋液瓶，往後看 10 秒確認是否有消毒稀釋液瓶口\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 10.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 17776,
+  "cached_input_tokens": 0,
+  "output_tokens": 259,
+  "thinking_tokens": 171,
+  "materials": [
+   "clip@90-99.5（context box，有聲音；片段內 00:00 ＝ 影片 01:30.0）",
+   "clip@98-109.5（context box，有聲音；片段內 00:00 ＝ 影片 01:38.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [99.5, 100.0, 100.5, 101.0], \"region\": [0.25, 0.45, 0.6, 0.85], \"reason\": \"確認以酒精棉片包住稀釋液瓶頂擦拭並扭開\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 7.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 19023,
+  "cached_input_tokens": 13381,
+  "output_tokens": 248,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@90-99.5（context box，有聲音；片段內 00:00 ＝ 影片 01:30.0）",
+   "clip@98-109.5（context box，有聲音；片段內 00:00 ＝ 影片 01:38.0）",
+   "zoom@99.5/100/100.5/101 region=[0.250, 0.450, 0.600, 0.850]"
+  ],
+  "reply": "{\n  \"action\": \"final\",\n  \"criteria\": [\n    {\n      \"criterion_id\": \"7a\",\n      \"verdict\": \"正確\",\n      \"explanation\": \"01:35.0–01:38.5 撕開酒精棉片包裝取出棉片，01:39.0 拿起細長透明的稀釋液瓶，01:39.5–01:41.5（clip@98-109.5 片段內 00:01.5–00:03.5）左手持稀釋液瓶，右手拿白色方形酒精棉片在稀釋液瓶口頂端來回擦拭消毒。\",\n      \"evidence\": [\n        \"clip@98-109.5\",\n        \"zoom@100\",\n        \"zoom@100.5\",\n        \"zoom@101\"\n      ],\n      \"confidence\": 0.95,\n      \"reason\": null\n    }\n  ]\n}",
+  "errors": []
+ }
+]

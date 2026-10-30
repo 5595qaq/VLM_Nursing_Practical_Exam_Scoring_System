@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 6.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 15070,
+  "cached_input_tokens": 0,
+  "output_tokens": 125,
+  "thinking_tokens": 39,
+  "materials": [
+   "clip@77-84.5（context box，有聲音；片段內 00:00 ＝ 影片 01:17.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [78.5, 79.5, 80.5, 81.0], \"region\": [0.42, 0.32, 0.72, 0.62], \"reason\": \"確認以酒精棉片包住稀釋液瓶頂扭開瓶口的細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 5.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 16300,
+  "cached_input_tokens": 0,
+  "output_tokens": 183,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@77-84.5（context box，有聲音；片段內 00:00 ＝ 影片 01:17.0）",
+   "zoom@78.5/79.5/80.5/81 region=[0.420, 0.320, 0.720, 0.620]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"8a\", \"verdict\": \"正確\", \"explanation\": \"於 01:18.5–01:20.5（clip@77-84.5 片段內 00:01.5–00:03.5）左手握住稀釋液瓶身，右手隔著酒精棉片包住稀釋液瓶頂端將其扭開取下，並於 01:21.0 將打開的稀釋液瓶放到車上。\", \"evidence\": [\"clip@77-84.5\", \"zoom@78.5\", \"zoom@79.5\", \"zoom@80.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

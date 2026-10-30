@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 5.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 15054,
+  "cached_input_tokens": 0,
+  "output_tokens": 77,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@27-34.5（context box，有聲音；片段內 00:00 ＝ 影片 00:27.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [30.0, 31.0, 31.5], \"region\": [0.55, 0.5, 0.85, 0.8], \"reason\": \"確認打開vial深紅色塑膠翻蓋的動作與銀色鋁圈\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 13.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 16264,
+  "cached_input_tokens": 0,
+  "output_tokens": 387,
+  "thinking_tokens": 208,
+  "materials": [
+   "clip@27-34.5（context box，有聲音；片段內 00:00 ＝ 影片 00:27.0）",
+   "zoom@30/31/31.5 region=[0.550, 0.500, 0.850, 0.800]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"00:30.0–00:32.0（clip@27-34.5 片段內 00:03.0–00:05.0）學生拿起 vial，用手指推開瓶頂深褐色塑膠翻蓋，00:31.5–00:32.5 將翻蓋取下放於治療車上，vial 瓶頂露出銀色鋁圈。\", \"evidence\": [\"clip@27-34.5\", \"zoom@30\", \"zoom@31\", \"zoom@31.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

@@ -1,0 +1,64 @@
+[
+ {
+  "turn": 1,
+  "seconds": 8.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 14810,
+  "cached_input_tokens": 0,
+  "output_tokens": 357,
+  "thinking_tokens": 302,
+  "materials": [
+   "clip@57.5-63（context box，有聲音；片段內 00:00 ＝ 影片 00:57.5）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 47.5, \"end\": 57.5, \"fps\": 2, \"reason\": \"檢查 57.5 秒之前是否已經將 vial 瓶口打開\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 41.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 16759,
+  "cached_input_tokens": 0,
+  "output_tokens": 59,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@57.5-63（context box，有聲音；片段內 00:00 ＝ 影片 00:57.5）",
+   "clip@47.5-57.5（context box，有聲音；片段內 00:00 ＝ 影片 00:47.5）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 63.0, \"end\": 73.0, \"fps\": 2, \"reason\": \"檢查 63.0-73.0 秒之間是否有打開 vial 瓶口的動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 8.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 18700,
+  "cached_input_tokens": 0,
+  "output_tokens": 300,
+  "thinking_tokens": 218,
+  "materials": [
+   "clip@57.5-63（context box，有聲音；片段內 00:00 ＝ 影片 00:57.5）",
+   "clip@47.5-57.5（context box，有聲音；片段內 00:00 ＝ 影片 00:47.5）",
+   "clip@63-73（context box，有聲音；片段內 00:00 ＝ 影片 01:03.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [59.5, 60.5, 61.5, 62.5], \"region\": [0.42, 0.55, 0.68, 0.9], \"reason\": \"確認打開 vial 塑膠瓶蓋的動作及掉落的瓶蓋\"}",
+  "errors": []
+ },
+ {
+  "turn": 4,
+  "seconds": 92.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 19953,
+  "cached_input_tokens": 0,
+  "output_tokens": 180,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@57.5-63（context box，有聲音；片段內 00:00 ＝ 影片 00:57.5）",
+   "clip@47.5-57.5（context box，有聲音；片段內 00:00 ＝ 影片 00:47.5）",
+   "clip@63-73（context box，有聲音；片段內 00:00 ＝ 影片 01:03.0）",
+   "zoom@59.5/60.5/61.5/62.5 region=[0.420, 0.550, 0.680, 0.900]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"於 00:59.5 看到桌上的 vial 仍有深褐色塑膠圓蓋，01:00.5–01:01.5 學生拿起 vial 並隔著酒精棉片以拇指推開瓶蓋，至 01:02.5 深褐色塑膠圓蓋掉落（畫面左下方），vial 瓶頂露出銀色鋁圈。\", \"evidence\": [\"clip@57.5-63\", \"zoom@59.5\", \"zoom@60.5\", \"zoom@61.5\", \"zoom@62.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 47.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 16428,
+  "cached_input_tokens": 14174,
+  "output_tokens": 245,
+  "thinking_tokens": 155,
+  "materials": [
+   "clip@74-84（context box，有聲音；片段內 00:00 ＝ 影片 01:14.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [78.0, 79.0, 80.0, 81.0], \"region\": [0.3, 0.45, 0.65, 0.85], \"reason\": \"確認以酒精棉片消毒稀釋液瓶口（包住瓶頂擦拭並扭開）\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 6.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 17649,
+  "cached_input_tokens": 0,
+  "output_tokens": 163,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@74-84（context box，有聲音；片段內 00:00 ＝ 影片 01:14.0）",
+   "zoom@78/79/80/81 region=[0.300, 0.450, 0.650, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"7a\", \"verdict\": \"正確\", \"explanation\": \"於 01:18.0–01:21.0（clip@74-84 片段內 00:04.0–00:07.0），左手握住細長稀釋液瓶，右手以酒精棉片包住稀釋液瓶頂端擦拭並扭開瓶口，完成消毒動作。\", \"evidence\": [\"clip@74-84\", \"zoom@78\", \"zoom@79\", \"zoom@80\", \"zoom@81\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

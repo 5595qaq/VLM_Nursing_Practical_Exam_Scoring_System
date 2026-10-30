@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 4.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 15974,
+  "cached_input_tokens": 0,
+  "output_tokens": 81,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@34.8-42.2（context box，有聲音；片段內 00:00 ＝ 影片 00:34.8）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [37.3, 37.8, 38.3, 38.8], \"region\": [0.35, 0.55, 0.65, 0.88], \"reason\": \"確認以酒精棉片擦拭 vial 瓶口的細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 5.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 17211,
+  "cached_input_tokens": 14174,
+  "output_tokens": 185,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@34.8-42.2（context box，有聲音；片段內 00:00 ＝ 影片 00:34.8）",
+   "zoom@37.3/37.8/38.3/38.8 region=[0.350, 0.550, 0.650, 0.880]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"6a\", \"verdict\": \"正確\", \"explanation\": \"於 00:36.8–00:39.8（clip@34.8-42.2 片段內 00:02.0–00:05.0），學生右手握住粉劑 vial，左手持白色方形酒精棉片在 vial 瓶口處旋轉擦拭消毒，並於擦拭後將棉片覆蓋於瓶口上。\", \"evidence\": [\"clip@34.8-42.2\", \"zoom@37.3\", \"zoom@37.8\", \"zoom@38.3\", \"zoom@38.8\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
