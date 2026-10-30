@@ -38,8 +38,8 @@ def test_rubric_classification_matches_the_plan():
     assert "取出時" not in by_id["10b"]["text"] and "取出後" in by_id["10b"]["text"]
     assert "隔著包裝" in by_id["10b"]["text"]  # fixing through the wrapper counts (rubric 1.10)
     assert by_id["10b"]["category"] == "visual" and by_id["10b"]["key"] is False
-    # rubric 1.16: the agent judges only after the syringe is out; the time in the wrapper goes to a person
-    assert "只判空針完全離開包裝之後" in by_id["10b"]["text"] and "轉人工" in by_id["10b"]["text"]
+    # rubric 1.18-pkgspan.1: the agent gets the wrapper spans and judges before and after removal
+    assert "手拿空針包裝時段" in by_id["10b"]["text"] and by_id["10b"]["package_spans"] is True
     assert by_id["10b"]["window_steps"] == [10]
     # 5a and 6a share one task but keep their own windows; 7a and 8a stay apart (rubric 1.18)
     assert by_id["5a"]["task"] == by_id["6a"]["task"] == "5-6"

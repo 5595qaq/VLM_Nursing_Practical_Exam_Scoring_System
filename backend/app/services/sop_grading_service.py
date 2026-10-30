@@ -104,6 +104,8 @@ def build_tasks(result: dict, rubric: dict, steps: set[int] | None, segmentation
                     "dense": spec.get("sample_interval") is not None,
                     "clip": spec.get("clip", False),
                     "search_steps": spec.get("search_steps")}
+            if spec.get("package_spans"):
+                crit["first_use"], crit["package_spans"] = package_spans(segmentation)
             crit["searching"] = _searching(crit, segmentation)
             if crit["searching"]:
                 key = ("search", c["criterion_id"])
@@ -302,6 +304,7 @@ def build_task_content(task: dict, video_id: str, duration: float, state: TaskSt
              if c["searching"] else "")
           + (f"；要計時：final 填 span=[開始, 結束]（影片秒數），滿 {c['min_seconds']:g} 秒才是正確"
              if c.get("min_seconds") else "")
+          + _package_note(c)
           for c in task["criteria"]),
         "切分結果（相關步驟的時間；只有時間，做了什麼要自己從畫面判斷）：",
         *_segment_lines(task, segmentation),
@@ -394,20 +397,39 @@ async def _run_material_action(action: dict, runner: GradingRunner, boxes: dict,
 FIRST_SYRINGE_USE_STEP = 13  # uncapping the syringe to draw the diluent
 
 
-def _package_review(c: dict, segmentation: dict) -> dict:
-    """10b 無法判定 → needs_review with every span the hands held the syringe wrapper (the segmentation's
-    package_spans; without them step 9's start to step 10's end, else the criterion window). Fixing the
-    needle through the wrapper is legal, but the grading agent read those frames as twisting or tearing
-    from run to run, so it judges only after the syringe is out and a person looks at the rest. Only spans
-    starting before the syringe's first use (step 13, uncapping it to draw the diluent) are listed; the
-    later ones are putting it back in the wrapper (VID_0098 listed 9 spans up to 06:25)."""
-    if c["criterion_id"] not in load_grading_module("validate_grading").AFTER_REMOVAL or c["verdict"] != "無法判定":
-        return c
+def package_spans(segmentation: dict) -> tuple[float | None, list[list[float]]]:
+    """The syringe's first use (step 13's start) and the segmentation's package_spans starting before it,
+    cut at the first use; the later ones are putting it back in the wrapper (VID_0098 listed 9 spans up to
+    06:25)."""
     first_use = min((e["start"] if e["start"] is not None else e["logical_window"][0]
                      for e in segmentation["steps"] if e["step_id"] == FIRST_SYRINGE_USE_STEP
                      and (e["start"] is not None or e.get("logical_window"))), default=None)
-    spans = [(s["start"], s["end"]) for s in segmentation.get("package_spans") or []
-             if first_use is None or s["start"] < first_use]
+    return first_use, [[s["start"], s["end"] if first_use is None else min(s["end"], first_use)]
+                       for s in segmentation.get("package_spans") or []
+                       if first_use is None or s["start"] < first_use]
+
+
+def _package_note(c: dict) -> str:
+    """Task line for a criterion with rubric package_spans (10b): where the hands held the wrapper."""
+    if "package_spans" not in c:
+        return ""
+    use = f"，第一次使用空針 {_fmt_t(c['first_use'])} 之前" if c["first_use"] is not None else ""
+    if not c["package_spans"]:
+        return f"；切分沒有標出手拿空針包裝的時段{use}"
+    spans = "、".join(f"{_fmt_t(a)}–{_fmt_t(b)}（{a:g}–{b:g} s）" for a, b in c["package_spans"])
+    return (f"；切分標出的手拿空針包裝時段{use}：{spans}（只有時間，做了什麼要自己看；"
+            f"這些時段前後 {load_grading_module('validate_grading_action').WINDOW_SLACK:g} 秒內也可以用動作）")
+
+
+def _package_review(c: dict, segmentation: dict) -> dict:
+    """10b 無法判定 or 錯誤 → needs_review with every span the hands held the syringe wrapper (package_spans;
+    without them step 9's start to step 10's end, else the criterion window), and the time from the last
+    span's end (out of the wrapper) to WINDOW_SLACK after the first use (VID_0081 fixed the needle at 02:20,
+    uncapping at 02:18, 25 s after step 10; VID_0098 right after taking it out). A person checks what the grading agent could not
+    see or may have missed: it read twisting as tearing or testing the plunger from run to run."""
+    if c["criterion_id"] not in load_grading_module("validate_grading").WRAPPER or c["verdict"] not in ("無法判定", "錯誤"):
+        return c
+    first_use, spans = package_spans(segmentation)
     where = "切分標出的手拿空針包裝時段" + (f"，第一次使用空針 {_fmt_t(first_use)} 之前" if first_use is not None else "")
     if not spans:
         found = [(e["start"], e["end"]) for e in segmentation["steps"]
@@ -415,9 +437,15 @@ def _package_review(c: dict, segmentation: dict) -> dict:
         spans = [(min(a for a, _ in found), max(b for _, b in found))] if found else [tuple(c["window"])]
         where = "切分沒有手拿包裝的時段，改看切分步驟 9、10 的時間範圍" if found else "切分沒有步驟 9、10 的時間，改看評分區間"
     times = "、".join(f"{_fmt_t(a)}–{_fmt_t(b)}" for a, b in spans)
+    # out of the wrapper (the last span's end) up to just after the first use (uncapping), else the window's end
+    slack = load_grading_module("validate_grading_action").WINDOW_SLACK
+    out = max(b for _, b in spans)
+    until = min(segmentation["meta"]["duration"], first_use + slack if first_use is not None else c["window"][1])
+    after = f"；取出後到拔針頭蓋：{_fmt_t(out)}–{_fmt_t(until)}" if until > out else ""
     agent = f"；評分 agent：{c['review_reason']}" if c.get("review_reason") else ""
+    what = "看不清楚有沒有固定針頭" if c["verdict"] == "無法判定" else "判沒有固定針頭（錯誤），要人工確認沒有漏看"
     return {**c, "needs_review": True,
-            "review_reason": f"取出後沒看到固定；取出前有沒有隔著包裝固定要人工看（{where}）：{times}{agent}"}
+            "review_reason": f"評分 agent {what}，要人工看（{where}）：{times}{after}{agent}"}
 
 
 async def run_task(task: dict, video_id: str, runner: GradingRunner, boxes: dict, segmentation: dict,
@@ -460,6 +488,8 @@ async def run_task(task: dict, video_id: str, runner: GradingRunner, boxes: dict
         if not errors:
             try:
                 feedback = await _run_material_action(action, runner, boxes, materials, state)
+                if action["action"] == "clip":  # validate_grading_action: 10b 錯誤 needs one on a wrapper span
+                    task.setdefault("clips", []).append([action["start"], action["end"]])
                 rejects = 0
                 continue
             except SkillRunError as exc:
