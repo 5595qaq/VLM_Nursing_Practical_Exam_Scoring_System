@@ -16,9 +16,12 @@ when it was built from the label times they say nothing about the grading agent:
   agreement   model verdict == human verdict
   error recall  human 錯誤/部分正確 that the model also marked 錯誤/部分正確
   false alarms  human 正確 that the model marked 錯誤/部分正確
-  time          the segmentation's detected spans of the step against the label times: they match when a pair
-                overlaps or the starts differ by at most 3 s (a step without one uses its logical_window),
-                and a label time with no span at all is a mismatch (a step whose time does not match is wrong even when the verdicts agree). The
+  time          the model's times of the step against the label times: they match when a pair overlaps or the
+                starts differ by at most 3 s, and a label time with no model time at all is a mismatch (a step
+                whose time does not match is wrong even when the verdicts agree). The model's times are the
+                mm:ss the grading agent cited in the step's explanations (its own criteria, 待判定 aside; times
+                in parentheses are clip-relative and dropped; a lone mm:ss is a point), or, when it cited none,
+                the segmentation's detected spans (a step without one uses its logical_window). The
                 segmentation is the segmentation.json next to the grading file or one folder up
                 (runs/<video>/<version>/runN/grading.json), used only when its video_id is the grading's;
                 without it, or without a label time, the time is not checked (–) and only the verdict counts.
@@ -39,6 +42,10 @@ COMPARED = {"正確", "錯誤", "部分正確", "無法判定"}
 FAULTS = {"錯誤", "部分正確"}
 TIME_SLACK = 3.0  # seconds between starts that still count as the same span
 _TIME_RE = re.compile(r"^(\d+):(\d{0,2}(?:\.\d+)?)$")
+_CITED = r"(\d{2}):(\d{2}(?:\.\d+)?)"
+_CITED_SPAN_RE = re.compile(_CITED + r"\s*[–\-~～]\s*" + _CITED)
+_CITED_POINT_RE = re.compile(_CITED)
+_PAREN_RE = re.compile(r"（[^（）]*）|\([^()]*\)")
 
 
 def parse_time(text: str) -> float | None:
@@ -61,6 +68,22 @@ def parse_spans(start: str, end: str) -> list[tuple[float, float]]:
 
 def spans_match(model: list[tuple[float, float]], human: list[tuple[float, float]]) -> bool:
     return any(ms <= he and hs <= me or abs(ms - hs) <= TIME_SLACK for ms, me in model for hs, he in human)
+
+
+def cited_spans(text: str) -> list[tuple[float, float]]:
+    """mm:ss ranges and points an explanation cites; parentheses hold clip-relative times
+    (「clip@27-35 片段內 00:02.5–00:05.0」), so they are dropped first."""
+    def sec(m, i):
+        return int(m.group(i)) * 60 + float(m.group(i + 1))
+    text = _PAREN_RE.sub("", text)
+    spans = [(sec(m, 1), sec(m, 3)) for m in _CITED_SPAN_RE.finditer(text)]
+    spans += [(sec(m, 1), sec(m, 1)) for m in _CITED_POINT_RE.finditer(_CITED_SPAN_RE.sub("", text))]
+    return sorted(spans)
+
+
+def agent_spans(step: dict) -> list[tuple[float, float]]:
+    return sorted({span for c in step.get("criteria", []) if c.get("source") == "vlm" and c["verdict"] != "待判定"
+                   for span in cited_spans(c["explanation"])})
 
 
 def segmentation_spans(segmentation: dict) -> dict[int, list[tuple[float, float]]]:
@@ -114,7 +137,8 @@ def visual_steps() -> set[int]:
 
 def compare(grading: dict, labels: dict[int, dict], segmentation: dict | None = None) -> list[dict]:
     """One row per labelled step. `time_match` is None when the time was not checked (no segmentation or
-    no label time); a label time without a detected span is False."""
+    no label time); a label time without a model time is False. `time_source` says where the model's
+    times came from: agent (cited in its explanations) or segmentation."""
     visual = visual_steps()
     seg = segmentation_spans(segmentation) if segmentation else {}
     rows = []
@@ -122,13 +146,16 @@ def compare(grading: dict, labels: dict[int, dict], segmentation: dict | None = 
         human = labels.get(step["step_id"])
         if human is None:
             continue
-        model_spans, human_spans = seg.get(step["step_id"], []), human.get("spans", [])
+        cited = agent_spans(step) if segmentation else []
+        model_spans = cited or seg.get(step["step_id"], [])
+        human_spans = human.get("spans", [])
         time_match = spans_match(model_spans, human_spans) if segmentation and human_spans else None
         match = human["verdict"] == step["verdict"]
         rows.append({"step_id": step["step_id"], "kind": "V" if step["step_id"] in visual else "P",
                      "human": human["verdict"], "human_why": human["why"],
                      "model": step["verdict"], "model_why": step["explanation"],
                      "match": match, "human_spans": human_spans, "model_spans": model_spans,
+                     "time_source": "agent" if cited else "segmentation",
                      "time_match": time_match, "strict_match": match and time_match is not False,
                      "review": bool(step.get("needs_review"))})
     return rows
@@ -179,12 +206,13 @@ def _totals(rows: list[dict]) -> str:
 
 
 def render(video_id: str, rows: list[dict], note: str = "") -> str:
-    out = [f"## {video_id}", "", *([f"（{note}）", ""] if note else []), "| 步驟 | 類型 | 人工 | 模型 | 一致 | 時間（人工／切分） | 人工說明 | 模型說明 |",
+    out = [f"## {video_id}", "", *([f"（{note}）", ""] if note else []), "| 步驟 | 類型 | 人工 | 模型 | 一致 | 時間（人工／模型） | 人工說明 | 模型說明 |",
            "|---|---|---|---|---|---|---|---|"]
     for r in rows:
         model = r["model"] + ("（需人工複核）" if r.get("review") else "")
         mark = {True: "✓", False: "✗", None: "–"}[r.get("time_match")]
-        times = f"{mark} {_spans(r.get('human_spans', []))}／{_spans(r.get('model_spans', []))}"
+        source = "（說明）" if r.get("time_source") == "agent" else ""
+        times = f"{mark} {_spans(r.get('human_spans', []))}／{_spans(r.get('model_spans', []))}{source}"
         out.append(f"| {r['step_id']} | {r['kind']} | {r['human']} | {model} | {'✓' if r['match'] else '✗'} | "
                    f"{times} | {_short(r['human_why'], 60)} | {_short(r['model_why'])} |")
     out += ["", _totals(rows), ""]
