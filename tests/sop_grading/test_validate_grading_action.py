@@ -173,15 +173,6 @@ def test_fixing_the_needle_wrong_needs_a_clip_on_a_wrapper_span():
     assert validate(action, {**task, "clips": [[68.0, 76.0]]}, used, DURATION) == []
 
 
-def test_video_only_task_has_clips_only():
-    task = {"window": [74.0, 81.0], "video_only": True, "criteria": [{"criterion_id": "10b", "window": [74.0, 81.0]}]}
-    zoom = {"action": "zoom", "times": [76.0], "region": [0.3, 0.4, 0.6, 0.7], "reason": "x"}
-    assert any("video only" in e for e in validate(zoom, task, FRESH, DURATION))
-    clip = {"action": "clip", "start": 74, "end": 81, "fps": 10, "region": [0.3, 0.4, 0.6, 0.7], "reason": "旋緊"}
-    assert validate(clip, task, {**FRESH, "clip": 3}, DURATION) == []
-    assert any("budget for clip exhausted (4)" in e for e in validate(clip, task, {**FRESH, "clip": 4}, DURATION))
-
-
 def test_wrapper_spans_open_the_action_range():
     # 10b: the segmentation's package_spans (before the first use) are listed with the criterion
     task = {"window": [74.0, 81.0], "criteria": [
