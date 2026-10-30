@@ -82,8 +82,11 @@ class Material:
     fps: float = CLIP_FPS
 
 
-def build_tasks(result: dict, rubric: dict, steps: set[int] | None = None) -> list[dict]:
-    """Group the 待判定 criteria by window_steps; each group is one model conversation."""
+def build_tasks(result: dict, rubric: dict, steps: set[int] | None = None,
+                segmentation: dict | None = None) -> list[dict]:
+    """Group the 待判定 criteria by window_steps; each group is one model conversation.
+    A criterion searching its range (rules.searched) gets a task of its own: sharing would stretch the
+    other criteria's few seconds to the whole range (5a and 6a share steps 5-6, rubric 1.18)."""
     specs = load_grading_module("rubric").criteria_by_id(rubric)
     groups: dict[tuple, dict] = {}
     for step in result["steps"]:
@@ -91,16 +94,18 @@ def build_tasks(result: dict, rubric: dict, steps: set[int] | None = None) -> li
             spec = specs[c["criterion_id"]]
             if c["verdict"] != "待判定" or (steps and spec["step_id"] not in steps):
                 continue
-            key = tuple(spec["window_steps"])
+            crit = {"criterion_id": c["criterion_id"], "step_id": spec["step_id"],
+                    "text": spec["text"], "window": c["window"],
+                    "audio": spec.get("audio", False),
+                    "min_seconds": spec.get("min_seconds"),
+                    "dense": spec.get("sample_interval") is not None,
+                    "clip": spec.get("clip", False),
+                    "search_steps": spec.get("search_steps")}
+            searching = segmentation is not None and _searching(crit, segmentation)
+            key = (spec["step_id"],) if searching else tuple(spec["window_steps"])
             group = groups.setdefault(key, {"key": "-".join(map(str, key)), "window_steps": list(key),
                                             "criteria": []})
-            group["criteria"].append({"criterion_id": c["criterion_id"], "step_id": spec["step_id"],
-                                      "text": spec["text"], "window": c["window"],
-                                      "audio": spec.get("audio", False),
-                                      "min_seconds": spec.get("min_seconds"),
-                                      "dense": spec.get("sample_interval") is not None,
-                                      "clip": spec.get("clip", False),
-                                      "search_steps": spec.get("search_steps")})
+            group["criteria"].append(crit)
     tasks = list(groups.values())
     for task in tasks:
         task["window"] = [min(c["window"][0] for c in task["criteria"]),
@@ -475,7 +480,7 @@ async def run_grading(video_path: Path, segmentation: dict, workdir: Path, model
                 step["criteria"] = [old[c["criterion_id"]] if c["verdict"] == "待判定"
                                     and old.get(c["criterion_id"], c)["verdict"] != "待判定" else c
                                     for c in step["criteria"]]
-    tasks = build_tasks(result, rubric, steps)
+    tasks = build_tasks(result, rubric, steps, segmentation)
 
     workdir.mkdir(parents=True, exist_ok=True)
     runner = GradingRunner(workdir, video_path, probe_dir)
