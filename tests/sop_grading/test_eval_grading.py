@@ -3,7 +3,8 @@
 import csv
 import json
 
-from eval_grading import compare, load_labels, main, parse_spans, parse_time, render, spans_match, summarize
+from eval_grading import (cited_spans, compare, load_labels, main, parse_spans, parse_time, render, spans_match,
+                          summarize)
 from grading_helpers import fill_visual, flag_review, make_segmentation
 from rules import grade_from_segmentation
 
@@ -62,24 +63,70 @@ def test_spans_match_overlap_or_starts_within_3s():
 
 
 def test_time_mismatch_counts_as_wrong():
+    # steps 9, 21, 23 have only program criteria: the times come from the segmentation (rubric 1.17 moved 5a–8a
+    # to the grading agent, whose cited times are used first)
     seg = make_segmentation()
     grading = fill_visual(grade_from_segmentation(seg))
-    s5 = next(e for e in seg["steps"] if e["step_id"] == 5)
-    s6 = next(e for e in seg["steps"] if e["step_id"] == 6)
-    labels = {5: {"verdict": "正確", "why": "", "spans": [(s5["start"] + 100, s5["end"] + 100)]},
-              6: {"verdict": "正確", "why": "", "spans": []},
-              7: {"verdict": "正確", "why": "", "spans": [(s6["start"], s6["end"])]}}
-    seg["steps"] = [e for e in seg["steps"] if e["step_id"] != 7]  # label time, no detected span
-    grading["steps"][6]["verdict"] = "正確"
+    s9 = next(e for e in seg["steps"] if e["step_id"] == 9)
+    s21 = next(e for e in seg["steps"] if e["step_id"] == 21)
+    labels = {9: {"verdict": "正確", "why": "", "spans": [(s9["start"] + 100, s9["end"] + 100)]},
+              21: {"verdict": "正確", "why": "", "spans": []},
+              23: {"verdict": "正確", "why": "", "spans": [(s21["start"], s21["end"])]}}
+    seg["steps"] = [e for e in seg["steps"] if e["step_id"] != 23]  # label time, no detected span
+    grading["steps"][22]["verdict"] = "正確"
     rows = compare(grading, labels, seg)
     assert [r["time_match"] for r in rows] == [False, None, False]
     assert [r["strict_match"] for r in rows] == [False, True, False]
     s = summarize(rows)
-    assert s["agreement"] == 3 and s["strict_agreement"] == 1 and s["time_mismatch"] == [5, 7]
+    assert s["agreement"] == 3 and s["strict_agreement"] == 1 and s["time_mismatch"] == [9, 23]
     assert [r["time_match"] for r in compare(grading, labels)] == [None, None, None]  # no segmentation
-    seg["steps"].append({"step_id": 7, "status": "not_visually_determinable", "start": None, "end": None,
-                         "confidence": 0.0, "evidence": "", "logical_window": [s6["start"], s6["end"]]})
+    seg["steps"].append({"step_id": 23, "status": "not_visually_determinable", "start": None, "end": None,
+                         "confidence": 0.0, "evidence": "", "logical_window": [s21["start"], s21["end"]]})
     assert compare(grading, labels, seg)[2]["time_match"] is True  # logical_window when nothing detected
+
+
+def test_cited_spans_drop_clip_relative_times():
+    text = "00:29.5–00:32.0（clip@27-35 片段內 00:02.5–00:05.0）推開翻蓋，00:31.5 脫離；03:00.5-03:05.0 擦拭"
+    assert cited_spans(text) == [(29.5, 32.0), (31.5, 31.5), (180.5, 185.0)]
+    assert cited_spans("沒有時間") == []
+
+
+def test_cited_spans_keep_video_times_in_parentheses_and_other_separators():
+    # code review: only 片段內 times are clip-relative; 至／到 are ranges; reversed and 03:75 typos
+    assert cited_spans("連續彈擊聲（04:47.5–04:50.1）") == [(287.5, 290.1)]
+    assert cited_spans("02:15.2 至 02:29，02:40到02:42") == [(135.2, 149.0), (160.0, 162.0)]
+    assert cited_spans("03:05.0–03:00.5；03:75 看不清；片段內第 00:12.0") == [(180.5, 185.0)]
+
+
+def test_agent_spans_use_the_agents_own_graded_criteria():
+    from eval_grading import agent_spans
+    step = {"criteria": [
+        {"source": "vlm", "verdict": "正確", "explanation": "00:02 開始互搓", "span": [2.0, 18.5]},  # timed
+        {"source": "vlm", "verdict": "待判定", "explanation": "等待評分 agent 看畫面判定（區間 00:00–00:20）。"},
+        {"source": "rule", "verdict": "正確", "explanation": "切分結果：步驟 1 於 00:00–00:18。"},
+        {"source": "vlm", "verdict": "錯誤", "explanation": "00:05–00:07 只做了內、外。"}]}
+    assert agent_spans(step) == [(2.0, 18.5), (5.0, 7.0)]
+
+
+def test_agent_cited_time_is_used_before_the_segmentation():
+    # VID_0100 0.30: the agent found the step at a time the segmentation did not give it
+    seg = make_segmentation()  # step 18 at 03:00–03:08, step 19 at 03:10–03:18
+    grading = fill_visual(grade_from_segmentation(seg))
+    steps = {s["step_id"]: s for s in grading["steps"]}
+    for c in steps[18]["criteria"]:
+        if c["source"] == "vlm":
+            c["explanation"] = "03:30.0–03:35.0（clip@205-215 片段內 00:05.0–00:10.0）持毛筆方式插針。"
+    for c in steps[19]["criteria"]:
+        c["explanation"] = "看到單手回套。"  # no time cited
+    labels = {18: {"verdict": steps[18]["verdict"], "why": "", "spans": [(211.0, 213.0)]},
+              19: {"verdict": steps[19]["verdict"], "why": "", "spans": [(191.0, 192.0)]}}
+    rows = {r["step_id"]: r for r in compare(grading, labels, seg)}
+    assert rows[18]["time_source"] == "agent" and rows[18]["model_spans"] == [(210.0, 215.0)]
+    assert rows[18]["time_match"] is True  # the segmentation's 03:00–03:08 would not match
+    assert rows[19]["time_source"] == "segmentation" and rows[19]["time_match"] is True
+    assert "03:30.0–03:35.0（說明）" in render("VID_0001", list(rows.values()))
+    seg["steps"] = [e for e in seg["steps"] if e["step_id"] != 19]
+    assert {r["step_id"]: r for r in compare(grading, labels, seg)}[19]["time_source"] is None  # no time at all
 
 
 def test_cli_skips_another_videos_segmentation(tmp_path, capsys):
