@@ -33,6 +33,7 @@ def check_rubric(rubric: dict) -> list[str]:
     if ids != list(range(1, STEP_COUNT + 1)):
         errors.append(f"steps must be 1..{STEP_COUNT} in order")
     seen = set()
+    tasks: dict[str, int] = {}
     for step in rubric["steps"]:
         sid = step["step_id"]
         if step.get("removed"):
@@ -56,6 +57,10 @@ def check_rubric(rubric: dict) -> list[str]:
                 errors.append(f"criterion {cid}: min_seconds needs a visual criterion and a number")
             if "clip" in c and (cat != "visual" or not isinstance(c["clip"], bool)):
                 errors.append(f"criterion {cid}: clip needs a visual criterion and true/false")
+            if "task" in c and (cat != "visual" or not isinstance(c["task"], str) or not c["task"]):
+                errors.append(f"criterion {cid}: task needs a visual criterion and a name")
+            elif "task" in c:
+                tasks[c["task"]] = tasks.get(c["task"], 0) + 1
             if cat == "visual" and not c.get("window_steps"):
                 errors.append(f"criterion {cid}: visual criterion needs window_steps")
             if "search_steps" in c and not _search_range_ok(c["search_steps"], sid, cat, c.get("window_steps") or []):
@@ -63,6 +68,8 @@ def check_rubric(rubric: dict) -> list[str]:
                               f"[first, last] step numbers around step {sid}")
             if cat == "not_visible" and (c.get("key") or not c.get("reason")):
                 errors.append(f"criterion {cid}: not_visible criterion needs a reason and cannot be key")
+    errors += [f"task {name} has only one criterion (a task name is shared by the criteria graded together)"
+               for name, n in tasks.items() if n < 2]
     return errors
 
 

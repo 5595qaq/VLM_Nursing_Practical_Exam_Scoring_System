@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 9.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 15945,
+  "cached_input_tokens": 0,
+  "output_tokens": 88,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@49.5-56.5（context box，有聲音；片段內 00:00 ＝ 影片 00:49.5）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [51.0, 51.5, 52.0, 52.5], \"region\": [0.25, 0.45, 0.6, 0.95], \"reason\": \"確認手拿稀釋液瓶並用酒精棉片消毒與扭開瓶頂的細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 4.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 17171,
+  "cached_input_tokens": 14174,
+  "output_tokens": 93,
+  "thinking_tokens": 25,
+  "materials": [
+   "clip@49.5-56.5（context box，有聲音；片段內 00:00 ＝ 影片 00:49.5）",
+   "zoom@51/51.5/52/52.5 region=[0.250, 0.450, 0.600, 0.950]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [53.0, 53.5], \"region\": [0.25, 0.45, 0.6, 0.95], \"reason\": \"確認稀釋液瓶頂扭開脫離的畫面\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 181.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 18380,
+  "cached_input_tokens": 0,
+  "output_tokens": 511,
+  "thinking_tokens": 231,
+  "materials": [
+   "clip@49.5-56.5（context box，有聲音；片段內 00:00 ＝ 影片 00:49.5）",
+   "zoom@51/51.5/52/52.5 region=[0.250, 0.450, 0.600, 0.950]",
+   "zoom@53/53.5 region=[0.250, 0.450, 0.600, 0.950]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"7a\", \"verdict\": \"正確\", \"explanation\": \"00:51.5–00:52.5 右手拿酒精棉片包住左手所持的稀釋液瓶頂端進行消毒並扭開。\", \"evidence\": [\"clip@49.5-56.5\", \"zoom@51.5\", \"zoom@52\", \"zoom@52.5\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"8a\", \"verdict\": \"正確\", \"explanation\": \"00:51.5–00:53.0 左手握稀釋液瓶身，右手隔著酒精棉片捏住瓶頂扭轉打開，00:53.0–00:53.5 可見扭下的瓶頂在右手棉片處、左手瓶口已打開。\", \"evidence\": [\"clip@49.5-56.5\", \"zoom@51.5\", \"zoom@52\", \"zoom@52.5\", \"zoom@53\", \"zoom@53.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

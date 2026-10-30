@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 47.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 15995,
+  "cached_input_tokens": 0,
+  "output_tokens": 88,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@76-399（hands_box，n=9）#0=01:16.0、#1=01:56.4、#2=02:36.8、#3=03:17.1、#4=03:57.5、#5=04:37.9、#6=05:18.2、#7=05:58.6、#8=06:39.0"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 180.0, \"end\": 210.0, \"fps\": 2, \"reason\": \"檢查 03:03-03:08 打開 vial 瓶口 (5a) 與 03:23-03:25 消毒瓶口 (6a) 的連續動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 5.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 21569,
+  "cached_input_tokens": 0,
+  "output_tokens": 125,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@76-399（hands_box，n=9）#0=01:16.0、#1=01:56.4、#2=02:36.8、#3=03:17.1、#4=03:57.5、#5=04:37.9、#6=05:18.2、#7=05:58.6、#8=06:39.0",
+   "clip@180-210（context box，有聲音；片段內 00:00 ＝ 影片 03:00.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [186.0, 186.5, 203.5, 204.0], \"region\": [0.3, 0.45, 0.65, 0.75], \"reason\": \"確認 03:06.0–03:06.5 推開 vial 褐色塑膠蓋與 03:23.5–03:24.0 以酒精棉片擦拭 vial 瓶口的細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 7.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 22824,
+  "cached_input_tokens": 14174,
+  "output_tokens": 284,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@76-399（hands_box，n=9）#0=01:16.0、#1=01:56.4、#2=02:36.8、#3=03:17.1、#4=03:57.5、#5=04:37.9、#6=05:18.2、#7=05:58.6、#8=06:39.0",
+   "clip@180-210（context box，有聲音；片段內 00:00 ＝ 影片 03:00.0）",
+   "zoom@186/186.5/203.5/204 region=[0.300, 0.450, 0.650, 0.750]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"於 03:05.5–03:07.5（clip@180-210 片段內 00:05.5–00:07.5），左手推掉 vial 上的深紅色塑膠翻蓋並放於治療車上，露出銀色鋁圈瓶口。\", \"evidence\": [\"clip@180-210\", \"zoom@186\", \"zoom@186.5\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"6a\", \"verdict\": \"正確\", \"explanation\": \"於 03:23.0–03:24.5（clip@180-210 片段內 00:23.0–00:24.5），左手扶住 vial 瓶身，右手拿酒精棉片在 vial 瓶口上旋轉擦拭消毒。\", \"evidence\": [\"clip@180-210\", \"zoom@203.5\", \"zoom@204\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

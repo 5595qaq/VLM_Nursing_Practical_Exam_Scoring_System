@@ -1,7 +1,9 @@
 """Validate one grading-agent action BEFORE executing it (no model call).
 
-A task is one group of 待判定 criteria that share a window (built by the backend from rules.py
+A task is one group of 待判定 criteria graded in one conversation (built by the backend from rules.py
 output): {"criteria": [{"criterion_id": "17a", "window": [148.0, 180.0]}, ...], "window": [a, b]}.
+Each criterion keeps its own window; the task window covers them all (criteria sharing a rubric
+`task`, such as 5a and 6a, can have different windows).
 
 Checks actions.schema.json plus rules the schema cannot express: times near the task window,
 span limits, remaining budget, and for final: exactly the task's criteria, each passing the same

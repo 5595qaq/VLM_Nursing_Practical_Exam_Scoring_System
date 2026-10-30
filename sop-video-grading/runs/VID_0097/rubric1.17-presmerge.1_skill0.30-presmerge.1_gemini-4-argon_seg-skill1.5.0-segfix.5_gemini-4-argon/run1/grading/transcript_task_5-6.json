@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 25.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 18332,
+  "cached_input_tokens": 0,
+  "output_tokens": 109,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@43-63（context box，有聲音；片段內 00:00 ＝ 影片 00:43.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [46.5, 48.0, 56.0, 60.0], \"region\": [0.2, 0.55, 0.65, 0.95], \"reason\": \"確認 46.5-48.0 秒打開 vial 塑膠蓋，以及 56.0 與 60.0 秒以酒精棉片消毒 vial 瓶口的細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 11.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 19571,
+  "cached_input_tokens": 0,
+  "output_tokens": 510,
+  "thinking_tokens": 396,
+  "materials": [
+   "clip@43-63（context box，有聲音；片段內 00:00 ＝ 影片 00:43.0）",
+   "zoom@46.5/48/56/60 region=[0.200, 0.550, 0.650, 0.950]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [46.5, 55.5, 56.5, 59.5], \"region\": [0.25, 0.35, 0.65, 0.95], \"reason\": \"確認 00:46.5 推開 vial 瓶蓋以及 00:55.5-00:59.5 以酒精棉片擦拭消毒 vial 瓶口的細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 11.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 20838,
+  "cached_input_tokens": 0,
+  "output_tokens": 639,
+  "thinking_tokens": 307,
+  "materials": [
+   "clip@43-63（context box，有聲音；片段內 00:00 ＝ 影片 00:43.0）",
+   "zoom@46.5/48/56/60 region=[0.200, 0.550, 0.650, 0.950]",
+   "zoom@46.5/55.5/56.5/59.5 region=[0.250, 0.350, 0.650, 0.950]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"00:45.5–00:48.0（clip@43-63 片段內 00:02.5–00:05.0）學生拿起 vial 並推開瓶頂深褐色塑膠翻蓋，00:48.0 右手將拆下的塑膠蓋放到桌上，左手持已露出銀色鋁圈的 vial。\", \"evidence\": [\"clip@43-63\", \"zoom@46.5\", \"zoom@48\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"6a\", \"verdict\": \"正確\", \"explanation\": \"00:54.5–00:57.5（clip@43-63 片段內 00:11.5–00:14.5）學生左手持 vial、右手持酒精棉片在 vial 瓶口來回擦拭消毒，接著於 00:58.5–01:01.0 將棉片覆蓋並擦拭桌上的 vial 瓶口。\", \"evidence\": [\"clip@43-63\", \"zoom@55.5\", \"zoom@56.5\", \"zoom@59.5\", \"zoom@60\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

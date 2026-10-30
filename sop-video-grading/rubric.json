@@ -1,6 +1,6 @@
 {
-  "version": "1.17",
-  "description": "無菌抽藥技術－vial 粉劑 30 步評分標準。category：program＝由切分結果以程式判定；visual＝評分 agent 看畫面（audio=true 時連聲音一起聽）；not_visible＝影片看不到，固定輸出「無法判定」且不影響步驟判定。visual 的 window_steps＝要看的步驟區間；search_steps＝[第一步, 最後一步]，切分沒找到該步時，改在這兩步之間（含）所有步驟的區間內找，且該步的切分 not_performed 不直接判錯誤。key=true 的標準錯誤時整步判「錯誤」。",
+  "version": "1.18",
+  "description": "無菌抽藥技術－vial 粉劑 30 步評分標準。category：program＝由切分結果以程式判定；visual＝評分 agent 看畫面（audio=true 時連聲音一起聽）；not_visible＝影片看不到，固定輸出「無法判定」且不影響步驟判定。visual 的 window_steps＝要看的步驟區間；task＝同名的標準共用一個評分任務（兩條都不在搜尋、且區間相距不超過 10 秒時；否則各自一個任務）；search_steps＝[第一步, 最後一步]，切分沒找到該步時，改在這兩步之間（含）所有步驟的區間內找，且該步的切分 not_performed 不直接判錯誤。key=true 的標準錯誤時整步判「錯誤」。",
   "steps": [
     {"step_id": 1, "text": "洗手。", "criteria": [
       {"id": "1a", "text": "洗手至少 15 秒（從雙手開始互搓到雙手分開）", "category": "visual", "key": true, "window_steps": [1], "sample_interval": 0.5, "min_seconds": 15, "note": "使用者確認（2026-10-21）：由評分 agent 在 0.5 秒一格的片段上量開始互搓與雙手分開的時間（按壓洗手液不算），回傳 span，程式檢查是否滿 15 秒；不再用切分邊界計時（切分會把邊界貼到伸手拿洗手液等動作，多算 1–2 秒）"},
@@ -21,10 +21,10 @@
       {"id": "4c", "text": "確認的藥物與紀錄單相符", "category": "not_visible", "reason": "資訊不足", "note": "鏡頭看不到藥瓶標籤與紀錄單內容"}
     ]},
     {"step_id": 5, "text": "將vial瓶口打開。", "criteria": [
-      {"id": "5a", "text": "將 vial 瓶口打開", "category": "visual", "key": true, "window_steps": [5], "search_steps": [4, 18], "clip": true, "note": "使用者決定（2026-10-30，rubric 1.17）：由 program 改成評分 agent 判定，原因與實驗見 CHANGELOG 0.30"}
+      {"id": "5a", "text": "將 vial 瓶口打開", "category": "visual", "key": true, "window_steps": [5], "task": "5-6", "search_steps": [4, 18], "clip": true, "note": "使用者決定（2026-10-30，rubric 1.17）：由 program 改成評分 agent 判定，原因與實驗見 CHANGELOG 0.30；rubric 1.18 起 5a／6a 同一個任務（CHANGELOG 0.31）"}
     ]},
     {"step_id": 6, "text": "以酒精棉片消毒瓶口。", "criteria": [
-      {"id": "6a", "text": "以酒精棉片消毒 vial 瓶口", "category": "visual", "key": true, "window_steps": [6], "search_steps": [5, 18], "clip": true, "note": "使用者決定（2026-10-30，rubric 1.17）：由 program 改成評分 agent 判定，原因與實驗見 CHANGELOG 0.30"}
+      {"id": "6a", "text": "以酒精棉片消毒 vial 瓶口", "category": "visual", "key": true, "window_steps": [6], "task": "5-6", "search_steps": [5, 18], "clip": true, "note": "使用者決定（2026-10-30，rubric 1.17）：由 program 改成評分 agent 判定，原因與實驗見 CHANGELOG 0.30；rubric 1.18 起 5a／6a 同一個任務（CHANGELOG 0.31）"}
     ]},
     {"step_id": 7, "text": "將稀釋液瓶口消毒。", "criteria": [
       {"id": "7a", "text": "消毒稀釋液瓶口", "category": "visual", "key": true, "window_steps": [7], "search_steps": [4, 13], "clip": true, "note": "使用者決定（2026-10-30，rubric 1.17）：由 program 改成評分 agent 判定，原因與實驗見 CHANGELOG 0.30"}
