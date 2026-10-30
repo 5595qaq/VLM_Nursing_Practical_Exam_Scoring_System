@@ -17,7 +17,8 @@ of this task was seen, either the opening clip (task["opening_clip"]) or a clip 
 needle (10b, rubric package_spans): actions may also look at the spans the hands held the syringe wrapper
 (the task lists them, each ±WINDOW_SLACK); 正確, 錯誤 or 無法判定, never 部分正確, and 錯誤 only after a
 clip action overlapping a listed span (any clip when none is listed; a twist lasts a second or two). The backend sends a 無法判定 to a person with those spans.
-A clip above 5 fps may last at most 8 s.
+A clip above 5 fps may last at most 8 s. A video-only task (rubric video_only, 10b) may use only clip,
+VIDEO_CLIP_BUDGET of them.
 
 A rejected action is NOT executed and does NOT consume budget.
 """
@@ -32,6 +33,7 @@ from validate_grading import WRAPPER, check_criterion
 SCHEMA_PATH = Path(__file__).resolve().parent.parent / "actions.schema.json"
 
 BUDGET = {"overview": 3, "zoom": 3, "burst": 3, "clip": 2}
+VIDEO_CLIP_BUDGET = 4  # a video-only task (rubric video_only, 10b) has clips instead of images
 WINDOW_SLACK = 10.0  # seconds the agent may look outside the task window
 OVERVIEW_SPAN = (2.0, 60.0)
 CLIP_SPAN = (1.0, 60.0)
@@ -60,8 +62,12 @@ def validate(action, task: dict, used: dict, duration: float,
     if name == "final":
         return _check_final(action, task, used, rubric or load_rubric())
 
-    if used.get(name, 0) >= BUDGET[name]:
-        errors.append(f"budget for {name} exhausted ({BUDGET[name]}); send final with what you have")
+    limits = budget(task)
+    if name not in limits:
+        return errors + [f"this task uses video only: {name} is not available; use clip (add region on the "
+                         "hands, fps up to 10, ≤ 8 s for fine movements)"]
+    if used.get(name, 0) >= limits[name]:
+        errors.append(f"budget for {name} exhausted ({limits[name]}); send final with what you have")
     ranges = allowed_ranges(task, duration)
     where = "、".join(f"{lo:g}-{hi:g}s" for lo, hi in ranges)
     inside = lambda a, b: any(lo <= a and b <= hi for lo, hi in ranges)  # noqa: E731
@@ -91,6 +97,11 @@ def validate(action, task: dict, used: dict, duration: float,
             errors.append(f"{name} region too large (area <= {ZOOM_MAX_AREA}, each side <= {ZOOM_MAX_SIDE} "
                           "of the context box)")
     return errors
+
+
+def budget(task: dict) -> dict:
+    """Actions and their budget for a task: video-only tasks get clips only."""
+    return {"clip": VIDEO_CLIP_BUDGET} if task.get("video_only") else BUDGET
 
 
 def allowed_ranges(task: dict, duration: float) -> list[tuple[float, float]]:

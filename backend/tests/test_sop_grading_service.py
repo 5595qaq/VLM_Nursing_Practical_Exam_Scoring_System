@@ -176,7 +176,7 @@ async def test_extra_material_actions_run(video, tmp_path):
      "（切分標出的手拿空針包裝時段，第一次使用空針 00:23.4 之前）：00:12.0–00:23.4"),
 ])
 async def test_fixing_the_needle_not_seen_goes_to_a_person(video, tmp_path, package_spans, reason):
-    # 10b 錯誤 needs a clip first; 無法判定 gets needs_review with every span the hands held the wrapper
+    # 10b 無法判定 gets needs_review with every span the hands held the wrapper
     wrong = {"action": "final", "criteria": [
         {"criterion_id": "10b", "verdict": "錯誤", "confidence": 0.8, "reason": None, "evidence": ["clip@16-21"],
          "explanation": "00:18 空針離開包裝，之後沒有旋緊。"}]}
@@ -185,9 +185,8 @@ async def test_fixing_the_needle_not_seen_goes_to_a_person(video, tmp_path, pack
     seg = segmentation()
     if package_spans:
         seg["package_spans"] = package_spans
-    model = FakeModel({"10b": [wrong, undetermined]})
+    model = FakeModel({"10b": [undetermined]})
     outcome = await grading.run_grading(video, seg, tmp_path, model, steps={10})
-    assert "before marking 錯誤, use clip" in requests_for(model, "10b")[1][0]["text"]
     step = next(s for s in outcome["result"]["steps"] if s["step_id"] == 10)
     c = next(c for c in step["criteria"] if c["criterion_id"] == "10b")
     assert c["verdict"] == "無法判定" and c["needs_review"] is True and step["needs_review"] is True
@@ -213,6 +212,22 @@ async def test_fixing_the_needle_task_lists_the_wrapper_spans(video, tmp_path):
     assert "clip@0.5-3" in final[0]["text"]
     c = next(c for s in outcome["result"]["steps"] for c in s["criteria"] if c["criterion_id"] == "10b")
     assert c["verdict"] == "錯誤" and "needs_review" not in c and outcome["failed_tasks"] == []
+
+
+async def test_fixing_the_needle_is_graded_on_video_only(video, tmp_path):
+    # rubric video_only (10b): the opening is the hands' clips over the window and the wrapper span at 5 fps,
+    # images are refused and the task has 4 clips
+    seg = segmentation()
+    seg["package_spans"] = [{"start": 0.5, "end": 3.0, "evidence": "ov"}]
+    zoom = {"action": "zoom", "times": [18.0], "region": [0.2, 0.2, 0.6, 0.6], "reason": "看手"}
+    model = FakeModel({"10b": [zoom]})
+    outcome = await grading.run_grading(video, seg, tmp_path, model, steps={10})
+    first, retry = requests_for(model, "10b")
+    assert [(b["fps"]) for b in first if b["type"] == "video"] == [5.0, 5.0]
+    assert "clip@0.5-3" in first[0]["text"] and "clip@16-21.5" in first[0]["text"]
+    assert "剩餘預算：clip 剩 4/4" in first[0]["text"]
+    assert "this task uses video only" in retry[0]["text"]
+    assert outcome["failed_tasks"] == []
 
 
 async def test_fixing_the_needle_seen_after_removal_needs_no_person(video, tmp_path):

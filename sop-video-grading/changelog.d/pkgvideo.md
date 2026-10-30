@@ -1,0 +1,1 @@
+- 10b 只用影片（issue #97，實驗 pkgvideo.1，暫定）：rubric 新增 `video_only`（visual 標準，`rubric.py` 檢查）。開場不附 9 張影格，改附任務區間與手拿空針包裝時段的手部影片（hands box，5 fps，相鄰時段合併，每段 ≤ 60 秒）。動作只能用 `clip`（`VIDEO_CLIP_BUDGET` 4 次），overview／zoom／burst 會被退回（`validate_grading_action.py` 的 `budget(task)`）。開場影片也算看過手拿包裝時段（10b 判錯誤的條件）。
