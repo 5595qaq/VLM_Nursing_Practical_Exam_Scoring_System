@@ -43,6 +43,7 @@ MOTION_MAX_SPAN = 180.0
 # (e.g. 76.1 + 180), which the scripts reject, and the whole task would then get no peaks.
 MOTION_PIECE_SECONDS = MOTION_MAX_SPAN - 0.01
 OPENING_CLIP_MAX_SECONDS = 60.0
+VIDEO_OPENING_FPS = 5.0  # video-only criteria (10b): the hands' clips over the window and the wrapper spans
 TASK_MERGE_GAP = 10.0  # criteria sharing a rubric `task` are graded together only when this close (s)
 
 logger = logging.getLogger(__name__)
@@ -103,7 +104,8 @@ def build_tasks(result: dict, rubric: dict, steps: set[int] | None, segmentation
                     "min_seconds": spec.get("min_seconds"),
                     "dense": spec.get("sample_interval") is not None,
                     "clip": spec.get("clip", False),
-                    "search_steps": spec.get("search_steps")}
+                    "search_steps": spec.get("search_steps"),
+                    "video_only": spec.get("video_only", False)}
             if spec.get("package_spans"):
                 crit["first_use"], crit["package_spans"] = package_spans(segmentation)
             crit["searching"] = _searching(crit, segmentation)
@@ -125,7 +127,8 @@ def build_tasks(result: dict, rubric: dict, steps: set[int] | None, segmentation
             names.add(name)
             tasks.append({"key": name, "window_steps": window_steps, "criteria": cluster,
                           "window": [min(c["window"][0] for c in cluster), max(c["window"][1] for c in cluster)],
-                          "needs_clip": any(c["audio"] or c["dense"] or c["clip"] for c in cluster)})
+                          "needs_clip": any(c["audio"] or c["dense"] or c["clip"] for c in cluster),
+                          "video_only": any(c["video_only"] for c in cluster)})
     return tasks
 
 
@@ -290,7 +293,7 @@ def _audio_line(task: dict) -> list[str]:
 
 def build_task_content(task: dict, video_id: str, duration: float, state: TaskState,
                        materials: list[Material], feedback: str, segmentation: dict) -> list[dict]:
-    limits = load_grading_module("validate_grading_action").BUDGET
+    limits = load_grading_module("validate_grading_action").budget(task)
     budget = "、".join(f"{k} 剩 {v - state.used[k]}/{v}" for k, v in limits.items())
     lines = [
         "【任務】",
@@ -347,6 +350,8 @@ async def _opening(task: dict, runner: GradingRunner, boxes: dict) -> tuple[list
             task["audio"] = await asyncio.to_thread(runner.audio_peaks, start, end)
         except SkillRunError:
             task["audio"] = None  # the agent still hears the clip
+    if task.get("video_only"):
+        return await _video_opening(task, runner, boxes)
     if task["needs_clip"] and end - start <= OPENING_CLIP_MAX_SECONDS:
         material, _ = await asyncio.to_thread(runner.clip, start, end, boxes["context"])
         task["opening_clip"] = True  # validate_grading_action counts it as a clip seen
@@ -356,6 +361,32 @@ async def _opening(task: dict, runner: GradingRunner, boxes: dict) -> tuple[list
     images = await asyncio.to_thread(runner.overview, boxes["hands"], start, end, 9, "hands")
     note = ("（任務區間超過 60 秒，需要聲音、0.5 秒一格或連續動作時請用 clip 選一段）" if task["needs_clip"] else "")
     return [Material(i.path, i.label) for i in images], f"開場：M1 是任務區間 9 張等距影格{note}。足夠判斷就直接送 final。"
+
+
+async def _video_opening(task: dict, runner: GradingRunner, boxes: dict) -> tuple[list[Material], str]:
+    """Video-only task (10b): clips of the hands box over the task window and each listed wrapper span, merged
+    when they touch and cut into pieces of at most OPENING_CLIP_MAX_SECONDS, at VIDEO_OPENING_FPS."""
+    spans = sorted([list(task["window"])] + [list(s) for c in task["criteria"] for s in c.get("package_spans") or []])
+    merged: list[list[float]] = []
+    for a, b in spans:
+        if merged and a <= merged[-1][1] + 2:
+            merged[-1][1] = max(merged[-1][1], b)
+        else:
+            merged.append([a, b])
+    materials = []
+    for a, b in merged:
+        b = max(b, a + 1)
+        while a < b:
+            piece = min(b, a + OPENING_CLIP_MAX_SECONDS)
+            material, info = await asyncio.to_thread(runner.clip, a, piece, boxes["hands"])
+            material.fps = VIDEO_OPENING_FPS
+            materials.append(material)
+            task.setdefault("clips", []).append([info["start"], info["end"]])  # counts as seen (10b 錯誤)
+            a = piece
+    task["opening_clip"] = True
+    names = "、".join(f"M{i + 1}" for i in range(len(materials)))
+    return materials, (f"開場：{names} 是任務區間與手拿空針包裝時段的手部影片（hands box，{VIDEO_OPENING_FPS:g} fps）。"
+                       "這個任務只用影片：要看更細的動作請用 clip 加 region（fps 最高 10，≤ 8 秒）。足夠判斷就直接送 final。")
 
 
 async def _run_material_action(action: dict, runner: GradingRunner, boxes: dict, materials: list[Material],
