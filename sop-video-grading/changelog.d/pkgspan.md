@@ -1,0 +1,3 @@
+- 10b（固定針頭與針心）把切分的手拿空針包裝時段交給評分 agent（issue #97，分支版本 0.31-pkgspan.1／rubric 1.18-pkgspan.1，暫定）：rubric 新增 `package_spans: true`，任務說明列出切分 `package_spans` 中第一次使用空針（步驟 13）之前開始的時段，`overview`／`zoom`／`burst`／`clip` 也可以用在這些時段（各 ±10 秒）。0.13–0.29 的評分 agent 都沒拿到這些時段，0.29 只在 10b 判無法判定後寫進 `review_reason` 給人工。
+- 10b 改回由評分 agent 判取出前（隔著包裝）與取出後：正確、錯誤或無法判定，不判部分正確；判錯誤前要用過 `clip`（`validate_grading_action.py`）。判無法判定時仍由程式加需人工複核並列出手拿包裝的時段。`criteria/08-hand-posture.md` 改寫 10b 的作法（兩段都要看、撕包裝不算旋緊、clip 優先看取出前後那一段）。
+- `validate_grading.py` 的 `AFTER_REMOVAL` 改名為 `WRAPPER`。

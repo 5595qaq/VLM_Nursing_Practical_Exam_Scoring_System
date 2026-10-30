@@ -14,9 +14,9 @@ For the plunger pull-back (16a/26a): 錯誤 only after at least one burst, since
 under a second and looks like the hands changing grip. A criterion with "clip": true in the rubric (20a,
 rolling the vial: overview frames 2–4 s apart cannot show the hands moving) is graded only after a clip
 of this task was seen, either the opening clip (task["opening_clip"]) or a clip action. Fixing the
-needle (10b) is judged only after the syringe is out of the wrapper: 正確 or 無法判定, never 錯誤 or
-部分正確; the backend sends a 無法判定 to a person with the segmentation's package_spans (fixing it
-through the wrapper is legal, but the agent read those frames as twisting or tearing from run to run).
+needle (10b, rubric package_spans): actions may also look at the spans the hands held the syringe wrapper
+(the task lists them, each ±WINDOW_SLACK); 正確, 錯誤 or 無法判定, never 部分正確, and 錯誤 only after a
+clip action (a twist lasts a second or two). The backend sends a 無法判定 to a person with those spans.
 A clip above 5 fps may last at most 8 s.
 
 A rejected action is NOT executed and does NOT consume budget.
@@ -27,7 +27,7 @@ from pathlib import Path
 from jsonschema import Draft202012Validator
 
 from rubric import criteria_by_id, load_rubric
-from validate_grading import AFTER_REMOVAL, check_criterion
+from validate_grading import WRAPPER, check_criterion
 
 SCHEMA_PATH = Path(__file__).resolve().parent.parent / "actions.schema.json"
 
@@ -62,8 +62,9 @@ def validate(action, task: dict, used: dict, duration: float,
 
     if used.get(name, 0) >= BUDGET[name]:
         errors.append(f"budget for {name} exhausted ({BUDGET[name]}); send final with what you have")
-    lo = max(0.0, task["window"][0] - WINDOW_SLACK)
-    hi = min(duration, task["window"][1] + WINDOW_SLACK)
+    ranges = allowed_ranges(task, duration)
+    where = "、".join(f"{lo:g}-{hi:g}s" for lo, hi in ranges)
+    inside = lambda a, b: any(lo <= a and b <= hi for lo, hi in ranges)  # noqa: E731
     if name in ("overview", "clip", "burst"):
         start, end = action["start"], action["end"]
         low, high = {"overview": OVERVIEW_SPAN, "clip": CLIP_SPAN, "burst": BURST_SPAN}[name]
@@ -71,14 +72,15 @@ def validate(action, task: dict, used: dict, duration: float,
             errors.append(f"{name} end must be > start")
         elif not low <= end - start <= high:
             errors.append(f"{name} span {end - start:.1f}s outside {low:g}-{high:g}s")
-        if start < lo or end > hi:
-            errors.append(f"{name} [{start:g}, {end:g}] must stay within {lo:g}-{hi:g}s "
-                          f"(task window ±{WINDOW_SLACK:g}s)")
+        if not inside(start, end):
+            errors.append(f"{name} [{start:g}, {end:g}] must stay within {where} "
+                          f"(task window or a listed wrapper span, ±{WINDOW_SLACK:g}s)")
     if name == "clip" and action.get("fps", 0) > FAST_CLIP_FPS and action["end"] - action["start"] > HIGH_FPS_MAX_SPAN:
         errors.append(f"clip above fps {FAST_CLIP_FPS} may last at most {HIGH_FPS_MAX_SPAN:g}s")
     if name == "zoom":
-        if any(not lo <= t <= hi for t in action["times"]):
-            errors.append(f"zoom times must stay within {lo:g}-{hi:g}s (task window ±{WINDOW_SLACK:g}s)")
+        if any(not inside(t, t) for t in action["times"]):
+            errors.append(f"zoom times must stay within {where} (task window or a listed wrapper span, "
+                          f"±{WINDOW_SLACK:g}s)")
         if len(set(action["times"])) != len(action["times"]):
             errors.append("zoom times must be distinct")
     if name in ("zoom", "burst") or (name == "clip" and "region" in action):
@@ -89,6 +91,12 @@ def validate(action, task: dict, used: dict, duration: float,
             errors.append(f"{name} region too large (area <= {ZOOM_MAX_AREA}, each side <= {ZOOM_MAX_SIDE} "
                           "of the context box)")
     return errors
+
+
+def allowed_ranges(task: dict, duration: float) -> list[tuple[float, float]]:
+    """The task window and each wrapper span listed for a criterion (10b), all ±WINDOW_SLACK."""
+    spans = [task["window"]] + [s for c in task["criteria"] for s in c.get("package_spans") or []]
+    return [(max(0.0, a - WINDOW_SLACK), min(duration, b + WINDOW_SLACK)) for a, b in spans]
 
 
 def _check_final(action: dict, task: dict, used: dict, rubric: dict) -> list[str]:
@@ -111,10 +119,12 @@ def _check_final(action: dict, task: dict, used: dict, rubric: dict) -> list[str
             errors.append(f"criterion {cid}: before marking 錯誤, use burst between the needle turning up and "
                           "the first flick to check for a short pull on the plunger's end plate (it often "
                           "lasts under a second and looks like the hands changing grip)")
-        if cid in AFTER_REMOVAL and c["verdict"] not in ("正確", "無法判定"):
-            errors.append(f"criterion {cid}: only 正確 (fixed after the syringe left the wrapper) or 無法判定 "
-                          "(not seen after it left, or unclear; reason 資訊不足 or 畫面被遮擋); the program sends "
-                          "無法判定 to a person with the spans the hands held the wrapper")
+        if cid in WRAPPER and c["verdict"] == "部分正確":
+            errors.append(f"criterion {cid}: 正確, 錯誤 or 無法判定 only (fixing is seen or it is not)")
+        if cid in WRAPPER and c["verdict"] == "錯誤" and used.get("clip", 0) == 0:
+            errors.append(f"criterion {cid}: before marking 錯誤, use clip with a region on both hands and the "
+                          "syringe (fps up to 10, ≤ 8 s) on the wrapper span where it comes out and after it: "
+                          "a twist lasts a second or two and frames 2–4 s apart miss it")
     return errors
 
 

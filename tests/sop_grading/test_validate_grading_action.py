@@ -148,17 +148,32 @@ def test_pull_back_wrong_needs_a_burst_first():
     assert validate(action, task, FRESH, DURATION) == []  # 正確 needs no burst
 
 
-@pytest.mark.parametrize("verdict, reason, ok", [
-    ("正確", None, True), ("無法判定", "資訊不足", True), ("錯誤", None, False), ("部分正確", None, False)])
-def test_fixing_the_needle_is_correct_or_undetermined(verdict, reason, ok):
-    # rubric 1.16: 10b is judged only after the syringe is out; fixing it through the wrapper is legal
-    # but the agent read those frames as twisting or tearing from run to run (VID_0098, 0072, 0091)
+@pytest.mark.parametrize("verdict, reason, clips, error", [
+    ("正確", None, 0, None), ("無法判定", "資訊不足", 0, None), ("錯誤", None, 1, None),
+    ("錯誤", None, 0, "before marking 錯誤, use clip"), ("部分正確", None, 1, "正確, 錯誤 or 無法判定 only")])
+def test_fixing_the_needle_verdicts(verdict, reason, clips, error):
+    # rubric 1.18-pkgspan.1: the agent sees the wrapper spans too; 錯誤 only after a clip (a twist lasts a
+    # second or two), never 部分正確
     task = {"window": [74.0, 81.0], "criteria": [{"criterion_id": "10b", "window": [74.0, 81.0]}]}
     action = {"action": "final", "criteria": [
         {"criterion_id": "10b", "verdict": verdict, "confidence": 0.8, "reason": reason,
          "explanation": "01:16 空針離開包裝，01:17–01:19 一手握針座、另一手旋緊。", "evidence": ["clip@74-81"]}]}
-    errors = validate(action, task, FRESH, DURATION)
-    assert (errors == []) if ok else any("only 正確" in e for e in errors), errors
+    errors = validate(action, task, {**FRESH, "clip": clips}, DURATION)
+    assert (errors == []) if error is None else any(error in e for e in errors), errors
+
+
+def test_wrapper_spans_open_the_action_range():
+    # 10b: the segmentation's package_spans (before the first use) are listed with the criterion
+    task = {"window": [74.0, 81.0], "criteria": [
+        {"criterion_id": "10b", "window": [74.0, 81.0], "package_spans": [[25.6, 35.0]]}]}
+    clip = {"action": "clip", "start": 26, "end": 34, "fps": 10, "region": [0.3, 0.4, 0.6, 0.7], "reason": "包裝"}
+    assert validate(clip, task, FRESH, DURATION) == []
+    assert validate({"action": "zoom", "times": [20.0, 78.0], "region": [0.3, 0.4, 0.6, 0.7], "reason": "x"},
+                    task, FRESH, DURATION) == []
+    errors = validate({**clip, "start": 48, "end": 55}, task, FRESH, DURATION)  # between the two ranges
+    assert any("must stay within 64-91s、15.6-45s" in e for e in errors), errors
+    errors = validate({**clip, "start": 40, "end": 48, "fps": 5}, task, FRESH, DURATION)  # straddles both
+    assert any("must stay within" in e for e in errors), errors
 
 
 def test_clip_region_and_high_fps_limits():
