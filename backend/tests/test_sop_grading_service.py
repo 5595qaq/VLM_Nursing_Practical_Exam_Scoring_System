@@ -191,7 +191,8 @@ async def test_fixing_the_needle_not_seen_goes_to_a_person(video, tmp_path, pack
     step = next(s for s in outcome["result"]["steps"] if s["step_id"] == 10)
     c = next(c for c in step["criteria"] if c["criterion_id"] == "10b")
     assert c["verdict"] == "無法判定" and c["needs_review"] is True and step["needs_review"] is True
-    assert c["review_reason"] == "評分 agent 看不清楚有沒有固定針頭，要人工看" + reason + "；評分 agent：01:12 手被包裝擋住"
+    assert c["review_reason"] == ("評分 agent 看不清楚有沒有固定針頭，要人工看" + reason
+                                  + "；取出後到拔針頭蓋：00:21.5–00:33.4；評分 agent：01:12 手被包裝擋住")
     assert outcome["failed_tasks"] == []
 
 
@@ -212,7 +213,9 @@ async def test_fixing_the_needle_task_lists_the_wrapper_spans(video, tmp_path):
     assert "must stay within 0-31.5s" in rejected[0]["text"]  # 0–13 and 6–31.5 merged
     assert "clip@0.5-3" in final[0]["text"]
     c = next(c for s in outcome["result"]["steps"] for c in s["criteria"] if c["criterion_id"] == "10b")
-    assert c["verdict"] == "錯誤" and "needs_review" not in c and outcome["failed_tasks"] == []
+    assert c["verdict"] == "錯誤" and c["needs_review"] is True and outcome["failed_tasks"] == []  # a person checks
+    assert c["review_reason"].startswith("評分 agent 判沒有固定針頭（錯誤），要人工確認沒有漏看")
+    assert "00:00.5–00:03.0；取出後到拔針頭蓋：00:21.5–00:33.4" in c["review_reason"]
 
 
 async def test_fixing_the_needle_seen_after_removal_needs_no_person(video, tmp_path):

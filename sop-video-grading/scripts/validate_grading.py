@@ -28,7 +28,7 @@ ALLOWED_SOURCES = {"program": {"rule"}, "visual": {"vlm", "rule"}, "not_visible"
 EVIDENCE_PREFIXES = ("global #", "ov@", "zoom@", "burst@", "clip@", "seg:step ")
 TIMESTAMP = re.compile(r"\d{2}:\d{2}")
 # Fixing the needle (10b): the grading agent gets the spans the hands held the syringe wrapper (rubric
-# package_spans); a 無法判定 goes to a person with those spans, which the backend writes into review_reason.
+# package_spans); a 無法判定 or 錯誤 goes to a person with those spans, which the backend writes into review_reason.
 WRAPPER = {"10b"}
 
 

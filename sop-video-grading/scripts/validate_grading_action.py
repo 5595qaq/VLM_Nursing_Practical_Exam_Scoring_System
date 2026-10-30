@@ -16,7 +16,7 @@ rolling the vial: overview frames 2–4 s apart cannot show the hands moving) is
 of this task was seen, either the opening clip (task["opening_clip"]) or a clip action. Fixing the
 needle (10b, rubric package_spans): actions may also look at the spans the hands held the syringe wrapper
 (the task lists them, each ±WINDOW_SLACK); 正確, 錯誤 or 無法判定, never 部分正確, and 錯誤 only after a
-clip action overlapping a listed span (any clip when none is listed; a twist lasts a second or two). The backend sends a 無法判定 to a person with those spans.
+clip action overlapping a listed span (any clip when none is listed; a twist lasts a second or two). The backend sends a 無法判定 or 錯誤 to a person with those spans.
 A clip above 5 fps may last at most 8 s.
 
 A rejected action is NOT executed and does NOT consume budget.

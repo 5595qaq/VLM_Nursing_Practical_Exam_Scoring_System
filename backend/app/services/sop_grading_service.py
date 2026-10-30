@@ -422,10 +422,12 @@ def _package_note(c: dict) -> str:
 
 
 def _package_review(c: dict, segmentation: dict) -> dict:
-    """10b 無法判定 → needs_review with every span the hands held the syringe wrapper (package_spans;
-    without them step 9's start to step 10's end, else the criterion window), for a person to look at
-    what the grading agent could not see."""
-    if c["criterion_id"] not in load_grading_module("validate_grading").WRAPPER or c["verdict"] != "無法判定":
+    """10b 無法判定 or 錯誤 → needs_review with every span the hands held the syringe wrapper (package_spans;
+    without them step 9's start to step 10's end, else the criterion window), and the time out of the
+    wrapper up to just after the first use when that is later than the window (VID_0081 fixed the needle
+    at 02:20, uncapping at 02:18, 25 s after step 10). A person checks what the grading agent could not
+    see or may have missed: it read twisting as tearing or testing the plunger from run to run."""
+    if c["criterion_id"] not in load_grading_module("validate_grading").WRAPPER or c["verdict"] not in ("無法判定", "錯誤"):
         return c
     first_use, spans = package_spans(segmentation)
     where = "切分標出的手拿空針包裝時段" + (f"，第一次使用空針 {_fmt_t(first_use)} 之前" if first_use is not None else "")
@@ -435,9 +437,13 @@ def _package_review(c: dict, segmentation: dict) -> dict:
         spans = [(min(a for a, _ in found), max(b for _, b in found))] if found else [tuple(c["window"])]
         where = "切分沒有手拿包裝的時段，改看切分步驟 9、10 的時間範圍" if found else "切分沒有步驟 9、10 的時間，改看評分區間"
     times = "、".join(f"{_fmt_t(a)}–{_fmt_t(b)}" for a, b in spans)
+    slack = load_grading_module("validate_grading_action").WINDOW_SLACK
+    after = (f"；取出後到拔針頭蓋：{_fmt_t(c['window'][1])}–{_fmt_t(first_use + slack)}"
+             if first_use is not None and first_use > c["window"][1] else "")
     agent = f"；評分 agent：{c['review_reason']}" if c.get("review_reason") else ""
+    what = "看不清楚有沒有固定針頭" if c["verdict"] == "無法判定" else "判沒有固定針頭（錯誤），要人工確認沒有漏看"
     return {**c, "needs_review": True,
-            "review_reason": f"評分 agent 看不清楚有沒有固定針頭，要人工看（{where}）：{times}{agent}"}
+            "review_reason": f"評分 agent {what}，要人工看（{where}）：{times}{after}{agent}"}
 
 
 async def run_task(task: dict, video_id: str, runner: GradingRunner, boxes: dict, segmentation: dict,
