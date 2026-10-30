@@ -1,0 +1,33 @@
+[
+ {
+  "turn": 1,
+  "seconds": 43.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 39897,
+  "cached_input_tokens": 0,
+  "output_tokens": 105,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@26-86（context box，有聲音；片段內 00:00 ＝ 影片 00:26.0）",
+   "clip@86-91（context box，有聲音；片段內 00:00 ＝ 影片 01:26.0）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 37.5, \"end\": 45.5, \"fps\": 10, \"region\": [0.3, 0.35, 0.78, 0.72], \"reason\": \"放大確認 00:37.5–00:45.5 空針在包裝內時是否有旋緊固定針頭與針心的動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 48.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 46246,
+  "cached_input_tokens": 0,
+  "output_tokens": 183,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@26-86（context box，有聲音；片段內 00:00 ＝ 影片 00:26.0）",
+   "clip@86-91（context box，有聲音；片段內 00:00 ＝ 影片 01:26.0）",
+   "clip@37.5-45.5（region=[0.300, 0.350, 0.780, 0.720]，原始解析度裁切，有聲音；片段內 00:00 ＝ 影片 00:37.5）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"10b\", \"verdict\": \"正確\", \"explanation\": \"於 00:37.6–00:45.4（clip@37.5-45.5 片段內 00:00.1–00:07.9），空針尚在已撕開的包裝內時，左手隔著包裝握住針頭蓋與針座接合處，右手握住針筒與針心尾端來回旋轉旋緊針頭，完成固定針頭與針心。\", \"evidence\": [\"clip@37.5-45.5\", \"clip@26-86\", \"clip@86-91\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]
