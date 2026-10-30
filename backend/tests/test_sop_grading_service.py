@@ -573,6 +573,39 @@ async def test_step_not_found_is_searched_with_the_range_times(video, tmp_path):
     assert "切分未找到" not in seven and "步驟 18：" not in seven  # step 7 was found: only its own times
 
 
+def window_of(text, cid):
+    return re.search(rf"{cid}（步驟 \d+）：[^；]*；window=\[([\d.]+), ([\d.]+)\]", text).groups()
+
+
+async def test_vial_opening_and_disinfection_share_a_task_unless_apart_or_searching(video, tmp_path):
+    # rubric 1.18: 5a and 6a share one task, each keeping its own window (step 5 at 00:09, step 6 at 00:10.8)
+    model = FakeModel()
+    await grading.run_grading(video, segmentation(), tmp_path / "a", model, steps={5, 6})
+    shared = requests_for(model, "5a")[0][0]["text"]
+    assert requests_for(model, "5a") == requests_for(model, "6a")
+    assert window_of(shared, "5a") != window_of(shared, "6a")
+    assert (tmp_path / "a" / "transcript_task_5-6.json").exists()
+    # segmentation missed step 5: 5a searches steps 4-18 on its own, 6a keeps its few seconds
+    seg = segmentation()
+    seg["steps"][4].update(status="not_performed", start=None, end=None)
+    model = FakeModel()
+    await grading.run_grading(video, seg, tmp_path / "b", model, steps={5, 6})
+    five, six = requests_for(model, "5a")[0][0]["text"], requests_for(model, "6a")[0][0]["text"]
+    assert "切分未找到步驟 5" in five and set(CRITERION.findall(five)) == {"5a"}
+    assert "切分未找到" not in six and set(CRITERION.findall(six)) == {"6a"}
+    lo, hi = window_of(six, "6a")
+    assert (lo, hi) == window_of(shared, "6a") and f"任務區間 {float(lo):g}–{float(hi):g} s" in six
+    assert {p.name for p in (tmp_path / "b").glob("transcript_task_*.json")} == {
+        "transcript_task_5-search.json", "transcript_task_6.json"}
+    # steps 5 and 6 found far apart: two tasks rather than one long window
+    seg = segmentation()
+    seg["steps"][5].update(start=40.0, end=42.0)
+    model = FakeModel()
+    await grading.run_grading(video, seg, tmp_path / "c", model, steps={5, 6})
+    assert {p.name for p in (tmp_path / "c").glob("transcript_task_*.json")} == {
+        "transcript_task_5.json", "transcript_task_6.json"}
+
+
 async def test_usage_counts_cached_and_thinking_tokens(video, tmp_path):
     class CachedModel(FakeModel):
         async def __call__(self, system, content):

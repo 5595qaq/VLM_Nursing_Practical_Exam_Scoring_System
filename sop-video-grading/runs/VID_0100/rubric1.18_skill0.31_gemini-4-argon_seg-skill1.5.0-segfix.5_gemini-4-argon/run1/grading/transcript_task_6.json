@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 5.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 15831,
+  "cached_input_tokens": 0,
+  "output_tokens": 153,
+  "thinking_tokens": 71,
+  "materials": [
+   "clip@182-188.5（context box，有聲音；片段內 00:00 ＝ 影片 03:02.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [183.5, 184.0, 184.5], \"region\": [0.45, 0.35, 0.78, 0.65], \"reason\": \"確認學生手中拿的是 vial 並用酒精棉片擦拭瓶口\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 7.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 17042,
+  "cached_input_tokens": 0,
+  "output_tokens": 261,
+  "thinking_tokens": 90,
+  "materials": [
+   "clip@182-188.5（context box，有聲音；片段內 00:00 ＝ 影片 03:02.0）",
+   "zoom@183.5/184/184.5 region=[0.450, 0.350, 0.780, 0.650]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"6a\", \"verdict\": \"正確\", \"explanation\": \"03:03.5–03:05.0（clip@182-188.5 片段內 00:01.5–00:03.0）左手持 vial 瓶，右手持白色方形酒精棉片在 vial 瓶口處擦拭消毒，並將棉片覆蓋在瓶口後放下 vial。\", \"evidence\": [\"clip@182-188.5\", \"zoom@183.5\", \"zoom@184\", \"zoom@184.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

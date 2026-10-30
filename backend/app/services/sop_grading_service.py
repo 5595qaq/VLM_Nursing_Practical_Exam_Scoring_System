@@ -43,6 +43,7 @@ MOTION_MAX_SPAN = 180.0
 # (e.g. 76.1 + 180), which the scripts reject, and the whole task would then get no peaks.
 MOTION_PIECE_SECONDS = MOTION_MAX_SPAN - 0.01
 OPENING_CLIP_MAX_SECONDS = 60.0
+TASK_MERGE_GAP = 10.0  # criteria sharing a rubric `task` are graded together only when this close (s)
 
 logger = logging.getLogger(__name__)
 GradingProgress = Callable[[int, int, str], Awaitable[None]]  # (tasks done, task count, task key)
@@ -82,31 +83,60 @@ class Material:
     fps: float = CLIP_FPS
 
 
-def build_tasks(result: dict, rubric: dict, steps: set[int] | None = None) -> list[dict]:
-    """Group the 待判定 criteria by window_steps; each group is one model conversation."""
+def build_tasks(result: dict, rubric: dict, steps: set[int] | None, segmentation: dict) -> list[dict]:
+    """Group the 待判定 criteria into model conversations, one per window_steps. Criteria with the same
+    rubric `task` (5a and 6a, rubric 1.18) share one when their windows lie within WINDOW_SLACK of each
+    other (TASK_MERGE_GAP). A criterion searching its range (rules.searched) gets a task of its own:
+    sharing would stretch the other criteria's few seconds to the whole range. Task names (the
+    transcript file names) are the window steps, plus "-search" or, if still taken, the criterion ids."""
     specs = load_grading_module("rubric").criteria_by_id(rubric)
-    groups: dict[tuple, dict] = {}
+    groups: dict[tuple, list[dict]] = {}
     for step in result["steps"]:
         for c in step["criteria"]:
             spec = specs[c["criterion_id"]]
             if c["verdict"] != "待判定" or (steps and spec["step_id"] not in steps):
                 continue
-            key = tuple(spec["window_steps"])
-            group = groups.setdefault(key, {"key": "-".join(map(str, key)), "window_steps": list(key),
-                                            "criteria": []})
-            group["criteria"].append({"criterion_id": c["criterion_id"], "step_id": spec["step_id"],
-                                      "text": spec["text"], "window": c["window"],
-                                      "audio": spec.get("audio", False),
-                                      "min_seconds": spec.get("min_seconds"),
-                                      "dense": spec.get("sample_interval") is not None,
-                                      "clip": spec.get("clip", False),
-                                      "search_steps": spec.get("search_steps")})
-    tasks = list(groups.values())
-    for task in tasks:
-        task["window"] = [min(c["window"][0] for c in task["criteria"]),
-                          max(c["window"][1] for c in task["criteria"])]
-        task["needs_clip"] = any(c["audio"] or c["dense"] or c["clip"] for c in task["criteria"])
+            crit = {"criterion_id": c["criterion_id"], "step_id": spec["step_id"],
+                    "text": spec["text"], "window": c["window"],
+                    "window_steps": spec["window_steps"],
+                    "audio": spec.get("audio", False),
+                    "min_seconds": spec.get("min_seconds"),
+                    "dense": spec.get("sample_interval") is not None,
+                    "clip": spec.get("clip", False),
+                    "search_steps": spec.get("search_steps")}
+            crit["searching"] = _searching(crit, segmentation)
+            if crit["searching"]:
+                key = ("search", c["criterion_id"])
+            elif spec.get("task"):
+                key = ("task", spec["task"])
+            else:
+                key = ("window", *spec["window_steps"])
+            groups.setdefault(key, []).append(crit)
+    tasks, names = [], set()
+    for key, crits in groups.items():
+        clusters = _near_clusters(crits) if key[0] == "task" else [crits]
+        for cluster in clusters:
+            window_steps = sorted({s for c in cluster for s in c["window_steps"]})
+            name = "-".join(map(str, window_steps)) + ("-search" if key[0] == "search" else "")
+            if name in names:
+                name += "-" + "-".join(c["criterion_id"] for c in cluster)
+            names.add(name)
+            tasks.append({"key": name, "window_steps": window_steps, "criteria": cluster,
+                          "window": [min(c["window"][0] for c in cluster), max(c["window"][1] for c in cluster)],
+                          "needs_clip": any(c["audio"] or c["dense"] or c["clip"] for c in cluster)})
     return tasks
+
+
+def _near_clusters(crits: list[dict]) -> list[list[dict]]:
+    """Split criteria into runs whose windows are at most TASK_MERGE_GAP apart (step 5 at 00:30 and step 6
+    at 03:00 would otherwise make one task over 2.5 minutes)."""
+    clusters: list[list[dict]] = []
+    for c in sorted(crits, key=lambda c: c["window"][0]):
+        if clusters and c["window"][0] - max(x["window"][1] for x in clusters[-1]) <= TASK_MERGE_GAP:
+            clusters[-1].append(c)
+        else:
+            clusters.append([c])
+    return clusters
 
 
 def _spans(start: float, end: float) -> list[tuple[float, float]]:
@@ -221,7 +251,7 @@ def _segment_lines(task: dict, segmentation: dict) -> list[str]:
     stop being independent checks of each other. A searched criterion also lists every step of its
     search range, so the agent knows what happens where."""
     search_range = load_grading_module("rubric").search_range
-    searched = {s for c in task["criteria"] if _searching(c, segmentation) for s in search_range(c)}
+    searched = {s for c in task["criteria"] if c["searching"] for s in search_range(c)}
     lines = []
     for sid in sorted({*task["window_steps"], *(c["step_id"] for c in task["criteria"]), *searched}):
         for e in (e for e in segmentation["steps"] if e["step_id"] == sid):
@@ -269,7 +299,7 @@ def build_task_content(task: dict, video_id: str, duration: float, state: TaskSt
           + ("；要聽聲音" if c["audio"] else "") + ("；要每 0.5 秒一格" if c["dense"] else "")
           + ("；要看 clip 的連續動作" if c["clip"] else "")
           + ("；" + load_grading_module("rules").search_note(c["step_id"], c["search_steps"])
-             if _searching(c, segmentation) else "")
+             if c["searching"] else "")
           + (f"；要計時：final 填 span=[開始, 結束]（影片秒數），滿 {c['min_seconds']:g} 秒才是正確"
              if c.get("min_seconds") else "")
           for c in task["criteria"]),
@@ -475,7 +505,7 @@ async def run_grading(video_path: Path, segmentation: dict, workdir: Path, model
                 step["criteria"] = [old[c["criterion_id"]] if c["verdict"] == "待判定"
                                     and old.get(c["criterion_id"], c)["verdict"] != "待判定" else c
                                     for c in step["criteria"]]
-    tasks = build_tasks(result, rubric, steps)
+    tasks = build_tasks(result, rubric, steps, segmentation)
 
     workdir.mkdir(parents=True, exist_ok=True)
     runner = GradingRunner(workdir, video_path, probe_dir)
