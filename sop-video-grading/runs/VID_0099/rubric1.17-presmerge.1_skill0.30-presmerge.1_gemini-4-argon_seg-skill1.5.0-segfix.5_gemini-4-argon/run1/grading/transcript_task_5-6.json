@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 13.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 16611,
+  "cached_input_tokens": 0,
+  "output_tokens": 102,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@57-68.5（context box，有聲音；片段內 00:00 ＝ 影片 00:57.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [60.0, 61.5, 62.0, 64.5], \"region\": [0.35, 0.65, 0.7, 0.9], \"reason\": \"確認打開 vial 瓶口（60.0-62.0）以及用酒精棉片消毒 vial 瓶口（64.5）的細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 28.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 17825,
+  "cached_input_tokens": 0,
+  "output_tokens": 494,
+  "thinking_tokens": 187,
+  "materials": [
+   "clip@57-68.5（context box，有聲音；片段內 00:00 ＝ 影片 00:57.0）",
+   "zoom@60/61.5/62/64.5 region=[0.350, 0.650, 0.700, 0.900]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"01:00.0–01:02.0（clip@57-68.5 片段內 00:03.0–00:05.0）學生拿起 vial，隔著酒精棉片將深紅色塑膠翻蓋推掉，01:02.0 可見瓶頂露出銀色鋁圈與橡皮塞，翻蓋掉落在桌面上。\", \"evidence\": [\"clip@57-68.5\", \"zoom@60\", \"zoom@61.5\", \"zoom@62\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"6a\", \"verdict\": \"正確\", \"explanation\": \"01:02.5–01:05.5（clip@57-68.5 片段內 00:05.5–00:08.5）學生以白色方形酒精棉片在 vial 瓶口橡皮塞處來回擦拭消毒，擦完後將棉片覆蓋於瓶口。\", \"evidence\": [\"clip@57-68.5\", \"zoom@64.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
