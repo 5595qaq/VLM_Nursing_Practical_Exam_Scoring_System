@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 42.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 17529,
+  "cached_input_tokens": 0,
+  "output_tokens": 70,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@64-74（context box，有聲音；片段內 00:00 ＝ 影片 01:04.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [66.5, 68.5, 70.5], \"region\": [0.3, 0.3, 0.65, 0.65], \"reason\": \"確認稀釋液瓶口扭開動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 6.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 18747,
+  "cached_input_tokens": 0,
+  "output_tokens": 181,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@64-74（context box，有聲音；片段內 00:00 ＝ 影片 01:04.0）",
+   "zoom@66.5/68.5/70.5 region=[0.300, 0.300, 0.650, 0.650]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"8a\", \"verdict\": \"正確\", \"explanation\": \"01:08–01:10（clip@64-74 片段內 00:04.0–00:06.5）左手握住細長透明稀釋液瓶身，右手捏住瓶頂扭轉打開，01:10.5 清楚看到瓶頂已脫離（zoom@66.5、zoom@68.5、zoom@70.5）。\", \"evidence\": [\"clip@64-74\", \"zoom@66.5\", \"zoom@68.5\", \"zoom@70.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 6.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 17065,
+  "cached_input_tokens": 0,
+  "output_tokens": 192,
+  "thinking_tokens": 99,
+  "materials": [
+   "ov@128-134（hands_box，n=9）#0=02:08.0、#1=02:08.8、#2=02:09.5、#3=02:10.2、#4=02:11.0、#5=02:11.8、#6=02:12.5、#7=02:13.2、#8=02:14.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [131.8, 132.5, 133.2, 134.0], \"region\": [0.35, 0.35, 0.75, 0.75], \"reason\": \"放大確認左手夾住稀釋液瓶的手勢是否為中指及食指夾住\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 5.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 18309,
+  "cached_input_tokens": 0,
+  "output_tokens": 136,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@128-134（hands_box，n=9）#0=02:08.0、#1=02:08.8、#2=02:09.5、#3=02:10.2、#4=02:11.0、#5=02:11.8、#6=02:12.5、#7=02:13.2、#8=02:14.0",
+   "zoom@131.8/132.5/133.2/134 region=[0.350, 0.350, 0.750, 0.750]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"12a\", \"verdict\": \"正確\", \"explanation\": \"於 02:11.8–02:14.0 學生以左手食指及中指夾住稀釋液瓶，姿勢清楚符合標準。\", \"evidence\": [\"ov@128-134 #5\", \"zoom@131.8\", \"zoom@132.5\", \"zoom@133.2\", \"zoom@134\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
