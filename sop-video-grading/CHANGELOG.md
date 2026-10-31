@@ -2,6 +2,11 @@
 
 未發布的修改先寫在 `changelog.d/`（一個分支一個檔，見 `changelog.d/README.md`），合併前改成正式版本時才移到這裡；規則見 `AGENTS.md`「多人協作」。
 
+## 0.33（rubric 1.19）
+
+- 7a（稀釋液瓶口消毒）的時間引用棉片第一次碰到瓶頂（`criteria/10-presence.md`）：一定要用一次 clip 看區間開始前 10 秒（拿起稀釋液瓶那段），扭開前有擦就引用最早擦的時間。step7a.1 只在「區間一開始就是隔著棉片扭開」時才往前看，agent 會把包著瓶頂扭開看成擦拭而不往前看（VID_0100 2 次只對 1 次），step7a.2 改成一律往前看。VID_0100 的 1.5.x 切分 5 次都把步驟 7 標在扭開（01:18–01:22），擦拭在 01:13.5–01:17，評分 agent 只看扭開而引用 01:17.5，時間對不上（issue #93，實驗 step7a.1／step7a.2：`experiments/2026-10-31-step7a.md`；step7a.2 在 VID_0100 兩次、VID_0074、0095、0099 都和參考一致）。
+- `AGENTS.md` 歸因規則：切分時間完全對不上（標到別的動作、離切分區間超過 10 秒、漏掉步驟）才改 `sop-video-skill`；只差幾秒、在評分 agent 看得到的範圍內，可以改評分端的作法（使用者，2026-10-31）。
+
 ## 0.32（rubric 1.19）
 
 - 10b（固定針頭與針心）把切分的手拿空針包裝時段交給評分 agent（issue #97，實驗 pkgspan.1：rubric 1.18-pkgspan.1，`experiments/2026-10-30-pkgspan.md`；暫定，待老師確認 10b 標準）：rubric 新增 `package_spans: true`，任務說明列出切分 `package_spans` 中第一次使用空針（步驟 13）之前開始的時段，`overview`／`zoom`／`burst`／`clip` 也可以用在這些時段（各 ±10 秒）。0.13–0.29 的評分 agent 都沒拿到這些時段，0.29 只在 10b 判無法判定後寫進 `review_reason` 給人工。
