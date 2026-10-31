@@ -1,0 +1,64 @@
+[
+ {
+  "turn": 1,
+  "seconds": 9.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 16297,
+  "cached_input_tokens": 0,
+  "output_tokens": 252,
+  "thinking_tokens": 164,
+  "materials": [
+   "clip@77-84（context box，有聲音；片段內 00:00 ＝ 影片 01:17.0）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 67.0, \"end\": 77.0, \"fps\": 2, \"reason\": \"依規則看區間開始前 10 秒到區間開始（67.0–77.0s），確認扭開前是否已有用棉片擦拭稀釋液瓶頂及最早碰到瓶頂的時間\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 55.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 18210,
+  "cached_input_tokens": 0,
+  "output_tokens": 93,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@77-84（context box，有聲音；片段內 00:00 ＝ 影片 01:17.0）",
+   "clip@67-77（context box，有聲音；片段內 00:00 ＝ 影片 01:07.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [73.5, 76.0, 77.5, 79.0], \"region\": [0.38, 0.32, 0.68, 0.56], \"reason\": \"確認手中瓶子為細長稀釋液瓶及酒精棉片擦拭與包覆瓶頂的動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 5.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 19443,
+  "cached_input_tokens": 0,
+  "output_tokens": 127,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@77-84（context box，有聲音；片段內 00:00 ＝ 影片 01:17.0）",
+   "clip@67-77（context box，有聲音；片段內 00:00 ＝ 影片 01:07.0）",
+   "zoom@73.5/76/77.5/79 region=[0.380, 0.320, 0.680, 0.560]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [80.0, 81.5, 83.0, 84.0], \"region\": [0.35, 0.35, 0.68, 0.72], \"reason\": \"確認稀釋液瓶口在01:20–01:24被打開及放置在桌上的狀態，以及先前01:13.5–01:19.0擦拭與扭開的是否為稀釋液瓶或vial\"}",
+  "errors": []
+ },
+ {
+  "turn": 4,
+  "seconds": 36.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 20684,
+  "cached_input_tokens": 0,
+  "output_tokens": 324,
+  "thinking_tokens": 109,
+  "materials": [
+   "clip@77-84（context box，有聲音；片段內 00:00 ＝ 影片 01:17.0）",
+   "clip@67-77（context box，有聲音；片段內 00:00 ＝ 影片 01:07.0）",
+   "zoom@73.5/76/77.5/79 region=[0.380, 0.320, 0.680, 0.560]",
+   "zoom@80/81.5/83/84 region=[0.350, 0.350, 0.680, 0.720]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"7a\", \"verdict\": \"正確\", \"explanation\": \"於 01:13.5（clip@67-77 片段內 00:06.5）起，考生以酒精棉片接觸並擦拭細長稀釋液瓶頂端至 01:16.5，隨後於 01:17.5–01:20.0（clip@77-84 片段內 00:00.5–00:03.0）再以酒精棉片包住稀釋液瓶頂扭開。\", \"evidence\": [\"clip@67-77\", \"clip@77-84\", \"zoom@73.5\", \"zoom@76\", \"zoom@77.5\", \"zoom@80\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

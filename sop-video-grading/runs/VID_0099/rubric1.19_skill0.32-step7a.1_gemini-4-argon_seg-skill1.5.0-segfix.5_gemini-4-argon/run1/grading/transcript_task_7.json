@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 9.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 16369,
+  "cached_input_tokens": 0,
+  "output_tokens": 212,
+  "thinking_tokens": 135,
+  "materials": [
+   "clip@77.5-86（context box，有聲音；片段內 00:00 ＝ 影片 01:17.5）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 67.5, \"end\": 78.0, \"fps\": 2, \"reason\": \"區間一開始（01:17.5）手已在稀釋液瓶頂操作，往前確認拿起稀釋液瓶及棉片第一次碰到瓶頂擦拭的時間\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 13.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 18242,
+  "cached_input_tokens": 0,
+  "output_tokens": 81,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@77.5-86（context box，有聲音；片段內 00:00 ＝ 影片 01:17.5）",
+   "clip@67.5-78（context box，有聲音；片段內 00:00 ＝ 影片 01:07.5）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [73.0, 75.0, 80.5], \"region\": [0.45, 0.4, 0.78, 0.72], \"reason\": \"確認棉片在稀釋液瓶頂端擦拭與扭開瓶頂的細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 6.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 19465,
+  "cached_input_tokens": 0,
+  "output_tokens": 198,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@77.5-86（context box，有聲音；片段內 00:00 ＝ 影片 01:17.5）",
+   "clip@67.5-78（context box，有聲音；片段內 00:00 ＝ 影片 01:07.5）",
+   "zoom@73/75/80.5 region=[0.450, 0.400, 0.780, 0.720]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"7a\", \"verdict\": \"正確\", \"explanation\": \"01:12.0（clip@67.5-78 片段內 00:04.5）拿起細長稀釋液瓶並以酒精棉片包住瓶頂擦拭消毒（zoom@73 確認棉片包在稀釋液瓶頂），接著於 01:14.5–01:22.5 隔著棉片扭開瓶頂（zoom@75、zoom@80.5）。\", \"evidence\": [\"clip@67.5-78\", \"clip@77.5-86\", \"zoom@73\", \"zoom@75\", \"zoom@80.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
