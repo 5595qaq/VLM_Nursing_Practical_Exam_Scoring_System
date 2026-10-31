@@ -569,7 +569,8 @@ async def gemini_call(system: str, content: list[dict]) -> ModelReply:
     output_tokens = counts["output_tokens"]
     feedback = getattr(response, "prompt_feedback", None)
     block = _name(getattr(feedback, "block_reason", None))
-    if block in _GEMINI_REFUSALS:
+    # Any real prompt block means there is no answer; resending the same prompt is blocked again.
+    if block and block != "BLOCKED_REASON_UNSPECIFIED":
         return ModelReply("", "refusal", input_tokens, output_tokens, counts["cached_input_tokens"],
                           counts["thinking_tokens"],
                           _refusal_detail(block, getattr(feedback, "block_reason_message", None)))
@@ -585,8 +586,8 @@ async def gemini_call(system: str, content: list[dict]) -> ModelReply:
 
 
 def _refusal_detail(reason: str | None, message) -> str:
-    """'PROHIBITED_CONTENT: <Gemini's message>' (the message is optional)."""
-    return f"{reason}: {message}" if message else str(reason)
+    """'PROHIBITED_CONTENT: <Gemini's message>'; either part may be missing."""
+    return ": ".join(str(part) for part in (reason, message) if part)
 
 
 def model_name() -> str:

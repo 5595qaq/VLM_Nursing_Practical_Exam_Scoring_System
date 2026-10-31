@@ -257,7 +257,7 @@ python sop-video-grading/scripts/compare_arms.py --labels 標註表.csv --arm �
 - `record.json` 每次執行的 `usage` 是評分用量：`input_tokens`（全部輸入，含快取）、`cached_input_tokens`（其中從快取讀的）、`output_tokens`（含 thinking）、`thinking_tokens`。
 - 這次執行有切分時另有 `segmentation_usage`（同樣的欄位）。
 - 每回合的用量在 `runN/grading/transcript_task_*.json` 與 `runN/seg/transcript.json`。
-- 模型拒絕回答（`stop_reason` 為 `refusal`）時，該回合另有 `refusal_detail`，寫 Gemini 的原因與訊息（例如 `PROHIBITED_CONTENT: …`，請求因輸入圖片被擋下）；錯誤訊息也會帶上同樣的內容。切分被拒絕時 CLI 直接停止、不寫紀錄，對話紀錄在 `--out` 資料夾的 `seg/transcript.json`。這類影片重跑通常結果相同，改由人工評分。
+- Gemini 拒絕回答（`stop_reason` 為 `refusal`：請求被擋下，或因安全類原因停止）時，該回合另有 `refusal_detail`，寫 Gemini 的原因與訊息（例如 `PROHIBITED_CONTENT: …`，請求因輸入圖片被擋下）；用 Claude 時不記原因。錯誤訊息也會帶上同樣的內容。切分被拒絕時 CLI 直接停止、不寫紀錄，對話紀錄在 `--out` 資料夾的 `seg/transcript.json`。這類影片重跑通常結果相同，改由人工評分。
 - `runN/grading.json` 是那次執行後的結果，版本資料夾的 `grading.json` 只保留最新的一次。
 - 2026-10-25 之前的紀錄只有 input／output。
 

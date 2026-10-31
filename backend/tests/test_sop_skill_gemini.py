@@ -143,6 +143,20 @@ async def test_gemini_refusal_keeps_the_block_reason_and_message(monkeypatch):
                                           "(stop_reason=refusal; PROHIBITED_CONTENT: input image violates the policy)")
 
 
+@pytest.mark.parametrize("block, refused", [("OTHER", True), ("BLOCKLIST", True),
+                                            ("BLOCKED_REASON_UNSPECIFIED", False)])
+async def test_any_prompt_block_is_a_refusal(monkeypatch, block, refused):
+    fake_client(monkeypatch, response(block_reason=SimpleNamespace(name=block)))
+    reply = await skill.gemini_call("SYSTEM", CONTENT)
+    assert (reply.stop_reason == "refusal") is refused
+    assert reply.refusal_detail == (block if refused else "")
+
+
+def test_refusal_detail_skips_missing_parts():
+    assert skill._refusal_detail(None, "msg") == "msg"
+    assert skill._refusal_detail(None, None) == ""
+
+
 async def test_gemini_finish_refusal_keeps_the_finish_reason(monkeypatch):
     fake_client(monkeypatch, response(finish="SAFETY"))
     assert (await skill.gemini_call("SYSTEM", CONTENT)).refusal_detail == "SAFETY"
