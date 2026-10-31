@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 4.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 15283,
+  "cached_input_tokens": 0,
+  "output_tokens": 108,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@188.5-199.5（hands_box，n=9）#0=03:08.5、#1=03:09.9、#2=03:11.2、#3=03:12.6、#4=03:14.0、#5=03:15.4、#6=03:16.8、#7=03:18.1、#8=03:19.5"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [191.2, 192.6, 194.0, 195.4], \"region\": [0.25, 0.4, 0.75, 0.75], \"reason\": \"放大查看 03:11.2 至 03:15.4 雙手回套針頭套的方式，確認是否雙手持握回套\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 5.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 16517,
+  "cached_input_tokens": 0,
+  "output_tokens": 167,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@188.5-199.5（hands_box，n=9）#0=03:08.5、#1=03:09.9、#2=03:11.2、#3=03:12.6、#4=03:14.0、#5=03:15.4、#6=03:16.8、#7=03:18.1、#8=03:19.5",
+   "zoom@191.2/192.6/194/195.4 region=[0.250, 0.400, 0.750, 0.750]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"19b\", \"verdict\": \"錯誤\", \"explanation\": \"於 03:12.6–03:14.0 左手握持空針外管，右手捏持針頭套將其套回針頭上，在胸前以雙手懸空完成回套，並非將針頭套置於桌面以單手回套。\", \"evidence\": [\"ov@188.5-199.5 #3\", \"ov@188.5-199.5 #4\", \"zoom@192.6\", \"zoom@194\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
