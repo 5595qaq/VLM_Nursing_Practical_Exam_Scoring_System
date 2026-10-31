@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 26.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 15503,
+  "cached_input_tokens": 0,
+  "output_tokens": 440,
+  "thinking_tokens": 326,
+  "materials": [
+   "ov@188.5-199.5（hands_box，n=9）#0=03:08.5、#1=03:09.9、#2=03:11.2、#3=03:12.6、#4=03:14.0、#5=03:15.4、#6=03:16.8、#7=03:18.1、#8=03:19.5"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [195.8, 196.3, 196.8, 197.3], \"region\": [0.15, 0.45, 0.75, 0.98], \"reason\": \"確認 03:15.8–03:17.3 將針頭插回針架上針頭套時是否為單手回套，以及另一隻手的位置\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 9.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 16730,
+  "cached_input_tokens": 0,
+  "output_tokens": 359,
+  "thinking_tokens": 177,
+  "materials": [
+   "ov@188.5-199.5（hands_box，n=9）#0=03:08.5、#1=03:09.9、#2=03:11.2、#3=03:12.6、#4=03:14.0、#5=03:15.4、#6=03:16.8、#7=03:18.1、#8=03:19.5",
+   "zoom@195.8/196.3/196.8/197.3 region=[0.150, 0.450, 0.750, 0.980]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"19b\", \"verdict\": \"正確\", \"explanation\": \"03:11–03:15 學生於胸前拉針心抽空氣後，於 03:16.3–03:17.3 以右手單手持針筒將針頭垂直插入桌上透明針架內的針頭套中，左手則伸向桌上的 vial 並未扶住或碰觸針頭套，符合單手回套標準。\", \"evidence\": [\"ov@188.5-199.5 #6\", \"zoom@196.3\", \"zoom@196.8\", \"zoom@197.3\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

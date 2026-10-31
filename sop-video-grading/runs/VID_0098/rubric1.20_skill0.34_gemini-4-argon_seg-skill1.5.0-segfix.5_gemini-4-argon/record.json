@@ -1,0 +1,38 @@
+{
+ "video_id": "VID_0098",
+ "versions": {
+  "rubric": "1.20",
+  "skill": "0.34",
+  "model": "gemini-4-argon",
+  "segmentation": "skill1.5.0-segfix.5_gemini-4-argon"
+ },
+ "video_sha256": "ca99124fe3ebc7cd5b27d0f88d838f6dc150f4144c1b775a332b771594f16566",
+ "runs": [
+  {
+   "run": 1,
+   "by": "5595QAQ",
+   "date": "2026-10-31",
+   "commit": "bc2ae432ae9ef73baa86f4aec6b9e8a491c72e96",
+   "video_sha256": "ca99124fe3ebc7cd5b27d0f88d838f6dc150f4144c1b775a332b771594f16566",
+   "steps": [
+    28
+   ],
+   "failed_tasks": [],
+   "segmentation": "reused segmentation.json of rubric1.16_skill0.29_gemini-4-argon_seg-skill1.5.0-segfix.5_gemini-4-argon",
+   "usage": {
+    "input_tokens": 55302,
+    "cached_input_tokens": 0,
+    "output_tokens": 977,
+    "thinking_tokens": 552
+   }
+  }
+ ],
+ "segmentation_from": {
+  "record": "rubric1.16_skill0.29_gemini-4-argon_seg-skill1.5.0-segfix.5_gemini-4-argon",
+  "run": 1,
+  "date": "2026-10-29",
+  "by": "5595QAQ",
+  "commit": "8afc162578865521eaa94e2f7b11e2c6a7eeb5cb",
+  "segmentation": "sop-video-skill 1.5.0-segfix.5 gemini-4-argon"
+ }
+}

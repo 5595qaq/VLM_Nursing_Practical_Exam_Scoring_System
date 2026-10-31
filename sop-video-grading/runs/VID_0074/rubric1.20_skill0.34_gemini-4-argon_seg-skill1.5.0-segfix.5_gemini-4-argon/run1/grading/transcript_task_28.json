@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 5.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 16930,
+  "cached_input_tokens": 0,
+  "output_tokens": 88,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@305.2-315（hands_box，n=9）#0=05:05.2、#1=05:06.4、#2=05:07.6、#3=05:08.9、#4=05:10.1、#5=05:11.3、#6=05:12.6、#7=05:13.8、#8=05:15.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [307.6, 308.9, 310.1, 311.3], \"region\": [0.2, 0.35, 0.75, 0.95], \"reason\": \"確認左手拿起針頭套並以雙手回套針頭的過程\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 104.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 18181,
+  "cached_input_tokens": 0,
+  "output_tokens": 303,
+  "thinking_tokens": 137,
+  "materials": [
+   "ov@305.2-315（hands_box，n=9）#0=05:05.2、#1=05:06.4、#2=05:07.6、#3=05:08.9、#4=05:10.1、#5=05:11.3、#6=05:12.6、#7=05:13.8、#8=05:15.0",
+   "zoom@307.6/308.9/310.1/311.3 region=[0.200, 0.350, 0.750, 0.950]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"28b\", \"verdict\": \"錯誤\", \"explanation\": \"05:07.6 左手從桌上拿起針頭套，05:08.9–05:11.3 左手直接持針頭套於胸前，右手持空針將針頭插入左手所持的針頭套中並壓緊，為雙手回套，未以單手套回。\", \"evidence\": [\"ov@305.2-315 #2\", \"zoom@308.9\", \"zoom@310.1\", \"zoom@311.3\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
