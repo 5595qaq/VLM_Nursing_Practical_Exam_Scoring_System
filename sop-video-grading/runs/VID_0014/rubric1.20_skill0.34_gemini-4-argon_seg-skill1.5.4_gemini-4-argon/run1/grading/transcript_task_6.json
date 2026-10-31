@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 24.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 17630,
+  "cached_input_tokens": 0,
+  "output_tokens": 91,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@256-266.5（context box，有聲音；片段內 00:00 ＝ 影片 04:16.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [258.5, 259.5, 260.5, 263.5], \"region\": [0.55, 0.55, 0.8, 0.85], \"reason\": \"放大確認酒精棉片擦拭 vial 瓶口的動作與擦拭後瓶口狀況\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 15.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 18879,
+  "cached_input_tokens": 0,
+  "output_tokens": 176,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@256-266.5（context box，有聲音；片段內 00:00 ＝ 影片 04:16.0）",
+   "zoom@258.5/259.5/260.5/263.5 region=[0.550, 0.550, 0.800, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"6a\", \"verdict\": \"正確\", \"explanation\": \"04:18.0–04:21.5（clip@256-266.5 片段內 00:02.0–00:05.5）學生左手扶住已開蓋的 vial 藥瓶，右手持酒精棉片在 vial 瓶口（銀色鋁圈及橡皮塞處）旋轉擦拭消毒。\", \"evidence\": [\"clip@256-266.5\", \"zoom@258.5\", \"zoom@259.5\", \"zoom@260.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

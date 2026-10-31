@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 9.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 17285,
+  "cached_input_tokens": 0,
+  "output_tokens": 482,
+  "thinking_tokens": 385,
+  "materials": [
+   "ov@91-103（hands_box，n=9）#0=01:31.0、#1=01:32.5、#2=01:34.0、#3=01:35.5、#4=01:37.0、#5=01:38.5、#6=01:40.0、#7=01:41.5、#8=01:43.0"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 94.0, \"end\": 102.0, \"fps\": 10, \"region\": [0.2, 0.2, 0.8, 0.65], \"reason\": \"查看空針離開包裝前後（01:34–01:42）雙手是否有旋緊固定針頭與針心的連續動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 9.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 23426,
+  "cached_input_tokens": 0,
+  "output_tokens": 195,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@91-103（hands_box，n=9）#0=01:31.0、#1=01:32.5、#2=01:34.0、#3=01:35.5、#4=01:37.0、#5=01:38.5、#6=01:40.0、#7=01:41.5、#8=01:43.0",
+   "clip@94-102（region=[0.200, 0.200, 0.800, 0.650]，原始解析度裁切，有聲音；片段內 00:00 ＝ 影片 01:34.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"10b\", \"verdict\": \"正確\", \"explanation\": \"01:36.0（clip@94-102 片段內 00:02.0）取出空針後，於 01:37.5–01:40.4（片段內 00:03.5–00:06.4）右手握住針筒、左手捏住針頭蓋與針座接合處來回旋緊針頭，之後於 01:40.7 拔開針頭蓋。\", \"evidence\": [\"ov@91-103 #5\", \"ov@91-103 #6\", \"clip@94-102\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

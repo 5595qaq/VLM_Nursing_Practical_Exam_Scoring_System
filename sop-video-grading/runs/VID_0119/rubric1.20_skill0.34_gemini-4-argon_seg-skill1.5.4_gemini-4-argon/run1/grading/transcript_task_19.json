@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 94.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 17115,
+  "cached_input_tokens": 0,
+  "output_tokens": 100,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@187.5-199.2（hands_box，n=9）#0=03:07.5、#1=03:09.0、#2=03:10.4、#3=03:11.9、#4=03:13.3、#5=03:14.8、#6=03:16.3、#7=03:17.7、#8=03:19.2"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [190.4, 191.9, 193.3, 194.8], \"region\": [0.25, 0.45, 0.7, 0.98], \"reason\": \"放大確認右手單手將針頭套入桌上針頭套的過程，以及左手持vial未碰觸針頭套\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 9.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 18367,
+  "cached_input_tokens": 0,
+  "output_tokens": 433,
+  "thinking_tokens": 224,
+  "materials": [
+   "ov@187.5-199.2（hands_box，n=9）#0=03:07.5、#1=03:09.0、#2=03:10.4、#3=03:11.9、#4=03:13.3、#5=03:14.8、#6=03:16.3、#7=03:17.7、#8=03:19.2",
+   "zoom@190.4/191.9/193.3/194.8 region=[0.250, 0.450, 0.700, 0.980]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"19b\", \"verdict\": \"正確\", \"explanation\": \"03:10.4–03:14.8 右手持空針將針頭單手伸入桌面上的針頭套內並舉起，期間左手全程拿著 vial 藥瓶，完全沒有碰觸針頭套。\", \"evidence\": [\"ov@187.5-199.2 #2\", \"ov@187.5-199.2 #3\", \"ov@187.5-199.2 #4\", \"ov@187.5-199.2 #5\", \"zoom@190.4\", \"zoom@191.9\", \"zoom@193.3\", \"zoom@194.8\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

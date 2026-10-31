@@ -1,0 +1,87 @@
+{
+ "video_id": "VID_0014",
+ "versions": {
+  "rubric": "1.20",
+  "skill": "0.34",
+  "model": "gemini-4-argon",
+  "segmentation": "skill1.5.4_gemini-4-argon"
+ },
+ "video_sha256": "a0b4e06f2741029494c628e2feed4860eb66d611bdd87fdf82ac9d6e2f245f05",
+ "runs": [
+  {
+   "run": 1,
+   "by": "5595QAQ",
+   "date": "2026-10-31",
+   "commit": "10cd87255def833a17fa9814c31da484fa72e7ac",
+   "video_sha256": "a0b4e06f2741029494c628e2feed4860eb66d611bdd87fdf82ac9d6e2f245f05",
+   "steps": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30
+   ],
+   "failed_tasks": [
+    {
+     "task": "15-16-17",
+     "error": "SkillRunError: task 15-16-17: no final action within 8 turns"
+    }
+   ],
+   "segmentation": "sop-video-skill 1.5.4 gemini-4-argon",
+   "usage": {
+    "input_tokens": 1686789,
+    "cached_input_tokens": 183306,
+    "output_tokens": 28280,
+    "thinking_tokens": 16836
+   },
+   "segmentation_usage": {
+    "input_tokens": 794099,
+    "cached_input_tokens": 381011,
+    "output_tokens": 56192,
+    "thinking_tokens": 6420
+   }
+  },
+  {
+   "run": 2,
+   "by": "5595QAQ",
+   "date": "2026-10-31",
+   "commit": "10cd87255def833a17fa9814c31da484fa72e7ac",
+   "video_sha256": "a0b4e06f2741029494c628e2feed4860eb66d611bdd87fdf82ac9d6e2f245f05",
+   "steps": [
+    15,
+    16,
+    17
+   ],
+   "failed_tasks": [],
+   "segmentation": "recorded segmentation.json",
+   "usage": {
+    "input_tokens": 353642,
+    "cached_input_tokens": 46305,
+    "output_tokens": 7242,
+    "thinking_tokens": 5176
+   }
+  }
+ ]
+}
