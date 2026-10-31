@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 6.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 17893,
+  "cached_input_tokens": 0,
+  "output_tokens": 145,
+  "thinking_tokens": 62,
+  "materials": [
+   "clip@29-41（context box，有聲音；片段內 00:00 ＝ 影片 00:29.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [30.5, 36.5, 38.0, 39.0], \"region\": [0.3, 0.45, 0.6, 0.85], \"reason\": \"確認打開 vial 塑膠瓶蓋的動作與開蓋後的瓶頂狀態\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 6.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 19114,
+  "cached_input_tokens": 0,
+  "output_tokens": 181,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@29-41（context box，有聲音；片段內 00:00 ＝ 影片 00:29.0）",
+   "zoom@30.5/36.5/38/39 region=[0.300, 0.450, 0.600, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"00:30.5 看到 vial 瓶頂為深褐色圓蓋；00:31.0–00:38.5（clip@29-41 片段內 00:02.0–00:09.5）雙手摳推瓶蓋並將其扳開，00:39.0 放回桌面時清楚可見瓶頂已露出銀色鋁圈，完成開瓶動作。\", \"evidence\": [\"clip@29-41\", \"zoom@30.5\", \"zoom@38\", \"zoom@39\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 6.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 17472,
+  "cached_input_tokens": 0,
+  "output_tokens": 148,
+  "thinking_tokens": 65,
+  "materials": [
+   "clip@266-275.5（context box，有聲音；片段內 00:00 ＝ 影片 04:26.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [269.5, 270.5, 271.5, 272.5], \"region\": [0.45, 0.5, 0.85, 0.85], \"reason\": \"確認學生手中扭開的是稀釋液瓶口\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 91.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 18706,
+  "cached_input_tokens": 15435,
+  "output_tokens": 182,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@266-275.5（context box，有聲音；片段內 00:00 ＝ 影片 04:26.0）",
+   "zoom@269.5/270.5/271.5/272.5 region=[0.450, 0.500, 0.850, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"8a\", \"verdict\": \"正確\", \"explanation\": \"04:29.5–04:32.5（clip@266-275.5 片段內 00:03.5–00:06.5）右手握住稀釋液瓶瓶身，左手捏住塑膠瓶頂扭開，04:32.5 已將瓶頂轉下並放在桌上。\", \"evidence\": [\"clip@266-275.5\", \"zoom@269.5\", \"zoom@270.5\", \"zoom@271.5\", \"zoom@272.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
