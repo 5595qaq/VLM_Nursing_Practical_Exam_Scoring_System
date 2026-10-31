@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 4.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 16574,
+  "cached_input_tokens": 0,
+  "output_tokens": 97,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@305.2-315（hands_box，n=9）#0=05:05.2、#1=05:06.4、#2=05:07.6、#3=05:08.9、#4=05:10.1、#5=05:11.3、#6=05:12.6、#7=05:13.8、#8=05:15.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [307.6, 309.5, 310.1, 311.3], \"region\": [0.25, 0.35, 0.75, 0.85], \"reason\": \"確認左手拿取桌上的針頭套並直接用雙手在胸前套回針頭套的過程\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 8.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 17825,
+  "cached_input_tokens": 0,
+  "output_tokens": 391,
+  "thinking_tokens": 191,
+  "materials": [
+   "ov@305.2-315（hands_box，n=9）#0=05:05.2、#1=05:06.4、#2=05:07.6、#3=05:08.9、#4=05:10.1、#5=05:11.3、#6=05:12.6、#7=05:13.8、#8=05:15.0",
+   "zoom@307.6/309.5/310.1/311.3 region=[0.250, 0.350, 0.750, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"28b\", \"verdict\": \"錯誤\", \"explanation\": \"05:07.6 左手從治療車桌面拿起針頭套，05:09.5–05:11.3 左手拿著針頭套舉在胸前迎向針頭、右手持針筒將針頭插入針頭套並壓緊，全程為雙手回套，未以單手套回。\", \"evidence\": [\"ov@305.2-315 #2\", \"ov@305.2-315 #4\", \"ov@305.2-315 #5\", \"zoom@309.5\", \"zoom@310.1\", \"zoom@311.3\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
