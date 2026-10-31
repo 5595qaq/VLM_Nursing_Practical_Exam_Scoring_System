@@ -1,5 +1,5 @@
 {
-  "version": "1.19",
+  "version": "1.20",
   "description": "無菌抽藥技術－vial 粉劑 30 步評分標準。category：program＝由切分結果以程式判定；visual＝評分 agent 看畫面（audio=true 時連聲音一起聽）；not_visible＝影片看不到，固定輸出「無法判定」且不影響步驟判定。visual 的 window_steps＝要看的步驟區間；task＝同名的標準共用一個評分任務（兩條都不在搜尋、且區間相距不超過 10 秒時；否則各自一個任務）；search_steps＝[第一步, 最後一步]，切分沒找到該步時，改在這兩步之間（含）所有步驟的區間內找，且該步的切分 not_performed 不直接判錯誤。key=true 的標準錯誤時整步判「錯誤」。",
   "steps": [
     {"step_id": 1, "text": "洗手。", "criteria": [
@@ -69,7 +69,7 @@
     ]},
     {"step_id": 19, "text": "抽出針頭，單手套上針頭套(或針座)。", "criteria": [
       {"id": "19a", "text": "抽出針頭並套回針頭套", "category": "program", "key": true, "rule": {"type": "detected"}},
-      {"id": "19b", "text": "單手套回（另一手未扶針頭套）", "category": "visual", "key": false, "window_steps": [19]}
+      {"id": "19b", "text": "單手套回（針尖進入針頭套之前，另一手沒有碰針頭套）", "category": "visual", "key": false, "window_steps": [19]}
     ]},
     {"step_id": 20, "text": "用雙手旋轉Vial瓶，讓稀釋液和粉劑融合。", "criteria": [
       {"id": "20a", "text": "雙手旋轉 vial 讓稀釋液與粉劑融合（雙手掌心夾住 vial 來回搓滾或旋轉）", "category": "visual", "key": true, "window_steps": [20], "clip": true, "note": "暫定（標準文字未經人工核對）。使用者要求（2026-10-21）：原本只看切分有沒有定位到步驟 20；資料擴增 AUG0072_SKIP 刪掉搓滾後，切分把拿著 vial、擦瓶口的幾秒標成 20 而判正確，改由評分 agent 看畫面"}
@@ -103,7 +103,7 @@
     ]},
     {"step_id": 28, "text": "單手套上針頭套(或針座)。", "criteria": [
       {"id": "28a", "text": "套回針頭套", "category": "program", "key": true, "rule": {"type": "detected"}},
-      {"id": "28b", "text": "單手套回（另一手未扶針頭套）", "category": "visual", "key": false, "window_steps": [28]}
+      {"id": "28b", "text": "單手套回（針尖進入針頭套之前，另一手沒有碰針頭套）", "category": "visual", "key": false, "window_steps": [28]}
     ]},
     {"step_id": 29, "text": "看給藥治療紀錄單丟棄藥物空瓶。(3讀)", "criteria": [
       {"id": "29a", "text": "目光注視給藥紀錄單累計至少 10 秒", "category": "visual", "key": true, "window_steps": [29]},
