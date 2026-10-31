@@ -26,15 +26,15 @@ def fake_client(monkeypatch, response):
     return models
 
 
-def response(finish="STOP", parts=None, block_reason=None):
+def response(finish="STOP", parts=None, block_reason=None, block_message=None, finish_message=None):
     if parts is None:
         parts = [SimpleNamespace(text="draft thoughts", thought=True),
                  SimpleNamespace(text='{"action": ', thought=None),
                  SimpleNamespace(text='"final"}', thought=False)]
     return SimpleNamespace(
-        candidates=[SimpleNamespace(finish_reason=SimpleNamespace(name=finish),
+        candidates=[SimpleNamespace(finish_reason=SimpleNamespace(name=finish), finish_message=finish_message,
                                     content=SimpleNamespace(parts=parts))],
-        prompt_feedback=SimpleNamespace(block_reason=block_reason),
+        prompt_feedback=SimpleNamespace(block_reason=block_reason, block_reason_message=block_message),
         usage_metadata=SimpleNamespace(prompt_token_count=1200, candidates_token_count=30,
                                        thoughts_token_count=70),
     )
@@ -130,6 +130,40 @@ async def test_gemini_stop_reasons_map_to_loop_reasons(monkeypatch, finish, bloc
     fake_client(monkeypatch, response(finish=finish, block_reason=block))
     reply = await skill.gemini_call("SYSTEM", CONTENT)
     assert reply.stop_reason == expected
+
+
+async def test_gemini_refusal_keeps_the_block_reason_and_message(monkeypatch):
+    # VID_0122 (issue #110): the prompt was blocked for an input image; the reason must survive.
+    fake_client(monkeypatch, response(block_reason=SimpleNamespace(name="PROHIBITED_CONTENT"),
+                                      block_message="input image violates the policy"))
+    reply = await skill.gemini_call("SYSTEM", CONTENT)
+    assert reply.stop_reason == "refusal"
+    assert reply.refusal_detail == "PROHIBITED_CONTENT: input image violates the policy"
+    assert skill.refusal_error(reply) == ("the model declined the request "
+                                          "(stop_reason=refusal; PROHIBITED_CONTENT: input image violates the policy)")
+
+
+@pytest.mark.parametrize("block, refused", [("OTHER", True), ("BLOCKLIST", True),
+                                            ("BLOCKED_REASON_UNSPECIFIED", False)])
+async def test_any_prompt_block_is_a_refusal(monkeypatch, block, refused):
+    fake_client(monkeypatch, response(block_reason=SimpleNamespace(name=block)))
+    reply = await skill.gemini_call("SYSTEM", CONTENT)
+    assert (reply.stop_reason == "refusal") is refused
+    assert reply.refusal_detail == (block if refused else "")
+
+
+def test_refusal_detail_skips_missing_parts():
+    assert skill._refusal_detail(None, "msg") == "msg"
+    assert skill._refusal_detail(None, None) == ""
+
+
+async def test_gemini_finish_refusal_keeps_the_finish_reason(monkeypatch):
+    fake_client(monkeypatch, response(finish="SAFETY"))
+    assert (await skill.gemini_call("SYSTEM", CONTENT)).refusal_detail == "SAFETY"
+    fake_client(monkeypatch, response(finish="SPII", finish_message="personal data"))
+    assert (await skill.gemini_call("SYSTEM", CONTENT)).refusal_detail == "SPII: personal data"
+    fake_client(monkeypatch, response())
+    assert (await skill.gemini_call("SYSTEM", CONTENT)).refusal_detail == ""
 
 
 async def test_gemini_empty_candidate_is_an_invalid_action_not_a_crash(monkeypatch):

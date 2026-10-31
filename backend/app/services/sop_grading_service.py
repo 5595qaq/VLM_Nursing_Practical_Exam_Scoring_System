@@ -30,7 +30,7 @@ from app.config import settings
 from app.services import gcs_service, sop_skill_service
 from app.services.sop_skill_service import (USAGE_KEYS, Image, ModelCall, ScriptRunner, SkillRunError,
                                             _fmt_box, _fmt_t, _image_block, _strip_frontmatter, add_usage,
-                                            gemini_call, parse_action, skill_dir)
+                                            gemini_call, parse_action, refusal_error, skill_dir)
 
 GRADING_CONCURRENCY = 3
 MAX_TASK_TURNS = 8
@@ -468,10 +468,12 @@ async def run_task(task: dict, video_id: str, runner: GradingRunner, boxes: dict
         entry = {"turn": turn, "seconds": round(time.monotonic() - started, 1), "stop_reason": reply.stop_reason,
                  **{k: getattr(reply, k, 0) for k in USAGE_KEYS},
                  "materials": [m.label for m in materials], "reply": reply.text}
+        if getattr(reply, "refusal_detail", ""):
+            entry["refusal_detail"] = reply.refusal_detail
         transcript.append(entry)
         log_path.write_text(json.dumps(transcript, ensure_ascii=False, indent=1), encoding="utf-8")
         if reply.stop_reason == "refusal":
-            raise SkillRunError(f"task {task['key']}: the model declined the request")
+            raise SkillRunError(f"task {task['key']}: {refusal_error(reply)}")
         try:
             if reply.stop_reason == "max_tokens":
                 raise ValueError("回覆超過 max_tokens 被截斷；請精簡 explanation 後重送")

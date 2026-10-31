@@ -59,6 +59,13 @@ class ModelReply:
     output_tokens: int = 0  # thinking included
     cached_input_tokens: int = 0  # of input_tokens: read from the cache (Gemini implicit / Claude cache read)
     thinking_tokens: int = 0  # of output_tokens
+    refusal_detail: str = ""  # stop_reason "refusal": the provider's reason and message, e.g. "PROHIBITED_CONTENT: ..."
+
+
+def refusal_error(reply: ModelReply) -> str:
+    """Error text for a refused reply; keeps the provider's reason so a blocked video can be explained."""
+    detail = f"; {reply.refusal_detail}" if getattr(reply, "refusal_detail", "") else ""
+    return f"the model declined the request (stop_reason=refusal{detail})"
 
 
 def add_usage(usage: dict, reply) -> None:
@@ -350,11 +357,13 @@ async def run_skill_loop(video_path: Path, video_id: str, workdir: Path, model_c
         entry = {"turn": turn, "seconds": round(time.monotonic() - started, 1),
                  "stop_reason": reply.stop_reason, **{k: getattr(reply, k, 0) for k in USAGE_KEYS},
                  "reply": reply.text}
+        if getattr(reply, "refusal_detail", ""):
+            entry["refusal_detail"] = reply.refusal_detail
         transcript.append(entry)
         _write_transcript(workdir / "transcript.json", transcript)
 
         if reply.stop_reason == "refusal":
-            raise SkillRunError("the model declined the request (stop_reason=refusal)")
+            raise SkillRunError(refusal_error(reply))
         try:
             if reply.stop_reason == "max_tokens":
                 raise ValueError("回覆超過 max_tokens 被截斷；請精簡 draft／evidence 後重送")
@@ -559,17 +568,26 @@ async def gemini_call(system: str, content: list[dict]) -> ModelReply:
     input_tokens = counts["input_tokens"] + counts["cached_input_tokens"]
     output_tokens = counts["output_tokens"]
     feedback = getattr(response, "prompt_feedback", None)
-    if feedback is not None and _name(feedback.block_reason) in _GEMINI_REFUSALS:
+    block = _name(getattr(feedback, "block_reason", None))
+    # Any real prompt block means there is no answer; resending the same prompt is blocked again.
+    if block and block != "BLOCKED_REASON_UNSPECIFIED":
         return ModelReply("", "refusal", input_tokens, output_tokens, counts["cached_input_tokens"],
-                          counts["thinking_tokens"])
+                          counts["thinking_tokens"],
+                          _refusal_detail(block, getattr(feedback, "block_reason_message", None)))
     candidate = (response.candidates or [None])[0]
     finish = _name(getattr(candidate, "finish_reason", None))
     parts = (candidate.content.parts or []) if candidate is not None and candidate.content else []
     text = "".join(part.text for part in parts if part.text and not part.thought)
     stop_reason = ("refusal" if finish in _GEMINI_REFUSALS
                    else "max_tokens" if finish == "MAX_TOKENS" else "end_turn")
+    detail = _refusal_detail(finish, getattr(candidate, "finish_message", None)) if stop_reason == "refusal" else ""
     return ModelReply(text, stop_reason, input_tokens, output_tokens, counts["cached_input_tokens"],
-                      counts["thinking_tokens"])
+                      counts["thinking_tokens"], detail)
+
+
+def _refusal_detail(reason: str | None, message) -> str:
+    """'PROHIBITED_CONTENT: <Gemini's message>'; either part may be missing."""
+    return ": ".join(str(part) for part in (reason, message) if part)
 
 
 def model_name() -> str:

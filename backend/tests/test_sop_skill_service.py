@@ -211,6 +211,14 @@ async def test_refusal_and_endless_loops_fail(video, tmp_path):
                                    ScriptedModel([HAPPY_PATH[1]] * 3), max_turns=3)
 
 
+async def test_refusal_reason_reaches_the_error_and_the_transcript(video, tmp_path):
+    refused = ModelReply(text="", stop_reason="refusal", refusal_detail="PROHIBITED_CONTENT: input image")
+    with pytest.raises(SkillRunError, match=r"stop_reason=refusal; PROHIBITED_CONTENT: input image"):
+        await skill.run_skill_loop(video, "V", tmp_path, ScriptedModel([refused]))
+    transcript = json.loads((tmp_path / "transcript.json").read_text(encoding="utf-8"))
+    assert transcript[-1]["refusal_detail"] == "PROHIBITED_CONTENT: input image"
+
+
 async def test_run_sop_skill_downloads_and_uploads_artifacts(video, monkeypatch):
     uploads = {}
 

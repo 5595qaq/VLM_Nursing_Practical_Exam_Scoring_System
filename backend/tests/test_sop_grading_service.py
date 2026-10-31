@@ -280,6 +280,19 @@ async def test_failed_regrade_keeps_the_previous_grade(video, tmp_path):
     assert steps[19]["verdict"] == "正確"  # not 待判定: the earlier grade survives the failed rerun
 
 
+async def test_refused_task_reports_the_reason(video, tmp_path):
+    class Refusing(FakeModel):
+        async def __call__(self, system, content):
+            self.requests.append(content)
+            return ModelReply("", "refusal", 100, 0, refusal_detail="PROHIBITED_CONTENT: input image")
+
+    outcome = await grading.run_grading(video, segmentation(), tmp_path, Refusing(), steps={12})
+    [failed] = outcome["failed_tasks"]
+    assert "stop_reason=refusal; PROHIBITED_CONTENT: input image" in failed["error"]
+    [log] = tmp_path.glob("**/transcript_task_*.json")
+    assert json.loads(log.read_text(encoding="utf-8"))[-1]["refusal_detail"] == "PROHIBITED_CONTENT: input image"
+
+
 async def test_review_flag_reaches_the_result(video, tmp_path):
     flagged = final_for([{"type": "text", "text": "  19b（步驟 19）\nov@1-2"}], "部分正確")
     flagged["criteria"][0].update(needs_review=True, review_reason="學生回套兩次，有一次用雙手")

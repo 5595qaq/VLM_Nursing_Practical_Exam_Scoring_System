@@ -1,0 +1,1 @@
+- 服務端（不改 SKILL／rubric 版本，#110）：Gemini 擋下請求或因安全類原因停止時，切分與評分的對話紀錄該回合多一個 `refusal_detail`（原因與 Gemini 的訊息，例如 `PROHIBITED_CONTENT: …`），錯誤訊息也帶上同樣內容；之前只記 `refusal`。`prompt_feedback.block_reason` 只要不是 `BLOCKED_REASON_UNSPECIFIED` 都算拒絕（之前 `OTHER` 會當成空回覆重送）。
