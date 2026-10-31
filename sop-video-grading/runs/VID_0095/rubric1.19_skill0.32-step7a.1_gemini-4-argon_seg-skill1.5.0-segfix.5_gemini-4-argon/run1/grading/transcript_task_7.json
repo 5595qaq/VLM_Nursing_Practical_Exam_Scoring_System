@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 6.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 19048,
+  "cached_input_tokens": 0,
+  "output_tokens": 77,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@76-98（context box，有聲音；片段內 00:00 ＝ 影片 01:16.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [78.5, 79.5, 80.5], \"region\": [0.4, 0.3, 0.7, 0.6], \"reason\": \"確認以酒精棉片擦拭稀釋液瓶頂端的動作與瓶子種類\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 23.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 20237,
+  "cached_input_tokens": 0,
+  "output_tokens": 198,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@76-98（context box，有聲音；片段內 00:00 ＝ 影片 01:16.0）",
+   "zoom@78.5/79.5/80.5 region=[0.400, 0.300, 0.700, 0.600]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"7a\", \"verdict\": \"正確\", \"explanation\": \"於 01:17.5–01:21.5（clip@76-98 片段內 00:01.5–00:05.5），學生右手持稀釋液瓶，左手用白色酒精棉片包住稀釋液瓶頂端進行擦拭消毒，並於 01:24.0–01:26.5（片段內 00:08.0–00:10.5）扭開瓶頂。\", \"evidence\": [\"clip@76-98\", \"zoom@78.5\", \"zoom@79.5\", \"zoom@80.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
