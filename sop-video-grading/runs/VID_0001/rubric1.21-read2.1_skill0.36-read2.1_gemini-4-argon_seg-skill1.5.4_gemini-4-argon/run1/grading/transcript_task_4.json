@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 5.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 17851,
+  "cached_input_tokens": 0,
+  "output_tokens": 97,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@72-187（hands_box，n=9）#0=01:12.0、#1=01:26.4、#2=01:40.8、#3=01:55.1、#4=02:09.5、#5=02:23.9、#6=02:38.2、#7=02:52.6、#8=03:07.0"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 135.0, \"end\": 195.0, \"fps\": 2, \"reason\": \"查看東西全部拿出來（約 02:23）之後到開瓶蓋（約 03:07）之間的 2 讀完整過程（注視時間、手指指藥單、比對稀釋液與指空針包裝）\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 13.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 28974,
+  "cached_input_tokens": 0,
+  "output_tokens": 486,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@72-187（hands_box，n=9）#0=01:12.0、#1=01:26.4、#2=01:40.8、#3=01:55.1、#4=02:09.5、#5=02:23.9、#6=02:38.2、#7=02:52.6、#8=03:07.0",
+   "clip@135-195（context box，有聲音；片段內 00:00 ＝ 影片 02:15.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4a\", \"verdict\": \"正確\", \"explanation\": \"所有所需物品（vial、空針包裝、酒精棉片、稀釋液）於 02:23.5（clip@135-195 片段內 00:08.5）全部取出放在檯面上；隨後於 02:26.5–03:00.5（片段內 00:11.5–00:45.5）手持 vial，低頭注視治療車前緣的給藥紀錄單並與手中藥物比對，累計注視時間約 34 秒，超過 10 秒。\", \"evidence\": [\"clip@135-195\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"4b\", \"verdict\": \"正確\", \"explanation\": \"於 02:26.5–02:41.5 及 02:46.0–02:58.0（clip@135-195 片段內 00:11.5–00:26.5、00:31.0–00:43.0）明顯用左手食指指出治療車前緣的給藥紀錄單進行核對。\", \"evidence\": [\"ov@72-187 #6\", \"ov@72-187 #7\", \"clip@135-195\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"4d\", \"verdict\": \"錯誤\", \"explanation\": \"於 02:26.5–03:00.5 進行 2 讀核對時，只有右手拿起 vial 比對，並未拿起桌上的稀釋液比對，也沒有用手指指出空針包裝（02:58.5 僅短暫將空針包裝往旁撥動整理）。\", \"evidence\": [\"clip@135-195\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

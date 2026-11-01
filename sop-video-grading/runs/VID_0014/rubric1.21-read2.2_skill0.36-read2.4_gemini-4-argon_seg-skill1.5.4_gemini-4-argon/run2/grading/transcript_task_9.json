@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 5.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 18211,
+  "cached_input_tokens": 0,
+  "output_tokens": 88,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@272.5-288（hands_box，n=9）#0=04:32.5、#1=04:34.4、#2=04:36.4、#3=04:38.3、#4=04:40.2、#5=04:42.2、#6=04:44.1、#7=04:46.1、#8=04:48.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [277.5, 278.3, 279.5, 280.2], \"region\": [0.25, 0.25, 0.75, 0.65], \"reason\": \"確認撕開空針包裝前用手指指出包裝核對的動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 5.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 19466,
+  "cached_input_tokens": 0,
+  "output_tokens": 176,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@272.5-288（hands_box，n=9）#0=04:32.5、#1=04:34.4、#2=04:36.4、#3=04:38.3、#4=04:40.2、#5=04:42.2、#6=04:44.1、#7=04:46.1、#8=04:48.0",
+   "zoom@277.5/278.3/279.5/280.2 region=[0.250, 0.250, 0.750, 0.650]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"9b\", \"verdict\": \"正確\", \"explanation\": \"於 04:38.3–04:40.2 撕開空針包裝前，左手拿著空針包裝，右手伸出食指明顯指向包裝袋上方進行核對，之後於 04:42.2–04:46.1 撕開包裝。\", \"evidence\": [\"ov@272.5-288 #3\", \"ov@272.5-288 #4\", \"zoom@278.3\", \"zoom@279.5\", \"zoom@280.2\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
