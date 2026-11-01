@@ -165,7 +165,7 @@ def test_review_flag_is_reported():
 
 def test_cli_prints_report(tmp_path, capsys):
     labels = write_labels(tmp_path / "l.csv", [row("VID_0001", 21, "正確", start="59:00", end="59:01"),
-                                               row("VID_0001", 9, "錯誤", kind="步驟遺漏")])
+                                               row("VID_0001", 23, "錯誤", kind="步驟遺漏")])
     (tmp_path / "segmentation.json").write_text(json.dumps(make_segmentation(), ensure_ascii=False), encoding="utf-8")
     grading = tmp_path / "g.json"
     grading.write_text(json.dumps(fill_visual(grade_from_segmentation(make_segmentation())), ensure_ascii=False),
@@ -175,5 +175,5 @@ def test_cli_prints_report(tmp_path, capsys):
     text = capsys.readouterr().out
     assert "## VID_0001" in text and "全部：一致 0/2（只比判定 1/2）" in text and "錯誤召回 0/1" in text
     assert "判定一致但時間對不上：步驟 21" in text and "| ✗ 59:00.0–59:01.0／" in text
-    assert "看畫面的步驟（V）：一致 0/0" in text  # steps 9 and 21 are program-only
+    assert "看畫面的步驟（V）：一致 0/0" in text  # steps 21 and 23 are program-only
     assert json.loads(out_json.read_text(encoding="utf-8"))["VID_0001"]["summary"]["compared"] == 2
