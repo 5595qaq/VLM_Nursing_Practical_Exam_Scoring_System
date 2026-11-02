@@ -7,12 +7,12 @@ usage: python sequence_check.py result.json [--write]
 
 Pairs that SOP allows to overlap (outer/inner steps, see sop_steps.md) are ignored:
   15/16/17 overlap (16 is the outer step, 17 spans the whole 15/16 box and may start before 15) ;
-  23 contains 24 ; 25/26/27 overlap.
+  23 contains 24 ; 25/26/27 overlap ; 2 and 4 (reading the record sheet) may overlap 3 (looking at the vial).
 """
 import argparse
 import json
 
-ALLOWED = {frozenset(p) for p in [(15, 16), (15, 17), (16, 17), (23, 24), (25, 26), (25, 27), (26, 27)]}
+ALLOWED = {frozenset(p) for p in [(2, 3), (3, 4), (15, 16), (15, 17), (16, 17), (23, 24), (25, 26), (25, 27), (26, 27)]}
 
 
 def first_starts(steps):

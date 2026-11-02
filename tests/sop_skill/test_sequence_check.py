@@ -23,6 +23,24 @@ def test_flick_may_start_before_the_cotton_pad():
     assert sequence_check.check(result) == []
 
 
+def test_reading_the_record_sheet_may_overlap_checking_the_vial():
+    # SKILL.md section 5: 2 and 4 mark only the reading, often while holding the vial (3).
+    for starts in ({2: 25.0, 3: 20.0, 4: 30.0}, {2: 21.0, 3: 28.0, 4: 24.0}):  # 3 before 2; 4 before 3
+        result = make_valid_result()
+        for sid, start in starts.items():
+            step(result, sid).update(status="detected", start=start, end=start + 3, logical_window=None)
+        assert sequence_check.check(result) == []
+
+
+def test_reading_the_record_sheet_before_washing_hands_is_reported():
+    # VID_0001 reads the sheet before washing hands: a real deviation, not an allowed overlap.
+    result = make_valid_result()
+    step(result, 1)["start"] = 40.0
+    step(result, 1)["end"] = 55.0
+    step(result, 2).update(status="detected", start=2.0, end=38.0, logical_window=None)
+    assert [1, 2] in [f["steps"] for f in sequence_check.check(result)]
+
+
 def test_write_keeps_result_valid(tmp_path, monkeypatch):
     result = make_valid_result()
     step(result, 5)["start"] = 35.0
