@@ -1,5 +1,5 @@
 {
-  "version": "1.21",
+  "version": "1.22",
   "description": "無菌抽藥技術－vial 粉劑 30 步評分標準。category：program＝由切分結果以程式判定；visual＝評分 agent 看畫面（audio=true 時連聲音一起聽）；not_visible＝影片看不到，固定輸出「無法判定」且不影響步驟判定。visual 的 window_steps＝要看的步驟區間；task＝同名的標準共用一個評分任務（兩條都不在搜尋、且區間相距不超過 10 秒時；否則各自一個任務）；search_steps＝[第一步, 最後一步]，切分沒找到該步時，改在這兩步之間（含）所有步驟的區間內找，且該步的切分 not_performed 不直接判錯誤。key=true 的標準錯誤時整步判「錯誤」。",
   "steps": [
     {"step_id": 1, "text": "洗手。", "criteria": [
@@ -16,10 +16,10 @@
       {"id": "3b", "text": "確實檢查出藥物有無變質、過期", "category": "not_visible", "reason": "資訊不足", "note": "影片限制，無法得知學生的檢查是否正確；本步驟暫以是否有看藥物為標準"}
     ]},
     {"step_id": 4, "text": "看給藥治療紀錄單確認藥物。(2讀)", "criteria": [
-      {"id": "4a", "text": "目光注視給藥紀錄單累計至少 10 秒", "category": "visual", "key": false, "window_steps": [4]},
-      {"id": "4b", "text": "明顯用手指指出給藥紀錄單", "category": "visual", "key": false, "window_steps": [4]},
+      {"id": "4a", "text": "目光注視給藥紀錄單累計至少 10 秒", "category": "visual", "key": false, "window_steps": [4, 5]},
+      {"id": "4b", "text": "明顯用手指指出給藥紀錄單", "category": "visual", "key": false, "window_steps": [4, 5]},
       {"id": "4c", "text": "確認的藥物與紀錄單相符", "category": "not_visible", "reason": "資訊不足", "note": "鏡頭看不到藥瓶標籤與紀錄單內容"},
-      {"id": "4d", "text": "核對時除了藥物，也拿起稀釋液和紀錄單比對", "category": "visual", "key": false, "window_steps": [4], "note": "暫定（使用者 2026-11-02，待老師確認）：2讀要核對藥物＋稀釋液；沒有比對稀釋液時 4d 錯誤，整步部分正確；給藥紀錄單不在畫面內時 4d 也判無法判定（藥單看不見）。指空針包裝在 9b"}
+      {"id": "4d", "text": "核對時除了藥物，也拿起稀釋液和紀錄單比對", "category": "visual", "key": false, "window_steps": [4, 5], "note": "暫定（使用者 2026-11-02，待老師確認）：2讀要核對藥物＋稀釋液；沒有比對稀釋液時 4d 錯誤，整步部分正確；給藥紀錄單不在畫面內時 4d 也判無法判定（藥單看不見）。指空針包裝在 9b"}
     ]},
     {"step_id": 5, "text": "將vial瓶口打開。", "criteria": [
       {"id": "5a", "text": "將 vial 瓶口打開", "category": "visual", "key": true, "window_steps": [5], "task": "5-6", "search_steps": [4, 18], "clip": true, "note": "使用者決定（2026-10-30，rubric 1.17）：由 program 改成評分 agent 判定，原因與實驗見 CHANGELOG 0.30；rubric 1.18 起 5a／6a 同一個任務（CHANGELOG 0.31）"}

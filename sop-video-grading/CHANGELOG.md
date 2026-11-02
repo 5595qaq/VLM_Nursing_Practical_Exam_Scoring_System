@@ -2,6 +2,10 @@
 
 未發布的修改先寫在 `changelog.d/`（一個分支一個檔，見 `changelog.d/README.md`），合併前改成正式版本時才移到這裡；規則見 `AGENTS.md`「多人協作」。
 
+## 0.37（rubric 1.22）
+
+- rubric 4a、4b、4d 的 `window_steps` 從 `[4]` 改成 `[4, 5]`，評分區間涵蓋到開瓶蓋（issue #117 的 code review）。sop-video-skill 1.5.5 起，步驟 4 只標讀單的時段；4d 規定要看到開瓶蓋之前為止，學生在標到的時段之後才拿稀釋液比對時，區間太短會誤判。標準文字不變。
+
 ## 0.36（rubric 1.21）
 
 - `criteria/02-drug-sheet.md`、rubric 4d、9b（暫定，使用者 2026-11-02，待老師確認；issue #116）：

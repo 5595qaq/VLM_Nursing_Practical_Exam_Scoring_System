@@ -7,12 +7,14 @@ usage: python sequence_check.py result.json [--write]
 
 Pairs that SOP allows to overlap (outer/inner steps, see sop_steps.md) are ignored:
   15/16/17 overlap (16 is the outer step, 17 spans the whole 15/16 box and may start before 15) ;
-  23 contains 24 ; 25/26/27 overlap ; 2 and 4 (reading the record sheet) may overlap 3 (looking at the vial).
+  23 contains 24 ; 25/26/27 overlap ; 2 and 4 (reading the record sheet) may overlap 3 (looking at the vial), so those two pairs are
+  ignored only when their spans do overlap.
 """
 import argparse
 import json
 
-ALLOWED = {frozenset(p) for p in [(2, 3), (3, 4), (15, 16), (15, 17), (16, 17), (23, 24), (25, 26), (25, 27), (26, 27)]}
+ALLOWED = {frozenset(p) for p in [(15, 16), (15, 17), (16, 17), (23, 24), (25, 26), (25, 27), (26, 27)]}
+ALLOWED_IF_OVERLAPPING = {frozenset(p) for p in [(2, 3), (3, 4)]}
 
 
 def first_starts(steps):
@@ -26,13 +28,20 @@ def first_starts(steps):
     return out, reps
 
 
+def overlaps(a, b):
+    return any(s1 < e2 and s2 < e1 for s1, e1 in a for s2, e2 in b)
+
+
 def check(res):
     st, reps = first_starts(res["steps"])
     found = []
     ids = sorted(st)
     for i in ids:
         for j in ids:
-            if i < j and st[j] < st[i] and frozenset((i, j)) not in ALLOWED:
+            pair = frozenset((i, j))
+            if pair in ALLOWED_IF_OVERLAPPING and overlaps(reps[i], reps[j]):
+                continue
+            if i < j and st[j] < st[i] and pair not in ALLOWED:
                 found.append({"type": "out_of_order", "start": st[j], "end": st[i], "steps": [i, j],
                               "description": f"步驟 {j} 於 {st[j]:.0f}s 開始，早於步驟 {i}（{st[i]:.0f}s）；SOP 順序為 {i}→{j}",
                               "evidence": "sequence_check.py 依 steps 開始時間比對", "confidence": 0.5, "auto": True})
