@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 5.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 18613,
+  "cached_input_tokens": 0,
+  "output_tokens": 69,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@143.6-180（hands_box，n=9）#0=02:23.6、#1=02:28.2、#2=02:32.7、#3=02:37.2、#4=02:41.8、#5=02:46.3、#6=02:50.9、#7=02:55.4、#8=03:00.0"
+  ],
+  "reply": "{\"action\": \"overview\", \"start\": 175.0, \"end\": 190.0, \"n\": 9, \"box\": \"hands\", \"reason\": \"Check if student picks up diluent bottle and compares with MAR after 03:00 before opening vial cap.\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 11.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 19970,
+  "cached_input_tokens": 16839,
+  "output_tokens": 671,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@143.6-180（hands_box，n=9）#0=02:23.6、#1=02:28.2、#2=02:32.7、#3=02:37.2、#4=02:41.8、#5=02:46.3、#6=02:50.9、#7=02:55.4、#8=03:00.0",
+   "ov@175-190（hands_box，n=9）#0=02:55.0、#1=02:56.9、#2=02:58.8、#3=03:00.6、#4=03:02.5、#5=03:04.4、#6=03:06.2、#7=03:08.1、#8=03:10.0"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4a\", \"verdict\": \"正確\", \"explanation\": \"於 02:23.6 時，vial、稀釋液、空針、酒精棉片四樣器材已全部拿出並放在檯面上。於 02:28.2–02:56.9 期間（共約 28 秒，超過 10 秒），學生右手拿著 vial，頭與視線持續低頭朝向治療車最前緣平放的給藥紀錄單並進行比對。\", \"evidence\": [\"ov@143.6-180 #0\", \"ov@143.6-180 #1\", \"ov@143.6-180 #2\", \"ov@143.6-180 #3\", \"ov@143.6-180 #4\", \"ov@143.6-180 #5\", \"ov@143.6-180 #6\", \"ov@143.6-180 #7\", \"ov@175-190 #1\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"4b\", \"verdict\": \"正確\", \"explanation\": \"於 02:28.2–02:56.9 期間，學生左手手指明顯指向治療車最前緣的給藥紀錄單逐項核對。\", \"evidence\": [\"ov@143.6-180 #1\", \"ov@143.6-180 #2\", \"ov@143.6-180 #3\", \"ov@143.6-180 #6\", \"ov@143.6-180 #7\", \"ov@175-190 #1\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"4d\", \"verdict\": \"錯誤\", \"explanation\": \"於 02:28.2–02:56.9 的二讀核對期間，學生只拿著 vial 與給藥紀錄單比對，稀釋液一直立在檯面上未拿起；直到 03:00.6 放下 vial、03:02.5 撕棉片並在 03:06.2 打開 vial 瓶蓋（步驟 5）為止，皆未拿起稀釋液和紀錄單比對。\", \"evidence\": [\"ov@143.6-180 #1\", \"ov@143.6-180 #7\", \"ov@175-190 #1\", \"ov@175-190 #2\", \"ov@175-190 #3\", \"ov@175-190 #6\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

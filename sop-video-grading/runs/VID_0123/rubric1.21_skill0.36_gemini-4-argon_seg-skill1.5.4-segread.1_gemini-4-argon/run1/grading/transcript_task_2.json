@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 5.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 18570,
+  "cached_input_tokens": 0,
+  "output_tokens": 87,
+  "thinking_tokens": 23,
+  "materials": [
+   "ov@0-46.8（hands_box，n=9）#0=00:00.0、#1=00:05.8、#2=00:11.7、#3=00:17.6、#4=00:23.4、#5=00:29.2、#6=00:35.1、#7=00:41.0、#8=00:46.8"
+  ],
+  "reply": "{\"action\": \"overview\", \"start\": 0.0, \"end\": 46.8, \"n\": 9, \"box\": \"context\", \"reason\": \"使用 context 視野尋找給藥紀錄單的位置，並觀察學生視線與手部動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 6.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 19904,
+  "cached_input_tokens": 16839,
+  "output_tokens": 278,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@0-46.8（hands_box，n=9）#0=00:00.0、#1=00:05.8、#2=00:11.7、#3=00:17.6、#4=00:23.4、#5=00:29.2、#6=00:35.1、#7=00:41.0、#8=00:46.8",
+   "ov@0-46.8（context_box，n=9）#0=00:00.0、#1=00:05.8、#2=00:11.7、#3=00:17.6、#4=00:23.4、#5=00:29.2、#6=00:35.1、#7=00:41.0、#8=00:46.8"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"2a\", \"verdict\": \"無法判定\", \"explanation\": \"已檢視全畫面（含治療車前緣、畫面下緣、點滴架及背景牆面），均未見到給藥紀錄單，無法確認注視對象與時間。\", \"evidence\": [\"ov@0-46.8 #0\", \"ov@0-46.8 #5\", \"ov@0-46.8 #8\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}, {\"criterion_id\": \"2b\", \"verdict\": \"無法判定\", \"explanation\": \"全畫面（含治療車前緣、畫面下緣及點滴架）均未見到給藥紀錄單，且 00:00–00:25 為洗手、00:25–00:46 為拿取及檢視藥瓶與空針，無法判定是否有指出藥單。\", \"evidence\": [\"ov@0-46.8 #0\", \"ov@0-46.8 #5\", \"ov@0-46.8 #8\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}]}",
+  "errors": []
+ }
+]
