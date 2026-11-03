@@ -7,6 +7,7 @@ No model call. For every step it:
     in a step with a `search_steps` criterion the agent checks whether the step was done, so
     not_performed decides none of its visual criteria, and a criterion whose step segmentation did
     not find is searched for over every step from the first to the last of `search_steps`;
+    an `after_step` criterion (4e) may happen after its own step, so not_performed does not decide it;
   - not_visible criteria: fixed 無法判定 with the rubric's reason;
 then aggregates the step verdict (rubric.aggregate) and joins the explanations.
 
@@ -108,7 +109,7 @@ def _grade(c: dict, sid: int, entries: dict[int, list[dict]], duration: float, m
         return _criterion(c, UNDETERMINED, f"{c['note']}，無法判定。", confidence=1.0,
                           reason=c["reason"])
 
-    if status == "not_performed" and not (search_step and c["category"] == "visual"):
+    if status == "not_performed" and not ((search_step or c.get("after_step")) and c["category"] == "visual"):
         conf = max(e["confidence"] for e in own)
         return _criterion(c, WRONG, f"切分結果：步驟 {sid} 未執行（{_seg_evidence(own)}）。",
                           source="rule", evidence=seg_ref, confidence=conf)

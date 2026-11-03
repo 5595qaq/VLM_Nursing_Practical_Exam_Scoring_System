@@ -17,6 +17,8 @@ of this task was seen, either the opening clip (task["opening_clip"]) or a clip 
 needle (10b, rubric package_spans): actions may also look at the spans the hands held the syringe wrapper
 (the task lists them, each ±WINDOW_SLACK); 正確, 錯誤 or 無法判定, never 部分正確, and 錯誤 only after a
 clip action overlapping a listed span (any clip when none is listed; a twist lasts a second or two). The backend sends a 無法判定 or 錯誤 to a person with those spans.
+Pointing at the syringe package (4e): 錯誤 only after a clip action; the gesture lasts two or three seconds
+in a window of a minute or more.
 A clip above 5 fps may last at most 8 s.
 
 A rejected action is NOT executed and does NOT consume budget.
@@ -39,6 +41,7 @@ ZOOM_MAX_AREA, ZOOM_MAX_SIDE = 0.50, 0.75
 BURST_SPAN = (0.3, 3.0)
 FLICK = {"17a", "27a"}  # need sound and the fingers seen together
 PULL_BACK = {"16a", "26a"}  # a sub-second pull a 2 fps clip or a few zooms can miss
+POINT_AT_PACKAGE = {"4e"}  # a gesture of a few seconds that opening frames ~9 s apart can miss
 FAST_CLIP_FPS = 5
 HIGH_FPS_MAX_SPAN = 8.0  # clips above FAST_CLIP_FPS stay short to bound the video tokens
 
@@ -135,6 +138,9 @@ def _check_final(action: dict, task: dict, used: dict, rubric: dict) -> list[str
             errors.append(f"criterion {cid}: before marking 錯誤, use burst between the needle turning up and "
                           "the first flick to check for a short pull on the plunger's end plate (it often "
                           "lasts under a second and looks like the hands changing grip)")
+        if cid in POINT_AT_PACKAGE and c["verdict"] == "錯誤" and used.get("clip", 0) == 0:
+            errors.append(f"criterion {cid}: before marking 錯誤, use clip on the few seconds before the package "
+                          "is torn open: pointing lasts two or three seconds and the opening frames can miss it")
         if cid in WRAPPER and c["verdict"] == "部分正確":
             errors.append(f"criterion {cid}: 正確, 錯誤 or 無法判定 only (fixing is seen or it is not)")
         if cid in WRAPPER and c["verdict"] == "錯誤" and not _clipped_wrapper(task, cid):

@@ -196,6 +196,24 @@ async def test_fixing_the_needle_not_seen_goes_to_a_person(video, tmp_path, pack
     assert outcome["failed_tasks"] == []
 
 
+async def test_sheet_out_of_frame_in_4a_decides_the_package_pointing(video, tmp_path):
+    # 4e has its own task; its agent marked 正確, but without the sheet nothing can be checked against it
+    def sheet_final(*ids):
+        return {"action": "final", "criteria": [
+            {"criterion_id": cid, "verdict": "無法判定", "confidence": 0.7, "reason": "藥單看不見",
+             "explanation": "00:05 找過治療車前緣與桌面，都沒有紀錄單。", "evidence": ["clip@0-10"]} for cid in ids]}
+    pointed = {"action": "final", "criteria": [
+        {"criterion_id": "4e", "verdict": "正確", "confidence": 0.7, "reason": None,
+         "explanation": "00:08 右手食指指著空針包裝。", "evidence": ["clip@0-10"]}]}
+    model = FakeModel({"4a": [sheet_final("4a", "4b", "4d")], "4e": [pointed]})
+    outcome = await grading.run_grading(video, segmentation(), tmp_path, model, steps={4})
+    assert outcome["failed_tasks"] == []
+    step = next(s for s in outcome["result"]["steps"] if s["step_id"] == 4)
+    c = next(c for c in step["criteria"] if c["criterion_id"] == "4e")
+    assert c["verdict"] == "無法判定" and c["reason"] == "藥單看不見" and "原判正確" in c["explanation"]
+    assert step["verdict"] == "無法判定"
+
+
 async def test_fixing_the_needle_task_lists_the_wrapper_spans(video, tmp_path):
     # 10b's window is step 10 (00:16–00:21.5); the wrapper span 00:00.5–00:03 is listed and open to actions
     seg = segmentation()
