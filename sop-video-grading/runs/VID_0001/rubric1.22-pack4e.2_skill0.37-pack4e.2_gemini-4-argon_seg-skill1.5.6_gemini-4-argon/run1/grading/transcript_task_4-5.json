@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 57.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 18787,
+  "cached_input_tokens": 0,
+  "output_tokens": 72,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@143-190（hands_box，n=9）#0=02:23.0、#1=02:28.9、#2=02:34.8、#3=02:40.6、#4=02:46.5、#5=02:52.4、#6=02:58.2、#7=03:04.1、#8=03:10.0"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 143.0, \"end\": 185.0, \"fps\": 2, \"reason\": \"確認步驟4（2讀）期間學生注視藥單的確切起訖時間，以及是否有拿起稀釋液比對（4d）\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 8.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 26682,
+  "cached_input_tokens": 17013,
+  "output_tokens": 86,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@143-190（hands_box，n=9）#0=02:23.0、#1=02:28.9、#2=02:34.8、#3=02:40.6、#4=02:46.5、#5=02:52.4、#6=02:58.2、#7=03:04.1、#8=03:10.0",
+   "clip@143-185（context box，有聲音；片段內 00:00 ＝ 影片 02:23.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [150.0, 158.0, 170.0], \"region\": [0.15, 0.55, 0.75, 0.9], \"reason\": \"放大確認治療車前緣的給藥紀錄單位置以及學生左手手指指向紀錄單的動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 18.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 27922,
+  "cached_input_tokens": 0,
+  "output_tokens": 1160,
+  "thinking_tokens": 582,
+  "materials": [
+   "ov@143-190（hands_box，n=9）#0=02:23.0、#1=02:28.9、#2=02:34.8、#3=02:40.6、#4=02:46.5、#5=02:52.4、#6=02:58.2、#7=03:04.1、#8=03:10.0",
+   "clip@143-185（context box，有聲音；片段內 00:00 ＝ 影片 02:23.0）",
+   "zoom@150/158/170 region=[0.150, 0.550, 0.750, 0.900]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4a\", \"verdict\": \"正確\", \"explanation\": \"02:23.5 時檯面上已備齊 vial、稀釋液、空針與酒精棉片四樣器材。02:26.0–02:58.5（clip@143-185 片段內 00:03.0–00:35.5）學生右手拿著 vial，低頭注視治療車前緣鐵架下方的給藥紀錄單並進行比對（其中 02:43.0–02:45.0 視線看向手中 vial 比對標籤），累計注視紀錄單時間約 32.5 秒，大於 10 秒。\", \"evidence\": [\"clip@143-185\", \"zoom@150\", \"zoom@158\", \"zoom@170\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"4b\", \"verdict\": \"正確\", \"explanation\": \"02:26.5–02:42.5 及 02:45.5–02:58.5（clip@143-185 片段內 00:03.5–00:19.5 及 00:22.5–00:35.5，以及 zoom@150、zoom@158、zoom@170）清楚看到學生左手食指明顯指著治療車前緣的給藥紀錄單逐項核對。\", \"evidence\": [\"clip@143-185\", \"zoom@150\", \"zoom@158\", \"zoom@170\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"4d\", \"verdict\": \"錯誤\", \"explanation\": \"02:23.5 學生將稀釋液瓶放在檯面上後，在 02:26.0–03:00.0 二讀核對期間只拿起 vial 與給藥紀錄單比對，稀釋液瓶一直立在檯面上未拿起核對，03:01.5 即拿起酒精棉片準備開瓶消毒。\", \"evidence\": [\"clip@143-185\", \"ov@143-190 #7\", \"ov@143-190 #8\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

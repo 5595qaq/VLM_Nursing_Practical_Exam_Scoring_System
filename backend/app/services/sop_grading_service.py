@@ -106,6 +106,8 @@ def build_tasks(result: dict, rubric: dict, steps: set[int] | None, segmentation
                     "search_steps": spec.get("search_steps")}
             if spec.get("package_spans"):
                 crit["first_use"], crit["package_spans"] = package_spans(segmentation)
+            if c["criterion_id"] == "4e":
+                crit["tear_start"] = _step_start(segmentation, spec["window_steps"][-1])
             crit["searching"] = _searching(crit, segmentation)
             if crit["searching"]:
                 key = ("search", c["criterion_id"])
@@ -409,6 +411,13 @@ def package_spans(segmentation: dict) -> tuple[float | None, list[list[float]]]:
                        if first_use is None or s["start"] < first_use]
 
 
+def _step_start(segmentation: dict, step_id: int) -> float | None:
+    """Where the segmentation places the step: its start, or its logical window's when it was not seen."""
+    return min((e["start"] if e["start"] is not None else e["logical_window"][0]
+                for e in segmentation["steps"] if e["step_id"] == step_id
+                and (e["start"] is not None or e.get("logical_window"))), default=None)
+
+
 def _package_note(c: dict) -> str:
     """Task line for a criterion with rubric package_spans (10b): where the hands held the wrapper."""
     if "package_spans" not in c:
@@ -446,6 +455,16 @@ def _package_review(c: dict, segmentation: dict) -> dict:
     what = "看不清楚有沒有固定針頭" if c["verdict"] == "無法判定" else "判沒有固定針頭（錯誤），要人工確認沒有漏看"
     return {**c, "needs_review": True,
             "review_reason": f"評分 agent {what}，要人工看（{where}）：{times}{after}{agent}"}
+
+
+def _sheet_unseen_point(graded: dict[str, dict], old: dict[str, dict]) -> None:
+    """4e is its own task (a longer window than 4a/4b/4d), so its agent can miss that the drug sheet is out
+    of frame and mark 錯誤, which turns step 4 錯誤 (VID_0119 before read2.4). 4a's finding decides, also
+    when one of the two comes from an earlier attempt (`old`: the other task failed then)."""
+    read, point = graded.get("4a") or old.get("4a"), graded.get("4e") or old.get("4e")
+    if read and point and read.get("reason") == "藥單看不見" and point["verdict"] not in ("無法判定", "待判定"):
+        graded["4e"] = {**point, "verdict": "無法判定", "reason": "藥單看不見",
+                        "explanation": f"4a 判定藥單不在畫面內，無法確認核對；評分 agent 原判{point['verdict']}：{point['explanation']}"}
 
 
 async def run_task(task: dict, video_id: str, runner: GradingRunner, boxes: dict, segmentation: dict,
@@ -490,7 +509,7 @@ async def run_task(task: dict, video_id: str, runner: GradingRunner, boxes: dict
         if not errors:
             try:
                 feedback = await _run_material_action(action, runner, boxes, materials, state)
-                if action["action"] == "clip":  # validate_grading_action: 10b 錯誤 needs one on a wrapper span
+                if action["action"] == "clip":  # validate_grading_action: 10b 錯誤 and 4e 錯誤 need one in the right place
                     task.setdefault("clips", []).append([action["start"], action["end"]])
                 rejects = 0
                 continue
@@ -579,6 +598,7 @@ async def run_grading(video_path: Path, segmentation: dict, workdir: Path, model
     outcomes = [item.result() if not item.cancelled() else (task, [], None, asyncio.CancelledError())
                 for item, task in zip(pending, tasks)]
     graded = {c["criterion_id"]: c for _, criteria, _, _ in outcomes for c in criteria}
+    _sheet_unseen_point(graded, old)
     specs = {s["step_id"]: s for s in rubric["steps"]}
     for i, step in enumerate(result["steps"]):
         # A failed task keeps the previous grade (if any) instead of falling back to 待判定, so a failed

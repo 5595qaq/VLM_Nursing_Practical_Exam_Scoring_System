@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 42.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 18807,
+  "cached_input_tokens": 0,
+  "output_tokens": 338,
+  "thinking_tokens": 275,
+  "materials": [
+   "ov@143-214（hands_box，n=9）#0=02:23.0、#1=02:31.9、#2=02:40.8、#3=02:49.6、#4=02:58.5、#5=03:07.4、#6=03:16.2、#7=03:25.1、#8=03:34.0"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 175.0, \"end\": 214.0, \"fps\": 2, \"reason\": \"查看二讀結束到撕開空針包裝期間，學生是否用手指指出空針包裝核對\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 12.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 26156,
+  "cached_input_tokens": 0,
+  "output_tokens": 448,
+  "thinking_tokens": 359,
+  "materials": [
+   "ov@143-214（hands_box，n=9）#0=02:23.0、#1=02:31.9、#2=02:40.8、#3=02:49.6、#4=02:58.5、#5=03:07.4、#6=03:16.2、#7=03:25.1、#8=03:34.0",
+   "clip@175-214（context box，有聲音；片段內 00:00 ＝ 影片 02:55.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [205.5, 206.0], \"region\": [0.35, 0.35, 0.75, 0.75], \"reason\": \"放大確認 03:25.5–03:26.0 右手食指指出空針包裝核對的動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 12.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 27389,
+  "cached_input_tokens": 17013,
+  "output_tokens": 183,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@143-214（hands_box，n=9）#0=02:23.0、#1=02:31.9、#2=02:40.8、#3=02:49.6、#4=02:58.5、#5=03:07.4、#6=03:16.2、#7=03:25.1、#8=03:34.0",
+   "clip@175-214（context box，有聲音；片段內 00:00 ＝ 影片 02:55.0）",
+   "zoom@205.5/206 region=[0.350, 0.350, 0.750, 0.750]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4e\", \"verdict\": \"正確\", \"explanation\": \"於撕開空針包裝前（03:25.5–03:26.0，對應 clip@175-214 片段內 00:30.5–00:31.0），學生左手持空針包裝，右手食指明顯指出空針包裝上的字樣進行核對，接著於 03:27.0 開始撕開包裝（給藥紀錄單位於治療車最前緣檯面）。\", \"evidence\": [\"clip@175-214\", \"zoom@205.5\", \"zoom@206\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

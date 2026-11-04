@@ -104,6 +104,22 @@ def test_presence_criterion_goes_to_the_agent_even_when_detected(segmentation):
     assert "切分未找到" not in c["explanation"]
 
 
+def test_pointing_at_the_package_is_still_graded_when_step_4_was_not_performed(segmentation):
+    # 4e may happen right before tearing the package, after step 4; the other step 4 criteria are decided
+    seg_step(segmentation, 4).update(start=None, end=None, status="not_performed", evidence="沒有 2讀")
+    result = grade_from_segmentation(segmentation)
+    assert criterion(result, "4a")["verdict"] == "錯誤" and criterion(result, "4a")["source"] == "rule"
+    c = criterion(result, "4e")
+    assert c["verdict"] == "待判定" and c["source"] == "vlm" and c["window"] is not None
+
+
+def test_pointing_at_the_package_window_runs_through_the_steps_before_tearing(segmentation):
+    # with step 9 not located, the window must still go past step 4 (it lists 5-8 too)
+    seg_step(segmentation, 9).update(start=None, end=None, status="not_visually_determinable", logical_window=None)
+    result = grade_from_segmentation(segmentation)
+    assert criterion(result, "4e")["window"][1] > criterion(result, "4d")["window"][1]
+
+
 def test_step_not_found_is_searched_between_search_steps(segmentation):
     # VID_0100 1.5.2: segmentation missed the 03:03 wipe; the agent searches steps 5-18 instead of 錯誤
     seg_step(segmentation, 6).update(start=None, end=None, status="not_performed", evidence="只把棉片蓋上")

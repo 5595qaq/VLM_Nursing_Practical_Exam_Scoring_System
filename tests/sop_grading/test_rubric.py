@@ -41,6 +41,11 @@ def test_rubric_classification_matches_the_plan():
     # rubric 1.18-pkgspan.1: the agent gets the wrapper spans and judges before and after removal
     assert "手拿空針包裝時段" in by_id["10b"]["text"] and by_id["10b"]["package_spans"] is True
     assert by_id["10b"]["window_steps"] == [10]
+    # pointing at the package belongs to the second read and counts until the package is torn open
+    assert by_id["4e"]["category"] == "visual" and by_id["4e"]["key"] is False
+    assert by_id["4e"]["window_steps"] == [4, 5, 6, 7, 8, 9] and by_id["4e"]["after_step"] is True
+    assert by_id["4d"]["window_steps"] == [4, 5] and "after_step" not in by_id["4d"]
+    assert "9b" not in by_id and by_id["9a"]["category"] == "program"
     # 5a and 6a share one task but keep their own windows; 7a and 8a stay apart (rubric 1.18)
     assert by_id["5a"]["task"] == by_id["6a"]["task"] == "5-6"
     assert by_id["5a"]["window_steps"] == [5] and by_id["6a"]["window_steps"] == [6]
@@ -89,6 +94,11 @@ def test_clip_flag_needs_a_visual_criterion():
                for e in broken(lambda r: r["steps"][8]["criteria"][0].update(clip=True)))  # 9a (program)
     assert any("clip needs a visual criterion" in e
                for e in broken(lambda r: r["steps"][19]["criteria"][0].update(clip="yes")))  # 20a
+
+
+def test_after_step_needs_a_visual_criterion_and_a_bool():
+    assert any("after_step needs" in e for e in broken(lambda r: r["steps"][8]["criteria"][0].update(after_step=True)))  # 9a
+    assert any("after_step needs" in e for e in broken(lambda r: r["steps"][3]["criteria"][4].update(after_step="yes")))  # 4e
 
 
 def test_search_steps_needs_a_visual_criterion_and_step_numbers():
