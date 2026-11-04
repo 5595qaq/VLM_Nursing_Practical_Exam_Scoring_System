@@ -69,7 +69,7 @@
 
 - 用標記表找出影片ID，再用 `python sop-video-grading/scripts/run_record.py` 確認同一版本還沒評過。
 - 執行 `sop_grading_cli`。使用者指定的影片就是同意執行的範圍；工作目錄有別人未 commit 的修改時，照下方「執行評分」的規則先問使用者。
-- 跑完確認紀錄正常寫進 `sop-video-grading/runs/`：檔案齊全（`record.json`、`segmentation.json`、`grading.json`、每個任務的對話紀錄）、`validate_grading.py --final` 通過、沒有學生姓名或原始影片路徑、commit 沒有 `-dirty`。
+- 跑完確認紀錄正常寫進 `sop-video-grading/runs/`：檔案齊全（`record.json`、`segmentation.json`、`grading.json`、每個任務的對話紀錄）、`validate_grading.py --final` 通過（只評部分步驟時，沒評的步驟仍是待判定，這類錯誤不算；檢查舊版本的紀錄時，rubric 版本不符的錯誤也不算）、沒有學生姓名或原始影片路徑、commit 沒有 `-dirty`。
 - 回報紀錄位置、token 用量與執行時間，並問使用者要不要 commit 紀錄。
 - 不抽影格、不判斷結果對錯、不比對標記表，除非使用者另外要求；要進入疊代流程前先問使用者。
 
