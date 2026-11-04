@@ -42,6 +42,7 @@ BURST_SPAN = (0.3, 3.0)
 FLICK = {"17a", "27a"}  # need sound and the fingers seen together
 PULL_BACK = {"16a", "26a"}  # a sub-second pull a 2 fps clip or a few zooms can miss
 POINT_AT_PACKAGE = {"4e"}  # a gesture of a few seconds that opening frames ~9 s apart can miss
+TEAR_MARGIN = 5.0  # s around the segmentation's tearing start: a 4e 錯誤 needs a clip there (the start may be a few s off)
 FAST_CLIP_FPS = 5
 HIGH_FPS_MAX_SPAN = 8.0  # clips above FAST_CLIP_FPS stay short to bound the video tokens
 
@@ -118,6 +119,15 @@ def _clipped_wrapper(task: dict, cid: str) -> bool:
     return any(a < e and s < b for a, b in clips for s, e in spans) if spans else bool(clips)
 
 
+def _clipped_before_tear(task: dict, cid: str) -> bool:
+    """A clip of this task overlapped the segmentation's tearing start ±TEAR_MARGIN; with no start, any clip."""
+    start = next((c.get("tear_start") for c in task["criteria"] if c["criterion_id"] == cid), None)
+    clips = task.get("clips") or []
+    if start is None:
+        return bool(clips)
+    return any(a < start + TEAR_MARGIN and start - TEAR_MARGIN < b for a, b in clips)
+
+
 def _check_final(action: dict, task: dict, used: dict, rubric: dict) -> list[str]:
     errors = []
     windows = {c["criterion_id"]: c["window"] for c in task["criteria"]}
@@ -138,7 +148,7 @@ def _check_final(action: dict, task: dict, used: dict, rubric: dict) -> list[str
             errors.append(f"criterion {cid}: before marking 錯誤, use burst between the needle turning up and "
                           "the first flick to check for a short pull on the plunger's end plate (it often "
                           "lasts under a second and looks like the hands changing grip)")
-        if cid in POINT_AT_PACKAGE and c["verdict"] == "錯誤" and used.get("clip", 0) == 0:
+        if cid in POINT_AT_PACKAGE and c["verdict"] == "錯誤" and not _clipped_before_tear(task, cid):
             errors.append(f"criterion {cid}: before marking 錯誤, use clip on the few seconds before the package "
                           "is torn open: pointing lasts two or three seconds and the opening frames can miss it")
         if cid in WRAPPER and c["verdict"] == "部分正確":

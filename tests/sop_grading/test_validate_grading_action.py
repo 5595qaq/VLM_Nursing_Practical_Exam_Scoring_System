@@ -142,7 +142,18 @@ def test_pointing_at_the_package_wrong_needs_a_clip_first():
         {"criterion_id": "4e", "verdict": "錯誤", "confidence": 0.8, "reason": None,
          "explanation": "02:50 直接撕開空針包裝，沒有用手指指。", "evidence": ["ov@148-180"]}]}
     assert any("use clip" in e for e in validate(action, task, FRESH, DURATION))
-    assert validate(action, task, {**FRESH, "clip": 1}, DURATION) == []
+    assert validate(action, {**task, "clips": [[150.0, 160.0]]}, {**FRESH, "clip": 1}, DURATION) == []
+
+
+def test_pointing_at_the_package_wrong_needs_the_clip_near_the_tearing():
+    # the window can be a minute long: a clip of the sheet reading alone says nothing about the seconds before tearing
+    task = {"window": [148.0, 212.0], "criteria": [{"criterion_id": "4e", "window": [148.0, 212.0], "tear_start": 205.0}]}
+    action = {"action": "final", "criteria": [
+        {"criterion_id": "4e", "verdict": "錯誤", "confidence": 0.8, "reason": None,
+         "explanation": "03:27 直接撕開空針包裝，沒有用手指指。", "evidence": ["clip@150-180"]}]}
+    used = {**FRESH, "clip": 1}
+    assert any("use clip" in e for e in validate(action, {**task, "clips": [[150.0, 180.0]]}, used, DURATION))
+    assert validate(action, {**task, "clips": [[175.0, 202.0]]}, used, DURATION) == []  # within the margin
 
 
 def test_pull_back_wrong_needs_a_burst_first():

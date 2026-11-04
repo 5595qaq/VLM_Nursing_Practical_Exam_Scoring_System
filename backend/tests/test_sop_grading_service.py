@@ -214,6 +214,60 @@ async def test_sheet_out_of_frame_in_4a_decides_the_package_pointing(video, tmp_
     assert step["verdict"] == "無法判定"
 
 
+async def test_sheet_out_of_frame_decides_across_attempts(video, tmp_path):
+    # 4a and 4e are separate tasks: a failed one is graded by a later attempt, and the other comes from `previous`
+    sheet = {"action": "final", "criteria": [
+        {"criterion_id": cid, "verdict": "無法判定", "confidence": 0.7, "reason": "藥單看不見",
+         "explanation": "00:05 找過治療車前緣與桌面，都沒有紀錄單。", "evidence": ["clip@0-10"]} for cid in ("4a", "4b", "4d")]}
+    pointed = {"action": "final", "criteria": [
+        {"criterion_id": "4e", "verdict": "正確", "confidence": 0.7, "reason": None,
+         "explanation": "00:08 右手食指指著空針包裝。", "evidence": ["clip@0-10"]}]}
+    first = await grading.run_grading(video, segmentation(), tmp_path / "a", FakeModel({"4a": [sheet], "4e": [pointed]}),
+                                      steps={4})
+
+    def previous_with_pending(*ids):
+        previous = json.loads(json.dumps(first["result"]))
+        for s in previous["steps"]:
+            for c in s["criteria"]:
+                if c["criterion_id"] in ids:
+                    c.update(verdict="待判定", reason=None, source="vlm")
+        return previous
+
+    def point_in(outcome):
+        step = next(s for s in outcome["result"]["steps"] if s["step_id"] == 4)
+        return next(c for c in step["criteria"] if c["criterion_id"] == "4e"), step
+
+    # 4e failed the first time: 4a comes from `previous`
+    later = await grading.run_grading(video, segmentation(), tmp_path / "b", FakeModel({"4e": [pointed]}),
+                                      previous=previous_with_pending("4e"), resume=True)
+    c, step = point_in(later)
+    assert c["verdict"] == "無法判定" and "原判正確" in c["explanation"] and step["verdict"] == "無法判定"
+
+    # 4a failed the first time: 4e comes from `previous`, marked 正確 by its agent
+    previous = previous_with_pending("4a", "4b", "4d")
+    kept = next(c for s in previous["steps"] for c in s["criteria"] if c["criterion_id"] == "4e")
+    kept.update(verdict="正確", reason=None, explanation="00:08 右手食指指著空針包裝。")
+    later = await grading.run_grading(video, segmentation(), tmp_path / "c", FakeModel({"4a": [sheet]}),
+                                      previous=previous, resume=True)
+    c, step = point_in(later)
+    assert c["verdict"] == "無法判定" and "原判正確" in c["explanation"] and step["verdict"] == "無法判定"
+
+
+async def test_pointing_wrong_needs_a_clip_near_the_segmented_tearing(video, tmp_path):
+    seg = segmentation()
+    seg["steps"][8].update(start=30.0, end=31.5)  # step 9: the window runs from step 4 (00:07) to here
+    clip = {"action": "clip", "start": 7.0, "end": 10.0, "fps": 2, "reason": "看 2讀"}
+    near = {**clip, "start": 27.0, "end": 30.0, "reason": "看撕開之前"}
+    wrong = {"action": "final", "criteria": [
+        {"criterion_id": "4e", "verdict": "錯誤", "confidence": 0.7, "reason": None, "evidence": ["clip@27-30"],
+         "explanation": "00:30 直接撕開空針包裝，沒有用手指指。"}]}
+    model = FakeModel({"4e": [clip, wrong, near, wrong]})
+    outcome = await grading.run_grading(video, seg, tmp_path, model, steps={4})
+    assert any("use clip on the few seconds before" in r[0]["text"] for r in requests_for(model, "4e"))
+    c = next(c for s in outcome["result"]["steps"] for c in s["criteria"] if c["criterion_id"] == "4e")
+    assert c["verdict"] == "錯誤" and outcome["failed_tasks"] == []
+
+
 async def test_fixing_the_needle_task_lists_the_wrapper_spans(video, tmp_path):
     # 10b's window is step 10 (00:16–00:21.5); the wrapper span 00:00.5–00:03 is listed and open to actions
     seg = segmentation()
