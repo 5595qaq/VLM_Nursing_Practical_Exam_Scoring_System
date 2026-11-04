@@ -17,6 +17,7 @@
 - 每次修改完成後，開 PR 前必須先做 code review（例如 `/code-review`），對象是這個分支相對 `main` 的完整變更；沒有做過 review 不得開 PR。
 - review 找到的問題要修正；決定不修的，寫明理由。修正後重新執行受影響的測試；修正幅度大時再 review 一次。
 - PR 描述要寫 review 的結果：找到哪些問題、哪些已修正、哪些不修以及理由。
+- 例外：相對最新的 `origin/main`（`git diff --name-status origin/main...HEAD`），變更全部是在 `sop-video-grading/runs/` 底下新增的命令列評分紀錄時，不用做 code review。開 PR 前仍要照「只執行評分」確認紀錄，並在 PR 描述寫明只加紀錄與確認結果。修改或刪除既有紀錄、前端 ZIP 的紀錄，或改到其他檔案，都不適用這個例外。
 
 ## 多人協作
 
@@ -69,7 +70,7 @@
 
 - 用標記表找出影片ID，再用 `python sop-video-grading/scripts/run_record.py` 確認同一版本還沒評過。
 - 執行 `sop_grading_cli`。使用者指定的影片就是同意執行的範圍；工作目錄有別人未 commit 的修改時，照下方「執行評分」的規則先問使用者。
-- 跑完確認紀錄正常寫進 `sop-video-grading/runs/`：檔案齊全（`record.json`、`segmentation.json`、`grading.json`、每個任務的對話紀錄）、`validate_grading.py --final` 通過、沒有學生姓名或原始影片路徑、commit 沒有 `-dirty`。
+- 跑完確認紀錄正常寫進 `sop-video-grading/runs/`：檔案齊全（`record.json`、`segmentation.json`、`grading.json`、每個任務的對話紀錄）、`validate_grading.py --final` 通過（只評部分步驟時，沒評的步驟仍是待判定，這類錯誤不算；檢查舊版本的紀錄時，rubric 版本不符的錯誤也不算）、沒有學生姓名或原始影片路徑、commit 沒有 `-dirty`。
 - 回報紀錄位置、token 用量與執行時間，並問使用者要不要 commit 紀錄。
 - 不抽影格、不判斷結果對錯、不比對標記表，除非使用者另外要求；要進入疊代流程前先問使用者。
 
