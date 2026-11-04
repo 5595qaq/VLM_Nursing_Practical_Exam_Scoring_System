@@ -17,7 +17,6 @@
 - 每次修改完成後，開 PR 前必須先做 code review（例如 `/code-review`），對象是這個分支相對 `main` 的完整變更；沒有做過 review 不得開 PR。
 - review 找到的問題要修正；決定不修的，寫明理由。修正後重新執行受影響的測試；修正幅度大時再 review 一次。
 - PR 描述要寫 review 的結果：找到哪些問題、哪些已修正、哪些不修以及理由。
-- 例外：相對最新的 `origin/main`（`git diff --name-status origin/main...HEAD`），變更全部是在 `sop-video-grading/runs/` 底下新增的命令列評分紀錄時，不用做 code review。開 PR 前仍要照「只執行評分」確認紀錄，並在 PR 描述寫明只加紀錄與確認結果。修改或刪除既有紀錄、前端 ZIP 的紀錄，或改到其他檔案，都不適用這個例外。
 
 ## 多人協作
 

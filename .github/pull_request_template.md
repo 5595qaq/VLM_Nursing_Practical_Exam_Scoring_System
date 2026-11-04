@@ -4,7 +4,7 @@
 
 ## Code review 結果
 
-<!-- AGENTS.md「Code review」：找到哪些問題、哪些已修正、哪些不修以及理由。符合該節例外（只新增命令列評分紀錄）的 PR 不用 review，這裡改為填寫紀錄的確認結果。 -->
+<!-- AGENTS.md「Code review」：找到哪些問題、哪些已修正、哪些不修以及理由。 -->
 
 ## 測試
 
@@ -12,7 +12,7 @@
 
 ## 檢查清單（規則見 AGENTS.md）
 
-- [ ] 已對這個分支相對 `main` 的完整變更做 code review，結果寫在上面；或符合 AGENTS.md「Code review」的例外（只新增命令列評分紀錄），紀錄的確認結果寫在上面
+- [ ] 已對這個分支相對 `main` 的完整變更做 code review，結果寫在上面
 - [ ] 文件已同步（README、TESTING、SKILL.md、CHANGELOG 等），或已寫明不需要更新的原因
 - [ ] 沒有模型權重、憑證、影片、影格圖片、標記表或學生姓名（只用影片 ID）
 - [ ] SOP 規則（`SKILL.md`、`criteria/`、`rubric.json`、`sop-video-skill/references/`）沒有改，或：
