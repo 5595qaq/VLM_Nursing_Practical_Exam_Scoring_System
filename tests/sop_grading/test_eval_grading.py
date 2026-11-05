@@ -138,7 +138,7 @@ def test_agent_spans_prefer_times_and_fall_back_to_the_explanation():
     def step(**c):
         return {"criteria": [{"source": "vlm", "verdict": "正確", "explanation": "02:00 動作，片段內 00:05", **c}]}
     assert agent_spans(step(times=[[150.0, 151.0], [160.0, 160.0]])) == [(150.0, 151.0), (160.0, 160.0)]
-    assert agent_spans(step(times=[])) == []  # says where it looked: the explanation's mm:ss are not used
+    assert agent_spans(step(times=[])) == [(120.0, 120.0)]  # 無法判定 may leave it empty and cite times in the text
     assert agent_spans(step()) == [(120.0, 120.0)]  # record before the times field
     assert agent_spans(step(span=[10.0, 26.0], times=[[1.0, 2.0]])) == [(10.0, 26.0)]
 
@@ -176,7 +176,7 @@ def test_agent_cited_time_is_used_before_the_segmentation():
     assert rows[18]["time_source"] == "agent" and rows[18]["model_spans"] == [(210.0, 215.0)]
     assert rows[18]["time_match"] is True  # the segmentation's 03:00–03:08 would not match
     assert rows[19]["time_source"] == "segmentation" and rows[19]["time_match"] is True
-    assert "03:30.0–03:35.0（說明）" in render("VID_0001", list(rows.values()))
+    assert "03:30.0–03:35.0（agent）" in render("VID_0001", list(rows.values()))
     seg["steps"] = [e for e in seg["steps"] if e["step_id"] != 19]
     assert {r["step_id"]: r for r in compare(grading, labels, seg)}[19]["time_source"] is None  # no time at all
 

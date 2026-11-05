@@ -8,7 +8,7 @@ Each criterion keeps its own window; the task window covers them all (criteria s
 Checks actions.schema.json plus rules the schema cannot express: times near the task window,
 span limits, remaining budget, and for final: exactly the task's criteria, each passing the same
 per-criterion rules as validate_grading.py (reason for 無法判定, mm:ss in the explanation,
-frame/clip evidence). For the flick (17a/27a): 錯誤 only after at least one burst in this task, and
+frame/clip evidence), and times in video seconds within the same ranges. For the flick (17a/27a): 錯誤 only after at least one burst in this task, and
 無法判定（無音軌） when the task's audio_peaks result says there is no usable audio (task["audio"]).
 For the plunger pull-back (16a/26a): 錯誤 only after at least one burst, since the pull often lasts
 under a second and looks like the hands changing grip. A criterion with "clip": true in the rubric (20a,
@@ -67,8 +67,8 @@ def validate(action, task: dict, used: dict, duration: float,
     if used.get(name, 0) >= BUDGET[name]:
         errors.append(f"budget for {name} exhausted ({BUDGET[name]}); send final with what you have")
     ranges = allowed_ranges(task, duration)
-    where = "、".join(f"{lo:g}-{hi:g}s" for lo, hi in ranges)
-    inside = lambda a, b: any(lo <= a and b <= hi for lo, hi in ranges)  # noqa: E731
+    where = _ranges_text(ranges)
+    inside = lambda a, b: _inside(ranges, a, b)  # noqa: E731
     if name in ("overview", "clip", "burst"):
         start, end = action["start"], action["end"]
         low, high = {"overview": OVERVIEW_SPAN, "clip": CLIP_SPAN, "burst": BURST_SPAN}[name]
@@ -95,6 +95,14 @@ def validate(action, task: dict, used: dict, duration: float,
             errors.append(f"{name} region too large (area <= {ZOOM_MAX_AREA}, each side <= {ZOOM_MAX_SIDE} "
                           "of the context box)")
     return errors
+
+
+def _inside(ranges: list[tuple[float, float]], start: float, end: float) -> bool:
+    return any(lo <= start and end <= hi for lo, hi in ranges)
+
+
+def _ranges_text(ranges: list[tuple[float, float]]) -> str:
+    return "、".join(f"{lo:g}-{hi:g}s" for lo, hi in ranges)
 
 
 def allowed_ranges(task: dict, duration: float) -> list[tuple[float, float]]:
@@ -141,9 +149,9 @@ def _check_times(cid: str, c: dict, spec: dict, ranges: list[tuple[float, float]
     for start, end in times:
         if end < start:
             errors.append(f"criterion {cid}: times {start:g}-{end:g} must end at or after the start")
-        elif not any(lo <= start and end <= hi for lo, hi in ranges):
-            where = ", ".join(f"{lo:g}-{hi:g}" for lo, hi in ranges)
-            errors.append(f"criterion {cid}: times {start:g}-{end:g} must stay within {where} s; times are video "
+        elif not _inside(ranges, start, end):
+            errors.append(f"criterion {cid}: times {start:g}-{end:g} must stay within {_ranges_text(ranges)}; "
+                          "times are video "
                           "seconds, so add the clip's start to a time read inside a clip")
     return errors
 
