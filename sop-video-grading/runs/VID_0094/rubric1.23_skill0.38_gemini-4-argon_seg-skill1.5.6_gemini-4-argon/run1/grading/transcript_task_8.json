@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 9.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 19009,
+  "cached_input_tokens": 0,
+  "output_tokens": 308,
+  "thinking_tokens": 225,
+  "materials": [
+   "clip@47-55.5（context box，有聲音；片段內 00:00 ＝ 影片 00:47.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [49.5, 51.0, 52.0, 52.5], \"region\": [0.3, 0.25, 0.75, 0.65], \"reason\": \"確認扭開稀釋液瓶口並取下瓶頂的細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 32.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 20238,
+  "cached_input_tokens": 17047,
+  "output_tokens": 275,
+  "thinking_tokens": 95,
+  "materials": [
+   "clip@47-55.5（context box，有聲音；片段內 00:00 ＝ 影片 00:47.0）",
+   "zoom@49.5/51/52/52.5 region=[0.300, 0.250, 0.750, 0.650]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"8a\", \"verdict\": \"正確\", \"explanation\": \"00:49.0–00:52.0（clip@47-55.5 片段內 00:02.0–00:05.0）學生左手握住稀釋液瓶身，右手捏住瓶頂扭轉並將稀釋液瓶口扭開分離（zoom@49.5、zoom@51、zoom@52）。\", \"evidence\": [\"clip@47-55.5\", \"zoom@49.5\", \"zoom@51\", \"zoom@52\", \"zoom@52.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

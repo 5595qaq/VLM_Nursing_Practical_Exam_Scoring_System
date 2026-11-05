@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 31.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 18654,
+  "cached_input_tokens": 0,
+  "output_tokens": 179,
+  "thinking_tokens": 92,
+  "materials": [
+   "ov@243-250（hands_box，n=9）#0=04:03.0、#1=04:03.9、#2=04:04.8、#3=04:05.6、#4=04:06.5、#5=04:07.4、#6=04:08.2、#7=04:09.1、#8=04:10.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [245.6, 246.5, 247.4], \"region\": [0.1, 0.45, 0.75, 0.95], \"reason\": \"確認單手回套時，右手將針頭插入針架上的針頭套、以及左手的位置\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 7.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 19890,
+  "cached_input_tokens": 17047,
+  "output_tokens": 257,
+  "thinking_tokens": 159,
+  "materials": [
+   "ov@243-250（hands_box，n=9）#0=04:03.0、#1=04:03.9、#2=04:04.8、#3=04:05.6、#4=04:06.5、#5=04:07.4、#6=04:08.2、#7=04:09.1、#8=04:10.0",
+   "zoom@245.6/246.5/247.4 region=[0.100, 0.450, 0.750, 0.950]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [245.6, 246.5, 247.4], \"region\": [0.2, 0.45, 0.9, 0.95], \"reason\": \"M2 中左手未在 region 內，重新框選包含雙手與針架、vial 的區域以確認單手回套時兩手位置\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 8.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 21128,
+  "cached_input_tokens": 17047,
+  "output_tokens": 319,
+  "thinking_tokens": 139,
+  "materials": [
+   "ov@243-250（hands_box，n=9）#0=04:03.0、#1=04:03.9、#2=04:04.8、#3=04:05.6、#4=04:06.5、#5=04:07.4、#6=04:08.2、#7=04:09.1、#8=04:10.0",
+   "zoom@245.6/246.5/247.4 region=[0.100, 0.450, 0.750, 0.950]",
+   "zoom@245.6/246.5/247.4 region=[0.200, 0.450, 0.900, 0.950]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"19b\", \"verdict\": \"正確\", \"explanation\": \"04:05–04:07 學生以右手持空針，單手將針頭垂直插回立於治療盤左側針架上的針頭套內並往下壓緊，期間左手扶著桌上的 vial 藥瓶，全程未碰觸針頭套。\", \"evidence\": [\"ov@243-250 #3\", \"ov@243-250 #4\", \"ov@243-250 #5\", \"zoom@245.6\", \"zoom@246.5\", \"zoom@247.4\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

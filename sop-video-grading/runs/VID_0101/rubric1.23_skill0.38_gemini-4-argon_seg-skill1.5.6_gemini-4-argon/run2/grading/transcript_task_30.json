@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 9.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 18698,
+  "cached_input_tokens": 15001,
+  "output_tokens": 114,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@419.5-427（hands_box，n=9）#0=06:59.5、#1=07:00.4、#2=07:01.4、#3=07:02.3、#4=07:03.2、#5=07:04.2、#6=07:05.1、#7=07:06.1、#8=07:07.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [420.4, 421.4, 423.2, 425.1], \"region\": [0.1, 0.45, 0.55, 0.98], \"reason\": \"放大確認 07:00.4–07:05.1 單手回套與將空針立於針架上的動作、持握部位及空針最終位置\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 10.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 19963,
+  "cached_input_tokens": 0,
+  "output_tokens": 383,
+  "thinking_tokens": 134,
+  "materials": [
+   "ov@419.5-427（hands_box，n=9）#0=06:59.5、#1=07:00.4、#2=07:01.4、#3=07:02.3、#4=07:03.2、#5=07:04.2、#6=07:05.1、#7=07:06.1、#8=07:07.0",
+   "zoom@420.4/421.4/423.2/425.1 region=[0.100, 0.450, 0.550, 0.980]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"30a\", \"verdict\": \"正確\", \"explanation\": \"07:00–07:05 學生將空針套入立在針架上的針頭套中，並將空針留置在針架上。\", \"evidence\": [\"ov@419.5-427 #1\", \"ov@419.5-427 #6\", \"zoom@421.4\", \"zoom@425.1\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"30b\", \"verdict\": \"正確\", \"explanation\": \"07:00–07:04 學生右手握住針筒外管（針柄處），由針頭端垂直置入針架上的針套內，未握持針頭部位。\", \"evidence\": [\"zoom@420.4\", \"zoom@421.4\", \"zoom@423.2\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 7.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 19194,
+  "cached_input_tokens": 17047,
+  "output_tokens": 259,
+  "thinking_tokens": 176,
+  "materials": [
+   "clip@82.4-92（context box，有聲音；片段內 00:00 ＝ 影片 01:22.4）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [84.4, 85.4, 86.4, 87.4], \"region\": [0.45, 0.35, 0.85, 0.85], \"reason\": \"確認扭開稀釋液瓶頂並放下瓶頂的動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 43.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 20416,
+  "cached_input_tokens": 0,
+  "output_tokens": 175,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@82.4-92（context box，有聲音；片段內 00:00 ＝ 影片 01:22.4）",
+   "zoom@84.4/85.4/86.4/87.4 region=[0.450, 0.350, 0.850, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"8a\", \"verdict\": \"正確\", \"explanation\": \"01:24.4–01:26.9（clip@82.4-92 片段內 00:02.0–00:04.5）右手握住稀釋液瓶身，左手捏住塑膠瓶頂扭轉並折下打開瓶口，01:27.4 瓶頂已分離。\", \"evidence\": [\"clip@82.4-92\", \"zoom@84.4\", \"zoom@85.4\", \"zoom@86.4\", \"zoom@87.4\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

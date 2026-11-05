@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 11.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 21265,
+  "cached_input_tokens": 17047,
+  "output_tokens": 242,
+  "thinking_tokens": 156,
+  "materials": [
+   "clip@162-182.5（context box，有聲音；片段內 00:00 ＝ 影片 02:42.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [169.0, 177.0, 180.0, 181.0], \"region\": [0.5, 0.45, 0.9, 0.85], \"reason\": \"放大確認稀釋液瓶口扭開與瓶頂分離的細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 9.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 22498,
+  "cached_input_tokens": 17047,
+  "output_tokens": 309,
+  "thinking_tokens": 129,
+  "materials": [
+   "clip@162-182.5（context box，有聲音；片段內 00:00 ＝ 影片 02:42.0）",
+   "zoom@169/177/180/181 region=[0.500, 0.450, 0.900, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"8a\", \"verdict\": \"正確\", \"explanation\": \"02:55–03:00（clip@162-182.5 片段內 00:13–00:18）雙手握住塑膠稀釋液瓶，扭轉瓶頂將其轉開（03:00.0 瓶頂脫離並噴出少許水花，03:01.0 將扭下的瓶頂放到治療盤上）。\", \"evidence\": [\"clip@162-182.5\", \"zoom@177\", \"zoom@180\", \"zoom@181\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
