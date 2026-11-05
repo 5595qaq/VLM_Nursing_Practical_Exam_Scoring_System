@@ -45,7 +45,7 @@ TIME_SLACK = 3.0  # seconds between starts that still count as the same span
 _TIME_RE = re.compile(r"^(\d+):(\d{0,2}(?:\.\d+)?)$")
 _CITED = r"(\d{2}):(\d{2}(?:\.\d+)?)"
 _CITED_RE = re.compile(_CITED + r"(?:\s*(?:[–\-~～至到])\s*" + _CITED + r")?")  # a range or a point
-_CLIP_TIME_RE = re.compile(r"片段內?[^\d]{0,3}" + _CITED_RE.pattern)  # time inside a clip, not the video
+_CLIP_TIME_RE = re.compile(r"片段(?:內[^\d]{0,3}|\s*)" + _CITED_RE.pattern)  # time inside a clip, not the video
 _CLIP_LIST_RE = re.compile(_CLIP_TIME_RE.pattern + r"(?:\s*[、及和與]\s*" + _CITED_RE.pattern + r")*")
 _PAREN_RE = re.compile(r"[（(][^（()）]*[）)]")  # a list counts only in parentheses: 「（clip@a-b 片段內 A 及 B）」
 

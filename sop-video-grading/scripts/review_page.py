@@ -254,7 +254,7 @@ const fmt = t => { const m = Math.floor(t / 60), s = t - m * 60; return String(m
 const sec = (m, s) => Number(m) * 60 + Number(s);
 // mm:ss or mm:ss–mm:ss in the text become links, except clip-relative times: same rules as cited_spans in eval_grading.py
 function clipRanges(str) {
-  const t = String.raw`\d{2}:\d{2}(?:\.\d+)?(?:\s*[–\-~～至到]\s*\d{2}:\d{2}(?:\.\d+)?)?`, head = String.raw`片段內?[^\d]{0,3}` + t;
+  const t = String.raw`\d{2}:\d{2}(?:\.\d+)?(?:\s*[–\-~～至到]\s*\d{2}:\d{2}(?:\.\d+)?)?`, head = String.raw`片段(?:內[^\d]{0,3}|\s*)` + t;
   const list = new RegExp(head + String.raw`(?:\s*[、及和與]\s*` + t + ")*", "g"), ranges = [];
   for (const p of str.matchAll(/[（(][^（()）]*[）)]/g))
     for (const m of p[0].matchAll(list)) ranges.push([p.index + m.index, p.index + m.index + m[0].length]);
