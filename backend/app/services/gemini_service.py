@@ -5,6 +5,7 @@ import time
 from datetime import timedelta
 
 import asyncpg
+import httpx
 from pgqueuer import RetryRequested
 
 from app.config import settings
@@ -24,7 +25,9 @@ def _is_transient_model_error(exc):
     code = getattr(exc, "code", None)
     status = getattr(exc, "status", None)
     return (
-        isinstance(exc, TimeoutError)
+        # httpx: a dropped connection. The SDK retries only timeouts and failed connects, so a server
+        # disconnecting mid-request (RemoteProtocolError) arrives here on its first occurrence.
+        isinstance(exc, (TimeoutError, httpx.TransportError))
         # Anthropic SDK errors (SOP_SKILL_PROVIDER=claude) after its own retries: rate limit / overloaded.
         or getattr(exc, "status_code", None) in (429, 529)
         or code in (429, 499)

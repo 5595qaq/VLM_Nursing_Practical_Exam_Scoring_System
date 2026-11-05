@@ -9,7 +9,7 @@ from google.auth.credentials import AnonymousCredentials
 from google.genai import errors
 
 from app.config import settings
-from app.services import agents, sop_skill_service
+from app.services import agents, gemini_service, sop_skill_service
 from app.services.model_logging import context
 
 
@@ -86,18 +86,23 @@ async def test_permanent_errors_do_not_retry(sdk_client, status):
     sdk_client._api_client._async_retry.sleep.assert_not_awaited()
 
 
-async def test_exhaustion_is_five_attempts_and_no_nested_retry(sdk_client):
+async def test_exhaustion_is_ten_attempts_and_no_nested_retry(sdk_client):
     seen = mock_http(sdk_client, [429])
     with pytest.raises(errors.APIError):
         await agents.run_time_cutting_agent("gs://bucket/test.mp4")
-    assert len(seen) == 5
-    assert sdk_client._api_client._async_retry.sleep.await_count == 4
+    assert len(seen) == 10
+    assert sdk_client._api_client._async_retry.sleep.await_count == 9
+
+
+@pytest.mark.parametrize("error", [httpx.RemoteProtocolError("Server disconnected"), httpx.ReadError("reset")])
+def test_a_dropped_connection_goes_back_to_the_queue(error):
+    assert gemini_service._is_transient_model_error(error)
 
 
 async def test_configuration_is_explicit(sdk_client):
     options = sdk_client._api_client._http_options
     retry = options.retry_options
-    assert retry.attempts == 5
+    assert retry.attempts == 10
     assert (retry.initial_delay, retry.exp_base, retry.max_delay, retry.jitter) == (1, 2, 60, 1)
     assert retry.http_status_codes == [408, 429, 500, 502, 503, 504]
     assert options.timeout is None

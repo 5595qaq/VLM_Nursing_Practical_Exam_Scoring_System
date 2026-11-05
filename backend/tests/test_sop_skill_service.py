@@ -22,6 +22,11 @@ BOX = [0.1, 0.1, 0.9, 0.9]
 HANDS = [0.2, 0.3, 0.8, 0.85]
 
 
+@pytest.fixture(autouse=True)
+def no_earlier_attempt(monkeypatch):
+    monkeypatch.setattr(skill.gcs_service, "blob_exists", lambda _name: False)
+
+
 @pytest.fixture(scope="module")
 def video(tmp_path_factory):
     path = tmp_path_factory.mktemp("video") / "source.mp4"
@@ -62,6 +67,8 @@ class ScriptedModel:
     async def __call__(self, system, content):
         self.requests.append((system, content))
         reply = self.replies.pop(0)
+        if isinstance(reply, Exception):
+            raise reply
         if isinstance(reply, ModelReply):
             return reply
         text = reply if isinstance(reply, str) else "下一步：\n```json\n" + json.dumps(reply, ensure_ascii=False) + "\n```"
@@ -294,6 +301,155 @@ async def test_failed_run_still_uploads_transcript(video, monkeypatch):
         await skill.run_sop_skill("gs://b/v.mp4", "vid", 0,
                                   model_call=ScriptedModel([ModelReply(text="", stop_reason="refusal")]))
     assert "sop_runs/vid/g0/transcript.json" in uploaded
+
+
+class Quota(Exception):
+    """Stands for the 429 left when the SDK retries are used up."""
+
+
+async def test_loop_continues_from_the_checkpoint_after_a_quota_error(video, tmp_path):
+    first = ScriptedModel([*HAPPY_PATH[:3], Quota("429")])
+    with pytest.raises(Quota):
+        await skill.run_skill_loop(video, "V", tmp_path, first)
+    assert (tmp_path / "checkpoint.json").exists()
+
+    second = ScriptedModel(HAPPY_PATH[3:])
+    outcome = await skill.run_skill_loop(video, "V", tmp_path, second)
+    assert len(second.requests) == 3  # the three finished turns are not paid for again
+    assert outcome["turns"] == 6
+    assert outcome["usage"]["input_tokens"] == 600  # both attempts, each reply once
+    assert outcome["result"]["meta"]["crop"]["box"] == BOX  # the crop set before the error
+    opening = texts(second.requests[0][1])
+    assert "d2" in opening and "全片總覽圖" in opening  # the draft and the pinned sheets came back
+    assert "crop_preview round 1" in opening
+    assert [e["turn"] for e in json.loads((tmp_path / "transcript.json").read_text(encoding="utf-8"))] == [1, 2, 3, 4, 5, 6]
+    assert not (tmp_path / "checkpoint.json").exists()
+
+
+async def test_changed_rules_start_the_segmentation_over(video, tmp_path, monkeypatch):
+    with pytest.raises(Quota):
+        await skill.run_skill_loop(video, "V", tmp_path, ScriptedModel([*HAPPY_PATH[:3], Quota("429")]))
+    monkeypatch.setattr(skill, "tree_digest", lambda _root: "other rules")
+    again = ScriptedModel(HAPPY_PATH)
+    outcome = await skill.run_skill_loop(video, "V", tmp_path, again)
+    assert len(again.requests) == 6 and outcome["usage"]["input_tokens"] == 600
+
+
+async def test_a_missing_image_starts_the_segmentation_over(video, tmp_path):
+    with pytest.raises(Quota):
+        await skill.run_skill_loop(video, "V", tmp_path, ScriptedModel([*HAPPY_PATH[:3], Quota("429")]))
+    (tmp_path / "motion.png").unlink()
+    again = ScriptedModel(HAPPY_PATH)
+    await skill.run_skill_loop(video, "V", tmp_path, again)
+    assert len(again.requests) == 6
+
+
+async def test_a_refusal_drops_the_checkpoint(video, tmp_path):
+    with pytest.raises(SkillRunError):
+        await skill.run_skill_loop(video, "V", tmp_path, ScriptedModel([ModelReply(text="", stop_reason="refusal")]))
+    assert not (tmp_path / "checkpoint.json").exists()
+
+
+async def test_run_sop_skill_continues_from_the_earlier_attempts_archive(video, monkeypatch):
+    uploads = {}
+
+    def download(uri, filename):
+        if uri.endswith("artifacts.zip"):
+            Path(filename).write_bytes(uploads["sop_runs/vid/g0/artifacts.zip"])
+        else:
+            shutil.copy(video, filename)
+
+    def upload(local, name, _content_type):
+        uploads[name] = Path(local).read_bytes()
+        return f"gs://b/{name}"
+
+    monkeypatch.setattr(skill.gcs_service, "download_to_filename", download)
+    monkeypatch.setattr(skill.gcs_service, "upload_file", upload)
+    with pytest.raises(Quota):
+        await skill.run_sop_skill("gs://b/v.mp4", "vid", 0, model_call=ScriptedModel([*HAPPY_PATH[:3], Quota("429")]))
+    assert "checkpoint.json" in zipfile.ZipFile(io.BytesIO(uploads["sop_runs/vid/g0/artifacts.zip"])).namelist()
+
+    monkeypatch.setattr(skill.gcs_service, "blob_exists", lambda name: name in uploads)
+    second = ScriptedModel(HAPPY_PATH[3:])
+    outcome = await skill.run_sop_skill("gs://b/v.mp4", "vid", 0, model_call=second)
+    assert len(second.requests) == 3 and outcome["turns"] == 6
+    names = zipfile.ZipFile(io.BytesIO(uploads["sop_runs/vid/g0/artifacts.zip"])).namelist()
+    assert "result.json" in names and "checkpoint.json" not in names
+
+
+async def test_resume_from_failure_finds_the_earlier_generations_checkpoint(video, monkeypatch):
+    uploads = {}
+
+    def download(uri, filename):
+        if uri.endswith("artifacts.zip"):
+            Path(filename).write_bytes(uploads[uri.split("/", 3)[3]])
+        else:
+            shutil.copy(video, filename)
+
+    def upload(local, name, _content_type):
+        uploads[name] = Path(local).read_bytes()
+        return f"gs://b/{name}"
+
+    monkeypatch.setattr(skill.gcs_service, "download_to_filename", download)
+    monkeypatch.setattr(skill.gcs_service, "upload_file", upload)
+    with pytest.raises(Quota):
+        await skill.run_sop_skill("gs://b/v.mp4", "vid", 0, model_call=ScriptedModel([*HAPPY_PATH[:3], Quota("429")]))
+    monkeypatch.setattr(skill.gcs_service, "blob_exists", lambda name: name in uploads)
+    # The job failed and "resume from failure" moved it to generation 2; generation 1 left nothing.
+    second = ScriptedModel(HAPPY_PATH[3:])
+    outcome = await skill.run_sop_skill("gs://b/v.mp4", "vid", 2, model_call=second)
+    assert len(second.requests) == 3 and outcome["turns"] == 6
+
+
+async def test_a_dropped_checkpoint_hides_the_older_ones(video, monkeypatch):
+    uploads = {}
+
+    def download(uri, filename):
+        if uri.endswith("artifacts.zip"):
+            Path(filename).write_bytes(uploads[uri.split("/", 3)[3]])
+        else:
+            shutil.copy(video, filename)
+
+    def upload(local, name, _content_type):
+        uploads[name] = Path(local).read_bytes()
+        return f"gs://b/{name}"
+
+    monkeypatch.setattr(skill.gcs_service, "download_to_filename", download)
+    monkeypatch.setattr(skill.gcs_service, "upload_file", upload)
+    with pytest.raises(Quota):
+        await skill.run_sop_skill("gs://b/v.mp4", "vid", 0, model_call=ScriptedModel([*HAPPY_PATH[:3], Quota("429")]))
+    monkeypatch.setattr(skill.gcs_service, "blob_exists", lambda name: name in uploads)
+    # Generation 1 resumes from generation 0, is refused and drops the checkpoint.
+    with pytest.raises(SkillRunError):
+        await skill.run_sop_skill("gs://b/v.mp4", "vid", 1,
+                                  model_call=ScriptedModel([ModelReply(text="", stop_reason="refusal")]))
+    again = ScriptedModel(HAPPY_PATH)
+    outcome = await skill.run_sop_skill("gs://b/v.mp4", "vid", 2, model_call=again)
+    assert len(again.requests) == 6 and outcome["turns"] == 6  # from the first turn
+
+
+async def test_a_checkpoint_of_a_failed_restore_is_not_needed(video, monkeypatch):
+    monkeypatch.setattr(skill.gcs_service, "blob_exists", lambda _name: 1 / 0)
+    monkeypatch.setattr(skill.gcs_service, "download_to_filename", lambda _u, f: shutil.copy(video, f))
+    monkeypatch.setattr(skill.gcs_service, "upload_file", lambda _local, name, _ct: f"gs://b/{name}")
+    outcome = await skill.run_sop_skill("gs://b/v.mp4", "vid", 0, model_call=ScriptedModel(HAPPY_PATH))
+    assert outcome["turns"] == 6
+
+
+async def test_periodic_upload_failure_does_not_stop_the_run():
+    calls = []
+
+    def upload():
+        calls.append(1)
+        raise OSError("GCS is down")
+
+    hook = skill.sop_checkpoint.throttled(upload, seconds=0)
+    await hook()
+    await hook()
+    assert len(calls) == 2
+    idle = skill.sop_checkpoint.throttled(upload, seconds=3600)
+    await idle()
+    assert len(calls) == 2  # inside the interval: no upload
 
 
 @pytest.mark.parametrize("text, expected", [

@@ -2,6 +2,7 @@
 
 No Google calls and no database. Needs ffmpeg plus the skill script dependencies.
 """
+import asyncio
 import io
 import json
 import re
@@ -22,6 +23,11 @@ DURATION = 60.0
 BOX = [0.1, 0.1, 0.9, 0.9]
 HANDS = [0.2, 0.3, 0.8, 0.85]
 CRITERION = re.compile(r"^\s+(\d+[a-z])（步驟", re.M)
+
+
+@pytest.fixture(autouse=True)
+def no_earlier_attempt(monkeypatch):
+    monkeypatch.setattr(grading.gcs_service, "blob_exists", lambda _name: False)
 
 
 @pytest.fixture(scope="module")
@@ -79,6 +85,8 @@ class FakeModel:
         ids = CRITERION.findall(content[0]["text"])
         key = next((k for k in self.script if ids and ids[0] == k), None)
         action = self.script[key].pop(0) if key and self.script[key] else final_for(content)
+        if isinstance(action, Exception):
+            raise action
         return ModelReply(json.dumps(action, ensure_ascii=False), "end_turn", 100, 10)
 
 
@@ -534,6 +542,91 @@ async def test_run_sop_grading_uploads_then_raises_on_failed_tasks(video, monkey
     assert "sop_runs/vid/g0/grading/artifacts.zip" in uploads
 
 
+class Quota(Exception):
+    """Stands for the 429 left when the SDK retries are used up."""
+
+
+class Killed(BaseException):
+    """Stands for a worker killed mid-run: nothing in run_grading catches it, so no cleanup runs."""
+
+
+OVERVIEW_12 = {"action": "overview", "start": 21.0, "end": 24.0, "n": 9, "reason": "看密一點"}
+
+
+async def test_failed_task_continues_from_its_checkpoint_and_counts_tokens_once(video, tmp_path):
+    first = await grading.run_grading(video, segmentation(), tmp_path, FakeModel({"12a": [OVERVIEW_12, Quota("429")]}),
+                                      steps={12})
+    assert [f["task"] for f in first["failed_tasks"]] == ["12"]
+    assert first["usage"]["input_tokens"] == 100
+    assert (tmp_path / "checkpoint_task_12.json").exists()
+
+    model = FakeModel()
+    second = await grading.run_grading(video, segmentation(), tmp_path, model, steps={12})
+    assert second["failed_tasks"] == []
+    assert len(model.requests) == 1  # the finished turn is not paid for again
+    assert second["usage"]["input_tokens"] == 100  # the first run already reported its 100
+    text = model.requests[0][0]["text"]
+    assert "overview 21-24" in text and "overview 已完成" in text  # the action log and the feedback came back
+    transcript = json.loads((tmp_path / "transcript_task_12.json").read_text(encoding="utf-8"))
+    assert [e["turn"] for e in transcript] == [1, 2]
+    assert not list(tmp_path.glob("checkpoint_task_*"))
+
+
+async def test_a_killed_run_keeps_its_finished_tasks(video, tmp_path):
+    class KilledOnStep19(FakeModel):
+        async def __call__(self, system, content):
+            if "（步驟 19）" not in content[0]["text"]:
+                return await super().__call__(system, content)
+            path = tmp_path / "checkpoint_task_12.json"
+            while not (path.exists() and "criteria" in json.loads(path.read_text(encoding="utf-8"))):
+                await asyncio.sleep(0.05)
+            raise Killed()
+
+    with pytest.raises(Killed):
+        await grading.run_grading(video, segmentation(), tmp_path, KilledOnStep19(), steps={12, 19})
+
+    model = FakeModel()
+    outcome = await grading.run_grading(video, segmentation(), tmp_path, model, steps={12, 19})
+    assert outcome["failed_tasks"] == []
+    assert requests_for(model, "12a") == [] and len(model.requests) == 1  # only step 19 goes to the model
+    assert outcome["usage"]["input_tokens"] == 200  # the killed run never reported step 12's tokens
+    steps = {s["step_id"]: s for s in outcome["result"]["steps"]}
+    assert steps[12]["verdict"] == "正確"
+    assert not list(tmp_path.glob("checkpoint_task_*"))
+
+
+async def test_changed_rules_regrade_the_task(video, tmp_path, monkeypatch):
+    await grading.run_grading(video, segmentation(), tmp_path, FakeModel({"12a": [Quota("429")]}), steps={12})
+    monkeypatch.setattr(grading.sop_skill_service, "tree_digest", lambda _root: "other rules")
+    model = FakeModel({"12a": [OVERVIEW_12]})
+    outcome = await grading.run_grading(video, segmentation(), tmp_path, model, steps={12})
+    assert len(model.requests) == 2 and outcome["usage"]["input_tokens"] == 200
+    transcript = json.loads((tmp_path / "transcript_task_12.json").read_text(encoding="utf-8"))
+    assert [e["turn"] for e in transcript] == [1, 2]
+
+
+async def test_a_task_that_cannot_finish_drops_its_checkpoint(video, tmp_path):
+    model = FakeModel({"12a": [{"action": "dance"}] * grading.MAX_CONSECUTIVE_REJECTS})
+    outcome = await grading.run_grading(video, segmentation(), tmp_path, model, steps={12})
+    assert [f["task"] for f in outcome["failed_tasks"]] == ["12"]
+    assert not list(tmp_path.glob("checkpoint_task_*"))
+
+
+def test_archive_holds_only_the_clips_of_unfinished_tasks(tmp_path, monkeypatch):
+    work = tmp_path / "run"
+    work.mkdir()
+    (work / "001_clip_1-2.mp4").write_bytes(b"still needed")
+    (work / "002_clip_3-4.mp4").write_bytes(b"finished task")
+    (work / "checkpoint_task_12.json").write_text(json.dumps(
+        {"materials": [["001_clip_1-2.mp4", "clip", "video", 2.0], ["003_ov.jpg", "ov", "image", 2.0]]}), encoding="utf-8")
+    uploaded = {}
+    monkeypatch.setattr(grading.gcs_service, "upload_file",
+                        lambda local, name, _ct: uploaded.update({name: Path(local).read_bytes()}) or f"gs://b/{name}")
+    grading._upload_artifacts(work, "p")
+    names = zipfile.ZipFile(io.BytesIO(uploaded["p/artifacts.zip"])).namelist()
+    assert "001_clip_1-2.mp4" in names and "002_clip_3-4.mp4" not in names
+
+
 async def test_progress_callback_error_stops_the_run_and_keeps_the_graded_criteria(video, tmp_path):
     class Stop(Exception):
         pass
@@ -647,7 +740,8 @@ async def test_resume_merges_the_earlier_artifacts(video, monkeypatch, tmp_path)
     assert len(outcome["attempts"]) == 2 and outcome["mixed_rules"] is True
     second = zipfile.ZipFile(io.BytesIO(uploads["sop_runs/vid/g1/grading/artifacts.zip"][0]))
     names = set(second.namelist())
-    assert first_names <= names  # nothing from the first attempt is lost
+    # nothing from the first attempt is lost, except the checkpoint of the task that has now finished
+    assert first_names - {"checkpoint_task_12.json"} <= names and "checkpoint_task_12.json" not in names
     assert any(n not in first_names for n in names)  # the rerun's new images got new numbers
     assert "transcript_task_15-16-17.json" in names and "transcript_task_12.json" in names
     assert "新增的一句規則" in second.read("rules_SKILL.md").decode("utf-8")
