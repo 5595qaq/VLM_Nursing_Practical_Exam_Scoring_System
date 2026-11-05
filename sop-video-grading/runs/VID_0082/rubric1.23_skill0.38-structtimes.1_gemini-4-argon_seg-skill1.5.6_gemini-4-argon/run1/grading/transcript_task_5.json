@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 30.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 18774,
+  "cached_input_tokens": 0,
+  "output_tokens": 81,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@54.9-61.5（context box，有聲音；片段內 00:00 ＝ 影片 00:54.9）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [56.9, 57.4, 57.9, 58.4], \"region\": [0.35, 0.6, 0.65, 0.9], \"reason\": \"放大確認將 vial 瓶口打開的動作與瓶蓋狀態\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 7.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 20008,
+  "cached_input_tokens": 0,
+  "output_tokens": 80,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@54.9-61.5（context box，有聲音；片段內 00:00 ＝ 影片 00:54.9）",
+   "zoom@56.9/57.4/57.9/58.4 region=[0.350, 0.600, 0.650, 0.900]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [58.6, 58.9, 59.4], \"region\": [0.3, 0.65, 0.7, 0.95], \"reason\": \"確認 vial 翻蓋被推開脫離的畫面與開蓋後的瓶頂狀態\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 8.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 21237,
+  "cached_input_tokens": 17290,
+  "output_tokens": 273,
+  "thinking_tokens": 89,
+  "materials": [
+   "clip@54.9-61.5（context box，有聲音；片段內 00:00 ＝ 影片 00:54.9）",
+   "zoom@56.9/57.4/57.9/58.4 region=[0.350, 0.600, 0.650, 0.900]",
+   "zoom@58.6/58.9/59.4 region=[0.300, 0.650, 0.700, 0.950]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"00:57.9–00:58.9 左手握住 vial 瓶身，右手拇指與食指推開 vial 上的深褐色塑膠翻蓋，00:58.9 可見瓶頂露出銀色鋁圈與中央橡皮塞，右手將脫離的瓶蓋放到左側檯面上。\", \"times\": [[57.9, 58.9]], \"evidence\": [\"clip@54.9-61.5\", \"zoom@57.9\", \"zoom@58.4\", \"zoom@58.6\", \"zoom@58.9\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

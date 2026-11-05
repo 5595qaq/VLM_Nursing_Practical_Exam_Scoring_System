@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 13.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 19252,
+  "cached_input_tokens": 0,
+  "output_tokens": 123,
+  "thinking_tokens": 41,
+  "materials": [
+   "clip@47-55.5（context box，有聲音；片段內 00:00 ＝ 影片 00:47.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [48.5, 49.5, 51.0, 52.0], \"region\": [0.3, 0.5, 0.65, 0.85], \"reason\": \"確認扭開稀釋液瓶頂的動作與瓶口打開狀態\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 107.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 20481,
+  "cached_input_tokens": 17290,
+  "output_tokens": 190,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@47-55.5（context box，有聲音；片段內 00:00 ＝ 影片 00:47.0）",
+   "zoom@48.5/49.5/51/52 region=[0.300, 0.500, 0.650, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"8a\", \"verdict\": \"正確\", \"explanation\": \"00:48.5–00:52.0（clip@47-55.5 片段內 00:01.5–00:05.0）學生左手握住稀釋液瓶身，右手隔著酒精棉片捏住瓶頂扭轉並將瓶口打開，00:52.0 瓶頂已分離。\", \"times\": [[48.5, 52.0]], \"evidence\": [\"clip@47-55.5\", \"zoom@48.5\", \"zoom@49.5\", \"zoom@51\", \"zoom@52\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 19.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 19064,
+  "cached_input_tokens": 16924,
+  "output_tokens": 85,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@24.2-271（hands_box，n=9）#0=00:24.2、#1=00:55.0、#2=01:25.9、#3=01:56.8、#4=02:27.6、#5=02:58.4、#6=03:29.3、#7=04:00.2、#8=04:31.0"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 24.2, \"end\": 57.0, \"fps\": 2, \"reason\": \"檢查撕開空針包裝前（包含00:24.2至00:57.0期間）是否有用手指指出空針包裝核對，並確認給藥紀錄單是否在畫面內。\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 95.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 24754,
+  "cached_input_tokens": 0,
+  "output_tokens": 210,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@24.2-271（hands_box，n=9）#0=00:24.2、#1=00:55.0、#2=01:25.9、#3=01:56.8、#4=02:27.6、#5=02:58.4、#6=03:29.3、#7=04:00.2、#8=04:31.0",
+   "clip@24.2-57（context box，有聲音；片段內 00:00 ＝ 影片 00:24.2）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4e\", \"verdict\": \"錯誤\", \"explanation\": \"給藥紀錄單位於治療車檯面中央偏前（白紙上有綠色螢光筆劃記）。於 00:25.7–00:34.7（clip@24.2-57 片段內 00:01.5–00:10.5）學生拿起空針包裝檢視並翻轉，但雙手手指僅握住包裝兩側，並未用手指指出空針包裝上的字核對，隨後於 00:35.2（片段內 00:11.0）即直接撕開空針包裝。\", \"times\": [[25.7, 35.2]], \"evidence\": [\"clip@24.2-57\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]
