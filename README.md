@@ -133,7 +133,7 @@ Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499、連線中斷，或 Claude 回�
 **存檔點**：切分與評分每次呼叫模型前都會把進度寫進工作資料夾（切分 `checkpoint.json`，評分每個任務一份 `checkpoint_task_<任務>.json`），下一次嘗試從最後一輪接著跑，token 用量也會累計。規則、程式版本（`GIT_COMMIT`）、模型、影片 ID 或切分結果不同時會忽略存檔點，從頭開始，所以一份結果不會混到兩版規則或程式。
 
 - 前端：存檔點跟著 `artifacts.zip` 放在同一個 `g<generation>` 底下，失敗時上傳，執行中最多每 60 秒更新一次，所以 worker 被關掉時最多少掉約 1 分鐘的進度。「從失敗處繼續」會開新的 generation，並往回找最新一份 `artifacts.zip` 的存檔點；那一份沒有存檔點（已完成，或因上述錯誤刪除）就從頭開始。
-- 命令列：存檔點在 `--out` 資料夾，同樣的指令重跑就會接續；`--force` 會清掉評分任務的存檔點。
+- 命令列：存檔點在 `--out` 資料夾。還沒寫進紀錄就停下（被關掉，或切分因 429、斷線失敗）時，同樣的指令重跑就會接續；已寫進紀錄但有失敗的任務，用 `--steps` 補評這些步驟時會接續。`--force` 會清掉評分任務的存檔點。用 `-dirty` 的程式再改程式時 commit 不變，存檔點仍會沿用，要從頭來請加 `--force` 或換 `--out`。
 
 ### SOP 評分（開發中）
 
@@ -633,6 +633,7 @@ my-awesome-project/
 │   │   │   ├── gcs_service.py
 │   │   │   ├── gemini_service.py
 │   │   │   ├── model_logging.py
+│   │   │   ├── sop_checkpoint.py
 │   │   │   ├── sop_grading_service.py
 │   │   │   ├── sop_run_bundle.py
 │   │   │   ├── sop_skill_service.py

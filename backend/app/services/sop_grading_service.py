@@ -492,7 +492,6 @@ async def run_task(task: dict, video_id: str, runner: GradingRunner, boxes: dict
         first_turn = saved["turn"] + 1
         logger.warning("task %s of %s continues from turn %d", task["key"], video_id, first_turn)
     else:
-        log_path.unlink(missing_ok=True)  # an earlier attempt's transcript is not this run's
         materials, feedback = await _opening(task, runner, boxes)
 
     for turn in range(first_turn, MAX_TASK_TURNS + 1):
@@ -561,14 +560,18 @@ async def run_task(task: dict, video_id: str, runner: GradingRunner, boxes: dict
 async def run_grading(video_path: Path, segmentation: dict, workdir: Path, model_call: ModelCall | None = None,
                       probe_dir: Path | None = None, steps: set[int] | None = None,
                       previous: dict | None = None, on_progress: GradingProgress | None = None,
-                      resume: bool = False, on_checkpoint: Callable[[], Awaitable[None]] | None = None) -> dict:
+                      resume: bool = False, on_checkpoint: Callable[[], Awaitable[None]] | None = None,
+                      usage_reported: bool = True) -> dict:
     """Grade one video. With `steps`, only those steps' visual criteria go to the model; the other
     visual criteria are copied from `previous` (an earlier grading result) when given. With `resume`,
     every criterion `previous` already graded is kept and only its 待判定 criteria go to the model.
     on_progress(done, total, task_key) is awaited after each task. An exception it raises before the
     last task cancels the remaining tasks and raises GradingIncomplete (errors=[that exception]) with
     the criteria graded so far; after the last task it is ignored, since nothing is left to stop.
-    The result's `task_exceptions` holds each failed task's exception (not JSON; for the caller only)."""
+    The result's `task_exceptions` holds each failed task's exception (not JSON; for the caller only).
+    usage_reported: the caller records this run's usage even when tasks failed (sop_grading_cli), so a failed
+    task's checkpoint stops carrying its tokens; the queue discards a failed attempt's usage, so there the
+    next attempt reports them."""
     rubric_mod, rules, validate = (load_grading_module(n) for n in ("rubric", "rules", "validate_grading"))
     rubric = rubric_mod.load_rubric()
     model_call = model_call or gemini_call
@@ -630,7 +633,7 @@ async def run_grading(video_path: Path, segmentation: dict, workdir: Path, model
     for task, _, state, exc in outcomes:
         if exc is None or isinstance(exc, SkillRunError):  # its grades are in the result; or resuming would repeat it
             _task_checkpoint(workdir, task).unlink(missing_ok=True)
-        elif state is not None:  # kept for the next attempt; this run's usage below counts its tokens
+        elif state is not None and usage_reported:  # kept for the next attempt; the caller records this run's usage
             sop_checkpoint.mark_reported(_task_checkpoint(workdir, task))
     graded = {c["criterion_id"]: c for _, criteria, _, _ in outcomes for c in criteria}
     _sheet_unseen_point(graded, old)
@@ -681,13 +684,11 @@ def _task_checkpoint(workdir: Path, task: dict) -> Path:
 
 
 def _upload_artifacts(workdir: Path, prefix: str) -> dict:
-    # Named per thread: a periodic upload cancelled with its task may still be running in its thread.
-    archive = workdir.parent / f"artifacts.{threading.get_ident()}.zip"
-    keep = sop_checkpoint.task_clips(workdir)  # an unfinished task still shows these to the model
+    archive = workdir.parent / "artifacts.zip"
     with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED) as zf:
-        # Clips and the proxy are cut again from the source video; keep the archive small.
-        sop_checkpoint.archive(zf, workdir, lambda item: item.is_file() and (not item.name.endswith(".mp4")
-                                                                              or item.name in keep))
+        # Clips and the proxy are cut again from the source video; keep the archive small. An unfinished
+        # task's clips still go in: sop_checkpoint.archive adds every file a checkpoint needs.
+        sop_checkpoint.archive(zf, workdir, lambda item: not item.name.endswith(".mp4"))
     uploads = {"artifacts": (archive, "artifacts.zip", "application/zip")}
     if (workdir / "grading.json").exists():
         uploads["result"] = (workdir / "grading.json", "grading.json", "application/json")
@@ -781,13 +782,15 @@ async def run_sop_grading(video_uri: str, video_id: str, generation: int, segmen
         history, texts = await asyncio.to_thread(_snapshot_rules, workdir, previous is not None)
         uploader = sop_checkpoint.PeriodicUpload(lambda: _upload_artifacts(workdir, prefix))
         try:
-            outcome = await run_grading(video, segmentation, workdir, model_call, on_progress=on_progress,
-                                        previous=previous, resume=previous is not None, on_checkpoint=uploader)
+            try:
+                outcome = await run_grading(video, segmentation, workdir, model_call, on_progress=on_progress,
+                                            previous=previous, resume=previous is not None, on_checkpoint=uploader,
+                                            usage_reported=False)
+            finally:  # also when cancelled: an upload still zipping must not outlive the temporary folder
+                await uploader.drain()
         except GradingIncomplete as exc:
-            await uploader.drain()
             exc.files = await _upload_or_none(workdir, video_id, generation)
             raise
-        await uploader.drain()
         files = await _upload_or_none(workdir, video_id, generation)
     changed = await asyncio.to_thread(sop_skill_service.rules_changed, grading_dir(), history[-1]["rules_digest"])
     exceptions = outcome.pop("task_exceptions")

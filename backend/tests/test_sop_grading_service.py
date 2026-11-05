@@ -572,6 +572,15 @@ async def test_failed_task_continues_from_its_checkpoint_and_counts_tokens_once(
     assert not list(tmp_path.glob("checkpoint_task_*"))
 
 
+async def test_queue_attempts_carry_a_failed_tasks_tokens_to_the_next_attempt(video, tmp_path):
+    # The queue discards a failed attempt's usage with GradingIncomplete, so the checkpoint keeps it.
+    first = await grading.run_grading(video, segmentation(), tmp_path, FakeModel({"12a": [OVERVIEW_12, Quota("429")]}),
+                                      steps={12}, usage_reported=False)
+    assert [f["task"] for f in first["failed_tasks"]] == ["12"]
+    second = await grading.run_grading(video, segmentation(), tmp_path, FakeModel(), steps={12}, usage_reported=False)
+    assert second["usage"]["input_tokens"] == 200  # both turns of task 12, once each
+
+
 async def test_a_killed_run_keeps_its_finished_tasks(video, tmp_path):
     class KilledOnStep19(FakeModel):
         async def __call__(self, system, content):

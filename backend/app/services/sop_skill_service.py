@@ -718,7 +718,7 @@ def _upload_artifacts(workdir: Path, prefix: str) -> dict:
     archive = workdir.parent / "artifacts.zip"
     with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED) as zf:
         # The proxy is regenerated from the source video; keep the archive small.
-        sop_checkpoint.archive(zf, workdir, lambda item: item.is_file() and not item.name.startswith("proxy.mp4"))
+        sop_checkpoint.archive(zf, workdir, lambda item: not item.name.startswith("proxy.mp4"))
     uploads = {"artifacts": (archive, "artifacts.zip", "application/zip")}
     for name in ("result.json", "transcript.json"):
         if (workdir / name).exists():

@@ -75,23 +75,25 @@ def needed_files(name: str, data: dict) -> set[str]:
     return {f"transcript_task_{key}.json", *(material[0] for material in data.get("materials", []))}
 
 
-def task_clips(workdir: Path) -> set[str]:
-    """Clips that unfinished grading tasks still show the model; they go into the archive with their checkpoint."""
-    names = set()
-    for path in workdir.glob(f"{TASK_PREFIX}*.json"):
+def archive(zf: zipfile.ZipFile, workdir: Path, keep: Callable[[Path], bool]) -> None:
+    """Add workdir's files that `keep` accepts to zf, plus every file a checkpoint needs (a grading task's
+    clips, which `keep` leaves out). Tasks keep running next to a periodic upload, so the checkpoints are
+    read first: the files they name already exist then and are in the listing that follows, whereas a
+    checkpoint read after the listing could name an image made in between. A checkpoint being written is
+    skipped, and a file gone mid-walk is left out instead of failing the upload."""
+    needed: set[str] = set()
+    for item in sorted(workdir.iterdir()):
+        if not is_checkpoint(item.name):
+            continue
         try:
-            materials = json.loads(path.read_text(encoding="utf-8")).get("materials") or []
+            data = item.read_bytes()
+            needed |= needed_files(item.name, json.loads(data))
         except (OSError, ValueError):
             continue
-        names |= {name for name, _, kind, _ in materials if kind == "video"}
-    return names
-
-
-def archive(zf: zipfile.ZipFile, workdir: Path, keep: Callable[[Path], bool]) -> None:
-    """Add workdir's files to zf. Tasks running next to a periodic upload replace and delete files, so a
-    checkpoint being written is skipped and a file gone mid-walk is left out instead of failing the upload."""
+        zf.writestr(item.name, data)
     for item in sorted(workdir.iterdir()):
-        if item.name.endswith(TEMPORARY) or not keep(item):
+        if (is_checkpoint(item.name) or item.name.endswith(TEMPORARY) or not item.is_file()
+                or not (keep(item) or item.name in needed)):
             continue
         try:
             zf.write(item, item.name)
@@ -143,7 +145,7 @@ def _restore_from_gcs(prefix: str, workdir: Path) -> bool | None:
     when there is no archive. The attempt's results, rules copies and other transcripts stay out: they
     are not this run's. Blocking. Any failure means starting over, which costs tokens, not correctness."""
     object_name = f"{prefix}/artifacts.zip"
-    downloaded = workdir.parent / "earlier_artifacts.zip"
+    downloaded = workdir.parent / "checkpoint_archive.zip"
     try:
         if not gcs_service.blob_exists(object_name):
             return None

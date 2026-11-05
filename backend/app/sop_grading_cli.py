@@ -13,9 +13,11 @@ usage: python -m app.sop_grading_cli VIDEO --video-id VID_0083 --out WORK/VID_00
 running sop-video-skill: faster and cheaper while tuning the grading agent.
 --steps regrades only those steps' visual criteria and keeps the rest from an existing grading.json.
 A regraded task that fails keeps its earlier grade (it is listed in failed_tasks).
-A run that stopped (429, dropped connection, killed) leaves checkpoints in the work folder; the same command
-continues from them, with the tokens already spent counted once (sop_checkpoint.py). --force ignores the
-grading tasks' checkpoints.
+A run that stopped before it was recorded (killed, or segmentation ended on a 429 or a dropped connection)
+leaves checkpoints in the work folder, and the same command continues from them. A recorded run with
+failed tasks keeps their checkpoints too: --steps with those steps continues them. Tokens already spent
+are counted once (sop_checkpoint.py). --force ignores the grading tasks' checkpoints. Checkpoints are tied
+to the commit (--commit), so a run of other code starts over.
 
 Every run of a label-sheet id (VID_0001) is recorded in sop-video-grading/runs/ (run_record.py), which
 is committed so maintainers share it. The record's version includes the segmentation source, and one
@@ -306,6 +308,8 @@ def main() -> None:
     ap.add_argument("--runs-dir", type=Path, help="run records folder (default sop-video-grading/runs)")
     a = ap.parse_args()
     steps = {int(s) for s in a.steps.split(",")} if a.steps else None
+    # The checkpoints' fingerprint reads settings.GIT_COMMIT; without GIT_COMMIT set, --commit fell back to git.
+    settings.GIT_COMMIT = a.commit.strip()
     seg_tag = segmentation_tag(a.video_id, a.labels)
     recorder = None
     if _rr().VIDEO_ID_RE.fullmatch(a.video_id):
