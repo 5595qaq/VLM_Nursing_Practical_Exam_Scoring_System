@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 27.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 23501,
+  "cached_input_tokens": 0,
+  "output_tokens": 88,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@347-379.5（context box，有聲音；片段內 00:00 ＝ 影片 05:47.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [350.5, 355.0, 362.0, 372.0], \"region\": [0.35, 0.25, 0.65, 0.55], \"reason\": \"確認白色方形酒精棉片墊在針頭與針筒接合處\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 17.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 24738,
+  "cached_input_tokens": 17047,
+  "output_tokens": 183,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@347-379.5（context box，有聲音；片段內 00:00 ＝ 影片 05:47.0）",
+   "zoom@350.5/355/362/372 region=[0.350, 0.250, 0.650, 0.550]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"25a\", \"verdict\": \"正確\", \"explanation\": \"於 05:49.5–06:17.5（clip@347-379.5 片段內 00:02.5–00:30.5），考生拿起白色方形酒精棉片墊在針頭與針筒接合處（針柄處），zoom@350.5 與 zoom@355 可清楚看到白色方形酒精棉片包覆在針頭與針筒交接處。\", \"evidence\": [\"clip@347-379.5\", \"zoom@350.5\", \"zoom@355\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
