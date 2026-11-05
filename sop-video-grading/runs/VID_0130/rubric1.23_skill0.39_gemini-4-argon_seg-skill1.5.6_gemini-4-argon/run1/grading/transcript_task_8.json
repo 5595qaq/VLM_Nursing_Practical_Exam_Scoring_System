@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 6.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 19728,
+  "cached_input_tokens": 0,
+  "output_tokens": 89,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@61.2-72.2（context box，有聲音；片段內 00:00 ＝ 影片 01:01.2）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [64.7, 67.2, 68.7, 69.2], \"region\": [0.25, 0.45, 0.58, 0.85], \"reason\": \"確認手中握著的是稀釋液瓶並正在扭開瓶頂、瓶頂已分離\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 24.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 20965,
+  "cached_input_tokens": 17262,
+  "output_tokens": 208,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@61.2-72.2（context box，有聲音；片段內 00:00 ＝ 影片 01:01.2）",
+   "zoom@64.7/67.2/68.7/69.2 region=[0.250, 0.450, 0.580, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"8a\", \"verdict\": \"正確\", \"explanation\": \"於 01:05.7–01:08.7（clip@61.2-72.2 片段內 00:04.5–00:07.5），學生左手握住稀釋液瓶身，右手隔著酒精棉片捏住瓶頂扭開，並於 01:08.7–01:09.2 將扭下的瓶頂拿開。\", \"times\": [[65.7, 69.2]], \"evidence\": [\"clip@61.2-72.2\", \"zoom@64.7\", \"zoom@67.2\", \"zoom@68.7\", \"zoom@69.2\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
