@@ -1,0 +1,87 @@
+{
+ "video_id": "VID_0085",
+ "versions": {
+  "rubric": "1.23",
+  "skill": "0.38",
+  "model": "gemini-4-argon",
+  "segmentation": "skill1.5.6_gemini-4-argon"
+ },
+ "video_sha256": "3f01569daa23f1dca566ae6abb6627ac6909dbca2ef774c948c14ec6d2b285ac",
+ "runs": [
+  {
+   "run": 1,
+   "by": "5595QAQ",
+   "date": "2026-11-05",
+   "commit": "58bdf3c02bb9a998cc6a7c26130099cfbb729418",
+   "video_sha256": "3f01569daa23f1dca566ae6abb6627ac6909dbca2ef774c948c14ec6d2b285ac",
+   "steps": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29
+   ],
+   "failed_tasks": [
+    {
+     "task": "30",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    }
+   ],
+   "segmentation": "sop-video-skill 1.5.6 gemini-4-argon",
+   "usage": {
+    "input_tokens": 1363435,
+    "cached_input_tokens": 797442,
+    "output_tokens": 21646,
+    "thinking_tokens": 11273
+   },
+   "segmentation_usage": {
+    "input_tokens": 715000,
+    "cached_input_tokens": 539077,
+    "output_tokens": 63486,
+    "thinking_tokens": 1186
+   }
+  },
+  {
+   "run": 2,
+   "by": "5595QAQ",
+   "date": "2026-11-05",
+   "commit": "96b4480cee2a919b1830b879490db05cef34dc8f",
+   "video_sha256": "3f01569daa23f1dca566ae6abb6627ac6909dbca2ef774c948c14ec6d2b285ac",
+   "steps": [
+    30
+   ],
+   "failed_tasks": [],
+   "segmentation": "recorded segmentation.json",
+   "usage": {
+    "input_tokens": 38638,
+    "cached_input_tokens": 17013,
+    "output_tokens": 366,
+    "thinking_tokens": 0
+   }
+  }
+ ]
+}

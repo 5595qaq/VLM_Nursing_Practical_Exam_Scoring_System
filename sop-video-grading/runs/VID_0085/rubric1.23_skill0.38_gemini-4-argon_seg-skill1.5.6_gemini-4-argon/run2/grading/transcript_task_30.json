@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 11.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 18707,
+  "cached_input_tokens": 0,
+  "output_tokens": 89,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@283-291（hands_box，n=9）#0=04:43.0、#1=04:44.0、#2=04:45.0、#3=04:46.0、#4=04:47.0、#5=04:48.0、#6=04:49.0、#7=04:50.0、#8=04:51.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [286.5, 287.0, 288.0, 289.0], \"region\": [0.15, 0.55, 0.45, 0.98], \"reason\": \"放大確認右手將空針放入針架的持握位置及放置結果\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 17.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 19931,
+  "cached_input_tokens": 17013,
+  "output_tokens": 277,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@283-291（hands_box，n=9）#0=04:43.0、#1=04:44.0、#2=04:45.0、#3=04:46.0、#4=04:47.0、#5=04:48.0、#6=04:49.0、#7=04:50.0、#8=04:51.0",
+   "zoom@286.5/287/288/289 region=[0.150, 0.550, 0.450, 0.980]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"30a\", \"verdict\": \"正確\", \"explanation\": \"04:46–04:49 學生用右手將抽藥後的空針垂直插入針架上的針頭套中並放手置於針架上。\", \"evidence\": [\"ov@283-291 #3\", \"ov@283-291 #4\", \"ov@283-291 #5\", \"ov@283-291 #6\", \"zoom@286.5\", \"zoom@287\", \"zoom@288\", \"zoom@289\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"30b\", \"verdict\": \"正確\", \"explanation\": \"04:46.5–04:48.0 學生右手握住空針外筒（針柄處），未碰觸針頭部位，將空針放入針架中。\", \"evidence\": [\"zoom@286.5\", \"zoom@287\", \"zoom@288\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

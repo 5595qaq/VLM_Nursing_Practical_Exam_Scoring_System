@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 21.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 18711,
+  "cached_input_tokens": 0,
+  "output_tokens": 162,
+  "thinking_tokens": 66,
+  "materials": [
+   "ov@319.5-325（hands_box，n=9）#0=05:19.5、#1=05:20.2、#2=05:20.9、#3=05:21.6、#4=05:22.2、#5=05:22.9、#6=05:23.6、#7=05:24.3、#8=05:25.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [320.9, 321.6, 322.2, 322.9], \"region\": [0.1, 0.55, 0.5, 0.98], \"reason\": \"確認空針是否放入針架，以及放入時右手持握空針的位置（針柄或針頭部位）\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 22.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 19963,
+  "cached_input_tokens": 17048,
+  "output_tokens": 290,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@319.5-325（hands_box，n=9）#0=05:19.5、#1=05:20.2、#2=05:20.9、#3=05:21.6、#4=05:22.2、#5=05:22.9、#6=05:23.6、#7=05:24.3、#8=05:25.0",
+   "zoom@320.9/321.6/322.2/322.9 region=[0.100, 0.550, 0.500, 0.980]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"30a\", \"verdict\": \"正確\", \"explanation\": \"05:20.9–05:22.9 右手將空針垂直插入治療車左側的針架（透明針座架）中固定。\", \"evidence\": [\"ov@319.5-325 #2\", \"ov@319.5-325 #3\", \"ov@319.5-325 #4\", \"ov@319.5-325 #5\", \"zoom@320.9\", \"zoom@321.6\", \"zoom@322.2\", \"zoom@322.9\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"30b\", \"verdict\": \"正確\", \"explanation\": \"05:20.9–05:22.2 右手持空針外管（針柄處），將空針放入針架中，未碰觸針頭部位。\", \"evidence\": [\"zoom@320.9\", \"zoom@321.6\", \"zoom@322.2\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

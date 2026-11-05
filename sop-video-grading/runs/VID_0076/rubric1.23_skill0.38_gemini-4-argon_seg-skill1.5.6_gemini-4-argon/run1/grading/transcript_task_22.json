@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 50.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 18750,
+  "cached_input_tokens": 0,
+  "output_tokens": 215,
+  "thinking_tokens": 96,
+  "materials": [
+   "ov@272.8-284（hands_box，n=9）#0=04:32.8、#1=04:34.2、#2=04:35.6、#3=04:37.0、#4=04:38.4、#5=04:39.8、#6=04:41.2、#7=04:42.6、#8=04:44.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [275.2, 275.6, 276.2, 277.0], \"region\": [0.35, 0.35, 0.75, 0.78], \"reason\": \"放大檢視 04:35–04:37 針頭插入 vial 時右手持針姿勢（22b）及針頭是否插入 vial 橡皮塞中心（22c）\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 4.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 19997,
+  "cached_input_tokens": 17047,
+  "output_tokens": 95,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@272.8-284（hands_box，n=9）#0=04:32.8、#1=04:34.2、#2=04:35.6、#3=04:37.0、#4=04:38.4、#5=04:39.8、#6=04:41.2、#7=04:42.6、#8=04:44.0",
+   "zoom@275.2/275.6/276.2/277 region=[0.350, 0.350, 0.750, 0.780]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [275.2, 275.6, 276.2, 277.0], \"region\": [0.4, 0.55, 0.72, 0.92], \"reason\": \"調整位置往下以清楚查看右手持針姿勢與針頭刺入桌面上 vial 瓶口中心的位置\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 6.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 21259,
+  "cached_input_tokens": 17013,
+  "output_tokens": 250,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@272.8-284（hands_box，n=9）#0=04:32.8、#1=04:34.2、#2=04:35.6、#3=04:37.0、#4=04:38.4、#5=04:39.8、#6=04:41.2、#7=04:42.6、#8=04:44.0",
+   "zoom@275.2/275.6/276.2/277 region=[0.350, 0.350, 0.750, 0.780]",
+   "zoom@275.2/275.6/276.2/277 region=[0.400, 0.550, 0.720, 0.920]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"22b\", \"verdict\": \"正確\", \"explanation\": \"04:35.2–04:37.0 插針進入 vial 時，右手以拇指與食指、中指握住針筒外管呈持毛筆姿勢，針筒垂直向下插入，手指未碰觸針頭、針座或活塞柄內側。\", \"evidence\": [\"zoom@275.2\", \"zoom@275.6\", \"zoom@276.2\", \"zoom@277\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"22c\", \"verdict\": \"正確\", \"explanation\": \"04:35.6–04:37.0 左手固定桌上的 vial，右手將針頭對準並刺入 vial 瓶口橡皮塞中央。\", \"evidence\": [\"zoom@275.6\", \"zoom@276.2\", \"zoom@277\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

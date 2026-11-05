@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 3.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 19175,
+  "cached_input_tokens": 17013,
+  "output_tokens": 84,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@33-42.2（context box，有聲音；片段內 00:00 ＝ 影片 00:33.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [34.5, 36.0, 37.5, 38.5], \"region\": [0.35, 0.5, 0.65, 0.9], \"reason\": \"確認打開vial瓶蓋以及酒精棉片擦拭vial瓶口的細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 10.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 20400,
+  "cached_input_tokens": 17013,
+  "output_tokens": 547,
+  "thinking_tokens": 270,
+  "materials": [
+   "clip@33-42.2（context box，有聲音；片段內 00:00 ＝ 影片 00:33.0）",
+   "zoom@34.5/36/37.5/38.5 region=[0.350, 0.500, 0.650, 0.900]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"00:35.0–00:36.5（clip@33-42.2 片段內 00:02.0–00:03.5）左手持 vial，右手將 vial 上的褐色塑膠翻蓋推開並放至桌面，露出銀色鋁圈與橡皮塞。\", \"evidence\": [\"clip@33-42.2\", \"zoom@36\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"6a\", \"verdict\": \"正確\", \"explanation\": \"00:37.0–00:38.5（clip@33-42.2 片段內 00:04.0–00:05.5）右手持白色方形酒精棉片在 vial 瓶口來回擦拭消毒，並將棉片留在瓶口上。\", \"evidence\": [\"clip@33-42.2\", \"zoom@37.5\", \"zoom@38.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
