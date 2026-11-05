@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 6.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 18903,
+  "cached_input_tokens": 0,
+  "output_tokens": 98,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@99.4-106.5（hands_box，n=9）#0=01:39.4、#1=01:40.3、#2=01:41.2、#3=01:42.1、#4=01:43.0、#5=01:43.8、#6=01:44.7、#7=01:45.6、#8=01:46.5"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [103.8, 104.7, 105.6, 106.5], \"region\": [0.25, 0.4, 0.75, 0.9], \"reason\": \"放大查看左手持握稀釋液瓶的手勢，確認是否以左手中指及食指夾住稀釋液瓶\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 11.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 20151,
+  "cached_input_tokens": 17256,
+  "output_tokens": 206,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@99.4-106.5（hands_box，n=9）#0=01:39.4、#1=01:40.3、#2=01:41.2、#3=01:42.1、#4=01:43.0、#5=01:43.8、#6=01:44.7、#7=01:45.6、#8=01:46.5",
+   "zoom@103.8/104.7/105.6/106.5 region=[0.250, 0.400, 0.750, 0.900]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"12a\", \"verdict\": \"正確\", \"explanation\": \"於 01:43.8–01:46.5 拿起稀釋液瓶抽取液體時，清楚看到學生以左手中指及食指夾住稀釋液瓶口附近，其餘手指固定空針。\", \"times\": [[103.8, 106.5]], \"evidence\": [\"ov@99.4-106.5 #6\", \"ov@99.4-106.5 #7\", \"ov@99.4-106.5 #8\", \"zoom@103.8\", \"zoom@104.7\", \"zoom@105.6\", \"zoom@106.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

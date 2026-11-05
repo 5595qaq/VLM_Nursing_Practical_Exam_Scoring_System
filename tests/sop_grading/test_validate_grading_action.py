@@ -14,9 +14,9 @@ FRESH = {"overview": 0, "zoom": 0, "clip": 0}
 
 def final(**changes) -> dict:
     criteria = [
-        {"criterion_id": "15b", "verdict": "部分正確", "confidence": 0.7, "reason": None,
+        {"criterion_id": "15b", "verdict": "部分正確", "times": [[150.0, 151.0]], "confidence": 0.7, "reason": None,
          "explanation": "02:31 先彈針，02:40 才把棉片墊在針柄。", "evidence": ["clip@148-180"]},
-        {"criterion_id": "17a", "verdict": "正確", "confidence": 0.8, "reason": None,
+        {"criterion_id": "17a", "verdict": "正確", "times": [[150.0, 151.0]], "confidence": 0.8, "reason": None,
          "explanation": "02:31–02:35 聽到連續彈擊聲並看到右手食指彈針筒。", "evidence": ["clip@148-180"]},
     ]
     criteria[1].update(changes)
@@ -139,7 +139,7 @@ def test_flick_wrong_needs_a_burst_first():
 def test_pointing_at_the_package_wrong_needs_a_clip_first():
     task = {"window": [148.0, 180.0], "criteria": [{"criterion_id": "4e", "window": [148.0, 180.0]}]}
     action = {"action": "final", "criteria": [
-        {"criterion_id": "4e", "verdict": "錯誤", "confidence": 0.8, "reason": None,
+        {"criterion_id": "4e", "verdict": "錯誤", "times": [[150.0, 151.0]], "confidence": 0.8, "reason": None,
          "explanation": "02:50 直接撕開空針包裝，沒有用手指指。", "evidence": ["ov@148-180"]}]}
     assert any("use clip" in e for e in validate(action, task, FRESH, DURATION))
     assert validate(action, {**task, "clips": [[150.0, 160.0]]}, {**FRESH, "clip": 1}, DURATION) == []
@@ -149,7 +149,7 @@ def test_pointing_at_the_package_wrong_needs_the_clip_near_the_tearing():
     # the window can be a minute long: a clip of the sheet reading alone says nothing about the seconds before tearing
     task = {"window": [148.0, 212.0], "criteria": [{"criterion_id": "4e", "window": [148.0, 212.0], "tear_start": 205.0}]}
     action = {"action": "final", "criteria": [
-        {"criterion_id": "4e", "verdict": "錯誤", "confidence": 0.8, "reason": None,
+        {"criterion_id": "4e", "verdict": "錯誤", "times": [[150.0, 151.0]], "confidence": 0.8, "reason": None,
          "explanation": "03:27 直接撕開空針包裝，沒有用手指指。", "evidence": ["clip@150-180"]}]}
     used = {**FRESH, "clip": 1}
     assert any("use clip" in e for e in validate(action, {**task, "clips": [[150.0, 180.0]]}, used, DURATION))
@@ -160,7 +160,7 @@ def test_pull_back_wrong_needs_a_burst_first():
     # VID_0074: the pull at 02:13.0–02:13.5 lasted half a second and looked like changing grip
     task = {"window": [148.0, 180.0], "criteria": [{"criterion_id": "16a", "window": [148.0, 180.0]}]}
     action = {"action": "final", "criteria": [
-        {"criterion_id": "16a", "verdict": "錯誤", "confidence": 0.8, "reason": None,
+        {"criterion_id": "16a", "verdict": "錯誤", "times": [[150.0, 151.0]], "confidence": 0.8, "reason": None,
          "explanation": "02:28–02:35 手只握外管，沒有碰尾端圓盤。", "evidence": ["clip@148-180"]}]}
     assert any("use burst" in e for e in validate(action, task, FRESH, DURATION))
     assert validate(action, task, {**FRESH, "burst": 1}, DURATION) == []
@@ -176,7 +176,7 @@ def test_fixing_the_needle_verdicts(verdict, reason, clips, error):
     # second or two), never 部分正確
     task = {"window": [74.0, 81.0], "criteria": [{"criterion_id": "10b", "window": [74.0, 81.0]}]}
     action = {"action": "final", "criteria": [
-        {"criterion_id": "10b", "verdict": verdict, "confidence": 0.8, "reason": reason,
+        {"criterion_id": "10b", "verdict": verdict, "times": [[76.0, 77.0]], "confidence": 0.8, "reason": reason,
          "explanation": "01:16 空針離開包裝，01:17–01:19 一手握針座、另一手旋緊。", "evidence": ["clip@74-81"]}]}
     errors = validate(action, {**task, "clips": [[74.0, 81.0]] * clips}, {**FRESH, "clip": clips}, DURATION)
     assert (errors == []) if error is None else any(error in e for e in errors), errors
@@ -186,7 +186,7 @@ def test_fixing_the_needle_wrong_needs_a_clip_on_a_wrapper_span():
     task = {"window": [74.0, 81.0], "criteria": [
         {"criterion_id": "10b", "window": [74.0, 81.0], "package_spans": [[25.6, 35.0], [66.0, 74.0]]}]}
     action = {"action": "final", "criteria": [
-        {"criterion_id": "10b", "verdict": "錯誤", "confidence": 0.8, "reason": None,
+        {"criterion_id": "10b", "verdict": "錯誤", "times": [[74.0, 75.0]], "confidence": 0.8, "reason": None,
          "explanation": "01:14 取出後試活塞，沒有旋緊。", "evidence": ["clip@76-84"]}]}
     used = {**FRESH, "clip": 1}
     assert any("before marking 錯誤" in e for e in validate(action, {**task, "clips": [[76.0, 84.0]]}, used, DURATION))
@@ -223,7 +223,7 @@ def test_rolling_needs_a_clip_first():
     # AUG0072_SKIP: overview frames 2–4 s apart showed hands around the vial with no rolling in between
     task = {"window": [178.0, 186.5], "criteria": [{"criterion_id": "20a", "window": [178.0, 186.5]}]}
     action = {"action": "final", "criteria": [
-        {"criterion_id": "20a", "verdict": "正確", "confidence": 0.8, "reason": None,
+        {"criterion_id": "20a", "verdict": "正確", "times": [[180.0, 181.0]], "confidence": 0.8, "reason": None,
          "explanation": "03:00 雙手夾住 vial。", "evidence": ["ov@178-186.5 #1"]}]}
     assert any("watch a clip" in e for e in validate(action, task, FRESH, DURATION))
     assert validate(action, task, {**FRESH, "clip": 1}, DURATION) == []
@@ -261,7 +261,7 @@ def wash_final(verdict="錯誤", span=(42.3, 54.2), **changes) -> dict:
     if span is not None:
         a["span"] = list(span)
     a.update(changes)
-    b = {"criterion_id": "1b", "verdict": "正確", "confidence": 0.8, "reason": None, "evidence": ["clip@38.6-57.4"],
+    b = {"criterion_id": "1b", "verdict": "正確", "times": [[40.0, 50.0]], "confidence": 0.8, "reason": None, "evidence": ["clip@38.6-57.4"],
          "explanation": "00:42–00:54 七個動作都有做到。"}
     return {"action": "final", "criteria": [a, b]}
 
@@ -291,6 +291,38 @@ def test_washing_span_errors(changes, expected):
 
 def test_span_only_on_timed_criteria():
     assert_rejected(final(span=[150, 160]), "span is only for criteria with min_seconds")
+
+
+def test_final_needs_times_unless_undetermined():
+    errors = validate(final(times=[]), TASK, FRESH, DURATION)
+    assert any("needs times" in e for e in errors), errors
+    action = final(verdict="無法判定", reason="畫面被遮擋", times=[], explanation="02:31–02:36 右手被支架擋住。")
+    assert validate(action, {**TASK, "audio": SOUND}, FRESH, DURATION) == []
+
+
+@pytest.mark.parametrize("times, expected", [
+    ([[20.0, 24.0]], "add the clip's start"),  # 00:20 read inside clip@148-180, not 168
+    ([[160.0, 150.0]], "must end at or after the start"),
+])
+def test_final_rejects_times_that_are_not_video_times(times, expected):
+    errors = validate(final(times=times), TASK, FRESH, DURATION)
+    assert any(expected in e for e in errors), errors
+
+
+def test_final_times_may_reach_the_slack_and_a_wrapper_span():
+    assert validate(final(times=[[138.0, 138.0], [190.0, 190.0]]), TASK, FRESH, DURATION) == []
+    task = {"window": [74.0, 81.0], "criteria": [
+        {"criterion_id": "10b", "window": [74.0, 81.0], "package_spans": [[25.6, 35.0]]}]}
+    action = {"action": "final", "criteria": [
+        {"criterion_id": "10b", "verdict": "正確", "times": [[30.0, 31.0]], "confidence": 0.8, "reason": None,
+         "explanation": "00:30 隔著包裝旋緊針頭。", "evidence": ["clip@28-34"]}]}
+    assert validate(action, {**task, "clips": [[28.0, 34.0]]}, {**FRESH, "clip": 1}, DURATION) == []
+
+
+def test_timed_criterion_uses_span_not_times():
+    action = wash_final()
+    action["criteria"][0]["times"] = [[40.0, 50.0]]
+    assert any("use span, not times" in e for e in validate(action, WASH, FRESH, DURATION))
 
 
 def test_washing_undetermined_needs_no_span():

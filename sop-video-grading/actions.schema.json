@@ -77,6 +77,7 @@
                   {"type": "null"}
                 ]
               },
+              "times": {"type": "array", "items": {"type": "array", "items": {"type": "number", "minimum": 0}, "minItems": 2, "maxItems": 2}, "description": "判定依據的影片時間（秒），[[開始, 結束], ...]；只有一個時間點時開始等於結束"},
               "span": {"type": "array", "items": {"type": "number", "minimum": 0}, "minItems": 2, "maxItems": 2},
               "needs_review": {"type": "boolean"},
               "review_reason": {"type": "string", "minLength": 4}
