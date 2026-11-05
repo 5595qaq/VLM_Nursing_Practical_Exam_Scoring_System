@@ -99,6 +99,11 @@ def test_a_dropped_connection_goes_back_to_the_queue(error):
     assert gemini_service._is_transient_model_error(error)
 
 
+@pytest.mark.parametrize("error", [httpx.ProxyError("bad proxy"), httpx.UnsupportedProtocol("ftp://")])
+def test_a_misconfigured_transport_fails_at_once(error):
+    assert not gemini_service._is_transient_model_error(error)
+
+
 async def test_configuration_is_explicit(sdk_client):
     options = sdk_client._api_client._http_options
     retry = options.retry_options

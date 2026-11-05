@@ -169,16 +169,6 @@ class GradingRunner(ScriptRunner):
         with self._lock:
             return super()._next(stem)
 
-    def load_or_prepare(self) -> None:
-        """Reuse the segmentation run's proxy when its probe.json is available."""
-        probe = self.probe_dir / "probe.json" if self.probe_dir else None
-        if probe and probe.is_file():
-            data = json.loads(probe.read_text(encoding="utf-8"))
-            if Path(data.get("proxy", "")).is_file():
-                self.probe = data
-                return
-        self.prepare()
-
     def _grading_script(self, script: str, *args) -> str:
         cmd = [sys.executable, str(grading_dir() / "scripts" / script), str(self.video), *map(str, args)]
         done = subprocess.run(cmd, cwd=self.workdir, capture_output=True, text=True,
@@ -479,7 +469,9 @@ async def run_task(task: dict, video_id: str, runner: GradingRunner, boxes: dict
     state = state or TaskState()
     log_path = workdir / f"transcript_task_{task['key']}.json"
     checkpoint_path = _task_checkpoint(workdir, task)
-    mark = sop_checkpoint.fingerprint(rule_digest, task, segmentation)  # before the opening adds to the task
+    # before the opening adds to the task
+    mark = sop_checkpoint.fingerprint(rule_digest, task, segmentation, settings.GIT_COMMIT,
+                                      settings.SOP_SKILL_GEMINI_MODEL)
     saved = sop_checkpoint.load(checkpoint_path, mark)
     if saved and "criteria" in saved:
         state.usage = saved["usage"]
@@ -500,6 +492,7 @@ async def run_task(task: dict, video_id: str, runner: GradingRunner, boxes: dict
         first_turn = saved["turn"] + 1
         logger.warning("task %s of %s continues from turn %d", task["key"], video_id, first_turn)
     else:
+        log_path.unlink(missing_ok=True)  # an earlier attempt's transcript is not this run's
         materials, feedback = await _opening(task, runner, boxes)
 
     for turn in range(first_turn, MAX_TASK_TURNS + 1):
@@ -692,10 +685,9 @@ def _upload_artifacts(workdir: Path, prefix: str) -> dict:
     archive = workdir.parent / f"artifacts.{threading.get_ident()}.zip"
     keep = sop_checkpoint.task_clips(workdir)  # an unfinished task still shows these to the model
     with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED) as zf:
-        for item in sorted(workdir.iterdir()):
-            # Clips and the proxy are cut again from the source video; keep the archive small.
-            if item.is_file() and (not item.name.endswith(".mp4") or item.name in keep):
-                zf.write(item, item.name)
+        # Clips and the proxy are cut again from the source video; keep the archive small.
+        sop_checkpoint.archive(zf, workdir, lambda item: item.is_file() and (not item.name.endswith(".mp4")
+                                                                              or item.name in keep))
     uploads = {"artifacts": (archive, "artifacts.zip", "application/zip")}
     if (workdir / "grading.json").exists():
         uploads["result"] = (workdir / "grading.json", "grading.json", "application/json")
@@ -781,17 +773,21 @@ async def run_sop_grading(video_uri: str, video_id: str, generation: int, segmen
             except Exception as exc:  # noqa: BLE001 - only the debugging zip is incomplete
                 logger.warning("could not restore earlier grading artifacts %s: %s", previous_artifacts, exc)
         prefix = artifact_prefix(video_id, generation)
-        # A worker killed mid-run saved no `previous`, but its periodic upload holds the finished tasks.
-        restored = not previous and await asyncio.to_thread(
-            sop_checkpoint.restore_latest, lambda number: artifact_prefix(video_id, number), generation, workdir)
-        history, texts = await asyncio.to_thread(_snapshot_rules, workdir, previous is not None or restored)
+        # A worker killed mid-run saved no `previous`, but its periodic upload holds the finished tasks. A
+        # checkpoint is used only under the same rules (its fingerprint), so it adds no attempt to the history.
+        if not previous:
+            await asyncio.to_thread(sop_checkpoint.restore_latest, lambda number: artifact_prefix(video_id, number),
+                                    generation, workdir)
+        history, texts = await asyncio.to_thread(_snapshot_rules, workdir, previous is not None)
+        uploader = sop_checkpoint.PeriodicUpload(lambda: _upload_artifacts(workdir, prefix))
         try:
             outcome = await run_grading(video, segmentation, workdir, model_call, on_progress=on_progress,
-                                        previous=previous, resume=previous is not None,
-                                        on_checkpoint=sop_checkpoint.throttled(lambda: _upload_artifacts(workdir, prefix)))
+                                        previous=previous, resume=previous is not None, on_checkpoint=uploader)
         except GradingIncomplete as exc:
+            await uploader.drain()
             exc.files = await _upload_or_none(workdir, video_id, generation)
             raise
+        await uploader.drain()
         files = await _upload_or_none(workdir, video_id, generation)
     changed = await asyncio.to_thread(sop_skill_service.rules_changed, grading_dir(), history[-1]["rules_digest"])
     exceptions = outcome.pop("task_exceptions")

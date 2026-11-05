@@ -156,6 +156,7 @@ class ScriptRunner:
         self.workdir = workdir
         self.video = video
         self.probe: dict = {}
+        self.probe_dir: Path | None = None  # load_or_prepare: where an existing probe.json may be
         self.counter = 0
 
     def _run(self, script: str, *args) -> str:
@@ -183,9 +184,10 @@ class ScriptRunner:
         self.probe = json.loads((self.workdir / "probe.json").read_text(encoding="utf-8"))
         return [Image(self.workdir / "grid.jpg", "開場格線圖：6 個時間點的完整畫面，綠線每 0.1 一格")]
 
-    def reuse_or_prepare(self) -> None:
-        """A resumed run keeps the proxy still on disk; a queue worker has a new folder and cuts it again."""
-        probe = self.workdir / "probe.json"
+    def load_or_prepare(self) -> None:
+        """Reuse the proxy of probe_dir's probe.json (the segmentation run's for grading, else an earlier
+        attempt in this workdir) when it is still on disk; a queue worker has a new folder and cuts it again."""
+        probe = (self.probe_dir or self.workdir) / "probe.json"
         if probe.is_file():
             data = json.loads(probe.read_text(encoding="utf-8"))
             if Path(data.get("proxy", "")).is_file():
@@ -363,10 +365,13 @@ async def _skill_turns(video_path, video_id, workdir, model_call, on_progress, m
     transcript: list[dict] = []
     max_turns = max_turns or settings.SOP_SKILL_MAX_TURNS
     checkpoint_path = workdir / sop_checkpoint.CHECKPOINT
-    mark = sop_checkpoint.fingerprint(await asyncio.to_thread(tree_digest, path), video_id)
+    mark = sop_checkpoint.fingerprint(await asyncio.to_thread(tree_digest, path), video_id,
+                                      settings.GIT_COMMIT, model_name())
     saved = sop_checkpoint.load(checkpoint_path, mark)
     if saved and not sop_checkpoint.files_exist(workdir, [name for name, _ in saved["pinned"] + saved["latest"]]):
         saved = None
+    if not saved:  # an earlier attempt's transcript is not this run's
+        (workdir / "transcript.json").unlink(missing_ok=True)
 
     latest: list[Image] = []
     motion_summary = None
@@ -374,7 +379,7 @@ async def _skill_turns(video_path, video_id, workdir, model_call, on_progress, m
     rejects = 0
     first_turn = 1
     if saved:
-        await asyncio.to_thread(runner.reuse_or_prepare)
+        await asyncio.to_thread(runner.load_or_prepare)
         state = LoopState(**saved["state"])
         pinned = [Image(workdir / name, label) for name, label in saved["pinned"]]
         latest = [Image(workdir / name, label) for name, label in saved["latest"]]
@@ -712,10 +717,8 @@ def _snapshot_skill(workdir: Path) -> dict:
 def _upload_artifacts(workdir: Path, prefix: str) -> dict:
     archive = workdir.parent / "artifacts.zip"
     with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED) as zf:
-        for item in sorted(workdir.iterdir()):
-            # The proxy is regenerated from the source video; keep the archive small.
-            if item.is_file() and not item.name.startswith("proxy.mp4"):
-                zf.write(item, item.name)
+        # The proxy is regenerated from the source video; keep the archive small.
+        sop_checkpoint.archive(zf, workdir, lambda item: item.is_file() and not item.name.startswith("proxy.mp4"))
     uploads = {"artifacts": (archive, "artifacts.zip", "application/zip")}
     for name in ("result.json", "transcript.json"):
         if (workdir / name).exists():
@@ -738,11 +741,12 @@ async def run_sop_skill(video_uri: str, video_id: str, generation: int,
         await asyncio.to_thread(sop_checkpoint.restore_latest, lambda number: artifact_prefix(video_id, number),
                                 generation, workdir)
         rules = await asyncio.to_thread(_snapshot_skill, workdir)
+        uploader = sop_checkpoint.PeriodicUpload(lambda: _upload_artifacts(workdir, prefix))
         try:
-            outcome = await run_skill_loop(
-                video, video_id, workdir, model_call or default_model_call(), on_progress,
-                on_checkpoint=sop_checkpoint.throttled(lambda: _upload_artifacts(workdir, prefix)))
+            outcome = await run_skill_loop(video, video_id, workdir, model_call or default_model_call(), on_progress,
+                                          on_checkpoint=uploader)
         finally:
+            await uploader.drain()
             try:
                 files = await asyncio.to_thread(_upload_artifacts, workdir, prefix)
             except Exception:

@@ -25,9 +25,10 @@ def _is_transient_model_error(exc):
     code = getattr(exc, "code", None)
     status = getattr(exc, "status", None)
     return (
-        # httpx: a dropped connection. The SDK retries only timeouts and failed connects, so a server
-        # disconnecting mid-request (RemoteProtocolError) arrives here on its first occurrence.
-        isinstance(exc, (TimeoutError, httpx.TransportError))
+        # httpx: a dropped connection or a timeout. The SDK retries only timeouts and failed connects, so a
+        # server disconnecting mid-request (RemoteProtocolError) arrives here on its first occurrence. Other
+        # transport errors (a wrong proxy or URL scheme) fail the same way every time and are not retried.
+        isinstance(exc, (TimeoutError, httpx.NetworkError, httpx.TimeoutException, httpx.RemoteProtocolError))
         # Anthropic SDK errors (SOP_SKILL_PROVIDER=claude) after its own retries: rate limit / overloaded.
         or getattr(exc, "status_code", None) in (429, 529)
         or code in (429, 499)

@@ -443,13 +443,55 @@ async def test_periodic_upload_failure_does_not_stop_the_run():
         calls.append(1)
         raise OSError("GCS is down")
 
-    hook = skill.sop_checkpoint.throttled(upload, seconds=0)
+    hook = skill.sop_checkpoint.PeriodicUpload(upload, seconds=0)
     await hook()
+    await hook.drain()
     await hook()
+    await hook.drain()
     assert len(calls) == 2
-    idle = skill.sop_checkpoint.throttled(upload, seconds=3600)
+    idle = skill.sop_checkpoint.PeriodicUpload(upload, seconds=3600)
     await idle()
+    await idle.drain()
     assert len(calls) == 2  # inside the interval: no upload
+
+
+async def test_drain_waits_for_an_upload_whose_caller_was_cancelled():
+    import asyncio
+    import threading
+
+    release, finished = threading.Event(), []
+
+    def upload():
+        release.wait(5)
+        finished.append(1)
+
+    hook = skill.sop_checkpoint.PeriodicUpload(upload, seconds=0)
+
+    async def turn():
+        await hook()
+        await asyncio.sleep(10)
+
+    caller = asyncio.create_task(turn())
+    await asyncio.sleep(0.05)
+    caller.cancel()  # the task that started the upload is cancelled; its upload keeps running
+    release.set()
+    await hook.drain()
+    assert finished == [1]  # the final upload can now go without being overwritten
+
+
+def test_restore_brings_back_only_what_the_checkpoint_needs(tmp_path, monkeypatch):
+    archive = tmp_path / "upload.zip"
+    with zipfile.ZipFile(archive, "w") as zf:
+        zf.writestr("checkpoint.json", json.dumps({"pinned": [["global_00.jpg", "g"]], "latest": [["003_ov.jpg", "o"]]}))
+        for name in ("global_00.jpg", "003_ov.jpg", "transcript.json", "001_old.jpg", "result.json", "rules_SKILL.md"):
+            zf.writestr(name, "x")
+    monkeypatch.setattr(skill.gcs_service, "blob_exists", lambda name: name == "p/g0/artifacts.zip")
+    monkeypatch.setattr(skill.gcs_service, "download_to_filename", lambda _uri, f: shutil.copy(archive, f))
+    work = tmp_path / "run"
+    work.mkdir()
+    assert skill.sop_checkpoint.restore_latest(lambda n: f"p/g{n}", 1, work)
+    assert sorted(p.name for p in work.iterdir()) == ["003_ov.jpg", "checkpoint.json", "global_00.jpg",
+                                                      "transcript.json"]
 
 
 @pytest.mark.parametrize("text, expected", [

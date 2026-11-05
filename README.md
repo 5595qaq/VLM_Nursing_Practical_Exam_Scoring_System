@@ -130,7 +130,7 @@ python sop-video-skill/scripts/schema_tools.py sop-video-skill/schema.json > out
 
 Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499、連線中斷，或 Claude 回傳 429／529（overloaded），且 SDK 重試用盡時，該影片的 skill 任務會依 queue 層退避重新派送，並從存檔點接續（最多 `GEMINI_QUEUE_MAX_ATTEMPTS` 次，之後工作失敗）；其他錯誤（模型拒答、連續 6 次不合格動作、超過回合上限）會讓工作失敗，可在前端「從失敗處繼續」只重跑未完成的影片，這幾種錯誤接續也只會重複，所以該影片從頭切分。重派次數用完而失敗時，按「從失敗處繼續」會從存檔點接續，已跑完的回合不必重付。
 
-**存檔點**：切分與評分每次呼叫模型前都會把進度寫進工作資料夾（切分 `checkpoint.json`，評分每個任務一份 `checkpoint_task_<任務>.json`），下一次嘗試從最後一輪接著跑，token 用量也會累計。規則、影片 ID 或切分結果不同時會忽略存檔點，從頭開始，所以一份結果不會混到兩版規則。
+**存檔點**：切分與評分每次呼叫模型前都會把進度寫進工作資料夾（切分 `checkpoint.json`，評分每個任務一份 `checkpoint_task_<任務>.json`），下一次嘗試從最後一輪接著跑，token 用量也會累計。規則、程式版本（`GIT_COMMIT`）、模型、影片 ID 或切分結果不同時會忽略存檔點，從頭開始，所以一份結果不會混到兩版規則或程式。
 
 - 前端：存檔點跟著 `artifacts.zip` 放在同一個 `g<generation>` 底下，失敗時上傳，執行中最多每 60 秒更新一次，所以 worker 被關掉時最多少掉約 1 分鐘的進度。「從失敗處繼續」會開新的 generation，並往回找最新一份 `artifacts.zip` 的存檔點；那一份沒有存檔點（已完成，或因上述錯誤刪除）就從頭開始。
 - 命令列：存檔點在 `--out` 資料夾，同樣的指令重跑就會接續；`--force` 會清掉評分任務的存檔點。

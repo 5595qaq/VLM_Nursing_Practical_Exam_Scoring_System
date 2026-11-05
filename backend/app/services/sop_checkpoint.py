@@ -2,8 +2,8 @@
 
 Both loops rebuild each request from their state, so that state and the files it names are all a later
 attempt needs to continue where the last one stopped (a 429, a dropped connection, a worker killed). The
-fingerprint ties a checkpoint to the rules and inputs it was made with: when they differ the checkpoint is
-ignored and the work starts over, so one result never mixes two versions of the rules.
+fingerprint ties a checkpoint to the rules, code, model and inputs it was made with: when any differs the
+checkpoint is ignored and the work starts over, so one result never mixes two versions.
 """
 import asyncio
 import hashlib
@@ -13,13 +13,14 @@ import os
 import time
 import zipfile
 from pathlib import Path
-from typing import Awaitable, Callable
+from typing import Callable
 
 from app.services import gcs_service
 
 logger = logging.getLogger(__name__)
 CHECKPOINT = "checkpoint.json"  # sop-video-skill: one per run
 TASK_PREFIX = "checkpoint_task_"  # sop-video-grading: one per task
+TEMPORARY = ".tmp"  # a checkpoint being written; never archived
 UPLOAD_SECONDS = 60  # a queue worker keeps its checkpoint in GCS at most this stale
 
 
@@ -33,7 +34,7 @@ def fingerprint(rules: str, *inputs) -> str:
 
 def save(path: Path, data: dict) -> None:
     """Replace the file in one step: a run killed while writing leaves the previous checkpoint."""
-    temporary = path.with_name(path.name + ".tmp")
+    temporary = path.with_name(path.name + TEMPORARY)
     temporary.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
     os.replace(temporary, path)
 
@@ -62,6 +63,18 @@ def mark_reported(path: Path) -> None:
     save(path, {**data, "usage": {}})
 
 
+def is_checkpoint(name: str) -> bool:
+    return name == CHECKPOINT or (name.startswith(TASK_PREFIX) and name.endswith(".json"))
+
+
+def needed_files(name: str, data: dict) -> set[str]:
+    """What a checkpoint needs besides itself: the images and clips it shows the model, and its transcript."""
+    if name == CHECKPOINT:
+        return {"transcript.json", *(image for image, _ in data.get("pinned", []) + data.get("latest", []))}
+    key = name[len(TASK_PREFIX):-len(".json")]
+    return {f"transcript_task_{key}.json", *(material[0] for material in data.get("materials", []))}
+
+
 def task_clips(workdir: Path) -> set[str]:
     """Clips that unfinished grading tasks still show the model; they go into the archive with their checkpoint."""
     names = set()
@@ -74,25 +87,43 @@ def task_clips(workdir: Path) -> set[str]:
     return names
 
 
-def throttled(upload: Callable[[], object], seconds: float = UPLOAD_SECONDS) -> Callable[[], Awaitable[None]]:
-    """on_checkpoint hook running `upload` at most every `seconds`. A failed upload only leaves an older
-    checkpoint in GCS, so it never stops the run."""
-    last = time.monotonic()
-    busy = False
-
-    async def hook() -> None:
-        nonlocal last, busy
-        if busy or time.monotonic() - last < seconds:
-            return
-        busy, last = True, time.monotonic()
+def archive(zf: zipfile.ZipFile, workdir: Path, keep: Callable[[Path], bool]) -> None:
+    """Add workdir's files to zf. Tasks running next to a periodic upload replace and delete files, so a
+    checkpoint being written is skipped and a file gone mid-walk is left out instead of failing the upload."""
+    for item in sorted(workdir.iterdir()):
+        if item.name.endswith(TEMPORARY) or not keep(item):
+            continue
         try:
-            await asyncio.to_thread(upload)
+            zf.write(item, item.name)
+        except FileNotFoundError:
+            continue
+
+
+class PeriodicUpload:
+    """on_checkpoint hook starting `upload` in the background at most every `seconds`, so no model call
+    waits for it. drain() before the final upload: an older upload finishing later would overwrite it.
+    A failed upload only leaves an older checkpoint in GCS, so it never stops the run."""
+
+    def __init__(self, upload: Callable[[], object], seconds: float = UPLOAD_SECONDS):
+        self.upload, self.seconds = upload, seconds
+        self.last = time.monotonic()
+        self.running: asyncio.Task | None = None
+
+    async def __call__(self) -> None:
+        if (self.running and not self.running.done()) or time.monotonic() - self.last < self.seconds:
+            return
+        self.last = time.monotonic()
+        self.running = asyncio.create_task(self._run())
+
+    async def _run(self) -> None:
+        try:
+            await asyncio.to_thread(self.upload)
         except Exception as exc:  # noqa: BLE001 - see above
             logger.warning("could not upload the checkpoint: %s", exc)
-        finally:
-            busy = False
 
-    return hook
+    async def drain(self) -> None:
+        if self.running:
+            await asyncio.shield(self.running)
 
 
 def restore_latest(prefix_of: Callable[[int], str], generation: int, workdir: Path) -> bool:
@@ -108,24 +139,27 @@ def restore_latest(prefix_of: Callable[[int], str], generation: int, workdir: Pa
 
 
 def _restore_from_gcs(prefix: str, workdir: Path) -> bool | None:
-    """Unpack `prefix`/artifacts.zip into workdir when it holds a checkpoint; None when there is no archive.
-    Blocking. Any failure means starting over, which costs tokens but gives the same result."""
+    """Unpack the checkpoints in `prefix`/artifacts.zip, with only the files they need, into workdir; None
+    when there is no archive. The attempt's results, rules copies and other transcripts stay out: they
+    are not this run's. Blocking. Any failure means starting over, which costs tokens, not correctness."""
     object_name = f"{prefix}/artifacts.zip"
-    archive = workdir.parent / "earlier_artifacts.zip"
+    downloaded = workdir.parent / "earlier_artifacts.zip"
     try:
         if not gcs_service.blob_exists(object_name):
             return None
-        gcs_service.download_to_filename(gcs_service.gcs_uri_for(object_name), str(archive))
-        with zipfile.ZipFile(archive) as zf:
-            names = [name for name in zf.namelist() if Path(name).name == name]  # flat names only, as we upload them
-            if not any(name == CHECKPOINT or name.startswith(TASK_PREFIX) for name in names):
-                return False
-            for name in names:
+        gcs_service.download_to_filename(gcs_service.gcs_uri_for(object_name), str(downloaded))
+        with zipfile.ZipFile(downloaded) as zf:
+            names = {name for name in zf.namelist() if Path(name).name == name}  # flat names only, as we upload them
+            wanted = set()
+            for name in filter(is_checkpoint, names):
+                wanted |= {name, *needed_files(name, json.loads(zf.read(name)))}
+            for name in wanted & names:
                 (workdir / name).write_bytes(zf.read(name))
-        logger.warning("restored the checkpoint of an earlier attempt from %s", object_name)
-        return True
+        if wanted:
+            logger.warning("restored the checkpoint of an earlier attempt from %s", object_name)
+        return bool(wanted)
     except Exception as exc:  # noqa: BLE001 - see above
         logger.warning("could not restore a checkpoint from %s: %s", object_name, exc)
         return False
     finally:
-        archive.unlink(missing_ok=True)
+        downloaded.unlink(missing_ok=True)
