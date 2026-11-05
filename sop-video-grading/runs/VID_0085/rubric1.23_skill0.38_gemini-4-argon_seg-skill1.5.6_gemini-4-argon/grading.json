@@ -1085,18 +1085,27 @@
   },
   {
    "step_id": 30,
-   "verdict": "待判定",
-   "explanation": "30a「空針放入空針包裝或針架（放在桌上或丟棄為錯誤）」待判定：等待評分 agent 看畫面判定（區間 04:43–04:51）；30b「由針心處或針柄處放入空針包裝（兩種都給分）」待判定：等待評分 agent 看畫面判定（區間 04:43–04:51）。",
-   "confidence": 0.0,
+   "verdict": "正確",
+   "explanation": "30a「空針放入空針包裝或針架（放在桌上或丟棄為錯誤）」正確：04:46–04:49 學生用右手將抽藥後的空針垂直插入針架上的針頭套中並放手置於針架上；30b「由針心處或針柄處放入空針包裝（兩種都給分）」正確：04:46.5–04:48.0 學生右手握住空針外筒（針柄處），未碰觸針頭部位，將空針放入針架中。",
+   "confidence": 0.95,
    "criteria": [
     {
      "criterion_id": "30a",
-     "verdict": "待判定",
-     "source": "vlm",
-     "explanation": "等待評分 agent 看畫面判定（區間 04:43–04:51）。",
-     "evidence": [],
-     "confidence": 0.0,
+     "verdict": "正確",
+     "explanation": "04:46–04:49 學生用右手將抽藥後的空針垂直插入針架上的針頭套中並放手置於針架上。",
+     "evidence": [
+      "ov@283-291 #3",
+      "ov@283-291 #4",
+      "ov@283-291 #5",
+      "ov@283-291 #6",
+      "zoom@286.5",
+      "zoom@287",
+      "zoom@288",
+      "zoom@289"
+     ],
+     "confidence": 0.95,
      "reason": null,
+     "source": "vlm",
      "window": [
       283.0,
       291.0
@@ -1104,12 +1113,16 @@
     },
     {
      "criterion_id": "30b",
-     "verdict": "待判定",
-     "source": "vlm",
-     "explanation": "等待評分 agent 看畫面判定（區間 04:43–04:51）。",
-     "evidence": [],
-     "confidence": 0.0,
+     "verdict": "正確",
+     "explanation": "04:46.5–04:48.0 學生右手握住空針外筒（針柄處），未碰觸針頭部位，將空針放入針架中。",
+     "evidence": [
+      "zoom@286.5",
+      "zoom@287",
+      "zoom@288"
+     ],
+     "confidence": 0.95,
      "reason": null,
+     "source": "vlm",
      "window": [
       283.0,
       291.0
