@@ -9,7 +9,7 @@ from pathlib import Path
 import pytest
 
 import review_page
-from eval_grading import (cited_spans, compare, load_labels, main, parse_spans, parse_time, render, spans_match,
+from eval_grading import (agent_spans, cited_spans, compare, load_labels, main, parse_spans, parse_time, render, spans_match,
                           summarize)
 from grading_helpers import fill_visual, flag_review, make_segmentation
 from rules import grade_from_segmentation
@@ -134,6 +134,13 @@ def test_review_page_links_the_times_cited_spans_keeps():
     out = subprocess.run(["node", "-e", script, json.dumps([c for c, _ in CLIP_CASES])],
                          capture_output=True, text=True, encoding="utf-8", check=True).stdout
     assert json.loads(out) == [[start for start, _ in spans] for _, spans in CLIP_CASES]
+def test_agent_spans_prefer_times_and_fall_back_to_the_explanation():
+    def step(**c):
+        return {"criteria": [{"source": "vlm", "verdict": "正確", "explanation": "02:00 動作，片段內 00:05", **c}]}
+    assert agent_spans(step(times=[[150.0, 151.0], [160.0, 160.0]])) == [(150.0, 151.0), (160.0, 160.0)]
+    assert agent_spans(step(times=[])) == []  # says where it looked: the explanation's mm:ss are not used
+    assert agent_spans(step()) == [(120.0, 120.0)]  # record before the times field
+    assert agent_spans(step(span=[10.0, 26.0], times=[[1.0, 2.0]])) == [(10.0, 26.0)]
 
 
 def test_cited_spans_keep_video_times_in_parentheses_and_other_separators():

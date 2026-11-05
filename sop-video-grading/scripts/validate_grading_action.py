@@ -62,7 +62,7 @@ def validate(action, task: dict, used: dict, duration: float,
         return errors
 
     if name == "final":
-        return _check_final(action, task, used, rubric or load_rubric())
+        return _check_final(action, task, used, rubric or load_rubric(), duration)
 
     if used.get(name, 0) >= BUDGET[name]:
         errors.append(f"budget for {name} exhausted ({BUDGET[name]}); send final with what you have")
@@ -128,8 +128,29 @@ def _clipped_before_tear(task: dict, cid: str) -> bool:
     return any(a < start + TEAR_MARGIN and start - TEAR_MARGIN < b for a, b in clips)
 
 
-def _check_final(action: dict, task: dict, used: dict, rubric: dict) -> list[str]:
+def _check_times(cid: str, c: dict, spec: dict, ranges: list[tuple[float, float]]) -> list[str]:
+    """times: the video seconds the verdict rests on, so nobody has to read them out of the explanation. A clip's
+    own 00:00-based times fall outside the allowed ranges unless the clip starts near the beginning of the video."""
+    times = c.get("times") or []
+    if spec.get("min_seconds"):
+        return [f"criterion {cid}: use span, not times, for a timed criterion"] if times else []
+    if not times and c["verdict"] != "無法判定":
+        return [f"criterion {cid}: {c['verdict']} needs times [[start, end], ...]: the video seconds the verdict "
+                "rests on (the part you watched when the action did not happen)"]
     errors = []
+    for start, end in times:
+        if end < start:
+            errors.append(f"criterion {cid}: times {start:g}-{end:g} must end at or after the start")
+        elif not any(lo <= start and end <= hi for lo, hi in ranges):
+            where = ", ".join(f"{lo:g}-{hi:g}" for lo, hi in ranges)
+            errors.append(f"criterion {cid}: times {start:g}-{end:g} must stay within {where} s; times are video "
+                          "seconds, so add the clip's start to a time read inside a clip")
+    return errors
+
+
+def _check_final(action: dict, task: dict, used: dict, rubric: dict, duration: float) -> list[str]:
+    errors = []
+    ranges = allowed_ranges(task, duration)
     windows = {c["criterion_id"]: c["window"] for c in task["criteria"]}
     got = [c["criterion_id"] for c in action["criteria"]]
     if sorted(got) != sorted(windows):
@@ -139,6 +160,7 @@ def _check_final(action: dict, task: dict, used: dict, rubric: dict) -> list[str
         cid = c["criterion_id"]
         full = {**c, "source": "vlm", "window": windows[cid]}
         errors += check_criterion(f"criterion {cid}", full, specs[cid], final=True)
+        errors += _check_times(cid, c, specs[cid], ranges)
         if cid in FLICK:
             errors += _check_flick(cid, c, task.get("audio"), used)
         if specs[cid].get("clip") and not task.get("opening_clip") and used.get("clip", 0) == 0:

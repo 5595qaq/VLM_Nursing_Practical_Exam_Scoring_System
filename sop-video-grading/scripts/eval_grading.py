@@ -19,8 +19,8 @@ when it was built from the label times they say nothing about the grading agent:
   time          the model's times of the step against the label times: they match when a pair overlaps or the
                 starts differ by at most 3 s, and a label time with no model time at all is a mismatch (a step
                 whose time does not match is wrong even when the verdicts agree). The model's times are the
-                mm:ss the grading agent cited in the step's explanations (its own criteria, 待判定 aside; a timed
-                criterion's span instead; times after 片段內 are clip-relative and dropped; a lone mm:ss is a
+                grading agent's times field (its own criteria, 待判定 aside), or for older records the mm:ss cited
+                in the step's explanations (a timed criterion's span instead; times after 片段內 are clip-relative and dropped; a lone mm:ss is a
                 point), or, when it cited none,
                 the segmentation's detected spans (a step without one uses its logical_window). The
                 segmentation is the segmentation.json next to the grading file or one folder up
@@ -87,11 +87,15 @@ def cited_spans(text: str) -> list[tuple[float, float]]:
 
 
 def agent_spans(step: dict) -> list[tuple[float, float]]:
-    """Times of the criteria the grading agent decided: a timed criterion's span, else the cited times."""
+    """Times of the criteria the grading agent decided: a timed criterion's span, else its times, else (records
+    before skill 0.39) the times cited in the explanation."""
     spans = set()
     for c in step.get("criteria", []):
         if c.get("source") == "vlm" and c["verdict"] != "待判定":
-            spans.update([tuple(c["span"])] if c.get("span") else cited_spans(c["explanation"]))
+            if c.get("span"):
+                spans.add(tuple(c["span"]))
+            else:
+                spans.update(map(tuple, c["times"]) if "times" in c else cited_spans(c["explanation"]))
     return sorted(spans)
 
 

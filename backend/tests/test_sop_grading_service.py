@@ -57,9 +57,13 @@ def final_for(content, verdict="正確"):
     ref = re.search(r"(clip@[\d.]+-[\d.]+|ov@[\d.]+-[\d.]+)", "\n".join(b.get("text", "") for b in content)).group(1)
     criteria = [{"criterion_id": cid, "verdict": verdict, "confidence": 0.7, "reason": None, "evidence": [ref],
                  "explanation": "00:05–00:08 看到動作完成，符合標準。"} for cid in CRITERION.findall(text)]
+    windows = dict(re.findall(r"(\w+)（步驟.*?window=\[([\d.]+),", text))
+    for c in criteria:  # a time inside the criterion's window
+        c["times"] = [[float(windows[c["criterion_id"]])] * 2]
     for c in criteria:  # timed criterion (1a washing): a measured span that matches the verdict
         if c["criterion_id"] == "1a":
             c["span"] = [0.0, 16.0] if verdict == "正確" else [0.0, 10.0]
+            del c["times"]
     return {"action": "final", "criteria": criteria}
 
 
@@ -99,7 +103,7 @@ async def test_grading_grades_every_visual_criterion(video, tmp_path):
 
 async def test_washing_task_asks_for_a_timed_span(video, tmp_path):
     no_span = {"action": "final", "criteria": [
-        {"criterion_id": cid, "verdict": "正確", "confidence": 0.7, "reason": None, "evidence": ["clip@0-18"],
+        {"criterion_id": cid, "verdict": "正確", "times": [[5.0, 5.0]], "confidence": 0.7, "reason": None, "evidence": ["clip@0-18"],
          "explanation": "00:01–00:16 看到雙手互搓。"} for cid in ("1a", "1b")]}
     model = FakeModel({"1a": [no_span]})
     outcome = await grading.run_grading(video, segmentation(), tmp_path, model, steps={1})
@@ -178,7 +182,7 @@ async def test_extra_material_actions_run(video, tmp_path):
 async def test_fixing_the_needle_not_seen_goes_to_a_person(video, tmp_path, package_spans, reason):
     # 10b 錯誤 needs a clip first; 無法判定 gets needs_review with every span the hands held the wrapper
     wrong = {"action": "final", "criteria": [
-        {"criterion_id": "10b", "verdict": "錯誤", "confidence": 0.8, "reason": None, "evidence": ["clip@16-21"],
+        {"criterion_id": "10b", "verdict": "錯誤", "times": [[17.0, 17.0]], "confidence": 0.8, "reason": None, "evidence": ["clip@16-21"],
          "explanation": "00:18 空針離開包裝，之後沒有旋緊。"}]}
     undetermined = {"action": "final", "criteria": [{**wrong["criteria"][0], "verdict": "無法判定", "reason": "資訊不足",
                                                      "needs_review": True, "review_reason": "01:12 手被包裝擋住"}]}
@@ -203,7 +207,7 @@ async def test_sheet_out_of_frame_in_4a_decides_the_package_pointing(video, tmp_
             {"criterion_id": cid, "verdict": "無法判定", "confidence": 0.7, "reason": "藥單看不見",
              "explanation": "00:05 找過治療車前緣與桌面，都沒有紀錄單。", "evidence": ["clip@0-10"]} for cid in ids]}
     pointed = {"action": "final", "criteria": [
-        {"criterion_id": "4e", "verdict": "正確", "confidence": 0.7, "reason": None,
+        {"criterion_id": "4e", "verdict": "正確", "times": [[5.0, 5.0]], "confidence": 0.7, "reason": None,
          "explanation": "00:08 右手食指指著空針包裝。", "evidence": ["clip@0-10"]}]}
     model = FakeModel({"4a": [sheet_final("4a", "4b", "4d")], "4e": [pointed]})
     outcome = await grading.run_grading(video, segmentation(), tmp_path, model, steps={4})
@@ -220,7 +224,7 @@ async def test_sheet_out_of_frame_decides_across_attempts(video, tmp_path):
         {"criterion_id": cid, "verdict": "無法判定", "confidence": 0.7, "reason": "藥單看不見",
          "explanation": "00:05 找過治療車前緣與桌面，都沒有紀錄單。", "evidence": ["clip@0-10"]} for cid in ("4a", "4b", "4d")]}
     pointed = {"action": "final", "criteria": [
-        {"criterion_id": "4e", "verdict": "正確", "confidence": 0.7, "reason": None,
+        {"criterion_id": "4e", "verdict": "正確", "times": [[5.0, 5.0]], "confidence": 0.7, "reason": None,
          "explanation": "00:08 右手食指指著空針包裝。", "evidence": ["clip@0-10"]}]}
     first = await grading.run_grading(video, segmentation(), tmp_path / "a", FakeModel({"4a": [sheet], "4e": [pointed]}),
                                       steps={4})
@@ -259,7 +263,7 @@ async def test_pointing_wrong_needs_a_clip_near_the_segmented_tearing(video, tmp
     clip = {"action": "clip", "start": 7.0, "end": 10.0, "fps": 2, "reason": "看 2讀"}
     near = {**clip, "start": 27.0, "end": 30.0, "reason": "看撕開之前"}
     wrong = {"action": "final", "criteria": [
-        {"criterion_id": "4e", "verdict": "錯誤", "confidence": 0.7, "reason": None, "evidence": ["clip@27-30"],
+        {"criterion_id": "4e", "verdict": "錯誤", "times": [[28.0, 28.0]], "confidence": 0.7, "reason": None, "evidence": ["clip@27-30"],
          "explanation": "00:30 直接撕開空針包裝，沒有用手指指。"}]}
     model = FakeModel({"4e": [clip, wrong, near, wrong]})
     outcome = await grading.run_grading(video, seg, tmp_path, model, steps={4})
@@ -275,7 +279,7 @@ async def test_fixing_the_needle_task_lists_the_wrapper_spans(video, tmp_path):
     clip = {"action": "clip", "start": 0.5, "end": 3.0, "fps": 10, "region": [0.2, 0.2, 0.6, 0.6], "reason": "看包裝"}
     far = {**clip, "start": 40.0, "end": 41.0}  # after the first use (step 13 at 00:23.4): not listed
     wrong = {"action": "final", "criteria": [
-        {"criterion_id": "10b", "verdict": "錯誤", "confidence": 0.7, "reason": None, "evidence": ["clip@0.5-3"],
+        {"criterion_id": "10b", "verdict": "錯誤", "times": [[1.0, 1.0]], "confidence": 0.7, "reason": None, "evidence": ["clip@0.5-3"],
          "explanation": "00:01–00:03 雙手撕包裝，00:18 取出後直接拔針頭蓋，沒有旋緊。"}]}
     model = FakeModel({"10b": [far, clip, wrong]})
     outcome = await grading.run_grading(video, seg, tmp_path, model, steps={10})
@@ -334,7 +338,7 @@ async def test_motion_peak_failure_does_not_stop_grading(video, tmp_path, monkey
 
 async def test_steps_filter_keeps_previous_grades(video, tmp_path):
     first = await grading.run_grading(video, segmentation(), tmp_path / "a", FakeModel())
-    model = FakeModel({"19b": [final_for([{"type": "text", "text": "  19b（步驟 19）\nov@1-2"}], "錯誤")]})
+    model = FakeModel({"19b": [final_for([{"type": "text", "text": "  19b（步驟 19）；window=[34.2, 35.7]\nov@1-2"}], "錯誤")]})
     second = await grading.run_grading(video, segmentation(), tmp_path / "b", model, steps={19},
                                        previous=first["result"])
     steps = {s["step_id"]: s for s in second["result"]["steps"]}
@@ -366,7 +370,7 @@ async def test_refused_task_reports_the_reason(video, tmp_path):
 
 
 async def test_review_flag_reaches_the_result(video, tmp_path):
-    flagged = final_for([{"type": "text", "text": "  19b（步驟 19）\nov@1-2"}], "部分正確")
+    flagged = final_for([{"type": "text", "text": "  19b（步驟 19）；window=[34.2, 35.7]\nov@1-2"}], "部分正確")
     flagged["criteria"][0].update(needs_review=True, review_reason="學生回套兩次，有一次用雙手")
     outcome = await grading.run_grading(video, segmentation(), tmp_path, FakeModel({"19b": [flagged]}), steps={19})
     step = next(s for s in outcome["result"]["steps"] if s["step_id"] == 19)
