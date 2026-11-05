@@ -2,7 +2,13 @@
 
 import csv
 import json
+import shutil
+import subprocess
+from pathlib import Path
 
+import pytest
+
+import review_page
 from eval_grading import (cited_spans, compare, load_labels, main, parse_spans, parse_time, render, spans_match,
                           summarize)
 from grading_helpers import fill_visual, flag_review, make_segmentation
@@ -89,6 +95,45 @@ def test_cited_spans_drop_clip_relative_times():
     text = "00:29.5–00:32.0（clip@27-35 片段內 00:02.5–00:05.0）推開翻蓋，00:31.5 脫離；03:00.5-03:05.0 擦拭"
     assert cited_spans(text) == [(29.5, 32.0), (31.5, 31.5), (180.5, 185.0)]
     assert cited_spans("沒有時間") == []
+
+
+CLIP_CASES = [
+    # 0.38 records: VID_0082 17a cites two clip times after one 片段內, and the second looked like a video time
+    ("02:32–02:39（clip@138-180 片段內 00:05.5–00:11.0 及 00:14.0–00:21.0）", [(152.0, 159.0)]),
+    ("（片段內 00:01–00:02、00:03–00:04、00:05，zoom@9）彈擊", []),
+    ("00:40（約 3.5 秒，clip@18-66.8 片段內 00:20 及 00:22）", [(40.0, 40.0)]),
+    ("（clip@1-9 片段內 00:02 及 00:03；clip@30-40 片段內 00:05 及 00:06）", []),
+    ("04:58（片段 00:07.5）", [(298.0, 298.0)]),
+    ("片段內 00:03~00:05 拿起", []),
+    ("片段內第 00:12", []),
+    ("片段外 00:07", [(7.0, 7.0)]),
+    # video times: before 片段內, after a clip time that a word separates, and after the parenthesis closes
+    ("（00:08.6–00:10.1，片段內 00:02.0–00:03.5）", [(8.6, 10.1)]),
+    ("（00:08，片段內 00:02；00:20，片段內 00:05）", [(8.0, 8.0), (20.0, 20.0)]),
+    ("（clip@226-286 片段內 00:00.0–00:07.5，並由 zoom@231.9 於 03:51.9 確認）", [(231.9, 231.9)]),
+    ("（片段內 00:02–00:03）及 00:25（片段內 00:05）", [(25.0, 25.0)]),
+    # without a parenthesis only the time right after 片段內 is known to be a clip time
+    ("片段內 00:02–00:03，學生在 00:40 拿起", [(40.0, 40.0)]),
+    ("片段內 00:02–00:03 及 00:25 拿起", [(25.0, 25.0)]),
+]
+
+
+@pytest.mark.parametrize("text,spans", CLIP_CASES)
+def test_cited_spans_drop_clip_times_only(text, spans):
+    assert cited_spans(text) == spans
+
+
+@pytest.mark.skipif(not shutil.which("node"), reason="node is not installed")
+def test_review_page_links_the_times_cited_spans_keeps():
+    # the page runs in a browser, so the same rules are written twice; this keeps them the same
+    page = Path(review_page.__file__).read_text(encoding="utf-8")
+    code = page[page.index("function clipRanges"):page.index("const pill =")]
+    script = ("const esc = s => s, sec = (m, s) => Number(m) * 60 + Number(s);\n" + code
+              + "console.log(JSON.stringify(JSON.parse(process.argv[1]).map(c => "
+              + "[...linkTimes(c, 'V').matchAll(/data-t=\"([0-9.]+)\"/g)].map(m => Number(m[1])))));")
+    out = subprocess.run(["node", "-e", script, json.dumps([c for c, _ in CLIP_CASES])],
+                         capture_output=True, text=True, encoding="utf-8", check=True).stdout
+    assert json.loads(out) == [[start for start, _ in spans] for _, spans in CLIP_CASES]
 
 
 def test_cited_spans_keep_video_times_in_parentheses_and_other_separators():
