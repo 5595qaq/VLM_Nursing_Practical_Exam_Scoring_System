@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 18.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 18780,
+  "cached_input_tokens": 0,
+  "output_tokens": 129,
+  "thinking_tokens": 49,
+  "materials": [
+   "clip@54.9-61.5（context box，有聲音；片段內 00:00 ＝ 影片 00:54.9）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [57.4, 57.9, 58.4, 58.9], \"region\": [0.35, 0.6, 0.65, 0.9], \"reason\": \"放大確認將 vial 瓶口翻蓋推開的動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 51.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 20014,
+  "cached_input_tokens": 0,
+  "output_tokens": 188,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@54.9-61.5（context box，有聲音；片段內 00:00 ＝ 影片 00:54.9）",
+   "zoom@57.4/57.9/58.4/58.9 region=[0.350, 0.600, 0.650, 0.900]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"於 00:57.9–00:58.9（clip@54.9-61.5 片段內 00:03.0–00:04.0），學生左手握住 vial 藥瓶，右手拇指與食指將瓶頂深褐色的塑膠翻蓋推開取下，瓶頂露出銀色鋁圈。\", \"times\": [[57.9, 58.9]], \"evidence\": [\"clip@54.9-61.5\", \"zoom@57.9\", \"zoom@58.4\", \"zoom@58.9\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
