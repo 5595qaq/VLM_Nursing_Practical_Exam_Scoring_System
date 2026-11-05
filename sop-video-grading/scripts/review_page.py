@@ -252,17 +252,19 @@ let current = null, zoomed = false;
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
 const fmt = t => { const m = Math.floor(t / 60), s = t - m * 60; return String(m).padStart(2, "0") + ":" + s.toFixed(1).padStart(4, "0"); };
 const sec = (m, s) => Number(m) * 60 + Number(s);
-// mm:ss or mm:ss–mm:ss in the text become links; times inside a clip ("片段內 00:03") are clip-relative, so not linked,
-// and so is the rest of a parenthesis after 片段內 ("（clip@1-9 片段內 00:03 及 00:05）"), as in eval_grading.py
-function inClipGroup(str, off, end) {
-  const before = str.slice(0, off), open = Math.max(before.lastIndexOf("（"), before.lastIndexOf("(")), close = Math.max(before.lastIndexOf("）"), before.lastIndexOf(")"));
-  if (open <= close || !before.slice(open).includes("片段內")) return false;
-  const after = str.slice(end), stops = [after.indexOf("）"), after.indexOf(")")].filter(i => i >= 0);
-  return !after.slice(0, stops.length ? Math.min(...stops) : after.length).includes("片段內");
+// mm:ss or mm:ss–mm:ss in the text become links, except clip-relative times: same rules as cited_spans in eval_grading.py
+function clipRanges(str) {
+  const t = String.raw`\d{2}:\d{2}(?:\.\d+)?(?:\s*[–\-~～至到]\s*\d{2}:\d{2}(?:\.\d+)?)?`, head = String.raw`片段內?[^\d]{0,3}` + t;
+  const list = new RegExp(head + String.raw`(?:\s*[、及和與]\s*` + t + ")*", "g"), ranges = [];
+  for (const p of str.matchAll(/[（(][^（()）]*[）)]/g))
+    for (const m of p[0].matchAll(list)) ranges.push([p.index + m.index, p.index + m.index + m[0].length]);
+  for (const m of str.matchAll(new RegExp(head, "g"))) ranges.push([m.index, m.index + m[0].length]);
+  return ranges;
 }
 function linkTimes(text, vid) {
-  return esc(text).replace(/(\d{1,2}):(\d{2}(?:\.\d+)?)(?:\s*[–-]\s*(\d{1,2}):(\d{2}(?:\.\d+)?))?/g, (all, m1, s1, m2, s2, off, str) => {
-    if (/片段內?\s*$/.test(str.slice(Math.max(0, off - 6), off)) || inClipGroup(str, off, off + all.length)) return all;
+  const safe = esc(text), clips = clipRanges(safe);
+  return safe.replace(/(\d{1,2}):(\d{2}(?:\.\d+)?)(?:\s*[–-]\s*(\d{1,2}):(\d{2}(?:\.\d+)?))?/g, (all, m1, s1, m2, s2, off) => {
+    if (clips.some(([a, b]) => off >= a && off < b)) return all;
     return `<span class="t" data-vid="${vid}" data-t="${sec(m1, s1)}">${all}</span>`;
   });
 }
