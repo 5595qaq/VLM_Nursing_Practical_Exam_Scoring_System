@@ -1,0 +1,91 @@
+{
+ "video_id": "VID_0084",
+ "versions": {
+  "rubric": "1.23",
+  "skill": "0.38",
+  "model": "gemini-4-argon",
+  "segmentation": "skill1.5.6_gemini-4-argon"
+ },
+ "video_sha256": "7269951ee80306dbc9ad8f4da7f9d94e924f56e395d32e8b13ce7daad8728ad1",
+ "runs": [
+  {
+   "run": 1,
+   "by": "5595QAQ",
+   "date": "2026-11-05",
+   "commit": "58bdf3c02bb9a998cc6a7c26130099cfbb729418",
+   "video_sha256": "7269951ee80306dbc9ad8f4da7f9d94e924f56e395d32e8b13ce7daad8728ad1",
+   "steps": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30
+   ],
+   "failed_tasks": [
+    {
+     "task": "13",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    },
+    {
+     "task": "22",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    }
+   ],
+   "segmentation": "sop-video-skill 1.5.6 gemini-4-argon",
+   "usage": {
+    "input_tokens": 1161412,
+    "cached_input_tokens": 596421,
+    "output_tokens": 19207,
+    "thinking_tokens": 10077
+   },
+   "segmentation_usage": {
+    "input_tokens": 742917,
+    "cached_input_tokens": 587588,
+    "output_tokens": 64461,
+    "thinking_tokens": 371
+   }
+  },
+  {
+   "run": 2,
+   "by": "5595QAQ",
+   "date": "2026-11-05",
+   "commit": "96b4480cee2a919b1830b879490db05cef34dc8f",
+   "video_sha256": "7269951ee80306dbc9ad8f4da7f9d94e924f56e395d32e8b13ce7daad8728ad1",
+   "steps": [
+    13,
+    22
+   ],
+   "failed_tasks": [],
+   "segmentation": "recorded segmentation.json",
+   "usage": {
+    "input_tokens": 77405,
+    "cached_input_tokens": 17013,
+    "output_tokens": 1142,
+    "thinking_tokens": 420
+   }
+  }
+ ]
+}

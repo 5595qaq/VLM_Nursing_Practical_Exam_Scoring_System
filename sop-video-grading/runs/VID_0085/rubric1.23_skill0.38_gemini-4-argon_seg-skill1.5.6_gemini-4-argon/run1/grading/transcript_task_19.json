@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 5.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 18663,
+  "cached_input_tokens": 0,
+  "output_tokens": 113,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@180-187.6（hands_box，n=9）#0=03:00.0、#1=03:00.9、#2=03:01.9、#3=03:02.8、#4=03:03.8、#5=03:04.8、#6=03:05.7、#7=03:06.7、#8=03:07.6"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [182.8, 183.4, 183.8, 184.8], \"region\": [0.1, 0.45, 0.75, 0.98], \"reason\": \"放大檢視 03:02.8–03:04.8 右手將空針單手套回針架上針頭套的過程，並同時確認左手位置\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 63.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 19918,
+  "cached_input_tokens": 17048,
+  "output_tokens": 371,
+  "thinking_tokens": 174,
+  "materials": [
+   "ov@180-187.6（hands_box，n=9）#0=03:00.0、#1=03:00.9、#2=03:01.9、#3=03:02.8、#4=03:03.8、#5=03:04.8、#6=03:05.7、#7=03:06.7、#8=03:07.6",
+   "zoom@182.8/183.4/183.8/184.8 region=[0.100, 0.450, 0.750, 0.980]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"19b\", \"verdict\": \"正確\", \"explanation\": \"03:02.8–03:04.8 右手持空針由 vial 抽出針頭後，單手將針頭由上往下插入立於左側針架上的針頭套中，期間左手全程扶著檯面上的 vial，完全沒有碰觸針頭套。\", \"evidence\": [\"ov@180-187.6 #3\", \"ov@180-187.6 #4\", \"ov@180-187.6 #5\", \"zoom@182.8\", \"zoom@183.4\", \"zoom@183.8\", \"zoom@184.8\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

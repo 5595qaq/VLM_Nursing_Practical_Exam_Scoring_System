@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 7.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 18677,
+  "cached_input_tokens": 0,
+  "output_tokens": 269,
+  "thinking_tokens": 171,
+  "materials": [
+   "ov@190-200（hands_box，n=9）#0=03:10.0、#1=03:11.2、#2=03:12.5、#3=03:13.8、#4=03:15.0、#5=03:16.2、#6=03:17.5、#7=03:18.8、#8=03:20.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [194.5, 195.0, 195.8, 196.2], \"region\": [0.3, 0.3, 0.7, 0.7], \"reason\": \"放大確認 03:14.5–03:16.2 學生將 vial 舉起檢視的動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 9.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 19924,
+  "cached_input_tokens": 17013,
+  "output_tokens": 169,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@190-200（hands_box，n=9）#0=03:10.0、#1=03:11.2、#2=03:12.5、#3=03:13.8、#4=03:15.0、#5=03:16.2、#6=03:17.5、#7=03:18.8、#8=03:20.0",
+   "zoom@194.5/195/195.8/196.2 region=[0.300, 0.300, 0.700, 0.700]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"3a\", \"verdict\": \"正確\", \"explanation\": \"於 03:14.5–03:16.2 學生將手中的 vial 藥瓶舉起至胸前並低頭轉動檢視瓶身與內容物（當時在雙手搓滾混合藥液的空檔拿起檢視）。影片限制，無法得知檢查內容是否正確。\", \"evidence\": [\"ov@190-200 #4\", \"ov@190-200 #5\", \"zoom@195\", \"zoom@195.8\", \"zoom@196.2\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

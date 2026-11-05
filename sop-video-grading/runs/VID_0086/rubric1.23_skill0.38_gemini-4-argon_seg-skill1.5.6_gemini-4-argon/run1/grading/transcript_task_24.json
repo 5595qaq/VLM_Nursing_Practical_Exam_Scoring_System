@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 81.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 18707,
+  "cached_input_tokens": 0,
+  "output_tokens": 95,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@348-406.2（hands_box，n=9）#0=05:48.0、#1=05:55.3、#2=06:02.6、#3=06:09.8、#4=06:17.1、#5=06:24.4、#6=06:31.6、#7=06:38.9、#8=06:46.2"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [355.3, 369.8, 384.4, 391.6], \"region\": [0.35, 0.0, 0.7, 0.35], \"reason\": \"放大確認抽藥液時右手持針心尾端環狀處的位置，是否有碰觸外露推桿\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 8.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 19958,
+  "cached_input_tokens": 17047,
+  "output_tokens": 310,
+  "thinking_tokens": 133,
+  "materials": [
+   "ov@348-406.2（hands_box，n=9）#0=05:48.0、#1=05:55.3、#2=06:02.6、#3=06:09.8、#4=06:17.1、#5=06:24.4、#6=06:31.6、#7=06:38.9、#8=06:46.2",
+   "zoom@355.3/369.8/384.4/391.6 region=[0.350, 0.000, 0.700, 0.350]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"24a\", \"verdict\": \"正確\", \"explanation\": \"05:55–06:31 倒舉 vial 抽取藥液期間，右手拇指抵在針筒翼緣，其餘手指持於針心尾端環狀圓盤處往下拉，全程未碰觸外露的針心推桿。\", \"evidence\": [\"ov@348-406.2 #1\", \"ov@348-406.2 #5\", \"zoom@355.3\", \"zoom@369.8\", \"zoom@384.4\", \"zoom@391.6\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

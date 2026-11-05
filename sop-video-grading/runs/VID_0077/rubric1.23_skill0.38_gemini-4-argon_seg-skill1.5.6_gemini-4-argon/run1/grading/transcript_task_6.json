@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 5.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 20150,
+  "cached_input_tokens": 17031,
+  "output_tokens": 80,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@153.2-167.8（context box，有聲音；片段內 00:00 ＝ 影片 02:33.2）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [157.2, 160.2, 163.2], \"region\": [0.35, 0.35, 0.65, 0.65], \"reason\": \"確認手中拿的是 vial 且有用酒精棉片擦拭瓶口\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 10.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 21380,
+  "cached_input_tokens": 17031,
+  "output_tokens": 376,
+  "thinking_tokens": 170,
+  "materials": [
+   "clip@153.2-167.8（context box，有聲音；片段內 00:00 ＝ 影片 02:33.2）",
+   "zoom@157.2/160.2/163.2 region=[0.350, 0.350, 0.650, 0.650]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"6a\", \"verdict\": \"正確\", \"explanation\": \"於 02:36–02:45（clip@153.2-167.8 片段內 00:03.5–00:12.0）左手持已開蓋的 vial 藥瓶，右手持酒精棉片在 vial 瓶口處持續旋轉擦拭消毒，經 zoom@157.2、zoom@160.2、zoom@163.2 確認瓶身與酒精棉片擦拭瓶口動作清楚。\", \"evidence\": [\"clip@153.2-167.8\", \"zoom@157.2\", \"zoom@160.2\", \"zoom@163.2\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

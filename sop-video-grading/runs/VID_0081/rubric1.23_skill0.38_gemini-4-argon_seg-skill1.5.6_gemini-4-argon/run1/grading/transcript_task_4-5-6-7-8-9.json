@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 12.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 18837,
+  "cached_input_tokens": 0,
+  "output_tokens": 507,
+  "thinking_tokens": 418,
+  "materials": [
+   "ov@43-328.5（hands_box，n=9）#0=00:43.0、#1=01:18.7、#2=01:54.4、#3=02:30.1、#4=03:05.8、#5=03:41.4、#6=04:17.1、#7=04:52.8、#8=05:28.5"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 45.0, \"end\": 105.0, \"fps\": 2, \"reason\": \"查看步驟4至步驟9撕開空針包裝前（00:45–01:45）是否有用手指指出空針包裝核對，同時透過 context 畫面確認給藥紀錄單是否在畫面內。\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 27.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 29956,
+  "cached_input_tokens": 17031,
+  "output_tokens": 102,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@43-328.5（hands_box，n=9）#0=00:43.0、#1=01:18.7、#2=01:54.4、#3=02:30.1、#4=03:05.8、#5=03:41.4、#6=04:17.1、#7=04:52.8、#8=05:28.5",
+   "clip@45-105（context box，有聲音；片段內 00:00 ＝ 影片 00:45.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [95.0, 95.5, 96.0, 96.5], \"region\": [0.3, 0.4, 0.7, 0.8], \"reason\": \"確認在撕開空針包裝前（01:35.0–01:36.5）是否用手指指出空針包裝上的字進行核對\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 124.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 31181,
+  "cached_input_tokens": 17013,
+  "output_tokens": 168,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@43-328.5（hands_box，n=9）#0=00:43.0、#1=01:18.7、#2=01:54.4、#3=02:30.1、#4=03:05.8、#5=03:41.4、#6=04:17.1、#7=04:52.8、#8=05:28.5",
+   "clip@45-105（context box，有聲音；片段內 00:00 ＝ 影片 00:45.0）",
+   "zoom@95/95.5/96/96.5 region=[0.300, 0.400, 0.700, 0.800]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4e\", \"verdict\": \"正確\", \"explanation\": \"給藥紀錄單位於右後方牆上及右下方檯面。01:33.5（clip@45-105 片段內 00:48.5）拿起空針包裝，01:36.5（zoom@96.5）左手拿著空針包裝，右手食指明顯指出空針包裝上方進行核對，之後於 01:37.5 開始撕開空針包裝。\", \"evidence\": [\"clip@45-105\", \"zoom@96.5\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

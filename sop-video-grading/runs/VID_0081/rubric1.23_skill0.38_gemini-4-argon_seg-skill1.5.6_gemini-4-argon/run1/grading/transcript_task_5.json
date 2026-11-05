@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 8.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 19263,
+  "cached_input_tokens": 0,
+  "output_tokens": 305,
+  "thinking_tokens": 225,
+  "materials": [
+   "clip@58-68（context box，有聲音；片段內 00:00 ＝ 影片 00:58.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [59.5, 63.5, 65.5], \"region\": [0.3, 0.45, 0.65, 0.85], \"reason\": \"確認推開 vial 褐色翻蓋及開蓋後的銀色鋁圈瓶口\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 8.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 20481,
+  "cached_input_tokens": 17031,
+  "output_tokens": 305,
+  "thinking_tokens": 125,
+  "materials": [
+   "clip@58-68（context box，有聲音；片段內 00:00 ＝ 影片 00:58.0）",
+   "zoom@59.5/63.5/65.5 region=[0.300, 0.450, 0.650, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"01:00.0–01:05.5（clip@58-68 片段內 00:02.0–00:07.5）學生拿起 vial，於 01:03.5 用手指撥開深褐色塑膠翻蓋，01:05.0–01:05.5 右手拿著拆下的褐色瓶蓋放到檯面上，vial 瓶頂露出銀色鋁圈。\", \"evidence\": [\"clip@58-68\", \"zoom@63.5\", \"zoom@65.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

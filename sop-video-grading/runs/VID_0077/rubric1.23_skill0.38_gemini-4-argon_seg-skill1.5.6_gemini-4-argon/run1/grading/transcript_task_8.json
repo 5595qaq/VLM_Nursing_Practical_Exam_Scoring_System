@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 24.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 19582,
+  "cached_input_tokens": 17013,
+  "output_tokens": 86,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@138.5-150（context box，有聲音；片段內 00:00 ＝ 影片 02:18.5）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [141.0, 143.0, 144.0, 145.0], \"region\": [0.35, 0.4, 0.65, 0.75], \"reason\": \"確認手拿的是稀釋液瓶並正在扭開瓶頂\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 9.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 20812,
+  "cached_input_tokens": 17031,
+  "output_tokens": 342,
+  "thinking_tokens": 252,
+  "materials": [
+   "clip@138.5-150（context box，有聲音；片段內 00:00 ＝ 影片 02:18.5）",
+   "zoom@141/143/144/145 region=[0.350, 0.400, 0.650, 0.750]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [142.0, 143.0, 144.0, 145.0], \"region\": [0.3, 0.25, 0.7, 0.65], \"reason\": \"調整框選位置以完整拍到雙手扭開稀釋液瓶頂的過程\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 6.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 22061,
+  "cached_input_tokens": 17049,
+  "output_tokens": 168,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@138.5-150（context box，有聲音；片段內 00:00 ＝ 影片 02:18.5）",
+   "zoom@141/143/144/145 region=[0.350, 0.400, 0.650, 0.750]",
+   "zoom@142/143/144/145 region=[0.300, 0.250, 0.700, 0.650]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"8a\", \"verdict\": \"正確\", \"explanation\": \"於 02:21.0–02:25.0（clip@138.5-150 片段內 00:02.5–00:06.5）左手握住稀釋液瓶身，右手隔著酒精棉片包住稀釋液瓶頂並扭開瓶頂。\", \"evidence\": [\"clip@138.5-150\", \"zoom@142\", \"zoom@143\", \"zoom@144\", \"zoom@145\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
