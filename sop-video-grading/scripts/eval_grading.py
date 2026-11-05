@@ -45,7 +45,9 @@ TIME_SLACK = 3.0  # seconds between starts that still count as the same span
 _TIME_RE = re.compile(r"^(\d+):(\d{0,2}(?:\.\d+)?)$")
 _CITED = r"(\d{2}):(\d{2}(?:\.\d+)?)"
 _CITED_RE = re.compile(_CITED + r"(?:\s*(?:[–\-~～至到])\s*" + _CITED + r")?")  # a range or a point
-_CLIP_TIME_RE = re.compile(r"片段內[^\d]{0,3}" + _CITED_RE.pattern)  # time inside a clip, not the video
+# Times inside a clip, not the video: 「片段內 A、B 及 C」. A time with its own 「（片段內 ...）」 after it is a video time.
+_CLIP_TIME_RE = re.compile(r"片段內[^\d]{0,3}" + _CITED_RE.pattern + r"(?:\s*[、及和與]\s*(?!" + _CITED_RE.pattern
+                           + r"\s*[（(][^）)]{0,20}片段內)" + _CITED_RE.pattern + r")*")
 
 
 def parse_time(text: str) -> float | None:
@@ -72,7 +74,7 @@ def spans_match(model: list[tuple[float, float]], human: list[tuple[float, float
 
 def cited_spans(text: str) -> list[tuple[float, float]]:
     """mm:ss ranges (–, -, ~, 至, 到) and points an explanation cites. Times after 片段內 are relative to a
-    clip (「clip@27-35 片段內 00:02.5–00:05.0」) and dropped; a time with seconds >= 60 is a typo and dropped."""
+    clip (「clip@27-35 片段內 00:02.5–00:05.0 及 00:07–00:09」) and dropped; a time with seconds >= 60 is a typo and dropped."""
     spans = []
     for m in _CITED_RE.finditer(_CLIP_TIME_RE.sub("", text)):
         a = int(m.group(1)) * 60 + float(m.group(2))

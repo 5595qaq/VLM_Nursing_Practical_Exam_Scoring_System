@@ -91,6 +91,21 @@ def test_cited_spans_drop_clip_relative_times():
     assert cited_spans("沒有時間") == []
 
 
+def test_cited_spans_drop_every_clip_time_of_a_list():
+    # 0.38 records: VID_0082 17a cites two clip times after one 片段內, and the second looked like a video time
+    text = "02:32–02:39（clip@138-180 片段內 00:05.5–00:11.0 及 00:14.0–00:21.0）"
+    assert cited_spans(text) == [(152.0, 159.0)]
+    assert cited_spans("片段內 00:01–00:02、00:03–00:04、00:05 彈擊") == []
+
+
+def test_cited_spans_keep_a_video_time_after_a_clip_time():
+    # a time with its own 片段內 after it is a video time, and so is one the sentence moves on to
+    text = "clip@10-40 片段內 00:02–00:03 及 00:25–00:26（clip@20-40 片段內 00:05–00:06）"
+    assert cited_spans(text) == [(25.0, 26.0)]
+    assert cited_spans("片段內 00:02–00:03）及 00:25（片段內 00:05）") == [(25.0, 25.0)]
+    assert cited_spans("片段內 00:02–00:03，學生在 00:40 拿起") == [(40.0, 40.0)]
+
+
 def test_cited_spans_keep_video_times_in_parentheses_and_other_separators():
     # code review: only 片段內 times are clip-relative; 至／到 are ranges; reversed and 03:75 typos
     assert cited_spans("連續彈擊聲（04:47.5–04:50.1）") == [(287.5, 290.1)]
