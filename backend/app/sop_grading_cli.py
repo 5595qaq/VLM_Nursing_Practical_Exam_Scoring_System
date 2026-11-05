@@ -13,6 +13,11 @@ usage: python -m app.sop_grading_cli VIDEO --video-id VID_0083 --out WORK/VID_00
 running sop-video-skill: faster and cheaper while tuning the grading agent.
 --steps regrades only those steps' visual criteria and keeps the rest from an existing grading.json.
 A regraded task that fails keeps its earlier grade (it is listed in failed_tasks).
+A run that stopped before it was recorded (killed, or segmentation ended on a 429 or a dropped connection)
+leaves checkpoints in the work folder, and the same command continues from them. A recorded run with
+failed tasks keeps their checkpoints too: --steps with those steps continues them. Tokens already spent
+are counted once (sop_checkpoint.py). --force ignores the grading tasks' checkpoints. Checkpoints are tied
+to the commit (--commit), so a run of other code starts over.
 
 Every run of a label-sheet id (VID_0001) is recorded in sop-video-grading/runs/ (run_record.py), which
 is committed so maintainers share it. The record's version includes the segmentation source, and one
@@ -41,7 +46,7 @@ import time
 from pathlib import Path
 
 from app.config import settings
-from app.services import sop_grading_service, sop_skill_service, video_service
+from app.services import sop_checkpoint, sop_grading_service, sop_skill_service, video_service
 
 SEG_FILES = ("transcript.json", "motion.json", "probe.json")  # kept from seg/ when the run segmented
 SOURCE_MARK = "segmentation.source"  # segmentation tag of the work folder's segmentation.json
@@ -222,7 +227,7 @@ def reuse_notice(source: dict) -> str:
 
 async def run(video: Path, video_id: str, out: Path, steps: set[int] | None,
               labels: Path | None = None, recorder: Recorder | None = None, seg_tag: str | None = None,
-              new_segmentation: bool = False) -> dict:
+              new_segmentation: bool = False, force: bool = False) -> dict:
     out.mkdir(parents=True, exist_ok=True)
     started = time.time() - 1  # files written from now on belong to this run (mtime resolution margin)
     recorded_seg = recorder.prepare(out, labels, new_segmentation) if recorder else None
@@ -269,6 +274,9 @@ async def run(video: Path, video_id: str, out: Path, steps: set[int] | None,
         previous = json.loads(grading_path.read_text(encoding="utf-8")) if steps and grading_path.exists() else None
     work = out / "grading"
     work.mkdir(exist_ok=True)
+    if force:  # asked to run again, usually to test stability: earlier attempts' tasks do not count
+        for stale in work.glob(f"{sop_checkpoint.TASK_PREFIX}*"):
+            stale.unlink()
     print("grading", video_id, "steps", sorted(steps) if steps else "all", flush=True)
     outcome = await sop_grading_service.run_grading(source, segmentation, work, probe_dir=seg_dir,
                                                     steps=steps, previous=previous)
@@ -300,6 +308,8 @@ def main() -> None:
     ap.add_argument("--runs-dir", type=Path, help="run records folder (default sop-video-grading/runs)")
     a = ap.parse_args()
     steps = {int(s) for s in a.steps.split(",")} if a.steps else None
+    # The checkpoints' fingerprint reads settings.GIT_COMMIT; without GIT_COMMIT set, --commit fell back to git.
+    settings.GIT_COMMIT = a.commit.strip()
     seg_tag = segmentation_tag(a.video_id, a.labels)
     recorder = None
     if _rr().VIDEO_ID_RE.fullmatch(a.video_id):
@@ -308,7 +318,8 @@ def main() -> None:
         recorder.check(steps, a.force, a.allow_dirty, a.new_segmentation)
     else:
         print(f"{a.video_id} 不是標記表的影片ID（VID_xxxx），不寫評分紀錄", flush=True)
-    outcome = asyncio.run(run(a.video, a.video_id, a.out, steps, a.labels, recorder, seg_tag, a.new_segmentation))
+    outcome = asyncio.run(run(a.video, a.video_id, a.out, steps, a.labels, recorder, seg_tag, a.new_segmentation,
+                              a.force))
     print(json.dumps({k: outcome[k] for k in ("tasks", "failed_tasks", "validation_errors", "usage")},
                      ensure_ascii=False, indent=1))
 

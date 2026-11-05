@@ -106,7 +106,8 @@ node frontend/sop-grading.test.js
 - 兩個 queue manager，以及兩個獨立 Python worker 程序共用 PostgreSQL，合计 20 支影片正常為 100 次邏輯呼叫，實測峰值 5。
 - 原子建立工作／入列；切段結果與四個後續任務同時提交，途中例外則全部 rollback。
 - 重複 completion 不重複加進度；結果依影片順序與 Agent A–D 排列，branch 通知進度從 0 到 N×6 單調增加。
-- 408、429、500、502、503、504 使用真實 SDK retry 搭配 mock HTTP transport，驗證等待指數、最多 5 attempts 及每次 HTTP 日誌；400、401、403、404 不重試。
+- 408、429、500、502、503、504 使用真實 SDK retry 搭配 mock HTTP transport，驗證等待指數、最多 10 attempts 及每次 HTTP 日誌；400、401、403、404 不重試。連線中斷、連不上與網路逾時交回 queue 重派，代理錯誤（`ProxyError`）與不支援的 URL 協定立刻失敗。
+- 存檔點（`test_sop_skill_service.py`、`test_sop_grading_service.py`）：429 後從最後一輪接續且 token 只算一次、worker 被關掉後已完成的評分任務不再呼叫模型、規則改變或圖片遺失時從頭開始、拒答與連續不合格動作刪除存檔點、「從失敗處繼續」往回找前一代的存檔點、被刪除的存檔點擋住更舊的、還原只帶回存檔點需要的檔案、週期上傳失敗不影響執行，以及最終上傳前會等週期上傳完成。
 - SDK 重試用盡後的暫時性錯誤（429／499／逾時）由 queue 以指數退避重新派送；同一任務執行到 `GEMINI_QUEUE_MAX_ATTEMPTS` 次仍失敗時，工作改為失敗並記錄重試次數。
 - 無效 JSON 只額外嘗試一次，GCS 缺檔／模型最終失敗使父工作失敗，已失敗父工作不再送模型请求。
 - 將測試 worker 在切段／評分途中 SIGKILL，再啟動新程序；驗證 heartbeat 到期後恢復且結果／進度不重複。為縮短測試，probe worker 的 heartbeat timeout 是 1 秒，正式 worker 預設 30 秒。
