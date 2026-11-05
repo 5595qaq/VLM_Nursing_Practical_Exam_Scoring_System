@@ -531,6 +531,8 @@ async def run_task(task: dict, video_id: str, runner: GradingRunner, boxes: dict
                         for c in action["criteria"]]
             # A worker killed now loses the other tasks, not this one: the next attempt reads it from here.
             sop_checkpoint.save(checkpoint_path, {"fingerprint": mark, "criteria": criteria, "usage": state.usage})
+            if on_checkpoint:  # other tasks may wait minutes on the model before their next upload
+                await on_checkpoint()
             return criteria, state
         if not errors:
             try:
@@ -774,9 +776,10 @@ async def run_sop_grading(video_uri: str, video_id: str, generation: int, segmen
             except Exception as exc:  # noqa: BLE001 - only the debugging zip is incomplete
                 logger.warning("could not restore earlier grading artifacts %s: %s", previous_artifacts, exc)
         prefix = artifact_prefix(video_id, generation)
-        # A worker killed mid-run saved no `previous`, but its periodic upload holds the finished tasks. A
-        # checkpoint is used only under the same rules (its fingerprint), so it adds no attempt to the history.
-        if not previous:
+        # A worker killed mid-run saved no `previous`, and a failed final upload no `previous_artifacts`, but the
+        # periodic upload holds the tasks' checkpoints. A checkpoint is used only under the same rules (its
+        # fingerprint), so it adds no attempt to the history.
+        if not (previous and previous_artifacts):
             await asyncio.to_thread(sop_checkpoint.restore_latest, lambda number: artifact_prefix(video_id, number),
                                     generation, workdir)
         history, texts = await asyncio.to_thread(_snapshot_rules, workdir, previous is not None)
@@ -788,6 +791,9 @@ async def run_sop_grading(video_uri: str, video_id: str, generation: int, segmen
                                             usage_reported=False)
             finally:  # also when cancelled: an upload still zipping must not outlive the temporary folder
                 await uploader.drain()
+            if not outcome["failed_tasks"]:  # graded: no checkpoint left (e.g. another grouping's) may come back
+                for stale in workdir.glob(f"{sop_checkpoint.TASK_PREFIX}*"):
+                    stale.unlink(missing_ok=True)
         except GradingIncomplete as exc:
             exc.files = await _upload_or_none(workdir, video_id, generation)
             raise
