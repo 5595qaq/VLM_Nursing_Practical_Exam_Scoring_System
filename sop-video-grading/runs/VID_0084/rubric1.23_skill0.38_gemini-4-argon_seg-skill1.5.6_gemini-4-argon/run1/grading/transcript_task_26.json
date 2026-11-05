@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 23.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 18741,
+  "cached_input_tokens": 0,
+  "output_tokens": 101,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@214.8-236.5（hands_box，n=9）#0=03:34.8、#1=03:37.5、#2=03:40.2、#3=03:42.9、#4=03:45.7、#5=03:48.4、#6=03:51.1、#7=03:53.8、#8=03:56.5"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [217.5, 224.9, 225.7, 231.1], \"region\": [0.3, 0.1, 0.7, 0.45], \"reason\": \"確認針筒垂直針頭向上（26b）以及手在針心尾端圓盤的拉/推動作（26a）\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 36.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 19989,
+  "cached_input_tokens": 17047,
+  "output_tokens": 444,
+  "thinking_tokens": 214,
+  "materials": [
+   "ov@214.8-236.5（hands_box，n=9）#0=03:34.8、#1=03:37.5、#2=03:40.2、#3=03:42.9、#4=03:45.7、#5=03:48.4、#6=03:51.1、#7=03:53.8、#8=03:56.5",
+   "zoom@217.5/224.9/225.7/231.1 region=[0.300, 0.100, 0.700, 0.450]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"26a\", \"verdict\": \"正確\", \"explanation\": \"03:37.5 左手持針筒直立，右手拇指與手指捏住針心尾端圓盤往下拉（往後抽）。\", \"evidence\": [\"ov@214.8-236.5 #1\", \"zoom@217.5\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"26b\", \"verdict\": \"正確\", \"explanation\": \"03:37.5–03:51.1 操作過程中針筒皆保持垂直、針頭朝上。\", \"evidence\": [\"ov@214.8-236.5 #1\", \"zoom@217.5\", \"zoom@224.9\", \"zoom@225.7\", \"zoom@231.1\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
