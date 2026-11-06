@@ -1,0 +1,107 @@
+{
+ "video_id": "VID_0123",
+ "versions": {
+  "rubric": "1.23",
+  "skill": "0.39",
+  "model": "gemini-4-argon",
+  "segmentation": "skill1.5.6_gemini-4-argon"
+ },
+ "video_sha256": "2617c7461171fb2d68ceb8fd609eab6a41db69563604da61a9471dad00ca85cf",
+ "runs": [
+  {
+   "run": 1,
+   "by": "5595QAQ",
+   "date": "2026-11-05",
+   "commit": "8edf6e9154aa4b83d7a0a688d71ce06395248d6d",
+   "video_sha256": "2617c7461171fb2d68ceb8fd609eab6a41db69563604da61a9471dad00ca85cf",
+   "steps": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    8,
+    9,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27
+   ],
+   "failed_tasks": [
+    {
+     "task": "1",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    },
+    {
+     "task": "7",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    },
+    {
+     "task": "10",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    },
+    {
+     "task": "28",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    },
+    {
+     "task": "29",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    },
+    {
+     "task": "30",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    }
+   ],
+   "segmentation": "sop-video-skill 1.5.6 gemini-4-argon",
+   "usage": {
+    "input_tokens": 1141366,
+    "cached_input_tokens": 655243,
+    "output_tokens": 16588,
+    "thinking_tokens": 7395
+   },
+   "segmentation_usage": {
+    "input_tokens": 751554,
+    "cached_input_tokens": 398456,
+    "output_tokens": 73172,
+    "thinking_tokens": 620
+   }
+  },
+  {
+   "run": 2,
+   "by": "5595QAQ",
+   "date": "2026-11-05",
+   "commit": "8edf6e9154aa4b83d7a0a688d71ce06395248d6d",
+   "video_sha256": "2617c7461171fb2d68ceb8fd609eab6a41db69563604da61a9471dad00ca85cf",
+   "steps": [
+    1,
+    7,
+    10,
+    28,
+    29,
+    30
+   ],
+   "failed_tasks": [],
+   "segmentation": "recorded segmentation.json",
+   "usage": {
+    "input_tokens": 505665,
+    "cached_input_tokens": 260548,
+    "output_tokens": 5955,
+    "thinking_tokens": 2336
+   }
+  }
+ ]
+}

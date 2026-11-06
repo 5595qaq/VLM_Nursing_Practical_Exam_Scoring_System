@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 8.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 18974,
+  "cached_input_tokens": 0,
+  "output_tokens": 115,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@272.5-280.4（hands_box，n=9）#0=04:32.5、#1=04:33.5、#2=04:34.5、#3=04:35.5、#4=04:36.4、#5=04:37.4、#6=04:38.4、#7=04:39.4、#8=04:40.4"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [274.5, 275.0, 275.5, 276.0], \"region\": [0.3, 0.45, 0.7, 0.85], \"reason\": \"放大查看 04:34.5–04:36.0 針頭插入 vial 的瞬間，確認右手持毛筆姿勢、針筒是否垂直，以及是否插入 vial 中心\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 6.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 20209,
+  "cached_input_tokens": 17296,
+  "output_tokens": 104,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@272.5-280.4（hands_box，n=9）#0=04:32.5、#1=04:33.5、#2=04:34.5、#3=04:35.5、#4=04:36.4、#5=04:37.4、#6=04:38.4、#7=04:39.4、#8=04:40.4",
+   "zoom@274.5/275/275.5/276 region=[0.300, 0.450, 0.700, 0.850]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [275.5, 276.0, 276.5, 277.0], \"region\": [0.35, 0.65, 0.65, 0.95], \"reason\": \"將放大區域往下移，完整看清右手持針姿勢、左手扶住的 vial 瓶口以及針頭插入 vial 中心的位置。\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 149.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 21458,
+  "cached_input_tokens": 17262,
+  "output_tokens": 266,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@272.5-280.4（hands_box，n=9）#0=04:32.5、#1=04:33.5、#2=04:34.5、#3=04:35.5、#4=04:36.4、#5=04:37.4、#6=04:38.4、#7=04:39.4、#8=04:40.4",
+   "zoom@274.5/275/275.5/276 region=[0.300, 0.450, 0.700, 0.850]",
+   "zoom@275.5/276/276.5/277 region=[0.350, 0.650, 0.650, 0.950]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"22b\", \"verdict\": \"正確\", \"explanation\": \"04:35.5–04:36.5 右手以持毛筆方式（拇指與食指、中指握住針筒外管）將針頭垂直向下刺入 vial，手指未碰觸針頭、針座及活塞柄內側。\", \"times\": [[275.5, 276.5]], \"evidence\": [\"zoom@275.5\", \"zoom@276\", \"zoom@276.5\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"22c\", \"verdict\": \"正確\", \"explanation\": \"04:35.5–04:36.5 針頭對準並垂直刺入 vial 瓶口橡皮塞中心。\", \"times\": [[275.5, 276.5]], \"evidence\": [\"zoom@275.5\", \"zoom@276\", \"zoom@276.5\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

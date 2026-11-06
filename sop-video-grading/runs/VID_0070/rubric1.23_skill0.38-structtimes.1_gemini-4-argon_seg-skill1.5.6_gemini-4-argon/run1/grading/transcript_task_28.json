@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 17.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 18912,
+  "cached_input_tokens": 0,
+  "output_tokens": 92,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@319.5-325（hands_box，n=9）#0=05:19.5、#1=05:20.2、#2=05:20.9、#3=05:21.6、#4=05:22.2、#5=05:22.9、#6=05:23.6、#7=05:24.3、#8=05:25.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [320.9, 321.6, 322.2, 322.6], \"region\": [0.1, 0.5, 0.7, 0.98], \"reason\": \"確認右手將空針單手插回桌面針架上的針頭套時，左手的位置與動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 24.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 20139,
+  "cached_input_tokens": 17256,
+  "output_tokens": 214,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@319.5-325（hands_box，n=9）#0=05:19.5、#1=05:20.2、#2=05:20.9、#3=05:21.6、#4=05:22.2、#5=05:22.9、#6=05:23.6、#7=05:24.3、#8=05:25.0",
+   "zoom@320.9/321.6/322.2/322.6 region=[0.100, 0.500, 0.700, 0.980]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"28b\", \"verdict\": \"正確\", \"explanation\": \"05:20.9–05:22.6 學生以右手持針筒，單手由上往下將針頭垂直插回立於針架上的針頭套內，左手在右側檯面整理酒精棉片與藥瓶，全程未碰觸針頭套。\", \"times\": [[320.9, 322.6]], \"evidence\": [\"ov@319.5-325 #2\", \"ov@319.5-325 #3\", \"ov@319.5-325 #4\", \"zoom@320.9\", \"zoom@321.6\", \"zoom@322.2\", \"zoom@322.6\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

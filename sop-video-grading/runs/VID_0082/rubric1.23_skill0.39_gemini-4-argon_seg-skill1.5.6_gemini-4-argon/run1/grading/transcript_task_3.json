@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 84.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 18930,
+  "cached_input_tokens": 0,
+  "output_tokens": 55,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@0-58.9（hands_box，n=9）#0=00:00.0、#1=00:07.4、#2=00:14.7、#3=00:22.1、#4=00:29.4、#5=00:36.8、#6=00:44.2、#7=00:51.5、#8=00:58.9"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 20.0, \"end\": 68.9, \"fps\": 2, \"reason\": \"檢查洗手結束後至開瓶蓋前後，學生是否有拿起藥物檢視\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 56.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 27342,
+  "cached_input_tokens": 17262,
+  "output_tokens": 61,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@0-58.9（hands_box，n=9）#0=00:00.0、#1=00:07.4、#2=00:14.7、#3=00:22.1、#4=00:29.4、#5=00:36.8、#6=00:44.2、#7=00:51.5、#8=00:58.9",
+   "clip@20-68.9（context box，有聲音；片段內 00:00 ＝ 影片 00:20.0）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 0.0, \"end\": 20.0, \"fps\": 2, \"reason\": \"檢查 00:00.0–00:20.0 是否有拿起藥物檢視\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 137.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 30821,
+  "cached_input_tokens": 17568,
+  "output_tokens": 252,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@0-58.9（hands_box，n=9）#0=00:00.0、#1=00:07.4、#2=00:14.7、#3=00:22.1、#4=00:29.4、#5=00:36.8、#6=00:44.2、#7=00:51.5、#8=00:58.9",
+   "clip@20-68.9（context box，有聲音；片段內 00:00 ＝ 影片 00:20.0）",
+   "clip@0-20（context box，有聲音；片段內 00:00 ＝ 影片 00:00.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"3a\", \"verdict\": \"錯誤\", \"explanation\": \"00:00.0–00:24.5 學生全程在洗手；00:24.5–00:56.0 拿起空針包裝檢視、撕開並取出空針；00:56.5–00:59.0 將 vial 移至中間並立即推開瓶蓋，00:59.5–01:08.9 撕開酒精棉片消毒瓶口與稀釋液瓶頂。整個區間內皆未將藥物（vial）舉到眼前或轉動檢視標籤與粉末。\", \"times\": [[0.0, 58.9]], \"evidence\": [\"ov@0-58.9 #0\", \"ov@0-58.9 #4\", \"ov@0-58.9 #8\", \"clip@0-20\", \"clip@20-68.9\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

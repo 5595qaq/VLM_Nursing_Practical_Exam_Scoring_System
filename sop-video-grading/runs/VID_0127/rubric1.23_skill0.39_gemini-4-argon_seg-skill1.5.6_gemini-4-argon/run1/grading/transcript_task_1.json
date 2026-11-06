@@ -1,0 +1,16 @@
+[
+ {
+  "turn": 1,
+  "seconds": 76.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 22470,
+  "cached_input_tokens": 17262,
+  "output_tokens": 463,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@1.6-27（context box，有聲音；片段內 00:00 ＝ 影片 00:01.6）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [\n  {\n    \"criterion_id\": \"1a\",\n    \"verdict\": \"正確\",\n    \"explanation\": \"00:03.6（clip@1.6-27 片段內 00:02.0）雙手開始互搓，00:25.1（片段內 00:23.5）雙手分開去拿取檯面上的空針包裝，共約 21.5 秒，滿 15 秒。\",\n    \"span\": [3.6, 25.1],\n    \"evidence\": [\"clip@1.6-27\"],\n    \"confidence\": 0.9,\n    \"reason\": null\n  },\n  {\n    \"criterion_id\": \"1b\",\n    \"verdict\": \"正確\",\n    \"explanation\": \"clip@1.6-27 片段中清楚看到洗手七個動作：內（00:03.6–00:04.1 掌心對掌心互搓）、外（00:04.6–00:06.6 手心搓手背）、夾（00:07.1–00:09.1 十指交叉搓指縫）、弓（00:09.6–00:12.6 彎曲手指搓指背）、大（00:13.1–00:16.1 握住大拇指旋轉搓揉）、立（00:16.6–00:20.1 指尖立在掌心搓揉）、腕（00:20.6–00:24.6 握住手腕旋轉搓揉），七個動作皆有做到。\",\n    \"times\": [[3.6, 24.6]],\n    \"evidence\": [\"clip@1.6-27\"],\n    \"confidence\": 0.9,\n    \"reason\": null\n  }\n]}",
+  "errors": []
+ }
+]

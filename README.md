@@ -44,7 +44,7 @@ Gemini 推論在雲端執行；worker 不需要 GPU。增加 worker 數量不會
 | `MAX_ACTIVE_VIDEOS_PER_EVALUATION` | 10 | 每個評分工作的活動影片窗口 |
 | `GEMINI_GLOBAL_CONCURRENCY` | 5 | 所有 worker 共用的 Gemini 任務上限，包含 SDK 退避期間 |
 | `GEMINI_CALL_STAGGER_MS` | 250 | 同一批切段／四個 Agent 任務的最早執行時間間距 |
-| `GEMINI_RETRY_ATTEMPTS` | 5 | 每次邏輯模型呼叫的 HTTP attempts，包含第一次 |
+| `GEMINI_RETRY_ATTEMPTS` | 10 | 每次邏輯模型呼叫的 HTTP attempts，包含第一次（退避 1、2、4…最多 60 秒，10 次約等 4 分鐘） |
 | `GEMINI_CALL_TIMEOUT_SECONDS` | 900 | 單次邏輯模型呼叫的最長等待秒數 |
 | `GEMINI_QUEUE_RETRY_BASE_SECONDS` | 60 | 暫時性模型錯誤後，PgQueuer 第一次重新派送前的等待秒數 |
 | `GEMINI_QUEUE_RETRY_MAX_SECONDS` | 900 | queue 層指數退避的最長等待秒數 |
@@ -128,7 +128,12 @@ python sop-video-skill/scripts/schema_tools.py sop-video-skill/schema.json > out
 | `GIT_COMMIT` | （空） | 記進切分／評分結果與實驗紀錄 ZIP 的程式版本；啟動 compose 時帶入（見「實驗紀錄 ZIP」），空白時紀錄寫 `unknown` |
 | `SOP_GRADING_CONCURRENCY` | 2 | 「切分＋評分」模式下，所有 worker 同時評分的影片數。每支影片的評分最多同時送 3 個 Gemini 請求，所以評分最多 2×3 個請求，同樣不計入 Agent A–D 的 5 路上限 |
 
-Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499，或 Claude 回傳 429／529（overloaded），且 SDK 重試用盡時，該影片的 skill 任務會依 queue 層退避重新派送，並從頭重跑該影片（最多 `GEMINI_QUEUE_MAX_ATTEMPTS` 次，之後工作失敗）；其他錯誤（模型拒答、連續 6 次不合格動作、超過回合上限）會讓工作失敗，可在前端「從失敗處繼續」只重跑未完成的影片。
+Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499、連線中斷，或 Claude 回傳 429／529（overloaded），且 SDK 重試用盡時，該影片的 skill 任務會依 queue 層退避重新派送，並從存檔點接續（最多 `GEMINI_QUEUE_MAX_ATTEMPTS` 次，之後工作失敗）；其他錯誤（模型拒答、連續 6 次不合格動作、超過回合上限）會讓工作失敗，可在前端「從失敗處繼續」只重跑未完成的影片，這幾種錯誤接續也只會重複，所以該影片從頭切分。重派次數用完而失敗時，按「從失敗處繼續」會從存檔點接續，已跑完的回合不必重付。
+
+**存檔點**：切分與評分每次呼叫模型前都會把進度寫進工作資料夾（切分 `checkpoint.json`，評分每個任務一份 `checkpoint_task_<任務>.json`），下一次嘗試從最後一輪接著跑，token 用量也會累計。規則、程式版本（`GIT_COMMIT`）、模型、影片 ID 或切分結果不同時會忽略存檔點，從頭開始，所以一份結果不會混到兩版規則或程式。
+
+- 前端：存檔點跟著 `artifacts.zip` 放在同一個 `g<generation>` 底下，失敗時上傳，執行中最多每 60 秒更新一次，所以 worker 被關掉時最多少掉約 1 分鐘的進度。「從失敗處繼續」會開新的 generation，並往回找最新一份 `artifacts.zip` 的存檔點；那一份沒有存檔點（已完成，或因上述錯誤刪除）就從頭開始。
+- 命令列：存檔點在 `--out` 資料夾。還沒寫進紀錄就停下（被關掉，或切分因 429、斷線失敗）時，同樣的指令重跑就會接續；已寫進紀錄但有失敗的任務，用 `--steps` 補評這些步驟時會接續（任務的分組要相同：例如任務 `15-16-17` 失敗，`--steps` 要包含 15、16、17，只補 15 會分成另一個任務而從頭評）。`--force` 會清掉評分任務的存檔點。用 `-dirty` 的程式再改程式時 commit 不變，存檔點仍會沿用，要從頭來請加 `--force` 或換 `--out`。
 
 ### SOP 評分（開發中）
 
@@ -164,7 +169,7 @@ Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499，或 Claude 回傳 429／529（o
 | `scripts/motion_peaks.py` | 以每秒 15 格分析任務區間內 hands_box 的畫面變化，找出手有明顯動作的時間點（不呼叫模型） |
 | `scripts/audio_peaks.py` | 找出任務區間內短促的響聲與連續響聲（彈針聲），並判斷影片有沒有可用的聲音（不呼叫模型） |
 | `scripts/burst.py` | 在 0.3–3 秒內平均取 3–12 張原始解析度的局部畫面，看不到 1 秒的短動作 |
-| `scripts/eval_grading.py` | 與人工標註表比對：每步的人工／模型判定與說明、一致率、錯誤召回、誤報（另外列出有看畫面標準的步驟）。時間也比：評分 agent 在該步說明裡引用的 mm:ss（計時標準用它的 `span`；「片段內」的 clip 相對時間不算；沒有引用時改用紀錄裡切分的區間，再沒有時用 `logical_window`，表格標「（說明）」的是前者）和標註時間沒有重疊、起點也差超過 3 秒，或標註有時間但模型沒有，判定一致也算錯（一致率以這個為準，括號內是只比判定的結果）；找不到同一支影片的 `segmentation.json` 或標註沒有時間時只比判定 |
+| `scripts/eval_grading.py` | 與人工標註表比對：每步的人工／模型判定與說明、一致率、錯誤召回、誤報（另外列出有看畫面標準的步驟）。時間也比：評分 agent 的 `times`，舊紀錄或空的 `times` 改看該步說明裡引用的 mm:ss（計時標準用它的 `span`；「片段內」的 clip 相對時間不算；沒有引用時改用紀錄裡切分的區間，再沒有時用 `logical_window`，表格標「（agent）」的是前者）和標註時間沒有重疊、起點也差超過 3 秒，或標註有時間但模型沒有，判定一致也算錯（一致率以這個為準，括號內是只比判定的結果）；找不到同一支影片的 `segmentation.json` 或標註沒有時間時只比判定 |
 | `scripts/compare_arms.py` | 在同一批影片上比較多份評分紀錄（不同規則、模型或做法）：一致率、成對差異（McNemar）、重跑翻轉、token 與時間，列出各組判定不同的步驟；可排除步驟（`--exclude-steps`）或讓指定步驟的錯誤＝部分正確（`--merge-faults-steps`），不呼叫模型 |
 | `scripts/labels_to_segmentation.py` | 用人工標註表的開始／結束秒數組出切分結果，調整評分 agent 時可跳過切分 skill |
 | `scripts/check_versions.py` | 合併前的版本檢查（CI 對每個 PR 執行）：版本必須是正式版本（不能是分支版本 `0.29-10b.1`）；PR 改了規則（評分 SKILL.md 以加上 `criteria/` 的全文比對）時版本要比目標分支大，`CHANGELOG.md` 要有新版本的標題，`changelog.d/` 的片段要全部移走 |
@@ -184,11 +189,11 @@ Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499，或 Claude 回傳 429／529（o
 評分表單的「執行模式」選 **SOP 步驟切分＋評分**（API 傳 `"pipeline": "sop_grading"`，不可同時傳 `selected_agents`）。每支影片在佇列裡依序跑兩個任務：
 
 1. `sop_skill`：與「只跑 SOP 步驟切分」相同，切分結果存進該影片的 `sop_result`。
-2. `sop_grading`：切分完成時在同一個交易排入。worker 從 GCS 下載原檔，以 `sop_result` 的切分結果執行 `sop_grading_service.run_grading`，把 `grading.json` 與各組對話紀錄、影格（`artifacts.zip`，不含片段影片；另含這次讀到的 `rules_rubric.json`、`rules_SKILL.md` 副本）上傳到 `gs://<bucket>/sop_runs/<video_id>/g<generation>/grading/`，結果存進 `grading_result`。每完成一組評分任務回報一次進度。
+2. `sop_grading`：切分完成時在同一個交易排入。worker 從 GCS 下載原檔，以 `sop_result` 的切分結果執行 `sop_grading_service.run_grading`，把 `grading.json` 與各組對話紀錄、影格（`artifacts.zip`，不含片段影片，但未完成的任務還要用的片段會隨存檔點放進去；另含這次讀到的 `rules_rubric.json`、`rules_SKILL.md` 副本）上傳到 `gs://<bucket>/sop_runs/<video_id>/g<generation>/grading/`，結果存進 `grading_result`。每完成一組評分任務回報一次進度。
 
 工作的總步數是「影片數 × 2」。有任務失敗或最終結果驗證不過時，會先上傳對話紀錄，並把已評好的標準存進該影片的 `grading_partial`：
 
-- 失敗的任務全是 429／`RESOURCE_EXHAUSTED`、499 或逾時（配額暫時用完）時，與切分一樣由 queue 退避後自動重新派送（最多 `GEMINI_QUEUE_MAX_ATTEMPTS` 次），不必手動續跑。
+- 失敗的任務全是 429／`RESOURCE_EXHAUSTED`、499、連線中斷或逾時（配額暫時用完）時，與切分一樣由 queue 退避後自動重新派送（最多 `GEMINI_QUEUE_MAX_ATTEMPTS` 次），不必手動續跑；任務本身也從存檔點接續，不必重跑已完成的回合。
 - 其他失敗（例如連續 4 次不合格動作）會讓工作失敗，按「從失敗處繼續」。
 
 不論哪一種，下一次嘗試都只把還沒評好的那幾組送給模型，已評好的標準沿用，也不會重新切分；新的 `artifacts.zip` 會併入前一次的對話紀錄與影格，下載時看得到每一組的依據。已評好的標準本身驗證不過時不保留，下一次改為整支重評。
@@ -628,6 +633,7 @@ my-awesome-project/
 │   │   │   ├── gcs_service.py
 │   │   │   ├── gemini_service.py
 │   │   │   ├── model_logging.py
+│   │   │   ├── sop_checkpoint.py
 │   │   │   ├── sop_grading_service.py
 │   │   │   ├── sop_run_bundle.py
 │   │   │   ├── sop_skill_service.py

@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 67.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 18674,
+  "cached_input_tokens": 0,
+  "output_tokens": 99,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@521-531（hands_box，n=9）#0=08:41.0、#1=08:42.2、#2=08:43.5、#3=08:44.8、#4=08:46.0、#5=08:47.2、#6=08:48.5、#7=08:49.8、#8=08:51.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [524.8, 526.0, 527.2, 528.5], \"region\": [0.1, 0.45, 0.75, 0.98], \"reason\": \"放大確認右手單手將空針套入針架上的針頭套，並確認左手位置沒有碰觸針頭套\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 8.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 19899,
+  "cached_input_tokens": 17047,
+  "output_tokens": 203,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@521-531（hands_box，n=9）#0=08:41.0、#1=08:42.2、#2=08:43.5、#3=08:44.8、#4=08:46.0、#5=08:47.2、#6=08:48.5、#7=08:49.8、#8=08:51.0",
+   "zoom@524.8/526/527.2/528.5 region=[0.100, 0.450, 0.750, 0.980]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"28b\", \"verdict\": \"正確\", \"explanation\": \"08:44.8–08:48.5 學生以右手單手持針筒，將針頭垂直由上往下插入立於桌面針架上的針頭套中，期間左手全程停留在桌面右側的藥瓶附近與半空中，完全沒有碰觸針頭套。\", \"evidence\": [\"ov@521-531 #3\", \"ov@521-531 #4\", \"ov@521-531 #5\", \"ov@521-531 #6\", \"zoom@524.8\", \"zoom@526\", \"zoom@527.2\", \"zoom@528.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

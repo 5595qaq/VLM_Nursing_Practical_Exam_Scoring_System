@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 138.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 18531,
+  "cached_input_tokens": 14981,
+  "output_tokens": 179,
+  "thinking_tokens": 91,
+  "materials": [
+   "clip@54.9-61.5（context box，有聲音；片段內 00:00 ＝ 影片 00:54.9）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [56.9, 57.9, 58.4, 59.4], \"region\": [0.25, 0.55, 0.65, 0.9], \"reason\": \"放大確認將 vial 瓶口塑膠蓋推開的動作及開蓋後的瓶頂狀態\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 146.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 19753,
+  "cached_input_tokens": 17013,
+  "output_tokens": 291,
+  "thinking_tokens": 123,
+  "materials": [
+   "clip@54.9-61.5（context box，有聲音；片段內 00:00 ＝ 影片 00:54.9）",
+   "zoom@56.9/57.9/58.4/59.4 region=[0.250, 0.550, 0.650, 0.900]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"於 00:56.9–00:58.9（clip@54.9-61.5 片段內 00:02.0–00:04.0）拿起 vial 並以手指推開瓶口的深紅色塑膠翻蓋，00:58.4 可見拇指與手指撥開瓶蓋、露出銀色鋁圈。\", \"evidence\": [\"clip@54.9-61.5\", \"zoom@57.9\", \"zoom@58.4\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

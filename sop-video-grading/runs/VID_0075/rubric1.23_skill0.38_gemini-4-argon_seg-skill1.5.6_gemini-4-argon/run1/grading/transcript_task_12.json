@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 9.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 18695,
+  "cached_input_tokens": 0,
+  "output_tokens": 90,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@93.5-101.5（hands_box，n=9）#0=01:33.5、#1=01:34.5、#2=01:35.5、#3=01:36.5、#4=01:37.5、#5=01:38.5、#6=01:39.5、#7=01:40.5、#8=01:41.5"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [96.5, 97.5, 98.5, 99.5], \"region\": [0.35, 0.45, 0.75, 0.85], \"reason\": \"放大確認左手夾持稀釋液瓶的手指姿勢是否為食指及中指夾住\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 79.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 19934,
+  "cached_input_tokens": 17013,
+  "output_tokens": 169,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@93.5-101.5（hands_box，n=9）#0=01:33.5、#1=01:34.5、#2=01:35.5、#3=01:36.5、#4=01:37.5、#5=01:38.5、#6=01:39.5、#7=01:40.5、#8=01:41.5",
+   "zoom@96.5/97.5/98.5/99.5 region=[0.350, 0.450, 0.750, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"12a\", \"verdict\": \"錯誤\", \"explanation\": \"01:36.5–01:39.5 學生左手以拇指與中指、無名指等握住稀釋液瓶，食指伸直在上方未將瓶子夾於食指與中指之間，不符合左手中指及食指夾住稀釋液瓶的標準。\", \"evidence\": [\"ov@93.5-101.5 #3\", \"zoom@96.5\", \"zoom@97.5\", \"zoom@98.5\", \"zoom@99.5\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

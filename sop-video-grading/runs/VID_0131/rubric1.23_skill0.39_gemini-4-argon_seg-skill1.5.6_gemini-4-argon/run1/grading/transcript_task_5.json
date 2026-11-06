@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 63.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 19148,
+  "cached_input_tokens": 17011,
+  "output_tokens": 84,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@27.4-35.5（context box，有聲音；片段內 00:00 ＝ 影片 00:27.4）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [28.4, 30.9, 31.9, 33.9], \"region\": [0.35, 0.55, 0.6, 0.95], \"reason\": \"確認 vial 瓶蓋被推開及開蓋前後瓶頂的狀態\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 9.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 20399,
+  "cached_input_tokens": 17296,
+  "output_tokens": 319,
+  "thinking_tokens": 110,
+  "materials": [
+   "clip@27.4-35.5（context box，有聲音；片段內 00:00 ＝ 影片 00:27.4）",
+   "zoom@28.4/30.9/31.9/33.9 region=[0.350, 0.550, 0.600, 0.950]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"00:29.4–00:33.5（clip@27.4-35.5 片段內 00:02.0–00:06.0）拿起 vial 並以右手將瓶口深紅色塑膠翻蓋推開取下，zoom@28.4 與 zoom@33.9 可清楚對比開蓋前後瓶頂由深紅圓蓋變為銀色鋁圈。\", \"times\": [[29.4, 33.5]], \"evidence\": [\"clip@27.4-35.5\", \"zoom@28.4\", \"zoom@30.9\", \"zoom@31.9\", \"zoom@33.9\"], \"confidence\": 1.0, \"reason\": null}]}",
+  "errors": []
+ }
+]

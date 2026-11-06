@@ -1,0 +1,115 @@
+{
+ "video_id": "VID_0081",
+ "versions": {
+  "rubric": "1.23",
+  "skill": "0.38",
+  "model": "gemini-4-argon",
+  "segmentation": "skill1.5.6_gemini-4-argon"
+ },
+ "video_sha256": "6f9235af873da512b612ede7dfc6feeb83ef8a17267ad624e6c2c613d5b2fc24",
+ "runs": [
+  {
+   "run": 1,
+   "by": "5595QAQ",
+   "date": "2026-11-05",
+   "commit": "58bdf3c02bb9a998cc6a7c26130099cfbb729418",
+   "video_sha256": "6f9235af873da512b612ede7dfc6feeb83ef8a17267ad624e6c2c613d5b2fc24",
+   "steps": [
+    1,
+    2,
+    4,
+    5,
+    6,
+    9,
+    11,
+    12,
+    13,
+    14,
+    16,
+    17,
+    18,
+    20,
+    21,
+    22,
+    23,
+    24,
+    28,
+    29,
+    30
+   ],
+   "failed_tasks": [
+    {
+     "task": "3",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    },
+    {
+     "task": "7",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    },
+    {
+     "task": "8",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    },
+    {
+     "task": "10",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    },
+    {
+     "task": "15",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    },
+    {
+     "task": "19",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    },
+    {
+     "task": "25-26-27",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    },
+    {
+     "task": "26",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    }
+   ],
+   "segmentation": "sop-video-skill 1.5.6 gemini-4-argon",
+   "usage": {
+    "input_tokens": 1295859,
+    "cached_input_tokens": 627600,
+    "output_tokens": 20869,
+    "thinking_tokens": 12106
+   },
+   "segmentation_usage": {
+    "input_tokens": 920890,
+    "cached_input_tokens": 483213,
+    "output_tokens": 81249,
+    "thinking_tokens": 2052
+   }
+  },
+  {
+   "run": 2,
+   "by": "5595QAQ",
+   "date": "2026-11-05",
+   "commit": "96b4480cee2a919b1830b879490db05cef34dc8f",
+   "video_sha256": "6f9235af873da512b612ede7dfc6feeb83ef8a17267ad624e6c2c613d5b2fc24",
+   "steps": [
+    3,
+    7,
+    8,
+    10,
+    15,
+    19,
+    25,
+    26,
+    27
+   ],
+   "failed_tasks": [],
+   "segmentation": "recorded segmentation.json",
+   "usage": {
+    "input_tokens": 766000,
+    "cached_input_tokens": 400567,
+    "output_tokens": 8461,
+    "thinking_tokens": 3581
+   }
+  }
+ ]
+}

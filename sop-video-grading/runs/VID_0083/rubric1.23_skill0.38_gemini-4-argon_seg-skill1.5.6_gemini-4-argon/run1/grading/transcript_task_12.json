@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 8.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 18649,
+  "cached_input_tokens": 0,
+  "output_tokens": 253,
+  "thinking_tokens": 156,
+  "materials": [
+   "ov@110-115.5（hands_box，n=9）#0=01:50.0、#1=01:50.7、#2=01:51.4、#3=01:52.1、#4=01:52.8、#5=01:53.4、#6=01:54.1、#7=01:54.8、#8=01:55.5"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [112.8, 113.4, 114.1, 114.8], \"region\": [0.35, 0.35, 0.75, 0.75], \"reason\": \"放大檢視左手夾住稀釋液瓶的手指姿勢（是否以中指及食指夾住）\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 14.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 19892,
+  "cached_input_tokens": 17013,
+  "output_tokens": 589,
+  "thinking_tokens": 453,
+  "materials": [
+   "ov@110-115.5（hands_box，n=9）#0=01:50.0、#1=01:50.7、#2=01:51.4、#3=01:52.1、#4=01:52.8、#5=01:53.4、#6=01:54.1、#7=01:54.8、#8=01:55.5",
+   "zoom@112.8/113.4/114.1/114.8 region=[0.350, 0.350, 0.750, 0.750]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"12a\", \"verdict\": \"正確\", \"explanation\": \"01:52.8–01:54.8 左手拿起稀釋液瓶，以食指及中指夾住稀釋液瓶身（拇指輔助支撐）。\", \"evidence\": [\"ov@110-115.5 #5\", \"zoom@113.4\", \"zoom@114.1\", \"zoom@114.8\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

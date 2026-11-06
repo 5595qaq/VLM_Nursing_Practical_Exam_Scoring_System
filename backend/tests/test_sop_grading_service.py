@@ -2,6 +2,7 @@
 
 No Google calls and no database. Needs ffmpeg plus the skill script dependencies.
 """
+import asyncio
 import io
 import json
 import re
@@ -22,6 +23,11 @@ DURATION = 60.0
 BOX = [0.1, 0.1, 0.9, 0.9]
 HANDS = [0.2, 0.3, 0.8, 0.85]
 CRITERION = re.compile(r"^\s+(\d+[a-z])（步驟", re.M)
+
+
+@pytest.fixture(autouse=True)
+def no_earlier_attempt(monkeypatch):
+    monkeypatch.setattr(grading.gcs_service, "blob_exists", lambda _name: False)
 
 
 @pytest.fixture(scope="module")
@@ -57,9 +63,13 @@ def final_for(content, verdict="正確"):
     ref = re.search(r"(clip@[\d.]+-[\d.]+|ov@[\d.]+-[\d.]+)", "\n".join(b.get("text", "") for b in content)).group(1)
     criteria = [{"criterion_id": cid, "verdict": verdict, "confidence": 0.7, "reason": None, "evidence": [ref],
                  "explanation": "00:05–00:08 看到動作完成，符合標準。"} for cid in CRITERION.findall(text)]
+    windows = dict(re.findall(r"(\w+)（步驟.*?window=\[([\d.]+),", text))
+    for c in criteria:  # a time inside the criterion's window
+        c["times"] = [[float(windows[c["criterion_id"]])] * 2]
     for c in criteria:  # timed criterion (1a washing): a measured span that matches the verdict
         if c["criterion_id"] == "1a":
             c["span"] = [0.0, 16.0] if verdict == "正確" else [0.0, 10.0]
+            del c["times"]
     return {"action": "final", "criteria": criteria}
 
 
@@ -75,6 +85,8 @@ class FakeModel:
         ids = CRITERION.findall(content[0]["text"])
         key = next((k for k in self.script if ids and ids[0] == k), None)
         action = self.script[key].pop(0) if key and self.script[key] else final_for(content)
+        if isinstance(action, Exception):
+            raise action
         return ModelReply(json.dumps(action, ensure_ascii=False), "end_turn", 100, 10)
 
 
@@ -99,7 +111,7 @@ async def test_grading_grades_every_visual_criterion(video, tmp_path):
 
 async def test_washing_task_asks_for_a_timed_span(video, tmp_path):
     no_span = {"action": "final", "criteria": [
-        {"criterion_id": cid, "verdict": "正確", "confidence": 0.7, "reason": None, "evidence": ["clip@0-18"],
+        {"criterion_id": cid, "verdict": "正確", "times": [[5.0, 5.0]], "confidence": 0.7, "reason": None, "evidence": ["clip@0-18"],
          "explanation": "00:01–00:16 看到雙手互搓。"} for cid in ("1a", "1b")]}
     model = FakeModel({"1a": [no_span]})
     outcome = await grading.run_grading(video, segmentation(), tmp_path, model, steps={1})
@@ -178,7 +190,7 @@ async def test_extra_material_actions_run(video, tmp_path):
 async def test_fixing_the_needle_not_seen_goes_to_a_person(video, tmp_path, package_spans, reason):
     # 10b 錯誤 needs a clip first; 無法判定 gets needs_review with every span the hands held the wrapper
     wrong = {"action": "final", "criteria": [
-        {"criterion_id": "10b", "verdict": "錯誤", "confidence": 0.8, "reason": None, "evidence": ["clip@16-21"],
+        {"criterion_id": "10b", "verdict": "錯誤", "times": [[17.0, 17.0]], "confidence": 0.8, "reason": None, "evidence": ["clip@16-21"],
          "explanation": "00:18 空針離開包裝，之後沒有旋緊。"}]}
     undetermined = {"action": "final", "criteria": [{**wrong["criteria"][0], "verdict": "無法判定", "reason": "資訊不足",
                                                      "needs_review": True, "review_reason": "01:12 手被包裝擋住"}]}
@@ -203,7 +215,7 @@ async def test_sheet_out_of_frame_in_4a_decides_the_package_pointing(video, tmp_
             {"criterion_id": cid, "verdict": "無法判定", "confidence": 0.7, "reason": "藥單看不見",
              "explanation": "00:05 找過治療車前緣與桌面，都沒有紀錄單。", "evidence": ["clip@0-10"]} for cid in ids]}
     pointed = {"action": "final", "criteria": [
-        {"criterion_id": "4e", "verdict": "正確", "confidence": 0.7, "reason": None,
+        {"criterion_id": "4e", "verdict": "正確", "times": [[5.0, 5.0]], "confidence": 0.7, "reason": None,
          "explanation": "00:08 右手食指指著空針包裝。", "evidence": ["clip@0-10"]}]}
     model = FakeModel({"4a": [sheet_final("4a", "4b", "4d")], "4e": [pointed]})
     outcome = await grading.run_grading(video, segmentation(), tmp_path, model, steps={4})
@@ -220,7 +232,7 @@ async def test_sheet_out_of_frame_decides_across_attempts(video, tmp_path):
         {"criterion_id": cid, "verdict": "無法判定", "confidence": 0.7, "reason": "藥單看不見",
          "explanation": "00:05 找過治療車前緣與桌面，都沒有紀錄單。", "evidence": ["clip@0-10"]} for cid in ("4a", "4b", "4d")]}
     pointed = {"action": "final", "criteria": [
-        {"criterion_id": "4e", "verdict": "正確", "confidence": 0.7, "reason": None,
+        {"criterion_id": "4e", "verdict": "正確", "times": [[5.0, 5.0]], "confidence": 0.7, "reason": None,
          "explanation": "00:08 右手食指指著空針包裝。", "evidence": ["clip@0-10"]}]}
     first = await grading.run_grading(video, segmentation(), tmp_path / "a", FakeModel({"4a": [sheet], "4e": [pointed]}),
                                       steps={4})
@@ -259,7 +271,7 @@ async def test_pointing_wrong_needs_a_clip_near_the_segmented_tearing(video, tmp
     clip = {"action": "clip", "start": 7.0, "end": 10.0, "fps": 2, "reason": "看 2讀"}
     near = {**clip, "start": 27.0, "end": 30.0, "reason": "看撕開之前"}
     wrong = {"action": "final", "criteria": [
-        {"criterion_id": "4e", "verdict": "錯誤", "confidence": 0.7, "reason": None, "evidence": ["clip@27-30"],
+        {"criterion_id": "4e", "verdict": "錯誤", "times": [[28.0, 28.0]], "confidence": 0.7, "reason": None, "evidence": ["clip@27-30"],
          "explanation": "00:30 直接撕開空針包裝，沒有用手指指。"}]}
     model = FakeModel({"4e": [clip, wrong, near, wrong]})
     outcome = await grading.run_grading(video, seg, tmp_path, model, steps={4})
@@ -275,7 +287,7 @@ async def test_fixing_the_needle_task_lists_the_wrapper_spans(video, tmp_path):
     clip = {"action": "clip", "start": 0.5, "end": 3.0, "fps": 10, "region": [0.2, 0.2, 0.6, 0.6], "reason": "看包裝"}
     far = {**clip, "start": 40.0, "end": 41.0}  # after the first use (step 13 at 00:23.4): not listed
     wrong = {"action": "final", "criteria": [
-        {"criterion_id": "10b", "verdict": "錯誤", "confidence": 0.7, "reason": None, "evidence": ["clip@0.5-3"],
+        {"criterion_id": "10b", "verdict": "錯誤", "times": [[1.0, 1.0]], "confidence": 0.7, "reason": None, "evidence": ["clip@0.5-3"],
          "explanation": "00:01–00:03 雙手撕包裝，00:18 取出後直接拔針頭蓋，沒有旋緊。"}]}
     model = FakeModel({"10b": [far, clip, wrong]})
     outcome = await grading.run_grading(video, seg, tmp_path, model, steps={10})
@@ -334,7 +346,7 @@ async def test_motion_peak_failure_does_not_stop_grading(video, tmp_path, monkey
 
 async def test_steps_filter_keeps_previous_grades(video, tmp_path):
     first = await grading.run_grading(video, segmentation(), tmp_path / "a", FakeModel())
-    model = FakeModel({"19b": [final_for([{"type": "text", "text": "  19b（步驟 19）\nov@1-2"}], "錯誤")]})
+    model = FakeModel({"19b": [final_for([{"type": "text", "text": "  19b（步驟 19）；window=[34.2, 35.7]\nov@1-2"}], "錯誤")]})
     second = await grading.run_grading(video, segmentation(), tmp_path / "b", model, steps={19},
                                        previous=first["result"])
     steps = {s["step_id"]: s for s in second["result"]["steps"]}
@@ -366,7 +378,7 @@ async def test_refused_task_reports_the_reason(video, tmp_path):
 
 
 async def test_review_flag_reaches_the_result(video, tmp_path):
-    flagged = final_for([{"type": "text", "text": "  19b（步驟 19）\nov@1-2"}], "部分正確")
+    flagged = final_for([{"type": "text", "text": "  19b（步驟 19）；window=[34.2, 35.7]\nov@1-2"}], "部分正確")
     flagged["criteria"][0].update(needs_review=True, review_reason="學生回套兩次，有一次用雙手")
     outcome = await grading.run_grading(video, segmentation(), tmp_path, FakeModel({"19b": [flagged]}), steps={19})
     step = next(s for s in outcome["result"]["steps"] if s["step_id"] == 19)
@@ -530,6 +542,100 @@ async def test_run_sop_grading_uploads_then_raises_on_failed_tasks(video, monkey
     assert "sop_runs/vid/g0/grading/artifacts.zip" in uploads
 
 
+class Quota(Exception):
+    """Stands for the 429 left when the SDK retries are used up."""
+
+
+class Killed(BaseException):
+    """Stands for a worker killed mid-run: nothing in run_grading catches it, so no cleanup runs."""
+
+
+OVERVIEW_12 = {"action": "overview", "start": 21.0, "end": 24.0, "n": 9, "reason": "看密一點"}
+
+
+async def test_failed_task_continues_from_its_checkpoint_and_counts_tokens_once(video, tmp_path):
+    first = await grading.run_grading(video, segmentation(), tmp_path, FakeModel({"12a": [OVERVIEW_12, Quota("429")]}),
+                                      steps={12})
+    assert [f["task"] for f in first["failed_tasks"]] == ["12"]
+    assert first["usage"]["input_tokens"] == 100
+    assert (tmp_path / "checkpoint_task_12.json").exists()
+
+    model = FakeModel()
+    second = await grading.run_grading(video, segmentation(), tmp_path, model, steps={12})
+    assert second["failed_tasks"] == []
+    assert len(model.requests) == 1  # the finished turn is not paid for again
+    assert second["usage"]["input_tokens"] == 100  # the first run already reported its 100
+    text = model.requests[0][0]["text"]
+    assert "overview 21-24" in text and "overview 已完成" in text  # the action log and the feedback came back
+    transcript = json.loads((tmp_path / "transcript_task_12.json").read_text(encoding="utf-8"))
+    assert [e["turn"] for e in transcript] == [1, 2]
+    assert not list(tmp_path.glob("checkpoint_task_*"))
+
+
+async def test_queue_attempts_carry_a_failed_tasks_tokens_to_the_next_attempt(video, tmp_path):
+    # The queue discards a failed attempt's usage with GradingIncomplete, so the checkpoint keeps it.
+    first = await grading.run_grading(video, segmentation(), tmp_path, FakeModel({"12a": [OVERVIEW_12, Quota("429")]}),
+                                      steps={12}, usage_reported=False)
+    assert [f["task"] for f in first["failed_tasks"]] == ["12"]
+    second = await grading.run_grading(video, segmentation(), tmp_path, FakeModel(), steps={12}, usage_reported=False)
+    assert second["usage"]["input_tokens"] == 200  # both turns of task 12, once each
+
+
+async def test_a_killed_run_keeps_its_finished_tasks(video, tmp_path):
+    class KilledOnStep19(FakeModel):
+        async def __call__(self, system, content):
+            if "（步驟 19）" not in content[0]["text"]:
+                return await super().__call__(system, content)
+            path = tmp_path / "checkpoint_task_12.json"
+            while not (path.exists() and "criteria" in json.loads(path.read_text(encoding="utf-8"))):
+                await asyncio.sleep(0.05)
+            raise Killed()
+
+    with pytest.raises(Killed):
+        await grading.run_grading(video, segmentation(), tmp_path, KilledOnStep19(), steps={12, 19})
+
+    model = FakeModel()
+    outcome = await grading.run_grading(video, segmentation(), tmp_path, model, steps={12, 19})
+    assert outcome["failed_tasks"] == []
+    assert requests_for(model, "12a") == [] and len(model.requests) == 1  # only step 19 goes to the model
+    assert outcome["usage"]["input_tokens"] == 200  # the killed run never reported step 12's tokens
+    steps = {s["step_id"]: s for s in outcome["result"]["steps"]}
+    assert steps[12]["verdict"] == "正確"
+    assert not list(tmp_path.glob("checkpoint_task_*"))
+
+
+async def test_changed_rules_regrade_the_task(video, tmp_path, monkeypatch):
+    await grading.run_grading(video, segmentation(), tmp_path, FakeModel({"12a": [Quota("429")]}), steps={12})
+    monkeypatch.setattr(grading.sop_skill_service, "tree_digest", lambda _root: "other rules")
+    model = FakeModel({"12a": [OVERVIEW_12]})
+    outcome = await grading.run_grading(video, segmentation(), tmp_path, model, steps={12})
+    assert len(model.requests) == 2 and outcome["usage"]["input_tokens"] == 200
+    transcript = json.loads((tmp_path / "transcript_task_12.json").read_text(encoding="utf-8"))
+    assert [e["turn"] for e in transcript] == [1, 2]
+
+
+async def test_a_task_that_cannot_finish_drops_its_checkpoint(video, tmp_path):
+    model = FakeModel({"12a": [{"action": "dance"}] * grading.MAX_CONSECUTIVE_REJECTS})
+    outcome = await grading.run_grading(video, segmentation(), tmp_path, model, steps={12})
+    assert [f["task"] for f in outcome["failed_tasks"]] == ["12"]
+    assert not list(tmp_path.glob("checkpoint_task_*"))
+
+
+def test_archive_holds_only_the_clips_of_unfinished_tasks(tmp_path, monkeypatch):
+    work = tmp_path / "run"
+    work.mkdir()
+    (work / "001_clip_1-2.mp4").write_bytes(b"still needed")
+    (work / "002_clip_3-4.mp4").write_bytes(b"finished task")
+    (work / "checkpoint_task_12.json").write_text(json.dumps(
+        {"materials": [["001_clip_1-2.mp4", "clip", "video", 2.0], ["003_ov.jpg", "ov", "image", 2.0]]}), encoding="utf-8")
+    uploaded = {}
+    monkeypatch.setattr(grading.gcs_service, "upload_file",
+                        lambda local, name, _ct: uploaded.update({name: Path(local).read_bytes()}) or f"gs://b/{name}")
+    grading._upload_artifacts(work, "p")
+    names = zipfile.ZipFile(io.BytesIO(uploaded["p/artifacts.zip"])).namelist()
+    assert "001_clip_1-2.mp4" in names and "002_clip_3-4.mp4" not in names
+
+
 async def test_progress_callback_error_stops_the_run_and_keeps_the_graded_criteria(video, tmp_path):
     class Stop(Exception):
         pass
@@ -643,7 +749,8 @@ async def test_resume_merges_the_earlier_artifacts(video, monkeypatch, tmp_path)
     assert len(outcome["attempts"]) == 2 and outcome["mixed_rules"] is True
     second = zipfile.ZipFile(io.BytesIO(uploads["sop_runs/vid/g1/grading/artifacts.zip"][0]))
     names = set(second.namelist())
-    assert first_names <= names  # nothing from the first attempt is lost
+    # nothing from the first attempt is lost, except the checkpoint of the task that has now finished
+    assert first_names - {"checkpoint_task_12.json"} <= names and "checkpoint_task_12.json" not in names
     assert any(n not in first_names for n in names)  # the rerun's new images got new numbers
     assert "transcript_task_15-16-17.json" in names and "transcript_task_12.json" in names
     assert "新增的一句規則" in second.read("rules_SKILL.md").decode("utf-8")

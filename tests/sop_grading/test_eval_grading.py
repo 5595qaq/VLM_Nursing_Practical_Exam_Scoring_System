@@ -2,8 +2,14 @@
 
 import csv
 import json
+import shutil
+import subprocess
+from pathlib import Path
 
-from eval_grading import (cited_spans, compare, load_labels, main, parse_spans, parse_time, render, spans_match,
+import pytest
+
+import review_page
+from eval_grading import (agent_spans, cited_spans, compare, load_labels, main, parse_spans, parse_time, render, spans_match,
                           summarize)
 from grading_helpers import fill_visual, flag_review, make_segmentation
 from rules import grade_from_segmentation
@@ -91,6 +97,52 @@ def test_cited_spans_drop_clip_relative_times():
     assert cited_spans("沒有時間") == []
 
 
+CLIP_CASES = [
+    # 0.38 records: VID_0082 17a cites two clip times after one 片段內, and the second looked like a video time
+    ("02:32–02:39（clip@138-180 片段內 00:05.5–00:11.0 及 00:14.0–00:21.0）", [(152.0, 159.0)]),
+    ("（片段內 00:01–00:02、00:03–00:04、00:05，zoom@9）彈擊", []),
+    ("00:40（約 3.5 秒，clip@18-66.8 片段內 00:20 及 00:22）", [(40.0, 40.0)]),
+    ("（clip@1-9 片段內 00:02 及 00:03；clip@30-40 片段內 00:05 及 00:06）", []),
+    ("04:58（片段 00:07.5）", [(298.0, 298.0)]),
+    ("片段內 00:03~00:05 拿起", []),
+    ("片段內第 00:12", []),
+    ("片段外 00:07", [(7.0, 7.0)]),
+    # video times: before 片段內, after a clip time that a word separates, and after the parenthesis closes
+    ("（00:08.6–00:10.1，片段內 00:02.0–00:03.5）", [(8.6, 10.1)]),
+    ("（00:08，片段內 00:02；00:20，片段內 00:05）", [(8.0, 8.0), (20.0, 20.0)]),
+    ("（clip@226-286 片段內 00:00.0–00:07.5，並由 zoom@231.9 於 03:51.9 確認）", [(231.9, 231.9)]),
+    ("（片段內 00:02–00:03）及 00:25（片段內 00:05）", [(25.0, 25.0)]),
+    # without a parenthesis only the time right after 片段內 is known to be a clip time
+    ("片段內 00:02–00:03，學生在 00:40 拿起", [(40.0, 40.0)]),
+    ("片段內 00:02–00:03 及 00:25 拿起", [(25.0, 25.0)]),
+]
+
+
+@pytest.mark.parametrize("text,spans", CLIP_CASES)
+def test_cited_spans_drop_clip_times_only(text, spans):
+    assert cited_spans(text) == spans
+
+
+@pytest.mark.skipif(not shutil.which("node"), reason="node is not installed")
+def test_review_page_links_the_times_cited_spans_keeps():
+    # the page runs in a browser, so the same rules are written twice; this keeps them the same
+    page = Path(review_page.__file__).read_text(encoding="utf-8")
+    code = page[page.index("function clipRanges"):page.index("const pill =")]
+    script = ("const esc = s => s, sec = (m, s) => Number(m) * 60 + Number(s);\n" + code
+              + "console.log(JSON.stringify(JSON.parse(process.argv[1]).map(c => "
+              + "[...linkTimes(c, 'V').matchAll(/data-t=\"([0-9.]+)\"/g)].map(m => Number(m[1])))));")
+    out = subprocess.run(["node", "-e", script, json.dumps([c for c, _ in CLIP_CASES])],
+                         capture_output=True, text=True, encoding="utf-8", check=True).stdout
+    assert json.loads(out) == [[start for start, _ in spans] for _, spans in CLIP_CASES]
+def test_agent_spans_prefer_times_and_fall_back_to_the_explanation():
+    def step(**c):
+        return {"criteria": [{"source": "vlm", "verdict": "正確", "explanation": "02:00 動作，片段內 00:05", **c}]}
+    assert agent_spans(step(times=[[150.0, 151.0], [160.0, 160.0]])) == [(150.0, 151.0), (160.0, 160.0)]
+    assert agent_spans(step(times=[])) == [(120.0, 120.0)]  # 無法判定 may leave it empty and cite times in the text
+    assert agent_spans(step()) == [(120.0, 120.0)]  # record before the times field
+    assert agent_spans(step(span=[10.0, 26.0], times=[[1.0, 2.0]])) == [(10.0, 26.0)]
+
+
 def test_cited_spans_keep_video_times_in_parentheses_and_other_separators():
     # code review: only 片段內 times are clip-relative; 至／到 are ranges; reversed and 03:75 typos
     assert cited_spans("連續彈擊聲（04:47.5–04:50.1）") == [(287.5, 290.1)]
@@ -124,7 +176,7 @@ def test_agent_cited_time_is_used_before_the_segmentation():
     assert rows[18]["time_source"] == "agent" and rows[18]["model_spans"] == [(210.0, 215.0)]
     assert rows[18]["time_match"] is True  # the segmentation's 03:00–03:08 would not match
     assert rows[19]["time_source"] == "segmentation" and rows[19]["time_match"] is True
-    assert "03:30.0–03:35.0（說明）" in render("VID_0001", list(rows.values()))
+    assert "03:30.0–03:35.0（agent）" in render("VID_0001", list(rows.values()))
     seg["steps"] = [e for e in seg["steps"] if e["step_id"] != 19]
     assert {r["step_id"]: r for r in compare(grading, labels, seg)}[19]["time_source"] is None  # no time at all
 

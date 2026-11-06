@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 4.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 18924,
+  "cached_input_tokens": 0,
+  "output_tokens": 68,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@0-58.9（hands_box，n=9）#0=00:00.0、#1=00:07.4、#2=00:14.7、#3=00:22.1、#4=00:29.4、#5=00:36.8、#6=00:44.2、#7=00:51.5、#8=00:58.9"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 20.0, \"end\": 68.9, \"fps\": 2, \"reason\": \"檢查 00:20–00:68.9 之間學生在洗手後是否有拿起 vial 藥瓶檢視\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 13.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 27336,
+  "cached_input_tokens": 17256,
+  "output_tokens": 61,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@0-58.9（hands_box，n=9）#0=00:00.0、#1=00:07.4、#2=00:14.7、#3=00:22.1、#4=00:29.4、#5=00:36.8、#6=00:44.2、#7=00:51.5、#8=00:58.9",
+   "clip@20-68.9（context box，有聲音；片段內 00:00 ＝ 影片 00:20.0）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 0.0, \"end\": 20.0, \"fps\": 2, \"reason\": \"檢查 00:00.0–00:20.0 是否有拿起藥物檢視\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 10.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 30815,
+  "cached_input_tokens": 17256,
+  "output_tokens": 293,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@0-58.9（hands_box，n=9）#0=00:00.0、#1=00:07.4、#2=00:14.7、#3=00:22.1、#4=00:29.4、#5=00:36.8、#6=00:44.2、#7=00:51.5、#8=00:58.9",
+   "clip@20-68.9（context box，有聲音；片段內 00:00 ＝ 影片 00:20.0）",
+   "clip@0-20（context box，有聲音；片段內 00:00 ＝ 影片 00:00.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"3a\", \"verdict\": \"錯誤\", \"explanation\": \"00:00.0–00:25.0（clip@0-20 全段及 clip@20-68.9 片段內 00:00.0–00:05.0）學生在進行乾洗手；00:25.5–00:56.0（clip@20-68.9 片段內 00:05.5–00:36.0）拿起空針包裝並拆開、旋緊針頭；00:56.5–00:58.5（片段內 00:36.5–00:38.5）左手短暫握住桌面上的藥瓶並推掉塑膠瓶蓋，隨即去拿酒精棉片消毒，整個任務區間內皆未拿起藥物舉到眼前或轉動檢視標籤與粉末。\", \"times\": [[0.0, 58.9]], \"evidence\": [\"ov@0-58.9 #0\", \"clip@0-20\", \"clip@20-68.9\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

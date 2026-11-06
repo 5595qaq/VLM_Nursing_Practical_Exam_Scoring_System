@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 8.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 18647,
+  "cached_input_tokens": 0,
+  "output_tokens": 157,
+  "thinking_tokens": 69,
+  "materials": [
+   "ov@73-79（hands_box，n=9）#0=01:13.0、#1=01:13.8、#2=01:14.5、#3=01:15.2、#4=01:16.0、#5=01:16.8、#6=01:17.5、#7=01:18.2、#8=01:19.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [76.0, 76.8, 77.5, 78.2], \"region\": [0.35, 0.4, 0.7, 0.75], \"reason\": \"放大查看左手持握稀釋液瓶的姿勢，是否以食指與中指夾住\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 12.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 19882,
+  "cached_input_tokens": 17047,
+  "output_tokens": 550,
+  "thinking_tokens": 344,
+  "materials": [
+   "ov@73-79（hands_box，n=9）#0=01:13.0、#1=01:13.8、#2=01:14.5、#3=01:15.2、#4=01:16.0、#5=01:16.8、#6=01:17.5、#7=01:18.2、#8=01:19.0",
+   "zoom@76/76.8/77.5/78.2 region=[0.350, 0.400, 0.700, 0.750]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"12a\", \"verdict\": \"錯誤\", \"explanation\": \"01:16.0–01:17.5 左手以拇指與食指、中指、無名指握持稀釋液瓶，01:18.2 針頭插入後改以中指、無名指與小指托住瓶身、拇指與食指扶住針筒，全程皆未以左手中指及食指夾住稀釋液瓶。\", \"evidence\": [\"ov@73-79 #4\", \"ov@73-79 #5\", \"ov@73-79 #6\", \"zoom@76\", \"zoom@76.8\", \"zoom@77.5\", \"zoom@78.2\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

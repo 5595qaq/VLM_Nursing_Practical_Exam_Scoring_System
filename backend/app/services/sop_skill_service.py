@@ -25,13 +25,13 @@ import sys
 import tempfile
 import time
 import zipfile
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Awaitable, Callable
 
 from app.config import settings
-from app.services import agents, gcs_service, usage
+from app.services import agents, gcs_service, sop_checkpoint, usage
 from app.services.model_logging import attempt_state
 
 logger = logging.getLogger(__name__)
@@ -156,6 +156,7 @@ class ScriptRunner:
         self.workdir = workdir
         self.video = video
         self.probe: dict = {}
+        self.probe_dir: Path | None = None  # load_or_prepare: where an existing probe.json may be
         self.counter = 0
 
     def _run(self, script: str, *args) -> str:
@@ -182,6 +183,17 @@ class ScriptRunner:
         self._run("prepare.py", self.video, "--out", self.workdir)
         self.probe = json.loads((self.workdir / "probe.json").read_text(encoding="utf-8"))
         return [Image(self.workdir / "grid.jpg", "開場格線圖：6 個時間點的完整畫面，綠線每 0.1 一格")]
+
+    def load_or_prepare(self) -> None:
+        """Reuse the proxy of probe_dir's probe.json (the segmentation run's for grading, else an earlier
+        attempt in this workdir) when it is still on disk; a queue worker has a new folder and cuts it again."""
+        probe = (self.probe_dir or self.workdir) / "probe.json"
+        if probe.is_file():
+            data = json.loads(probe.read_text(encoding="utf-8"))
+            if Path(data.get("proxy", "")).is_file():
+                self.probe = data
+                return
+        self.prepare()
 
     def crop_preview(self, box) -> list[Image]:
         out = self._next("crop_preview.jpg")
@@ -320,10 +332,30 @@ def _write_transcript(path: Path, entries: list[dict]) -> None:
     path.write_text(json.dumps(entries, ensure_ascii=False, indent=1), encoding="utf-8")
 
 
+def _read_transcript(path: Path) -> list[dict]:
+    """An earlier attempt's transcript; only the debugging log is shorter when it cannot be read."""
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return []
+
+
 async def run_skill_loop(video_path: Path, video_id: str, workdir: Path, model_call: ModelCall,
                          on_progress: ProgressCallback | None = None,
-                         max_turns: int | None = None) -> dict:
-    """Run SKILL.md section 0 until a valid final result. Returns result + run metadata."""
+                         max_turns: int | None = None,
+                         on_checkpoint: Callable[[], Awaitable[None]] | None = None) -> dict:
+    """Run SKILL.md section 0 until a valid final result. Returns result + run metadata.
+    Continues from workdir's checkpoint when an earlier attempt left one. A SkillRunError (refusal, too many
+    invalid actions, no final) drops the checkpoint, since resuming would only repeat it; other errors,
+    such as a 429 once the SDK retries are used up, keep it for the next attempt."""
+    try:
+        return await _skill_turns(video_path, video_id, workdir, model_call, on_progress, max_turns, on_checkpoint)
+    except SkillRunError:
+        (workdir / sop_checkpoint.CHECKPOINT).unlink(missing_ok=True)
+        raise
+
+
+async def _skill_turns(video_path, video_id, workdir, model_call, on_progress, max_turns, on_checkpoint) -> dict:
     path = skill_dir()
     validate_action = load_skill_module("validate_action")
     sequence_check = load_skill_module("sequence_check")
@@ -332,17 +364,44 @@ async def run_skill_loop(video_path: Path, video_id: str, workdir: Path, model_c
     state = LoopState()
     transcript: list[dict] = []
     max_turns = max_turns or settings.SOP_SKILL_MAX_TURNS
+    checkpoint_path = workdir / sop_checkpoint.CHECKPOINT
+    mark = sop_checkpoint.fingerprint(await asyncio.to_thread(tree_digest, path), video_id,
+                                      settings.GIT_COMMIT, model_name())
+    saved = sop_checkpoint.load(checkpoint_path, mark)
+    if saved and not sop_checkpoint.files_exist(workdir, [name for name, _ in saved["pinned"] + saved["latest"]]):
+        saved = None
+    if not saved:  # an earlier attempt's transcript is not this run's
+        (workdir / "transcript.json").unlink(missing_ok=True)
 
-    pinned = await asyncio.to_thread(runner.prepare)
-    state.images_produced += len(pinned)
-    duration = runner.duration
-    resolution = f"{runner.probe['width']}x{runner.probe['height']}"
     latest: list[Image] = []
     motion_summary = None
     feedback = "開場：請看固定圖片 P1（格線圖）找出雙手操作範圍，送出第一個 crop_preview。"
     rejects = 0
+    first_turn = 1
+    if saved:
+        await asyncio.to_thread(runner.load_or_prepare)
+        state = LoopState(**saved["state"])
+        pinned = [Image(workdir / name, label) for name, label in saved["pinned"]]
+        latest = [Image(workdir / name, label) for name, label in saved["latest"]]
+        motion_summary, feedback, rejects = saved["motion_summary"], saved["feedback"], saved["rejects"]
+        runner.counter = saved["counter"]
+        transcript = _read_transcript(workdir / "transcript.json")[:saved["turn"]]
+        first_turn = saved["turn"] + 1
+        logger.warning("segmentation of %s continues from turn %d", video_id, first_turn)
+    else:
+        pinned = await asyncio.to_thread(runner.prepare)
+        state.images_produced += len(pinned)
+    duration = runner.duration
+    resolution = f"{runner.probe['width']}x{runner.probe['height']}"
 
-    for turn in range(1, max_turns + 1):
+    for turn in range(first_turn, max_turns + 1):
+        sop_checkpoint.save(checkpoint_path, {
+            "fingerprint": mark, "turn": turn - 1, "state": asdict(state), "motion_summary": motion_summary,
+            "pinned": [[image.path.name, image.label] for image in pinned],
+            "latest": [[image.path.name, image.label] for image in latest],
+            "feedback": feedback, "rejects": rejects, "counter": runner.counter})
+        if on_checkpoint:
+            await on_checkpoint()
         if on_progress:
             await on_progress(turn, "thinking", state.validator_state())
         if _image_bytes(pinned + latest) > MAX_REQUEST_IMAGE_BYTES:
@@ -398,6 +457,7 @@ async def run_skill_loop(video_path: Path, video_id: str, workdir: Path, model_c
             result = action["result"]
             (workdir / "result.json").write_text(json.dumps(result, ensure_ascii=False, indent=1),
                                                  encoding="utf-8")
+            checkpoint_path.unlink(missing_ok=True)
             return {
                 "result": result,
                 "sequence_check": sequence_check.check(result),
@@ -657,10 +717,8 @@ def _snapshot_skill(workdir: Path) -> dict:
 def _upload_artifacts(workdir: Path, prefix: str) -> dict:
     archive = workdir.parent / "artifacts.zip"
     with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED) as zf:
-        for item in sorted(workdir.iterdir()):
-            # The proxy is regenerated from the source video; keep the archive small.
-            if item.is_file() and not item.name.startswith("proxy.mp4"):
-                zf.write(item, item.name)
+        # The proxy is regenerated from the source video; keep the archive small.
+        sop_checkpoint.archive(zf, workdir, lambda item: not item.name.startswith("proxy.mp4"))
     uploads = {"artifacts": (archive, "artifacts.zip", "application/zip")}
     for name in ("result.json", "transcript.json"):
         if (workdir / name).exists():
@@ -679,12 +737,16 @@ async def run_sop_skill(video_uri: str, video_id: str, generation: int,
         workdir.mkdir()
         video = root / "source.mp4"
         await asyncio.to_thread(gcs_service.download_to_filename, video_uri, str(video))
+        prefix = artifact_prefix(video_id, generation)
+        await asyncio.to_thread(sop_checkpoint.restore_latest, lambda number: artifact_prefix(video_id, number),
+                                generation, workdir)
         rules = await asyncio.to_thread(_snapshot_skill, workdir)
+        uploader = sop_checkpoint.PeriodicUpload(lambda: _upload_artifacts(workdir, prefix))
         try:
-            outcome = await run_skill_loop(video, video_id, workdir, model_call or default_model_call(),
-                                          on_progress)
+            outcome = await run_skill_loop(video, video_id, workdir, model_call or default_model_call(), on_progress,
+                                          on_checkpoint=uploader)
         finally:
-            prefix = artifact_prefix(video_id, generation)
+            await uploader.drain()
             try:
                 files = await asyncio.to_thread(_upload_artifacts, workdir, prefix)
             except Exception:
