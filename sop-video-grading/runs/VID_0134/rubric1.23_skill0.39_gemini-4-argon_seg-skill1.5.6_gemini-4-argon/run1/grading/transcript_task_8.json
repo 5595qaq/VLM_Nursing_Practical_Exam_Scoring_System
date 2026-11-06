@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 7.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 19241,
+  "cached_input_tokens": 15246,
+  "output_tokens": 124,
+  "thinking_tokens": 43,
+  "materials": [
+   "clip@63.5-72（context box，有聲音；片段內 00:00 ＝ 影片 01:03.5）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [65.5, 67.0, 68.5, 69.5], \"region\": [0.25, 0.45, 0.55, 0.85], \"reason\": \"確認手拿稀釋液瓶並扭開瓶頂\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 54.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 20475,
+  "cached_input_tokens": 0,
+  "output_tokens": 219,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@63.5-72（context box，有聲音；片段內 00:00 ＝ 影片 01:03.5）",
+   "zoom@65.5/67/68.5/69.5 region=[0.250, 0.450, 0.550, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"8a\", \"verdict\": \"正確\", \"explanation\": \"於 01:05.5–01:09.5（clip@63.5-72 片段內 00:02.0–00:06.0）左手握住稀釋液瓶身，右手隔著酒精棉片捏住瓶頂並用力扭轉，於 01:08.5 扭開瓶頂並於 01:09.5 將瓶頂與棉片放到檯面上，已打開稀釋液瓶口。\", \"times\": [[65.5, 69.5]], \"evidence\": [\"clip@63.5-72\", \"zoom@65.5\", \"zoom@67\", \"zoom@68.5\", \"zoom@69.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

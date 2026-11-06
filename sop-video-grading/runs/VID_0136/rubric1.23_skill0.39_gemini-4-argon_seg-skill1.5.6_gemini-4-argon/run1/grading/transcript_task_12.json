@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 20.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 18927,
+  "cached_input_tokens": 0,
+  "output_tokens": 89,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@110-120.2（hands_box，n=9）#0=01:50.0、#1=01:51.3、#2=01:52.5、#3=01:53.8、#4=01:55.1、#5=01:56.4、#6=01:57.7、#7=01:58.9、#8=02:00.2"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [113.8, 115.1, 117.7, 120.2], \"region\": [0.25, 0.25, 0.75, 0.65], \"reason\": \"放大確認左手食指與中指夾住稀釋液瓶的手勢\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 16.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 20170,
+  "cached_input_tokens": 17280,
+  "output_tokens": 171,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@110-120.2（hands_box，n=9）#0=01:50.0、#1=01:51.3、#2=01:52.5、#3=01:53.8、#4=01:55.1、#5=01:56.4、#6=01:57.7、#7=01:58.9、#8=02:00.2",
+   "zoom@113.8/115.1/117.7/120.2 region=[0.250, 0.250, 0.750, 0.650]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"12a\", \"verdict\": \"正確\", \"explanation\": \"於 01:55.1–02:00.2 學生將稀釋液瓶夾於左手中指與食指之間，並進行後續插針與抽取動作，符合標準。\", \"times\": [[115.1, 120.2]], \"evidence\": [\"ov@110-120.2 #4\", \"ov@110-120.2 #8\", \"zoom@115.1\", \"zoom@117.7\", \"zoom@120.2\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

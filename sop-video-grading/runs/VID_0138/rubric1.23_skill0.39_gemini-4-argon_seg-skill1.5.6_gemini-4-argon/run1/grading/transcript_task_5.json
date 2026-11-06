@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 9.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 18764,
+  "cached_input_tokens": 0,
+  "output_tokens": 88,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@57-63（context box，有聲音；片段內 00:00 ＝ 影片 00:57.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [58.0, 59.5, 60.0, 62.5], \"region\": [0.28, 0.78, 0.58, 0.99], \"reason\": \"放大確認 vial 瓶蓋是否在此時段被推開，或是較早就已打開\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 18.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 19971,
+  "cached_input_tokens": 17280,
+  "output_tokens": 342,
+  "thinking_tokens": 142,
+  "materials": [
+   "clip@57-63（context box，有聲音；片段內 00:00 ＝ 影片 00:57.0）",
+   "zoom@58/59.5/60/62.5 region=[0.280, 0.780, 0.580, 0.990]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"00:58.5–01:00.5（clip@57-63 片段內 00:01.5–00:03.5）左手掀開 vial 瓶口的深褐色塑膠蓋並於 01:01.0 放到檯面上，zoom@58 與 zoom@62.5 可清楚看到 vial 瓶頂從深褐色圓蓋變成銀色鋁圈。\", \"times\": [[58.5, 60.5]], \"evidence\": [\"clip@57-63\", \"zoom@58\", \"zoom@59.5\", \"zoom@60\", \"zoom@62.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

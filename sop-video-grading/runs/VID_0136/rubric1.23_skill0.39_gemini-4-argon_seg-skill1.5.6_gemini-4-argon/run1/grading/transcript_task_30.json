@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 17.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 18959,
+  "cached_input_tokens": 0,
+  "output_tokens": 299,
+  "thinking_tokens": 212,
+  "materials": [
+   "ov@294.5-303（hands_box，n=9）#0=04:54.5、#1=04:55.6、#2=04:56.6、#3=04:57.7、#4=04:58.8、#5=04:59.8、#6=05:00.9、#7=05:01.9、#8=05:03.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [297.7, 298.8, 299.8, 300.9], \"region\": [0.15, 0.5, 0.65, 0.98], \"reason\": \"放大確認學生將空針放入針架的過程與持握部位\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 8.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 20232,
+  "cached_input_tokens": 17298,
+  "output_tokens": 339,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@294.5-303（hands_box，n=9）#0=04:54.5、#1=04:55.6、#2=04:56.6、#3=04:57.7、#4=04:58.8、#5=04:59.8、#6=05:00.9、#7=05:01.9、#8=05:03.0",
+   "zoom@297.7/298.8/299.8/300.9 region=[0.150, 0.500, 0.650, 0.980]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"30a\", \"verdict\": \"正確\", \"explanation\": \"04:57.7–05:00.9 學生將抽完藥的空針插回桌上的木製針架（針套立於針架中），並未平放在桌上或丟棄。\", \"times\": [[297.7, 300.9]], \"evidence\": [\"ov@294.5-303 #3\", \"ov@294.5-303 #4\", \"ov@294.5-303 #5\", \"ov@294.5-303 #6\", \"zoom@297.7\", \"zoom@298.8\", \"zoom@299.8\", \"zoom@300.9\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"30b\", \"verdict\": \"正確\", \"explanation\": \"04:57.7–04:59.8 學生右手握住空針外筒（針柄處），將針頭朝下插入針架上的針頭套中。\", \"times\": [[297.7, 299.8]], \"evidence\": [\"zoom@297.7\", \"zoom@298.8\", \"zoom@299.8\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
