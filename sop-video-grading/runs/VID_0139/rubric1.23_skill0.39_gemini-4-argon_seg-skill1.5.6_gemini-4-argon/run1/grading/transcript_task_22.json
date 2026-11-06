@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 32.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 19007,
+  "cached_input_tokens": 0,
+  "output_tokens": 232,
+  "thinking_tokens": 130,
+  "materials": [
+   "ov@218.5-235（hands_box，n=9）#0=03:38.5、#1=03:40.6、#2=03:42.6、#3=03:44.7、#4=03:46.8、#5=03:48.8、#6=03:50.9、#7=03:52.9、#8=03:55.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [220.6, 221.2, 221.8, 222.6], \"region\": [0.35, 0.5, 0.7, 0.9], \"reason\": \"放大查看 03:40.6–03:42.6 針頭插入 vial 時的持針手勢與插入位置\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 10.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 20250,
+  "cached_input_tokens": 17296,
+  "output_tokens": 442,
+  "thinking_tokens": 181,
+  "materials": [
+   "ov@218.5-235（hands_box，n=9）#0=03:38.5、#1=03:40.6、#2=03:42.6、#3=03:44.7、#4=03:46.8、#5=03:48.8、#6=03:50.9、#7=03:52.9、#8=03:55.0",
+   "zoom@220.6/221.2/221.8/222.6 region=[0.350, 0.500, 0.700, 0.900]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"22b\", \"verdict\": \"正確\", \"explanation\": \"03:41–03:42 右手以持毛筆方式（拇指與食指、中指）握住針筒外管，針筒向下刺入桌上的 vial，手指未碰觸針頭、針座及活塞柄內側。\", \"times\": [[221.2, 222.6]], \"evidence\": [\"zoom@221.2\", \"zoom@221.8\", \"zoom@222.6\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"22c\", \"verdict\": \"正確\", \"explanation\": \"03:41–03:42 針頭對準並插入 vial 橡皮塞中心。\", \"times\": [[221.2, 222.6]], \"evidence\": [\"zoom@221.2\", \"zoom@221.8\", \"zoom@222.6\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

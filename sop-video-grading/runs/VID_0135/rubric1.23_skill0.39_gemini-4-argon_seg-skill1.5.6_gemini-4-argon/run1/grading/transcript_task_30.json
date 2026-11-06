@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 7.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 18976,
+  "cached_input_tokens": 0,
+  "output_tokens": 150,
+  "thinking_tokens": 65,
+  "materials": [
+   "ov@418.5-426.4（hands_box，n=9）#0=06:58.5、#1=06:59.5、#2=07:00.5、#3=07:01.5、#4=07:02.4、#5=07:03.4、#6=07:04.4、#7=07:05.4、#8=07:06.4"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [421.0, 421.5, 422.4, 423.4], \"region\": [0.15, 0.5, 0.55, 0.98], \"reason\": \"放大確認將空針放入包裝袋的方式及持握部位\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 20.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 20224,
+  "cached_input_tokens": 17262,
+  "output_tokens": 295,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@418.5-426.4（hands_box，n=9）#0=06:58.5、#1=06:59.5、#2=07:00.5、#3=07:01.5、#4=07:02.4、#5=07:03.4、#6=07:04.4、#7=07:05.4、#8=07:06.4",
+   "zoom@421/421.5/422.4/423.4 region=[0.150, 0.500, 0.550, 0.980]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"30a\", \"verdict\": \"正確\", \"explanation\": \"07:01.0–07:03.4 學生左手打開桌上的空針包裝袋，右手將空針放入空針包裝內。\", \"times\": [[421.0, 423.4]], \"evidence\": [\"ov@418.5-426.4 #3\", \"ov@418.5-426.4 #4\", \"zoom@421\", \"zoom@421.5\", \"zoom@422.4\", \"zoom@423.4\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"30b\", \"verdict\": \"正確\", \"explanation\": \"07:01.0–07:01.5 右手握住針筒靠近針頭端，將空針的針心尾端朝下率先插入空針包裝袋內（由針心處放入包裝）。\", \"times\": [[421.0, 421.5]], \"evidence\": [\"zoom@421\", \"zoom@421.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

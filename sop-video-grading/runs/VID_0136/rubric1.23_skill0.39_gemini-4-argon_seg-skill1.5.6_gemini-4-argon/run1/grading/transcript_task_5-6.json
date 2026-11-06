@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 12.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 20238,
+  "cached_input_tokens": 17280,
+  "output_tokens": 113,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@86.2-99.5（context box，有聲音；片段內 00:00 ＝ 影片 01:26.2）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [88.7, 90.2, 92.7, 96.2], \"region\": [0.15, 0.45, 0.55, 0.95], \"reason\": \"確認打開vial瓶蓋（88.7s、90.2s）及用酒精棉片消毒vial瓶口（92.7s、96.2s）的細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 17.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 21475,
+  "cached_input_tokens": 17262,
+  "output_tokens": 600,
+  "thinking_tokens": 210,
+  "materials": [
+   "clip@86.2-99.5（context box，有聲音；片段內 00:00 ＝ 影片 01:26.2）",
+   "zoom@88.7/90.2/92.7/96.2 region=[0.150, 0.450, 0.550, 0.950]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"01:28–01:31（clip@86.2-99.5 片段內 00:02.0–00:04.5）學生左手握住 vial 藥瓶，右手隔著棉片推開深紅色塑膠翻蓋，並於 01:30.7 將取下的瓶蓋放在治療車左側檯面上（zoom@92.7 左下角可見取下的深紅色翻蓋，vial 瓶頂露出銀色鋁圈）。\", \"times\": [[88.2, 90.7]], \"evidence\": [\"clip@86.2-99.5\", \"zoom@88.7\", \"zoom@90.2\", \"zoom@92.7\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"6a\", \"verdict\": \"正確\", \"explanation\": \"01:32–01:38（clip@86.2-99.5 片段內 00:06.0–00:11.5）學生左手扶著桌上的 vial 藥瓶，右手拿白色方形酒精棉片在 vial 瓶口上方來回擦拭消毒（zoom@92.7、zoom@96.2 清楚可見）。\", \"times\": [[92.2, 97.7]], \"evidence\": [\"clip@86.2-99.5\", \"zoom@92.7\", \"zoom@96.2\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

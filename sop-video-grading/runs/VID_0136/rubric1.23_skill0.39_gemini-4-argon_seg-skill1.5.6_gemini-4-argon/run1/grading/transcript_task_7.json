@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 38.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 20068,
+  "cached_input_tokens": 17280,
+  "output_tokens": 247,
+  "thinking_tokens": 189,
+  "materials": [
+   "clip@76-89（context box，有聲音；片段內 00:00 ＝ 影片 01:16.0）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 66.0, \"end\": 76.0, \"fps\": 2, \"reason\": \"檢查區間開始前10秒是否有更早消毒稀釋液瓶頂的動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 17.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 21981,
+  "cached_input_tokens": 17280,
+  "output_tokens": 87,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@76-89（context box，有聲音；片段內 00:00 ＝ 影片 01:16.0）",
+   "clip@66-76（context box，有聲音；片段內 00:00 ＝ 影片 01:06.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [77.5, 79.0, 82.0, 85.0], \"region\": [0.25, 0.35, 0.55, 0.65], \"reason\": \"確認以酒精棉片消毒稀釋液瓶頂並扭開瓶頂的細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 8.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 23210,
+  "cached_input_tokens": 17280,
+  "output_tokens": 296,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@76-89（context box，有聲音；片段內 00:00 ＝ 影片 01:16.0）",
+   "clip@66-76（context box，有聲音；片段內 00:00 ＝ 影片 01:06.0）",
+   "zoom@77.5/79/82/85 region=[0.250, 0.350, 0.550, 0.650]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"7a\", \"verdict\": \"正確\", \"explanation\": \"於 01:12.0–01:15.0（clip@66-76 片段內 00:06.0–00:09.0）撕開酒精棉片包裝後，01:16.0（clip@76-89 片段內 00:00.0）拿起細長的稀釋液瓶，01:16.5–01:25.0（片段內 00:00.5–00:09.0）以酒精棉片在稀釋液瓶頂端擦拭並包住瓶頂扭開，zoom@77.5、zoom@79、zoom@82、zoom@85 清楚確認手中為細長稀釋液瓶且瓶頂包覆白色方形酒精棉片。\", \"times\": [[76.5, 85.0]], \"evidence\": [\"clip@66-76\", \"clip@76-89\", \"zoom@77.5\", \"zoom@79\", \"zoom@82\", \"zoom@85\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

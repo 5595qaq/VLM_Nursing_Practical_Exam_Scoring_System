@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 5.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 19130,
+  "cached_input_tokens": 16900,
+  "output_tokens": 93,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@46-53.8（context box，有聲音；片段內 00:00 ＝ 影片 00:46.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [47.5, 49.5, 50.0, 51.0], \"region\": [0.35, 0.45, 0.7, 0.95], \"reason\": \"確認 vial 瓶蓋被打開（紅色翻蓋推掉放在桌上，瓶頂變為銀色鋁圈）\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 4.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 20351,
+  "cached_input_tokens": 17279,
+  "output_tokens": 163,
+  "thinking_tokens": 72,
+  "materials": [
+   "clip@46-53.8（context box，有聲音；片段內 00:00 ＝ 影片 00:46.0）",
+   "zoom@47.5/49.5/50/51 region=[0.350, 0.450, 0.700, 0.950]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [50.5, 51.5, 53.0, 53.5], \"region\": [0.4, 0.35, 0.7, 0.98], \"reason\": \"確認 vial 瓶蓋脫落後露出銀色鋁圈及放置於檯面上的深褐色塑膠翻蓋\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 5.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 21587,
+  "cached_input_tokens": 17280,
+  "output_tokens": 237,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@46-53.8（context box，有聲音；片段內 00:00 ＝ 影片 00:46.0）",
+   "zoom@47.5/49.5/50/51 region=[0.350, 0.450, 0.700, 0.950]",
+   "zoom@50.5/51.5/53/53.5 region=[0.400, 0.350, 0.700, 0.980]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"00:47.5 時 vial 瓶頂為深褐色圓蓋，00:48.0–00:50.5 學生左手持 vial、右手將瓶蓋推開，00:51.0–00:52.0 右手將拆下的深褐色瓶蓋放在治療車檯面上，00:53.0–00:53.5 將 vial 放回檯面時可見瓶頂已露出銀色鋁圈。\", \"times\": [[48.0, 51.8]], \"evidence\": [\"clip@46-53.8\", \"zoom@47.5\", \"zoom@49.5\", \"zoom@50\", \"zoom@50.5\", \"zoom@51.5\", \"zoom@53\", \"zoom@53.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

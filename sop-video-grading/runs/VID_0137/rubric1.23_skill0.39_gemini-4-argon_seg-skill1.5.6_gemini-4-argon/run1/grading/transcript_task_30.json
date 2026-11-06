@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 7.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 18947,
+  "cached_input_tokens": 0,
+  "output_tokens": 101,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@261-266.5（hands_box，n=9）#0=04:21.0、#1=04:21.7、#2=04:22.4、#3=04:23.1、#4=04:23.8、#5=04:24.4、#6=04:25.1、#7=04:25.8、#8=04:26.5"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [262.4, 263.1, 263.8, 265.1], \"region\": [0.45, 0.45, 0.98, 0.98], \"reason\": \"放大確認 04:22.4-04:25.1 空針如何放入針架以及手握的位置\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 7.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 20190,
+  "cached_input_tokens": 17298,
+  "output_tokens": 320,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@261-266.5（hands_box，n=9）#0=04:21.0、#1=04:21.7、#2=04:22.4、#3=04:23.1、#4=04:23.8、#5=04:24.4、#6=04:25.1、#7=04:25.8、#8=04:26.5",
+   "zoom@262.4/263.1/263.8/265.1 region=[0.450, 0.450, 0.980, 0.980]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"30a\", \"verdict\": \"正確\", \"explanation\": \"04:23–04:24 學生將抽好藥的空針插回治療車上的針架內（針頭插在針架上的針頭套中直立放置），04:25.1 空針穩固立於針架上。\", \"times\": [[263.1, 265.1]], \"evidence\": [\"ov@261-266.5 #3\", \"ov@261-266.5 #4\", \"zoom@263.1\", \"zoom@263.8\", \"zoom@265.1\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"30b\", \"verdict\": \"正確\", \"explanation\": \"04:22.4–04:23.8 學生以右手持針筒外管（針柄處），將針頭朝下插回針架上的針頭套中放置，未觸碰針頭部位。\", \"times\": [[262.4, 263.8]], \"evidence\": [\"zoom@262.4\", \"zoom@263.1\", \"zoom@263.8\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

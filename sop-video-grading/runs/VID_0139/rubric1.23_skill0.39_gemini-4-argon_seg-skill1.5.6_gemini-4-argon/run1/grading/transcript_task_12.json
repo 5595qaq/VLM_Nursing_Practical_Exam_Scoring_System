@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 25.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 18908,
+  "cached_input_tokens": 0,
+  "output_tokens": 176,
+  "thinking_tokens": 91,
+  "materials": [
+   "ov@109-115（hands_box，n=9）#0=01:49.0、#1=01:49.8、#2=01:50.5、#3=01:51.2、#4=01:52.0、#5=01:52.8、#6=01:53.5、#7=01:54.2、#8=01:55.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [111.2, 112.0, 112.8, 113.5], \"region\": [0.35, 0.35, 0.75, 0.85], \"reason\": \"放大確認左手夾住稀釋液瓶的手指姿勢\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 9.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 20155,
+  "cached_input_tokens": 17262,
+  "output_tokens": 275,
+  "thinking_tokens": 190,
+  "materials": [
+   "ov@109-115（hands_box，n=9）#0=01:49.0、#1=01:49.8、#2=01:50.5、#3=01:51.2、#4=01:52.0、#5=01:52.8、#6=01:53.5、#7=01:54.2、#8=01:55.0",
+   "zoom@111.2/112/112.8/113.5 region=[0.350, 0.350, 0.750, 0.850]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [110.5, 111.2, 112.5, 113.5], \"region\": [0.2, 0.4, 0.55, 0.9], \"reason\": \"調整位置以完整拍到左手夾持稀釋液瓶的手勢\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 7.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 21420,
+  "cached_input_tokens": 17298,
+  "output_tokens": 173,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@109-115（hands_box，n=9）#0=01:49.0、#1=01:49.8、#2=01:50.5、#3=01:51.2、#4=01:52.0、#5=01:52.8、#6=01:53.5、#7=01:54.2、#8=01:55.0",
+   "zoom@111.2/112/112.8/113.5 region=[0.350, 0.350, 0.750, 0.850]",
+   "zoom@110.5/111.2/112.5/113.5 region=[0.200, 0.400, 0.550, 0.900]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"12a\", \"verdict\": \"正確\", \"explanation\": \"01:50.5–01:53.5 清楚看到學生以左手中指與食指夾住稀釋液瓶，並拿起至胸前準備插入針頭。\", \"times\": [[110.5, 113.5]], \"evidence\": [\"ov@109-115 #2\", \"ov@109-115 #5\", \"zoom@110.5\", \"zoom@111.2\", \"zoom@112.5\", \"zoom@113.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
