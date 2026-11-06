@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 6.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 20734,
+  "cached_input_tokens": 17262,
+  "output_tokens": 73,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@96.5-113.5（context box，有聲音；片段內 00:00 ＝ 影片 01:36.5）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 86.5, \"end\": 96.5, \"fps\": 2, \"reason\": \"依規則確認區間開始前 10 秒（拿起稀釋液瓶、撕棉片那段）是否有更早擦拭稀釋液瓶口\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 34.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 22603,
+  "cached_input_tokens": 17296,
+  "output_tokens": 353,
+  "thinking_tokens": 272,
+  "materials": [
+   "clip@96.5-113.5（context box，有聲音；片段內 00:00 ＝ 影片 01:36.5）",
+   "clip@86.5-96.5（context box，有聲音；片段內 00:00 ＝ 影片 01:26.5）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [98.0, 100.0, 105.0], \"region\": [0.28, 0.42, 0.52, 0.72], \"reason\": \"確認酒精棉片擦拭及包住稀釋液瓶口扭開\"}",
+  "errors": []
+ }
+]

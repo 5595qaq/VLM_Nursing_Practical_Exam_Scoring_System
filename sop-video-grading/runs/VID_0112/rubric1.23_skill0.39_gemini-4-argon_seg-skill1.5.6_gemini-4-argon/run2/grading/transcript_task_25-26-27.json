@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 44.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 22409,
+  "cached_input_tokens": 17296,
+  "output_tokens": 109,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@318-343（context box，有聲音；片段內 00:00 ＝ 影片 05:18.0）"
+  ],
+  "reply": "{\"action\": \"burst\", \"start\": 324.5, \"end\": 327.5, \"n\": 9, \"region\": [0.25, 0.25, 0.55, 0.65], \"reason\": \"確認 05:24.5-05:27.5 連續響聲期間是否有彈針動作，以及針頭與針筒接合處是否已墊酒精棉片\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 8.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 23858,
+  "cached_input_tokens": 17296,
+  "output_tokens": 293,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@318-343（context box，有聲音；片段內 00:00 ＝ 影片 05:18.0）",
+   "burst@324.5-327.5（原始解析度，9 格，每 0.38 s）#0=05:24.5、#1=05:24.9、#2=05:25.2、#3=05:25.6、#4=05:26.0、#5=05:26.4、#6=05:26.8、#7=05:27.1、#8=05:27.5 region=[0.250, 0.250, 0.550, 0.650]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"25b\", \"verdict\": \"正確\", \"explanation\": \"於 05:22.0（clip@318-343 片段內 00:04.0）先將白色方形酒精棉片墊在針頭與針筒接合處，接著於 05:24.9–05:27.5（burst@324.5-327.5 #1–#8，對應片段內 00:06.9–00:09.5）右手手指彈擊針筒並伴隨連續彈擊聲（05:25.8–05:27.3），符合先墊酒精棉片才彈針。\", \"times\": [[322.0, 327.5]], \"evidence\": [\"clip@318-343\", \"burst@324.5-327.5 #0\", \"burst@324.5-327.5 #1\", \"burst@324.5-327.5 #4\", \"burst@324.5-327.5 #6\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

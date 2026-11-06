@@ -1,0 +1,119 @@
+{
+ "video_id": "VID_0115",
+ "versions": {
+  "rubric": "1.23",
+  "skill": "0.39",
+  "model": "gemini-4-argon",
+  "segmentation": "skill1.5.6_gemini-4-argon"
+ },
+ "video_sha256": "a17bcbb32003bb5e0775998cf18b030d92ae7460a7aef6f250ac2d2cc6368ee6",
+ "runs": [
+  {
+   "run": 1,
+   "by": "余亮岑",
+   "date": "2026-11-06",
+   "commit": "8edf6e9154aa4b83d7a0a688d71ce06395248d6d",
+   "video_sha256": "a17bcbb32003bb5e0775998cf18b030d92ae7460a7aef6f250ac2d2cc6368ee6",
+   "steps": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    8,
+    9,
+    11,
+    13,
+    14,
+    19,
+    20,
+    21,
+    23,
+    24,
+    28,
+    29
+   ],
+   "failed_tasks": [
+    {
+     "task": "7",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    },
+    {
+     "task": "10",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    },
+    {
+     "task": "12",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    },
+    {
+     "task": "15-16-17",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    },
+    {
+     "task": "18",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    },
+    {
+     "task": "22",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    },
+    {
+     "task": "25",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    },
+    {
+     "task": "25-26-27",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    },
+    {
+     "task": "30",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    }
+   ],
+   "segmentation": "sop-video-skill 1.5.6 gemini-4-argon",
+   "usage": {
+    "input_tokens": 1100499,
+    "cached_input_tokens": 581652,
+    "output_tokens": 12653,
+    "thinking_tokens": 4599
+   },
+   "segmentation_usage": {
+    "input_tokens": 592831,
+    "cached_input_tokens": 419878,
+    "output_tokens": 49082,
+    "thinking_tokens": 0
+   }
+  },
+  {
+   "run": 2,
+   "by": "余亮岑",
+   "date": "2026-11-06",
+   "commit": "8edf6e9154aa4b83d7a0a688d71ce06395248d6d",
+   "video_sha256": "a17bcbb32003bb5e0775998cf18b030d92ae7460a7aef6f250ac2d2cc6368ee6",
+   "steps": [
+    7,
+    10,
+    12,
+    15,
+    16,
+    17,
+    18,
+    22,
+    25,
+    26,
+    27,
+    30
+   ],
+   "failed_tasks": [],
+   "segmentation": "recorded segmentation.json",
+   "usage": {
+    "input_tokens": 688862,
+    "cached_input_tokens": 343554,
+    "output_tokens": 8736,
+    "thinking_tokens": 3070
+   }
+  }
+ ]
+}

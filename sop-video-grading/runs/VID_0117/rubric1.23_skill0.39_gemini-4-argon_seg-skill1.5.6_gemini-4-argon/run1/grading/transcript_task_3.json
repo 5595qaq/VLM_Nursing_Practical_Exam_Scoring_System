@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 12.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 18968,
+  "cached_input_tokens": 0,
+  "output_tokens": 106,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@21-60（hands_box，n=9）#0=00:21.0、#1=00:25.9、#2=00:30.8、#3=00:35.6、#4=00:40.5、#5=00:45.4、#6=00:50.2、#7=00:55.1、#8=01:00.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [25.0, 25.9, 27.5, 55.1], \"region\": [0.3, 0.1, 0.7, 0.6], \"reason\": \"確認學生在 00:25–00:28 與 00:55 手中舉起檢視的瓶子（vial 與稀釋液瓶）細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 20.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 20203,
+  "cached_input_tokens": 0,
+  "output_tokens": 167,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@21-60（hands_box，n=9）#0=00:21.0、#1=00:25.9、#2=00:30.8、#3=00:35.6、#4=00:40.5、#5=00:45.4、#6=00:50.2、#7=00:55.1、#8=01:00.0",
+   "zoom@25/25.9/27.5/55.1 region=[0.300, 0.100, 0.700, 0.600]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"3a\", \"verdict\": \"正確\", \"explanation\": \"00:25–00:28 學生拿起 vial 藥瓶舉到眼前轉動檢視標籤與瓶內粉末；00:55 亦拿起稀釋液瓶檢視。影片限制，無法得知檢查內容是否正確。\", \"times\": [[25.0, 27.5], [55.1, 55.1]], \"evidence\": [\"ov@21-60 #1\", \"zoom@25.9\", \"zoom@27.5\", \"zoom@55.1\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

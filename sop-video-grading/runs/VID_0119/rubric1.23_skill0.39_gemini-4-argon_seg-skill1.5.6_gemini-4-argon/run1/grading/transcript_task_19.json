@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 28.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 18951,
+  "cached_input_tokens": 0,
+  "output_tokens": 218,
+  "thinking_tokens": 126,
+  "materials": [
+   "ov@187.5-199.4（hands_box，n=9）#0=03:07.5、#1=03:09.0、#2=03:10.5、#3=03:12.0、#4=03:13.4、#5=03:14.9、#6=03:16.4、#7=03:17.9、#8=03:19.4"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [191.5, 192.5, 193.5, 194.5], \"region\": [0.25, 0.55, 0.75, 0.98], \"reason\": \"放大確認右手將針頭套入桌上針套的過程，以及左手的位置與動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 23.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 20206,
+  "cached_input_tokens": 17297,
+  "output_tokens": 365,
+  "thinking_tokens": 154,
+  "materials": [
+   "ov@187.5-199.4（hands_box，n=9）#0=03:07.5、#1=03:09.0、#2=03:10.5、#3=03:12.0、#4=03:13.4、#5=03:14.9、#6=03:16.4、#7=03:17.9、#8=03:19.4",
+   "zoom@191.5/192.5/193.5/194.5 region=[0.250, 0.550, 0.750, 0.980]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"19b\", \"verdict\": \"正確\", \"explanation\": \"03:11.5–03:14.5 右手持針筒單手將針頭刺入桌上的針頭套並垂直舉起套緊，過程中左手一直拿著 vial 藥瓶，完全沒有碰觸針頭套。\", \"times\": [[191.5, 194.5]], \"evidence\": [\"ov@187.5-199.4 #3\", \"ov@187.5-199.4 #4\", \"ov@187.5-199.4 #5\", \"zoom@191.5\", \"zoom@192.5\", \"zoom@193.5\", \"zoom@194.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

@@ -1,0 +1,16 @@
+[
+ {
+  "turn": 1,
+  "seconds": 26.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 21185,
+  "cached_input_tokens": 0,
+  "output_tokens": 360,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@0-18.6（context box，有聲音；片段內 00:00 ＝ 影片 00:00.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"1a\", \"verdict\": \"錯誤\", \"explanation\": \"於 00:03.0 雙手開始互搓，至 00:15.5 雙手分開，洗手時間共約 12.5 秒，不足 15 秒。\", \"span\": [3.0, 15.5], \"evidence\": [\"clip@0-18.6\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"1b\", \"verdict\": \"正確\", \"explanation\": \"洗手過程中七個動作皆有做到：內（00:03.0–00:04.0 掌心對掌心）、外（00:04.5–00:05.5 手心搓手背）、夾（00:06.0–00:06.5 十指交叉搓指縫）、弓（00:07.0–00:08.5 彎曲手指搓指背）、大（00:09.0–00:11.0 握住大拇指旋轉）、立（00:11.5–00:13.0 指尖立於掌心搓揉）、腕（00:13.5–00:15.0 搓手腕）。\", \"times\": [[3.0, 15.0]], \"evidence\": [\"clip@0-18.6\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

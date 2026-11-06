@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 5.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 19432,
+  "cached_input_tokens": 17262,
+  "output_tokens": 87,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@68-77.5（context box，有聲音；片段內 00:00 ＝ 影片 01:08.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [70.5, 72.0, 73.5, 74.5], \"region\": [0.25, 0.45, 0.55, 0.85], \"reason\": \"放大確認手部扭開稀釋液瓶頂並將瓶頂分離的動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 6.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 20665,
+  "cached_input_tokens": 17296,
+  "output_tokens": 186,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@68-77.5（context box，有聲音；片段內 00:00 ＝ 影片 01:08.0）",
+   "zoom@70.5/72/73.5/74.5 region=[0.250, 0.450, 0.550, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"8a\", \"verdict\": \"正確\", \"explanation\": \"於 01:10.0–01:13.5（clip@68-77.5 片段內 00:02.0–00:05.5），學生左手握住稀釋液瓶身，右手捏住瓶頂將其扭開，並於 01:14.0 將扭下的瓶頂放在治療車檯面上。\", \"times\": [[70.0, 73.5]], \"evidence\": [\"clip@68-77.5\", \"zoom@70.5\", \"zoom@72\", \"zoom@73.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

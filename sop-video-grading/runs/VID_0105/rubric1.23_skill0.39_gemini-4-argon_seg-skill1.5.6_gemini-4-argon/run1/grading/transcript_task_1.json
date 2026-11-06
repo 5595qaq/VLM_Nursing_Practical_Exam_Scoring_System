@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 16.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 19960,
+  "cached_input_tokens": 0,
+  "output_tokens": 101,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@0-12（context box，有聲音；片段內 00:00 ＝ 影片 00:00.0）"
+  ],
+  "reply": "{\"action\": \"burst\", \"start\": 8.0, \"end\": 11.0, \"n\": 12, \"region\": [0.15, 0.35, 0.55, 0.85], \"reason\": \"確認洗手後半段（08.0–11.0s）是否有做弓、立、腕等動作，以及雙手分開的確切時間點\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 9.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 21433,
+  "cached_input_tokens": 17262,
+  "output_tokens": 342,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@0-12（context box，有聲音；片段內 00:00 ＝ 影片 00:00.0）",
+   "burst@8-11（原始解析度，12 格，每 0.27 s）#0=00:08.0、#1=00:08.3、#2=00:08.5、#3=00:08.8、#4=00:09.1、#5=00:09.4、#6=00:09.6、#7=00:09.9、#8=00:10.2、#9=00:10.5、#10=00:10.7、#11=00:11.0 region=[0.150, 0.350, 0.550, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"1a\", \"verdict\": \"錯誤\", \"explanation\": \"00:02.5 雙手開始互搓，00:11.0 彎腰雙手分開去拿取下方物品，共約 8.5 秒，不足 15 秒。\", \"span\": [2.5, 11.0], \"evidence\": [\"clip@0-12\", \"burst@8-11 #11\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"1b\", \"verdict\": \"正確\", \"explanation\": \"內（00:02.5–00:03.0）、外（00:03.5–00:04.5）、夾（00:05.0）、弓（00:05.5–00:06.0）、大（00:06.5–00:07.5）、立（00:08.5–00:09.6）、腕（00:09.9–00:10.7）七個動作都有做到。\", \"times\": [[2.5, 10.7]], \"evidence\": [\"clip@0-12\", \"burst@8-11 #2\", \"burst@8-11 #7\", \"burst@8-11 #9\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 10.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 18962,
+  "cached_input_tokens": 0,
+  "output_tokens": 147,
+  "thinking_tokens": 61,
+  "materials": [
+   "ov@274-280.5（hands_box，n=9）#0=04:34.0、#1=04:34.8、#2=04:35.6、#3=04:36.4、#4=04:37.2、#5=04:38.1、#6=04:38.9、#7=04:39.7、#8=04:40.5"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [275.6, 277.2, 278.1, 278.9], \"region\": [0.15, 0.65, 0.55, 1.0], \"reason\": \"確認空針放入針架的動作與手握持的部位\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 88.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 20205,
+  "cached_input_tokens": 17262,
+  "output_tokens": 417,
+  "thinking_tokens": 130,
+  "materials": [
+   "ov@274-280.5（hands_box，n=9）#0=04:34.0、#1=04:34.8、#2=04:35.6、#3=04:36.4、#4=04:37.2、#5=04:38.1、#6=04:38.9、#7=04:39.7、#8=04:40.5",
+   "zoom@275.6/277.2/278.1/278.9 region=[0.150, 0.650, 0.550, 1.000]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"30a\", \"verdict\": \"正確\", \"explanation\": \"04:38.1–04:38.9 學生將抽藥後的空針垂直放入桌面左側的木製針架中，04:39.7 起空針穩立於針架上。\", \"times\": [[278.1, 279.7]], \"evidence\": [\"ov@274-280.5 #5\", \"ov@274-280.5 #7\", \"zoom@278.1\", \"zoom@278.9\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"30b\", \"verdict\": \"正確\", \"explanation\": \"04:38.1–04:38.9 學生右手握住空針針筒（針柄）處，將空針放入木製針架中，未拿取針頭部位。\", \"times\": [[278.1, 278.9]], \"evidence\": [\"zoom@278.1\", \"zoom@278.9\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

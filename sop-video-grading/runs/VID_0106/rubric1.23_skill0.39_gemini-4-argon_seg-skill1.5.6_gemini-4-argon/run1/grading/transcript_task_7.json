@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 7.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 19462,
+  "cached_input_tokens": 17296,
+  "output_tokens": 91,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@62-72.5（context box，有聲音；片段內 00:00 ＝ 影片 01:02.0）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 52.0, \"end\": 62.0, \"fps\": 2, \"reason\": \"依規則7a，查看區間開始前10秒至區間開始（52.0–62.0秒），確認學生何時拿起稀釋液瓶、撕開棉片並第一次碰到稀釋液瓶頂。\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 105.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 21235,
+  "cached_input_tokens": 0,
+  "output_tokens": 80,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@62-72.5（context box，有聲音；片段內 00:00 ＝ 影片 01:02.0）",
+   "clip@52-62（context box，有聲音；片段內 00:00 ＝ 影片 00:52.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [63.5, 64.5, 65.5, 68.5], \"region\": [0.3, 0.3, 0.6, 0.65], \"reason\": \"確認稀釋液瓶頂消毒與包住扭開的細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 21.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 22452,
+  "cached_input_tokens": 0,
+  "output_tokens": 212,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@62-72.5（context box，有聲音；片段內 00:00 ＝ 影片 01:02.0）",
+   "clip@52-62（context box，有聲音；片段內 00:00 ＝ 影片 00:52.0）",
+   "zoom@63.5/64.5/65.5/68.5 region=[0.300, 0.300, 0.600, 0.650]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"7a\", \"verdict\": \"正確\", \"explanation\": \"01:03.5–01:06.5（clip@62-72.5 片段內 00:01.5–00:04.5）學生右手拿酒精棉片在左手持的細長稀釋液瓶頂端擦拭消毒，接著於 01:07.0–01:10.5 隔著棉片扭開瓶頂。\", \"times\": [[63.5, 66.5]], \"evidence\": [\"clip@52-62\", \"clip@62-72.5\", \"zoom@63.5\", \"zoom@64.5\", \"zoom@65.5\", \"zoom@68.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 35.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 18972,
+  "cached_input_tokens": 0,
+  "output_tokens": 293,
+  "thinking_tokens": 177,
+  "materials": [
+   "ov@369.4-395（hands_box，n=9）#0=06:09.4、#1=06:12.6、#2=06:15.8、#3=06:19.0、#4=06:22.2、#5=06:25.4、#6=06:28.6、#7=06:31.8、#8=06:35.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [374.5, 375.8, 377.0, 385.4], \"region\": [0.3, 0.05, 0.7, 0.55], \"reason\": \"確認06:14.5-06:17.0右手是否拉針心尾端往後抽（26a），以及針筒是否垂直、針頭向上（26b）\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 8.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 20216,
+  "cached_input_tokens": 17297,
+  "output_tokens": 297,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@369.4-395（hands_box，n=9）#0=06:09.4、#1=06:12.6、#2=06:15.8、#3=06:19.0、#4=06:22.2、#5=06:25.4、#6=06:28.6、#7=06:31.8、#8=06:35.0",
+   "zoom@374.5/375.8/377/385.4 region=[0.300, 0.050, 0.700, 0.550]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"26a\", \"verdict\": \"正確\", \"explanation\": \"06:14.5–06:15.8 左手握針筒外管，右手手指捏住針心尾端圓盤往下拉，將針頭內的液體抽回針筒。\", \"times\": [[374.5, 375.8]], \"evidence\": [\"ov@369.4-395 #2\", \"zoom@374.5\", \"zoom@375.8\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"26b\", \"verdict\": \"正確\", \"explanation\": \"06:14.5–06:31.8 學生以左手持針筒使其保持垂直、針頭朝上進行回抽與排氣。\", \"times\": [[374.5, 391.8]], \"evidence\": [\"ov@369.4-395 #2\", \"ov@369.4-395 #5\", \"zoom@374.5\", \"zoom@375.8\", \"zoom@385.4\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 32.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 19040,
+  "cached_input_tokens": 8192,
+  "output_tokens": 102,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@81-88.5（context box，有聲音；片段內 00:00 ＝ 影片 01:21.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [83.5, 84.5, 85.0, 86.0], \"region\": [0.25, 0.55, 0.55, 0.95], \"reason\": \"放大確認學生在 01:23.5–01:26.0 推開 vial 瓶蓋的動作與瓶頂變化\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 53.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 20270,
+  "cached_input_tokens": 17296,
+  "output_tokens": 230,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@81-88.5（context box，有聲音；片段內 00:00 ＝ 影片 01:21.0）",
+   "zoom@83.5/84.5/85/86 region=[0.250, 0.550, 0.550, 0.950]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"01:23.5（zoom@83.5）可見桌上 vial 頂端原本為褐色圓蓋；01:24.0–01:25.5（clip@81-88.5 片段內 00:03.0–00:04.5，以及 zoom@84.5、zoom@85）學生左手握住 vial，右手將塑膠翻蓋打開並取下；01:26.0（zoom@86）可見 vial 瓶頂已變成銀色鋁圈。\", \"times\": [[84.0, 86.0]], \"evidence\": [\"clip@81-88.5\", \"zoom@83.5\", \"zoom@84.5\", \"zoom@85\", \"zoom@86\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

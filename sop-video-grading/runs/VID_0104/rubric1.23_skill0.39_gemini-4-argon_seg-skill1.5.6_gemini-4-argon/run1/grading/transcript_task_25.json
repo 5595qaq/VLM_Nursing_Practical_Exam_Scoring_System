@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 30.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 22039,
+  "cached_input_tokens": 17262,
+  "output_tokens": 82,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@369.4-395（context box，有聲音；片段內 00:00 ＝ 影片 06:09.4）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [371.4, 376.4, 384.4], \"region\": [0.25, 0.25, 0.55, 0.55], \"reason\": \"確認針頭與針筒接合處是否有白色方形酒精棉片墊著\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 6.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 23266,
+  "cached_input_tokens": 17297,
+  "output_tokens": 179,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@369.4-395（context box，有聲音；片段內 00:00 ＝ 影片 06:09.4）",
+   "zoom@371.4/376.4/384.4 region=[0.250, 0.250, 0.550, 0.550]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"25a\", \"verdict\": \"正確\", \"explanation\": \"於 06:11.4 看到學生取出白色方形酒精棉片，06:11.4–06:33.0（如 zoom@376.4 與 zoom@384.4）清楚看到白色酒精棉片墊在針頭與針筒接合處（針柄）。\", \"times\": [[371.4, 393.0]], \"evidence\": [\"clip@369.4-395\", \"zoom@371.4\", \"zoom@376.4\", \"zoom@384.4\"], \"confidence\": 1.0, \"reason\": null}]}",
+  "errors": []
+ }
+]

@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 13.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 19653,
+  "cached_input_tokens": 17262,
+  "output_tokens": 82,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@28.8-40.4（context box，有聲音；片段內 00:00 ＝ 影片 00:28.8）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [30.8, 37.8, 38.8], \"region\": [0.3, 0.35, 0.65, 0.75], \"reason\": \"確認學生手拿 vial 推掉瓶口塑膠翻蓋的動作及前後瓶口變化\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 13.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 20875,
+  "cached_input_tokens": 0,
+  "output_tokens": 234,
+  "thinking_tokens": 148,
+  "materials": [
+   "clip@28.8-40.4（context box，有聲音；片段內 00:00 ＝ 影片 00:28.8）",
+   "zoom@30.8/37.8/38.8 region=[0.300, 0.350, 0.650, 0.750]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [38.1, 38.3, 39.8], \"region\": [0.25, 0.55, 0.6, 0.95], \"reason\": \"確認vial瓶蓋打開脫離的瞬間以及放回檯面後瓶口變為銀色鋁圈\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 8.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 22113,
+  "cached_input_tokens": 17262,
+  "output_tokens": 211,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@28.8-40.4（context box，有聲音；片段內 00:00 ＝ 影片 00:28.8）",
+   "zoom@30.8/37.8/38.8 region=[0.300, 0.350, 0.650, 0.750]",
+   "zoom@38.1/38.3/39.8 region=[0.250, 0.550, 0.600, 0.950]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"00:30.8–00:38.3（clip@28.8-40.4 片段內 00:02.0–00:09.5）雙手拿起 vial 並推開褐色塑膠翻蓋，00:38.3 翻蓋脫離，00:39.8 放回檯面時可見瓶頂已露出銀色鋁圈與中間橡皮塞。\", \"times\": [[30.8, 38.3]], \"evidence\": [\"clip@28.8-40.4\", \"zoom@30.8\", \"zoom@37.8\", \"zoom@38.3\", \"zoom@39.8\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

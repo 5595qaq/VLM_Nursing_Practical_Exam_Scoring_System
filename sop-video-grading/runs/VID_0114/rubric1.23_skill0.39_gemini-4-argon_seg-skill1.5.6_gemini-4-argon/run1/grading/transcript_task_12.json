@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 5.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 18936,
+  "cached_input_tokens": 15246,
+  "output_tokens": 89,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@89.4-96（hands_box，n=9）#0=01:29.4、#1=01:30.2、#2=01:31.0、#3=01:31.9、#4=01:32.7、#5=01:33.5、#6=01:34.3、#7=01:35.2、#8=01:36.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [92.7, 94.3, 95.2, 96.0], \"region\": [0.35, 0.45, 0.75, 0.95], \"reason\": \"放大確認左手夾持稀釋液瓶的手勢是否以食指與中指夾住\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 7.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 20171,
+  "cached_input_tokens": 17262,
+  "output_tokens": 320,
+  "thinking_tokens": 229,
+  "materials": [
+   "ov@89.4-96（hands_box，n=9）#0=01:29.4、#1=01:30.2、#2=01:31.0、#3=01:31.9、#4=01:32.7、#5=01:33.5、#6=01:34.3、#7=01:35.2、#8=01:36.0",
+   "zoom@92.7/94.3/95.2/96 region=[0.350, 0.450, 0.750, 0.950]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [96.5, 97.5, 98.5, 99.5], \"region\": [0.35, 0.4, 0.75, 0.85], \"reason\": \"確認拿起稀釋液瓶抽吸時左手食指與中指夾住稀釋液瓶的姿勢\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 7.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 21392,
+  "cached_input_tokens": 17296,
+  "output_tokens": 191,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@89.4-96（hands_box，n=9）#0=01:29.4、#1=01:30.2、#2=01:31.0、#3=01:31.9、#4=01:32.7、#5=01:33.5、#6=01:34.3、#7=01:35.2、#8=01:36.0",
+   "zoom@92.7/94.3/95.2/96 region=[0.350, 0.450, 0.750, 0.950]",
+   "zoom@96.5/97.5/98.5/99.5 region=[0.350, 0.400, 0.750, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"12a\", \"verdict\": \"正確\", \"explanation\": \"於 01:34.3–01:39.5 可見學生以左手食指與中指夾住稀釋液瓶口頸部並將其提起抽吸稀釋液，符合左手中指及食指夾住稀釋液瓶之標準。\", \"times\": [[94.3, 99.5]], \"evidence\": [\"ov@89.4-96 #5\", \"ov@89.4-96 #6\", \"zoom@94.3\", \"zoom@95.2\", \"zoom@96\", \"zoom@96.5\", \"zoom@97.5\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

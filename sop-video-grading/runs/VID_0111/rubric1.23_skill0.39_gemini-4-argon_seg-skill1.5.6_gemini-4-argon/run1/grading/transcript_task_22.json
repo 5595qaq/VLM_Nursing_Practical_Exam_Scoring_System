@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 9.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 19007,
+  "cached_input_tokens": 0,
+  "output_tokens": 117,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@173-182.8（hands_box，n=9）#0=02:53.0、#1=02:54.2、#2=02:55.4、#3=02:56.7、#4=02:57.9、#5=02:59.1、#6=03:00.3、#7=03:01.6、#8=03:02.8"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [175.4, 176.0, 176.4, 176.7], \"region\": [0.3, 0.45, 0.75, 0.85], \"reason\": \"放大查看針頭刺入 vial 的瞬間（02:55.4–02:56.7），確認右手持針是否為持毛筆方式及針頭是否刺入 vial 中心\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 9.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 20232,
+  "cached_input_tokens": 17296,
+  "output_tokens": 268,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@173-182.8（hands_box，n=9）#0=02:53.0、#1=02:54.2、#2=02:55.4、#3=02:56.7、#4=02:57.9、#5=02:59.1、#6=03:00.3、#7=03:01.6、#8=03:02.8",
+   "zoom@175.4/176/176.4/176.7 region=[0.300, 0.450, 0.750, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"22b\", \"verdict\": \"正確\", \"explanation\": \"02:56.0–02:56.7 右手以持毛筆方式（拇指與食指、中指握住針筒外管）將針頭垂直向下刺入桌上的 vial，手指未碰觸針頭、針座及活塞柄內側。\", \"times\": [[176.0, 176.7]], \"evidence\": [\"zoom@176\", \"zoom@176.4\", \"zoom@176.7\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"22c\", \"verdict\": \"正確\", \"explanation\": \"02:56.0–02:56.7 針頭對準並垂直刺入 vial 瓶口橡皮塞中心。\", \"times\": [[176.0, 176.7]], \"evidence\": [\"zoom@176\", \"zoom@176.4\", \"zoom@176.7\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 8.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 18868,
+  "cached_input_tokens": 0,
+  "output_tokens": 239,
+  "thinking_tokens": 154,
+  "materials": [
+   "ov@138-145（hands_box，n=9）#0=02:18.0、#1=02:18.9、#2=02:19.8、#3=02:20.6、#4=02:21.5、#5=02:22.4、#6=02:23.2、#7=02:24.1、#8=02:25.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [140.6, 141.5, 142.4, 143.2], \"region\": [0.3, 0.4, 0.7, 0.8], \"reason\": \"放大確認左手是否以食指與中指夾住稀釋液瓶\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 22.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 20095,
+  "cached_input_tokens": 17296,
+  "output_tokens": 359,
+  "thinking_tokens": 178,
+  "materials": [
+   "ov@138-145（hands_box，n=9）#0=02:18.0、#1=02:18.9、#2=02:19.8、#3=02:20.6、#4=02:21.5、#5=02:22.4、#6=02:23.2、#7=02:24.1、#8=02:25.0",
+   "zoom@140.6/141.5/142.4/143.2 region=[0.300, 0.400, 0.700, 0.800]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"12a\", \"verdict\": \"正確\", \"explanation\": \"02:20.6–02:23.2 左手掌心朝上，清楚可見以左手食指與中指夾住稀釋液瓶。\", \"times\": [[140.6, 143.2]], \"evidence\": [\"ov@138-145 #3\", \"ov@138-145 #4\", \"ov@138-145 #5\", \"zoom@140.6\", \"zoom@141.5\", \"zoom@142.4\", \"zoom@143.2\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
