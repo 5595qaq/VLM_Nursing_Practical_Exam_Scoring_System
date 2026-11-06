@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 9.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 20786,
+  "cached_input_tokens": 0,
+  "output_tokens": 100,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@0-17.5（context box，有聲音；片段內 00:00 ＝ 影片 00:00.0）"
+  ],
+  "reply": "{\"action\": \"burst\", \"start\": 5.0, \"end\": 8.0, \"n\": 12, \"region\": [0.35, 0.3, 0.75, 0.65], \"reason\": \"確認 00:05.0–00:08.0 動作轉換處是否有做「弓」（搓指背）動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 13.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 22298,
+  "cached_input_tokens": 0,
+  "output_tokens": 714,
+  "thinking_tokens": 339,
+  "materials": [
+   "clip@0-17.5（context box，有聲音；片段內 00:00 ＝ 影片 00:00.0）",
+   "burst@5-8（原始解析度，12 格，每 0.27 s）#0=00:05.0、#1=00:05.3、#2=00:05.5、#3=00:05.8、#4=00:06.1、#5=00:06.4、#6=00:06.6、#7=00:06.9、#8=00:07.2、#9=00:07.5、#10=00:07.7、#11=00:08.0 region=[0.350, 0.300, 0.750, 0.650]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"1a\", \"verdict\": \"錯誤\", \"explanation\": \"00:02.0 雙手開始互搓，00:14.5 雙手分開去拿桌上空針包裝，洗手時間共約 12.5 秒，不足 15 秒。\", \"evidence\": [\"clip@0-17.5\"], \"confidence\": 0.95, \"reason\": null, \"span\": [2.0, 14.5]}, {\"criterion_id\": \"1b\", \"verdict\": \"正確\", \"explanation\": \"七個洗手動作皆有完成：內（00:02.0–00:02.5 掌心互搓）、外（00:03.0–00:04.5 手心搓手背）、夾（00:05.0–00:06.1 十指交叉搓指縫）、弓（00:06.4–00:07.7 彎曲手指搓指背）、大（00:08.0–00:09.5 握住大拇指旋轉）、立（00:10.0–00:11.0 指尖立在掌心搓）、腕（00:11.5–00:14.0 搓手腕）。\", \"evidence\": [\"clip@0-17.5\", \"burst@5-8 #2\", \"burst@5-8 #7\", \"burst@5-8 #11\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

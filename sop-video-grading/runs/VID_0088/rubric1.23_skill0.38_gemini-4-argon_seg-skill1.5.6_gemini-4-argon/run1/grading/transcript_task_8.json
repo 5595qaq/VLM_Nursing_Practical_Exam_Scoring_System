@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 6.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 19311,
+  "cached_input_tokens": 17047,
+  "output_tokens": 140,
+  "thinking_tokens": 46,
+  "materials": [
+   "clip@107.5-117.5（context box，有聲音；片段內 00:00 ＝ 影片 01:47.5）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [109.5, 110.5, 111.5, 113.0], \"region\": [0.45, 0.3, 0.85, 0.7], \"reason\": \"確認隔著酒精棉片扭開稀釋液瓶頂並將打開的瓶身放回檯面\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 351.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 20557,
+  "cached_input_tokens": 17013,
+  "output_tokens": 301,
+  "thinking_tokens": 134,
+  "materials": [
+   "clip@107.5-117.5（context box，有聲音；片段內 00:00 ＝ 影片 01:47.5）",
+   "zoom@109.5/110.5/111.5/113 region=[0.450, 0.300, 0.850, 0.700]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"8a\", \"verdict\": \"正確\", \"explanation\": \"於 01:50–01:52（clip@107.5-117.5 片段內 00:02.5–00:04.5）學生左手握住塑膠稀釋液瓶身，右手隔著酒精棉片包住瓶頂並將瓶頂扭開。\", \"evidence\": [\"clip@107.5-117.5\", \"zoom@109.5\", \"zoom@110.5\", \"zoom@111.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

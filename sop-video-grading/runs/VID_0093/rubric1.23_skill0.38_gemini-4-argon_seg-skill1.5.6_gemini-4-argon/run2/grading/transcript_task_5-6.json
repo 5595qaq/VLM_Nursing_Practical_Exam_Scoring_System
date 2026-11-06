@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 7.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 18797,
+  "cached_input_tokens": 0,
+  "output_tokens": 126,
+  "thinking_tokens": 28,
+  "materials": [
+   "ov@48-235.2（hands_box，n=9）#0=00:48.0、#1=01:11.4、#2=01:34.8、#3=01:58.2、#4=02:21.6、#5=02:45.0、#6=03:08.4、#7=03:31.8、#8=03:55.2"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 48.0, \"end\": 70.0, \"fps\": 2, \"reason\": \"查看步驟 5（00:50.0–00:54.0）將 vial 瓶口打開與步驟 6（00:55.0–01:07.0）以酒精棉片消毒 vial 瓶口的連續動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 14.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 22935,
+  "cached_input_tokens": 17013,
+  "output_tokens": 365,
+  "thinking_tokens": 277,
+  "materials": [
+   "ov@48-235.2（hands_box，n=9）#0=00:48.0、#1=01:11.4、#2=01:34.8、#3=01:58.2、#4=02:21.6、#5=02:45.0、#6=03:08.4、#7=03:31.8、#8=03:55.2",
+   "clip@48-70（context box，有聲音；片段內 00:00 ＝ 影片 00:48.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [52.0, 54.0, 58.0, 62.0], \"region\": [0.45, 0.4, 0.78, 0.85], \"reason\": \"確認推掉 vial 塑膠翻蓋及以酒精棉片擦拭 vial 瓶口的細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 9.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 24182,
+  "cached_input_tokens": 17047,
+  "output_tokens": 275,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@48-235.2（hands_box，n=9）#0=00:48.0、#1=01:11.4、#2=01:34.8、#3=01:58.2、#4=02:21.6、#5=02:45.0、#6=03:08.4、#7=03:31.8、#8=03:55.2",
+   "clip@48-70（context box，有聲音；片段內 00:00 ＝ 影片 00:48.0）",
+   "zoom@52/54/58/62 region=[0.450, 0.400, 0.780, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"00:51–00:54（clip@48-70 片段內 00:03.0–00:06.0）右手拿著棉片推開 vial 上的深色塑膠翻蓋並放回檯面，zoom@54 清楚看到瓶頂已露出銀色鋁圈。\", \"evidence\": [\"clip@48-70\", \"zoom@52\", \"zoom@54\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"6a\", \"verdict\": \"正確\", \"explanation\": \"00:55–01:05（clip@48-70 片段內 00:07.5–00:17.0）右手拿白色方形酒精棉片在 vial 瓶口反覆旋轉擦拭消毒，擦完後將棉片覆蓋在瓶口上。\", \"evidence\": [\"clip@48-70\", \"zoom@58\", \"zoom@62\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

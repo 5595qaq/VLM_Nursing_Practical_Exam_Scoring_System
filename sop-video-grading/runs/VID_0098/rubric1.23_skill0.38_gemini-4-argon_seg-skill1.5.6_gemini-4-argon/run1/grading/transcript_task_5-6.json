@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 15.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 21642,
+  "cached_input_tokens": 17013,
+  "output_tokens": 376,
+  "thinking_tokens": 288,
+  "materials": [
+   "clip@39.6-62（context box，有聲音；片段內 00:00 ＝ 影片 00:39.6）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [42.1, 47.6, 53.6, 56.6], \"region\": [0.35, 0.35, 0.65, 0.85], \"reason\": \"確認打開vial紅色瓶蓋以及使用酒精棉片擦拭vial瓶口的動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 15.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 22871,
+  "cached_input_tokens": 17047,
+  "output_tokens": 689,
+  "thinking_tokens": 367,
+  "materials": [
+   "clip@39.6-62（context box，有聲音；片段內 00:00 ＝ 影片 00:39.6）",
+   "zoom@42.1/47.6/53.6/56.6 region=[0.350, 0.350, 0.650, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"00:42–00:47（clip@39.6-62 片段內 00:02.5–00:07.5）學生拿起 vial 並以手指推開深紅色塑膠翻蓋，00:47.6（zoom@47.6）可見瓶頂已露出銀色鋁圈，並將拆下的塑膠蓋放在治療車檯面上。\", \"evidence\": [\"clip@39.6-62\", \"zoom@42.1\", \"zoom@47.6\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"6a\", \"verdict\": \"正確\", \"explanation\": \"00:52–00:58（clip@39.6-62 片段內 00:13.0–00:18.5）學生左手持已開蓋的 vial，右手拿白色方形酒精棉片在 vial 瓶口來回擦拭與旋轉消毒（zoom@53.6、zoom@56.6 清楚可見）。\", \"evidence\": [\"clip@39.6-62\", \"zoom@53.6\", \"zoom@56.6\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

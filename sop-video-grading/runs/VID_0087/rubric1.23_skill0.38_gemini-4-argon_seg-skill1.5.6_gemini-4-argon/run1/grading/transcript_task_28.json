@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 36.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 18696,
+  "cached_input_tokens": 8192,
+  "output_tokens": 108,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@283.5-291.5（hands_box，n=9）#0=04:43.5、#1=04:44.5、#2=04:45.5、#3=04:46.5、#4=04:47.5、#5=04:48.5、#6=04:49.5、#7=04:50.5、#8=04:51.5"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [287.0, 287.5, 288.5, 289.2], \"region\": [0.3, 0.55, 0.75, 0.98], \"reason\": \"放大確認 04:47–04:49 單手將針頭插入針架上針頭套時，左手是否有碰觸針頭套\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 78.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 19943,
+  "cached_input_tokens": 17047,
+  "output_tokens": 176,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@283.5-291.5（hands_box，n=9）#0=04:43.5、#1=04:44.5、#2=04:45.5、#3=04:46.5、#4=04:47.5、#5=04:48.5、#6=04:49.5、#7=04:50.5、#8=04:51.5",
+   "zoom@287/287.5/288.5/289.2 region=[0.300, 0.550, 0.750, 0.980]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"28b\", \"verdict\": \"正確\", \"explanation\": \"04:47.0–04:49.2 右手單手握持針筒，將針頭垂直插入立在透明針架上的針頭套中，左手全程懸空於胸前下方，完全沒有碰觸針頭套。\", \"evidence\": [\"ov@283.5-291.5 #4\", \"ov@283.5-291.5 #5\", \"zoom@287\", \"zoom@287.5\", \"zoom@288.5\", \"zoom@289.2\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

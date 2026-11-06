@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 8.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 21662,
+  "cached_input_tokens": 17047,
+  "output_tokens": 109,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@283-303.5（context box，有聲音；片段內 00:00 ＝ 影片 04:43.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [286.5, 290.5, 295.0, 300.0], \"region\": [0.45, 0.3, 0.72, 0.68], \"reason\": \"用 zoom 確認針頭與針筒接合處是否有白色方形酒精棉片、手指彈針筒的動作，以及推針心排氣前後推桿長度的變化\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 103.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 22888,
+  "cached_input_tokens": 17048,
+  "output_tokens": 406,
+  "thinking_tokens": 291,
+  "materials": [
+   "clip@283-303.5（context box，有聲音；片段內 00:00 ＝ 影片 04:43.0）",
+   "zoom@286.5/290.5/295/300 region=[0.450, 0.300, 0.720, 0.680]"
+  ],
+  "reply": "{\"action\": \"burst\", \"start\": 290.0, \"end\": 292.0, \"n\": 9, \"region\": [0.45, 0.15, 0.75, 0.55], \"reason\": \"在連續響聲 04:50.4–04:51.7 附近用 burst 確認右手手指彈擊針筒，以及針頭與針筒接合處是否墊有酒精棉片\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 11.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 24332,
+  "cached_input_tokens": 17048,
+  "output_tokens": 560,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@283-303.5（context box，有聲音；片段內 00:00 ＝ 影片 04:43.0）",
+   "zoom@286.5/290.5/295/300 region=[0.450, 0.300, 0.720, 0.680]",
+   "burst@290-292（原始解析度，9 格，每 0.25 s）#0=04:50.0、#1=04:50.2、#2=04:50.5、#3=04:50.8、#4=04:51.0、#5=04:51.2、#6=04:51.5、#7=04:51.8、#8=04:52.0 region=[0.450, 0.150, 0.750, 0.550]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"25b\", \"verdict\": \"正確\", \"explanation\": \"04:45.5–04:46.5（clip@283-303.5 片段內 00:02.5–00:03.5、zoom@286.5）左手先將白色方形酒精棉片墊在針頭與針筒接合處，之後才在 04:49.5–04:53.5（片段內 00:06.5–00:10.5）以右手指彈針筒。\", \"evidence\": [\"clip@283-303.5\", \"zoom@286.5\", \"burst@290-292 #0\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"27a\", \"verdict\": \"正確\", \"explanation\": \"04:49.5–04:53.6（clip@283-303.5 片段內 00:06.5–00:10.6、burst@290-292 #0-#8）左手持針筒直立，右手食指與中指重複輕彈針筒，並可清楚聽到連續短促的彈擊聲（04:50.4–04:53.6）。\", \"evidence\": [\"clip@283-303.5\", \"burst@290-292 #2\", \"burst@290-292 #3\", \"burst@290-292 #7\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"27b\", \"verdict\": \"正確\", \"explanation\": \"彈針後於 04:54.5–05:00.5（clip@283-303.5 片段內 00:11.5–00:17.5）右手拇指抵住針心尾端圓盤往上推排氣；對比 zoom@295 與 zoom@300，外露推桿長度明顯變短。\", \"evidence\": [\"clip@283-303.5\", \"zoom@295\", \"zoom@300\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

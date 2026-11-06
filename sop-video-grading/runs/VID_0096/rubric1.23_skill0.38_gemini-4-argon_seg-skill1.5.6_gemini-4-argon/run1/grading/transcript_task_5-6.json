@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 172.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 18776,
+  "cached_input_tokens": 0,
+  "output_tokens": 152,
+  "thinking_tokens": 55,
+  "materials": [
+   "ov@48-279.2（hands_box，n=9）#0=00:48.0、#1=01:16.9、#2=01:45.8、#3=02:14.7、#4=02:43.6、#5=03:12.5、#6=03:41.4、#7=04:10.3、#8=04:39.2"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 48.0, \"end\": 70.0, \"fps\": 2, \"reason\": \"觀看步驟5將vial瓶口打開（00:50.0–00:56.0）與步驟6以酒精棉片消毒vial瓶口（00:59.0–01:07.8）的連續動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 169.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 22914,
+  "cached_input_tokens": 0,
+  "output_tokens": 103,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@48-279.2（hands_box，n=9）#0=00:48.0、#1=01:16.9、#2=01:45.8、#3=02:14.7、#4=02:43.6、#5=03:12.5、#6=03:41.4、#7=04:10.3、#8=04:39.2",
+   "clip@48-70（context box，有聲音；片段內 00:00 ＝ 影片 00:48.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [52.0, 55.5, 64.0, 66.5], \"region\": [0.3, 0.25, 0.7, 0.65], \"reason\": \"確認52.0-55.5推開vial瓶蓋，以及64.0-66.5以酒精棉片消毒vial瓶口\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 14.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 24155,
+  "cached_input_tokens": 17047,
+  "output_tokens": 700,
+  "thinking_tokens": 338,
+  "materials": [
+   "ov@48-279.2（hands_box，n=9）#0=00:48.0、#1=01:16.9、#2=01:45.8、#3=02:14.7、#4=02:43.6、#5=03:12.5、#6=03:41.4、#7=04:10.3、#8=04:39.2",
+   "clip@48-70（context box，有聲音；片段內 00:00 ＝ 影片 00:48.0）",
+   "zoom@52/55.5/64/66.5 region=[0.300, 0.250, 0.700, 0.650]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"00:52.5–00:55.0（clip@48-70 片段內 00:04.5–00:07.0）雙手持 vial（zoom@52 可見瓶頂深紅色塑膠翻蓋），以拇指推掉瓶口塑膠翻蓋，並於 00:55.5–00:56.5 將脫落的深紅色瓶蓋放到治療車左側檯面上。\", \"evidence\": [\"clip@48-70\", \"zoom@52\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"6a\", \"verdict\": \"正確\", \"explanation\": \"00:57.5–01:02.5 撕開酒精棉片包裝取出棉片，01:03.0–01:07.0（clip@48-70 片段內 00:15.0–00:19.0）左手持 vial、右手拿酒精棉片在 vial 瓶口來回旋轉擦拭消毒（zoom@64、zoom@66.5 清楚可見銀色鋁圈瓶口與白色酒精棉片），擦完後將棉片覆蓋於瓶口並放回檯面。\", \"evidence\": [\"clip@48-70\", \"zoom@64\", \"zoom@66.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

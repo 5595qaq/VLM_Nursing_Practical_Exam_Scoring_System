@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 14.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 19489,
+  "cached_input_tokens": 17047,
+  "output_tokens": 171,
+  "thinking_tokens": 90,
+  "materials": [
+   "clip@79-90（context box，有聲音；片段內 00:00 ＝ 影片 01:19.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [82.0, 83.5, 84.5, 85.5], \"region\": [0.45, 0.4, 0.85, 0.85], \"reason\": \"放大確認稀釋液瓶口扭開並分離的過程\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 12.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 20722,
+  "cached_input_tokens": 0,
+  "output_tokens": 275,
+  "thinking_tokens": 107,
+  "materials": [
+   "clip@79-90（context box，有聲音；片段內 00:00 ＝ 影片 01:19.0）",
+   "zoom@82/83.5/84.5/85.5 region=[0.450, 0.400, 0.850, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"8a\", \"verdict\": \"正確\", \"explanation\": \"01:22.0–01:25.5（clip@79-90 片段內 00:03.0–00:06.5）左手握住稀釋液瓶身，右手隔著酒精棉片包住瓶頂扭轉，於 01:25.5 將瓶頂扭開脫離並放到治療車上。\", \"evidence\": [\"clip@79-90\", \"zoom@82\", \"zoom@83.5\", \"zoom@85.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
