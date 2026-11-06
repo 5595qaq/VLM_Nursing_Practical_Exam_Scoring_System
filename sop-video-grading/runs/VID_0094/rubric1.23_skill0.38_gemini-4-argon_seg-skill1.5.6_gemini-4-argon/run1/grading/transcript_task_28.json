@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 62.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 18687,
+  "cached_input_tokens": 0,
+  "output_tokens": 87,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@317-324（hands_box，n=9）#0=05:17.0、#1=05:17.9、#2=05:18.8、#3=05:19.6、#4=05:20.5、#5=05:21.4、#6=05:22.2、#7=05:23.1、#8=05:24.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [319.6, 320.5, 321.4, 322.2], \"region\": [0.1, 0.4, 0.7, 0.9], \"reason\": \"確認右手將針頭插入針架上針頭套的過程，以及左手位置\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 46.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 19935,
+  "cached_input_tokens": 17047,
+  "output_tokens": 192,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@317-324（hands_box，n=9）#0=05:17.0、#1=05:17.9、#2=05:18.8、#3=05:19.6、#4=05:20.5、#5=05:21.4、#6=05:22.2、#7=05:23.1、#8=05:24.0",
+   "zoom@319.6/320.5/321.4/322.2 region=[0.100, 0.400, 0.700, 0.900]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"28b\", \"verdict\": \"正確\", \"explanation\": \"05:19.6–05:22.2 學生以右手持針筒，單手將針頭由上往下插入立於治療車針架上的針頭套中回套，期間左手懸空或拿取桌上的藥瓶，全程未碰觸針頭套。\", \"evidence\": [\"ov@317-324 #3\", \"ov@317-324 #4\", \"ov@317-324 #5\", \"zoom@319.6\", \"zoom@320.5\", \"zoom@321.4\", \"zoom@322.2\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

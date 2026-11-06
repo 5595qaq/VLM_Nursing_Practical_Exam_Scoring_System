@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 70.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 18660,
+  "cached_input_tokens": 8192,
+  "output_tokens": 90,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@109-117（hands_box，n=9）#0=01:49.0、#1=01:50.0、#2=01:51.0、#3=01:52.0、#4=01:53.0、#5=01:54.0、#6=01:55.0、#7=01:56.0、#8=01:57.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [111.0, 112.0, 114.0, 115.0], \"region\": [0.35, 0.5, 0.7, 0.9], \"reason\": \"放大確認左手夾住稀釋液瓶的姿勢是否為食指與中指夾住\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 301.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 19887,
+  "cached_input_tokens": 0,
+  "output_tokens": 259,
+  "thinking_tokens": 178,
+  "materials": [
+   "ov@109-117（hands_box，n=9）#0=01:49.0、#1=01:50.0、#2=01:51.0、#3=01:52.0、#4=01:53.0、#5=01:54.0、#6=01:55.0、#7=01:56.0、#8=01:57.0",
+   "zoom@111/112/114/115 region=[0.350, 0.500, 0.700, 0.900]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [113.0, 116.0, 117.0], \"region\": [0.35, 0.55, 0.7, 0.95], \"reason\": \"確認左手食指與中指夾住稀釋液瓶的完整畫面\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 9.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 21113,
+  "cached_input_tokens": 17013,
+  "output_tokens": 199,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@109-117（hands_box，n=9）#0=01:49.0、#1=01:50.0、#2=01:51.0、#3=01:52.0、#4=01:53.0、#5=01:54.0、#6=01:55.0、#7=01:56.0、#8=01:57.0",
+   "zoom@111/112/114/115 region=[0.350, 0.500, 0.700, 0.900]",
+   "zoom@113/116/117 region=[0.350, 0.550, 0.700, 0.950]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"12a\", \"verdict\": \"正確\", \"explanation\": \"於 01:51.0–01:57.0 期間，學生清楚以左手食指與中指夾住稀釋液瓶口（01:51.0–01:53.0 夾住立於桌上的瓶口並插入針頭，01:54.0–01:57.0 夾著瓶口將稀釋液瓶舉起抽取液體），符合標準。\", \"evidence\": [\"ov@109-117 #2\", \"zoom@111\", \"zoom@113\", \"zoom@114\", \"zoom@115\", \"zoom@116\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

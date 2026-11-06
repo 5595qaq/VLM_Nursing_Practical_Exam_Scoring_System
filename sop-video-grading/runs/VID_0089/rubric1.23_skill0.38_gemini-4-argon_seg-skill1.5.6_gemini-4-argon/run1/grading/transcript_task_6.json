@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 10.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 18716,
+  "cached_input_tokens": 0,
+  "output_tokens": 124,
+  "thinking_tokens": 38,
+  "materials": [
+   "clip@63-70（context box，有聲音；片段內 00:00 ＝ 影片 01:03.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [65.5, 66.0, 66.5, 67.0], \"region\": [0.45, 0.25, 0.85, 0.55], \"reason\": \"確認學生手中的瓶子為vial且使用酒精棉片擦拭瓶口\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 15.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 19930,
+  "cached_input_tokens": 17047,
+  "output_tokens": 286,
+  "thinking_tokens": 109,
+  "materials": [
+   "clip@63-70（context box，有聲音；片段內 00:00 ＝ 影片 01:03.0）",
+   "zoom@65.5/66/66.5/67 region=[0.450, 0.250, 0.850, 0.550]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"6a\", \"verdict\": \"正確\", \"explanation\": \"01:05–01:07（clip@63-70 片段內 00:02.0–00:04.0）左手握住已開蓋的 vial，右手持酒精棉片在 vial 瓶口橡皮塞處來回擦拭消毒，zoom@66、zoom@66.5 清楚看到白色方形酒精棉片在銀色鋁圈瓶口上擦拭。\", \"evidence\": [\"clip@63-70\", \"zoom@66\", \"zoom@66.5\", \"zoom@67\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

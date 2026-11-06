@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 7.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 18719,
+  "cached_input_tokens": 0,
+  "output_tokens": 146,
+  "thinking_tokens": 60,
+  "materials": [
+   "ov@318-325.5（hands_box，n=9）#0=05:18.0、#1=05:18.9、#2=05:19.9、#3=05:20.8、#4=05:21.8、#5=05:22.7、#6=05:23.6、#7=05:24.6、#8=05:25.5"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [319.9, 320.8, 321.8, 323.6], \"region\": [0.1, 0.5, 0.5, 1.0], \"reason\": \"確認右手持空針的部位以及將空針插回針架的過程\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 57.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 19946,
+  "cached_input_tokens": 17047,
+  "output_tokens": 282,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@318-325.5（hands_box，n=9）#0=05:18.0、#1=05:18.9、#2=05:19.9、#3=05:20.8、#4=05:21.8、#5=05:22.7、#6=05:23.6、#7=05:24.6、#8=05:25.5",
+   "zoom@319.9/320.8/321.8/323.6 region=[0.100, 0.500, 0.500, 1.000]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"30a\", \"verdict\": \"正確\", \"explanation\": \"05:19.9–05:23.6 學生以右手持空針，將針頭插回針架上的針頭套內並直立固定於針架上。\", \"evidence\": [\"ov@318-325.5 #2\", \"ov@318-325.5 #6\", \"zoom@319.9\", \"zoom@320.8\", \"zoom@321.8\", \"zoom@323.6\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"30b\", \"verdict\": \"正確\", \"explanation\": \"05:19.9–05:21.8 右手握住空針外管（針柄處）將空針放入針架上之針套內，未抓握針頭部位。\", \"evidence\": [\"zoom@319.9\", \"zoom@320.8\", \"zoom@321.8\", \"zoom@323.6\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

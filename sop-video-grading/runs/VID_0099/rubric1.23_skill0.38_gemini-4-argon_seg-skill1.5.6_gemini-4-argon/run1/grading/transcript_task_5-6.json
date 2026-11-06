@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 15.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 19347,
+  "cached_input_tokens": 17013,
+  "output_tokens": 81,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@58.5-68.5（context box，有聲音；片段內 00:00 ＝ 影片 00:58.5）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [60.0, 61.5, 62.5, 64.5], \"region\": [0.4, 0.55, 0.7, 0.9], \"reason\": \"確認vial瓶口打開與酒精棉片消毒vial瓶口\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 27.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 20572,
+  "cached_input_tokens": 0,
+  "output_tokens": 368,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@58.5-68.5（context box，有聲音；片段內 00:00 ＝ 影片 00:58.5）",
+   "zoom@60/61.5/62.5/64.5 region=[0.400, 0.550, 0.700, 0.900]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"01:00.0（zoom@60）vial 瓶頂原本有紅褐色塑膠翻蓋，01:00.5–01:02.0（clip@58.5-68.5 片段內 00:02.0–00:03.5、zoom@61.5）隔著酒精棉片將翻蓋推開，01:02.5（zoom@62.5）翻蓋已脫落掉在檯面上，vial 瓶口露出銀色鋁圈。\", \"evidence\": [\"clip@58.5-68.5\", \"zoom@60\", \"zoom@61.5\", \"zoom@62.5\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"6a\", \"verdict\": \"正確\", \"explanation\": \"01:02.5–01:05.5（clip@58.5-68.5 片段內 00:04.0–00:07.0、zoom@64.5）右手持白色方形酒精棉片在已開蓋的 vial 瓶口上來回旋轉擦拭消毒，完成後將棉片留置於瓶口上。\", \"evidence\": [\"clip@58.5-68.5\", \"zoom@62.5\", \"zoom@64.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

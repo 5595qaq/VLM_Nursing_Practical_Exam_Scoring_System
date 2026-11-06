@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 36.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 18677,
+  "cached_input_tokens": 14997,
+  "output_tokens": 114,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@251-258.5（hands_box，n=9）#0=04:11.0、#1=04:11.9、#2=04:12.9、#3=04:13.8、#4=04:14.8、#5=04:15.7、#6=04:16.6、#7=04:17.6、#8=04:18.5"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [254.0, 254.8, 255.7, 256.5], \"region\": [0.2, 0.45, 0.75, 0.98], \"reason\": \"放大確認 04:14.0 至 04:16.5 右手將針頭插入針架上的針頭套時，左手的位置及是否碰觸針頭套\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 21.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 19924,
+  "cached_input_tokens": 17047,
+  "output_tokens": 285,
+  "thinking_tokens": 100,
+  "materials": [
+   "ov@251-258.5（hands_box，n=9）#0=04:11.0、#1=04:11.9、#2=04:12.9、#3=04:13.8、#4=04:14.8、#5=04:15.7、#6=04:16.6、#7=04:17.6、#8=04:18.5",
+   "zoom@254/254.8/255.7/256.5 region=[0.200, 0.450, 0.750, 0.980]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"28b\", \"verdict\": \"正確\", \"explanation\": \"04:14–04:16 右手單手握持針筒，將針頭垂直插入立在桌面透明針架上的針頭套內，左手全程握著 vial 位於一旁，完全沒有碰觸針頭套。\", \"evidence\": [\"ov@251-258.5 #3\", \"ov@251-258.5 #4\", \"ov@251-258.5 #5\", \"zoom@254\", \"zoom@254.8\", \"zoom@255.7\", \"zoom@256.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

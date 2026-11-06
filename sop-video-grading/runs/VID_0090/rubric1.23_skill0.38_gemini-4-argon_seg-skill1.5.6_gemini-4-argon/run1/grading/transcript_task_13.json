@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 8.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 18748,
+  "cached_input_tokens": 0,
+  "output_tokens": 303,
+  "thinking_tokens": 211,
+  "materials": [
+   "ov@92.8-108（hands_box，n=9）#0=01:32.8、#1=01:34.7、#2=01:36.6、#3=01:38.5、#4=01:40.4、#5=01:42.3、#6=01:44.2、#7=01:46.1、#8=01:48.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [104.0, 105.0, 106.1, 107.5], \"region\": [0.25, 0.35, 0.75, 0.75], \"reason\": \"放大確認插入稀釋液瓶時的左右手分工、針筒方向及手指固定方式\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 6.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 19983,
+  "cached_input_tokens": 17013,
+  "output_tokens": 333,
+  "thinking_tokens": 222,
+  "materials": [
+   "ov@92.8-108（hands_box，n=9）#0=01:32.8、#1=01:34.7、#2=01:36.6、#3=01:38.5、#4=01:40.4、#5=01:42.3、#6=01:44.2、#7=01:46.1、#8=01:48.0",
+   "zoom@104/105/106.1/107.5 region=[0.250, 0.350, 0.750, 0.750]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [104.2, 105.0, 106.1, 108.0], \"region\": [0.38, 0.45, 0.85, 0.85], \"reason\": \"調整放大區域以完整包含雙手、稀釋液瓶與針筒，確認插針方向及哪隻手夾瓶、哪隻手拿針筒與固定針筒\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 7.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 21237,
+  "cached_input_tokens": 17047,
+  "output_tokens": 261,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@92.8-108（hands_box，n=9）#0=01:32.8、#1=01:34.7、#2=01:36.6、#3=01:38.5、#4=01:40.4、#5=01:42.3、#6=01:44.2、#7=01:46.1、#8=01:48.0",
+   "zoom@104/105/106.1/107.5 region=[0.250, 0.350, 0.750, 0.750]",
+   "zoom@104.2/105/106.1/108 region=[0.380, 0.450, 0.850, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"13a\", \"verdict\": \"正確\", \"explanation\": \"於 01:44.2–01:48.0 期間，學生以左手（畫面右側的手）將針頭插入稀釋液瓶口，並以右手（畫面左側夾住稀釋液瓶的手）的拇指與食指扶住並固定針筒前端。\", \"evidence\": [\"zoom@104.2\", \"zoom@105\", \"zoom@106.1\", \"zoom@108\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"13b\", \"verdict\": \"正確\", \"explanation\": \"於 01:44.2–01:46.1 針頭剛插入稀釋液瓶口時，針頭端比針筒尾端低，針筒由右上往左下斜向下插入瓶中。\", \"evidence\": [\"zoom@104.2\", \"zoom@105\", \"zoom@106.1\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 12.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 22520,
+  "cached_input_tokens": 0,
+  "output_tokens": 101,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@144.2-170（context box，有聲音；片段內 00:00 ＝ 影片 02:24.2）"
+  ],
+  "reply": "{\"action\": \"burst\", \"start\": 148.5, \"end\": 151.0, \"n\": 9, \"region\": [0.45, 0.25, 0.85, 0.55], \"reason\": \"在連續響聲 02:29.5–02:30.6 附近確認是否先彈針（尚未墊棉片）\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 6.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 23940,
+  "cached_input_tokens": 0,
+  "output_tokens": 88,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@144.2-170（context box，有聲音；片段內 00:00 ＝ 影片 02:24.2）",
+   "burst@148.5-151（原始解析度，9 格，每 0.31 s）#0=02:28.5、#1=02:28.8、#2=02:29.1、#3=02:29.4、#4=02:29.8、#5=02:30.1、#6=02:30.4、#7=02:30.7、#8=02:31.0 region=[0.450, 0.250, 0.850, 0.550]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [156.5, 160.0], \"region\": [0.45, 0.2, 0.85, 0.55], \"reason\": \"確認02:36.5與02:40.0時針頭與針筒接合處是否墊有酒精棉片\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 24.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 25116,
+  "cached_input_tokens": 17013,
+  "output_tokens": 256,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@144.2-170（context box，有聲音；片段內 00:00 ＝ 影片 02:24.2）",
+   "burst@148.5-151（原始解析度，9 格，每 0.31 s）#0=02:28.5、#1=02:28.8、#2=02:29.1、#3=02:29.4、#4=02:29.8、#5=02:30.1、#6=02:30.4、#7=02:30.7、#8=02:31.0 region=[0.450, 0.250, 0.850, 0.550]",
+   "zoom@156.5/160 region=[0.450, 0.200, 0.850, 0.550]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"15b\", \"verdict\": \"部分正確\", \"explanation\": \"學生於 02:28.5–02:31.0（clip@144.2-170 片段內 00:04.3–00:06.8，burst@148.5-151）先以右手手指連續彈擊針筒並有明顯彈擊聲，此時針頭與針筒接合處未墊酒精棉片；直到 02:36.2（片段內 00:12.0，zoom@156.5）才將白色酒精棉片墊在針頭與針筒接合處並推針心排氣，屬於先彈針後墊棉片。\", \"evidence\": [\"clip@144.2-170\", \"burst@148.5-151 #0\", \"burst@148.5-151 #4\", \"zoom@156.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
