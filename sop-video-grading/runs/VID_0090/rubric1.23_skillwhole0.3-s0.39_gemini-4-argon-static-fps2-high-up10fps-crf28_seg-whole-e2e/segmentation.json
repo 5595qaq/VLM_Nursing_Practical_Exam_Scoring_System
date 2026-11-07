@@ -18,15 +18,15 @@
    "status": "not_visually_determinable",
    "start": null,
    "end": null,
-   "evidence": "影片開始時器材已全部在檯面上，且畫面中看不見給藥紀錄單",
+   "evidence": "影片開始時器材已全部在檯面上，未見取藥過程與給藥紀錄單",
    "confidence": 0.8
   },
   {
    "step_id": 3,
    "status": "detected",
-   "start": 16.5,
-   "end": 22.5,
-   "evidence": "00:16–00:22 拿起稀釋液瓶與 vial 檢視。影片缺乏資訊，無法確認學生的藥瓶是否正確",
+   "start": 16.0,
+   "end": 22.8,
+   "evidence": "00:16–00:22 拿起稀釋液與 vial 檢視。影片缺乏資訊，無法確認學生的藥瓶是否正確",
    "confidence": 0.4
   },
   {
@@ -34,37 +34,29 @@
    "status": "not_visually_determinable",
    "start": null,
    "end": null,
-   "evidence": "00:16–00:39 檢視藥物與空針包裝，但畫面中看不見給藥紀錄單",
+   "evidence": "畫面中看不見給藥紀錄單，無法確認2讀",
    "confidence": 0.8
   },
   {
    "step_id": 5,
    "status": "detected",
-   "start": 41.0,
-   "end": 45.0,
-   "evidence": "00:41–00:45 推掉 vial 褐色塑膠蓋並放回檯面",
+   "start": 39.8,
+   "end": 45.8,
+   "evidence": "00:39–00:45 隔著棉片推掉 vial 褐色塑膠蓋並放回檯面",
    "confidence": 0.9
   },
   {
    "step_id": 6,
    "status": "detected",
-   "start": 45.5,
+   "start": 45.8,
    "end": 49.0,
-   "evidence": "00:45–00:49 用酒精棉片擦拭 vial 瓶口並將棉片蓋在瓶口上",
+   "evidence": "00:45–00:49 用酒精棉片擦拭 vial 瓶口",
    "confidence": 0.9
-  },
-  {
-   "step_id": 6,
-   "status": "detected",
-   "start": 319.5,
-   "end": 325.5,
-   "evidence": "05:19–05:25 撕開新棉片再次擦拭 vial 瓶口",
-   "confidence": 0.8
   },
   {
    "step_id": 7,
    "status": "detected",
-   "start": 55.0,
+   "start": 55.2,
    "end": 60.5,
    "evidence": "00:55–01:00 用酒精棉片包住稀釋液瓶頂扭開並擦拭瓶口",
    "confidence": 0.9
@@ -81,17 +73,17 @@
    "step_id": 9,
    "status": "detected",
    "start": 62.0,
-   "end": 70.0,
-   "evidence": "01:02–01:10 拿起空針包裝並撕開包裝袋",
+   "end": 71.5,
+   "evidence": "01:02–01:11 拿起空針包裝檢視並撕開包裝袋",
    "confidence": 0.9
   },
   {
    "step_id": 10,
    "status": "detected",
-   "start": 70.0,
-   "end": 76.0,
-   "evidence": "01:10–01:16 從包裝取出空針並一手握針頭蓋與針座、一手握針筒旋緊固定",
-   "confidence": 0.9
+   "start": 71.5,
+   "end": 86.2,
+   "evidence": "01:11–01:26 從包裝取出空針並調整固定針頭",
+   "confidence": 0.8
   },
   {
    "step_id": 11,
@@ -105,48 +97,48 @@
    "step_id": 12,
    "status": "detected",
    "start": 101.5,
-   "end": 104.5,
+   "end": 104.2,
    "evidence": "01:41–01:44 左手食指與中指夾住稀釋液瓶",
    "confidence": 0.9
   },
   {
    "step_id": 13,
    "status": "detected",
-   "start": 96.0,
+   "start": 99.0,
    "end": 106.0,
-   "evidence": "01:36–01:46 拔掉針套、將針頭插入稀釋液瓶並以左手手指固定針筒",
+   "evidence": "01:39–01:46 拔掉針頭蓋，右手將針頭插入稀釋液瓶，左手固定針筒",
    "confidence": 0.9
   },
   {
    "step_id": 14,
    "status": "detected",
    "start": 106.0,
-   "end": 127.5,
-   "evidence": "01:46–02:07 右手持針心尾端環狀處拉針心抽取稀釋液後拔出針頭",
+   "end": 128.0,
+   "evidence": "01:46–02:08 右手持針心尾端拉針心抽取稀釋液",
    "confidence": 0.9
   },
   {
    "step_id": 15,
    "status": "detected",
-   "start": 131.0,
-   "end": 152.0,
-   "evidence": "02:11–02:32 將酒精棉片墊在針頭與針筒交接處",
+   "start": 130.5,
+   "end": 151.8,
+   "evidence": "02:10–02:31 拿起酒精棉片墊在針頭與針筒交接處",
    "confidence": 0.9
   },
   {
    "step_id": 16,
    "status": "detected",
    "start": 131.5,
-   "end": 152.0,
-   "evidence": "02:11–02:32 針筒垂直拿在眼前操作排氣",
+   "end": 151.8,
+   "evidence": "02:11–02:31 針筒垂直拿起進行排氣操作",
    "confidence": 0.8
   },
   {
    "step_id": 17,
    "status": "detected",
-   "start": 134.0,
+   "start": 134.5,
    "end": 151.5,
-   "evidence": "02:14–02:31 手指輕彈針筒並推針心排氣",
+   "evidence": "02:14–02:31 右手食指輕彈針筒並推針心排氣",
    "confidence": 0.9
   },
   {
@@ -154,7 +146,7 @@
    "status": "detected",
    "start": 157.5,
    "end": 175.5,
-   "evidence": "02:37–02:55 持毛筆方式將針頭插入 vial 中心並打入稀釋液",
+   "evidence": "02:37–02:55 針頭插入 vial 中心並推針心打入稀釋液",
    "confidence": 0.9
   },
   {
@@ -162,31 +154,31 @@
    "status": "detected",
    "start": 175.5,
    "end": 181.0,
-   "evidence": "02:55–03:01 拔出針頭並單手套入桌上的針頭套",
+   "evidence": "02:55–03:01 抽出針頭並套上桌上的針頭套",
    "confidence": 0.9
   },
   {
    "step_id": 20,
    "status": "detected",
-   "start": 181.5,
+   "start": 182.0,
    "end": 227.5,
-   "evidence": "03:01–03:47 雙手掌心夾住 vial 來回搓滾融合藥液",
+   "evidence": "03:02–03:47 雙手掌心夾住 vial 來回搓滾溶解粉劑",
    "confidence": 0.9
   },
   {
    "step_id": 21,
    "status": "detected",
-   "start": 228.5,
+   "start": 229.0,
    "end": 232.5,
-   "evidence": "03:48–03:52 拿起空針拔除針套",
+   "evidence": "03:49–03:52 拿起空針拔除針頭套",
    "confidence": 0.8
   },
   {
    "step_id": 22,
    "status": "detected",
    "start": 232.5,
-   "end": 239.5,
-   "evidence": "03:52–03:59 持毛筆方式將針頭插入 vial 中心並打入空氣",
+   "end": 240.0,
+   "evidence": "03:52–04:00 將空針插入 vial 中心",
    "confidence": 0.9
   },
   {
@@ -194,47 +186,47 @@
    "status": "detected",
    "start": 240.0,
    "end": 272.0,
-   "evidence": "04:00–04:32 將 vial 倒置舉到眼前、空針朝上抽藥至拔出針頭",
+   "evidence": "04:00–04:32 將 vial 倒置舉起，空針朝上抽藥",
    "confidence": 0.9
   },
   {
    "step_id": 24,
    "status": "detected",
-   "start": 240.5,
-   "end": 271.0,
-   "evidence": "04:00–04:31 右手持針心尾端環狀處往下拉抽出藥液",
+   "start": 240.0,
+   "end": 271.5,
+   "evidence": "04:00–04:31 右手持針心尾端拉針心抽取藥液",
    "confidence": 0.9
   },
   {
    "step_id": 25,
    "status": "detected",
-   "start": 275.0,
+   "start": 274.5,
    "end": 283.0,
-   "evidence": "04:35–04:43 用酒精棉片墊在針頭與針筒交接處",
+   "evidence": "04:34–04:43 拿起酒精棉片墊在針頭與針筒交接處",
    "confidence": 0.9
   },
   {
    "step_id": 26,
    "status": "detected",
-   "start": 275.0,
+   "start": 272.0,
    "end": 283.0,
-   "evidence": "04:35–04:43 將針筒垂直拿起、針頭朝上",
+   "evidence": "04:32–04:43 針筒垂直拿起，針頭向上拉針心並排氣",
    "confidence": 0.9
   },
   {
    "step_id": 27,
    "status": "detected",
    "start": 277.5,
-   "end": 282.5,
-   "evidence": "04:37–04:42 右手輕彈針筒並推針心排氣",
+   "end": 282.8,
+   "evidence": "04:37–04:42 右手輕彈針筒並推針心排出空氣",
    "confidence": 0.9
   },
   {
    "step_id": 28,
    "status": "detected",
-   "start": 284.0,
+   "start": 283.0,
    "end": 288.0,
-   "evidence": "04:44–04:48 單手將針頭套入桌上的針頭套後壓緊",
+   "evidence": "04:43–04:48 將針頭插入桌上的針頭套回套",
    "confidence": 0.9
   },
   {
@@ -242,7 +234,7 @@
    "status": "not_performed",
    "start": null,
    "end": null,
-   "evidence": "直到 06:21 影片結束，空的 vial 仍留在治療車檯面上，未丟棄也未看紀錄單",
+   "evidence": "直至影片結束，空的 vial 仍留在治療車檯面上，未丟棄",
    "confidence": 0.9
   },
   {
@@ -250,8 +242,8 @@
    "status": "not_visually_determinable",
    "start": null,
    "end": null,
-   "evidence": "04:48 回套後放在檯面上，之後拿去點滴架給藥，給藥後在 06:14 放在檯面上，未在給藥前放入空針包裝袋",
-   "confidence": 0.8
+   "evidence": "04:47–04:48 回套後將空針放在桌上（包裝旁），05:35 拿去加藥，06:14 給藥後又放回桌上",
+   "confidence": 0.9
   }
  ],
  "unassigned_spans": [],
