@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 29.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 20414,
+  "cached_input_tokens": 0,
+  "output_tokens": 512,
+  "thinking_tokens": 416,
+  "materials": [
+   "clip@0-15.6（context box，有聲音；片段內 00:00 ＝ 影片 00:00.0）"
+  ],
+  "reply": "{\"action\": \"burst\", \"start\": 10.5, \"end\": 13.5, \"n\": 12, \"region\": [0.35, 0.4, 0.8, 0.8], \"reason\": \"確認洗手最後幾秒（10.5–13.5秒）是否有做「腕」（搓手腕）及「立」的動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 17.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 21935,
+  "cached_input_tokens": 0,
+  "output_tokens": 882,
+  "thinking_tokens": 485,
+  "materials": [
+   "clip@0-15.6（context box，有聲音；片段內 00:00 ＝ 影片 00:00.0）",
+   "burst@10.5-13.5（原始解析度，12 格，每 0.27 s）#0=00:10.5、#1=00:10.8、#2=00:11.0、#3=00:11.3、#4=00:11.6、#5=00:11.9、#6=00:12.1、#7=00:12.4、#8=00:12.7、#9=00:13.0、#10=00:13.2、#11=00:13.5 region=[0.350, 0.400, 0.800, 0.800]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"1a\", \"verdict\": \"錯誤\", \"explanation\": \"00:02.5 雙手開始互搓，00:13.5 雙手分開伸向點滴架，共約 11.0 秒，不足 15 秒。\", \"evidence\": [\"clip@0-15.6\", \"burst@10.5-13.5 #11\"], \"confidence\": 0.95, \"reason\": null, \"span\": [2.5, 13.5]}, {\"criterion_id\": \"1b\", \"verdict\": \"正確\", \"explanation\": \"洗手七個動作皆有完成：內（00:02.5–00:03.0 掌心互搓）、外（00:03.5–00:04.5 手心搓手背）、夾（00:05.0–00:05.5 十指交叉搓指縫）、弓（00:06.5–00:08.5 彎曲手指搓指背）、大（00:09.0–00:10.0 握住大拇指旋轉）、立（00:10.5 指尖立在掌心搓）、腕（00:10.8–00:13.0 搓手腕）。\", \"evidence\": [\"clip@0-15.6\", \"burst@10.5-13.5 #0\", \"burst@10.5-13.5 #1\", \"burst@10.5-13.5 #5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

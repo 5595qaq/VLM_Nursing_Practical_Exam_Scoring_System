@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 49.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 18965,
+  "cached_input_tokens": 8192,
+  "output_tokens": 394,
+  "thinking_tokens": 306,
+  "materials": [
+   "ov@83-149（hands_box，n=9）#0=01:23.0、#1=01:31.2、#2=01:39.5、#3=01:47.8、#4=01:56.0、#5=02:04.2、#6=02:12.5、#7=02:20.8、#8=02:29.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [87.5, 91.2, 132.5, 149.0], \"region\": [0.4, 0.25, 0.85, 0.65], \"reason\": \"放大檢視三次抽取稀釋液時左手夾持稀釋液瓶的姿勢\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 8.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 20182,
+  "cached_input_tokens": 17262,
+  "output_tokens": 228,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@83-149（hands_box，n=9）#0=01:23.0、#1=01:31.2、#2=01:39.5、#3=01:47.8、#4=01:56.0、#5=02:04.2、#6=02:12.5、#7=02:20.8、#8=02:29.0",
+   "zoom@87.5/91.2/132.5/149 region=[0.400, 0.250, 0.850, 0.650]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"12a\", \"verdict\": \"正確\", \"explanation\": \"學生共三次夾取稀釋液瓶抽取稀釋液（01:27.5、01:31.2、02:12.5、02:29.0），放大畫面中皆清楚可見以左手食指與中指夾住稀釋液瓶。\", \"times\": [[87.5, 91.2], [132.5, 132.5], [149.0, 149.0]], \"evidence\": [\"ov@83-149 #1\", \"ov@83-149 #6\", \"ov@83-149 #8\", \"zoom@87.5\", \"zoom@91.2\", \"zoom@132.5\", \"zoom@149\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 75.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 19009,
+  "cached_input_tokens": 0,
+  "output_tokens": 101,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@187-211（hands_box，n=9）#0=03:07.0、#1=03:10.0、#2=03:13.0、#3=03:16.0、#4=03:19.0、#5=03:22.0、#6=03:25.0、#7=03:28.0、#8=03:31.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [189.0, 189.5, 190.0, 190.5], \"region\": [0.35, 0.2, 0.65, 0.6], \"reason\": \"確認針頭插入 vial 的瞬間（約 03:09–03:10）的持針手勢與插入位置\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 126.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 20244,
+  "cached_input_tokens": 17262,
+  "output_tokens": 340,
+  "thinking_tokens": 242,
+  "materials": [
+   "ov@187-211（hands_box，n=9）#0=03:07.0、#1=03:10.0、#2=03:13.0、#3=03:16.0、#4=03:19.0、#5=03:22.0、#6=03:25.0、#7=03:28.0、#8=03:31.0",
+   "zoom@189/189.5/190/190.5 region=[0.350, 0.200, 0.650, 0.600]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [189.5, 190.0, 190.5, 191.0], \"region\": [0.28, 0.2, 0.65, 0.6], \"reason\": \"將放大範圍向左延伸，以完整包含右手持握針筒與針頭刺入 vial 的整個手部及器材畫面\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 85.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 21501,
+  "cached_input_tokens": 17262,
+  "output_tokens": 447,
+  "thinking_tokens": 162,
+  "materials": [
+   "ov@187-211（hands_box，n=9）#0=03:07.0、#1=03:10.0、#2=03:13.0、#3=03:16.0、#4=03:19.0、#5=03:22.0、#6=03:25.0、#7=03:28.0、#8=03:31.0",
+   "zoom@189/189.5/190/190.5 region=[0.350, 0.200, 0.650, 0.600]",
+   "zoom@189.5/190/190.5/191 region=[0.280, 0.200, 0.650, 0.600]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"18b\", \"verdict\": \"正確\", \"explanation\": \"03:09.5–03:11.0 右手拇指與食指、中指握住針筒外管，以持毛筆方式將針頭刺入左手持有的 vial 瓶口，手指未碰觸針頭、針座及活塞柄內側。\", \"times\": [[189.5, 191.0]], \"evidence\": [\"ov@187-211 #1\", \"zoom@189.5\", \"zoom@190\", \"zoom@190.5\", \"zoom@191\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"18c\", \"verdict\": \"正確\", \"explanation\": \"03:10.0–03:11.0 針頭對準並插入 vial 橡皮塞的中心位置。\", \"times\": [[190.0, 191.0]], \"evidence\": [\"zoom@190\", \"zoom@190.5\", \"zoom@191\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

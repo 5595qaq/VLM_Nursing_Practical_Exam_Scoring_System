@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 53.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 22269,
+  "cached_input_tokens": 17262,
+  "output_tokens": 97,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@152-176.4（context box，有聲音；片段內 00:00 ＝ 影片 02:32.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [154.0, 155.0, 171.0, 173.0], \"region\": [0.3, 0.25, 0.6, 0.65], \"reason\": \"確認 5a 推開 vial 瓶蓋與 6a 用酒精棉片擦拭 vial 瓶口的細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 140.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 23502,
+  "cached_input_tokens": 17280,
+  "output_tokens": 553,
+  "thinking_tokens": 234,
+  "materials": [
+   "clip@152-176.4（context box，有聲音；片段內 00:00 ＝ 影片 02:32.0）",
+   "zoom@154/155/171/173 region=[0.300, 0.250, 0.600, 0.650]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"於 02:34.0–02:37.0（clip@152-176.4 片段內 00:02.0–00:05.0）左手持 vial 瓶，右手將 vial 瓶口上的褐色塑膠翻蓋推開取下，露出銀色鋁圈瓶口。\", \"times\": [[154.0, 157.0]], \"evidence\": [\"clip@152-176.4\", \"zoom@154\", \"zoom@155\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"6a\", \"verdict\": \"正確\", \"explanation\": \"於 02:50.5–02:54.0（clip@152-176.4 片段內 00:18.5–00:22.0）右手持酒精棉片在 vial 瓶口處旋轉擦拭消毒。\", \"times\": [[170.5, 174.0]], \"evidence\": [\"clip@152-176.4\", \"zoom@171\", \"zoom@173\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

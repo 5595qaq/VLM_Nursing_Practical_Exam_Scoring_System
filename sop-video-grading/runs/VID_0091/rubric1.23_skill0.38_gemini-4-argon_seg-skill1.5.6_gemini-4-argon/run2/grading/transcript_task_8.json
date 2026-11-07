@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 5.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 19582,
+  "cached_input_tokens": 17030,
+  "output_tokens": 121,
+  "thinking_tokens": 41,
+  "materials": [
+   "clip@85.5-97（context box，有聲音；片段內 00:00 ＝ 影片 01:25.5）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [88.5, 91.5, 92.5, 93.5], \"region\": [0.4, 0.45, 0.7, 0.75], \"reason\": \"確認稀釋液瓶口扭開並脫離的細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 43.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 20819,
+  "cached_input_tokens": 0,
+  "output_tokens": 226,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@85.5-97（context box，有聲音；片段內 00:00 ＝ 影片 01:25.5）",
+   "zoom@88.5/91.5/92.5/93.5 region=[0.400, 0.450, 0.700, 0.750]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"8a\", \"verdict\": \"正確\", \"explanation\": \"於 01:27.5–01:33.5（clip@85.5-97 片段內 00:02.0–00:08.0），學生左手握住稀釋液塑膠瓶身，右手先空手（01:28.5）再隔著酒精棉片（01:31.5–01:32.5）捏住瓶頂扭轉打開，於 01:33.5 將扭下的瓶頂與棉片放到檯面上並立放已打開的稀釋液瓶。\", \"evidence\": [\"clip@85.5-97\", \"zoom@88.5\", \"zoom@91.5\", \"zoom@92.5\", \"zoom@93.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

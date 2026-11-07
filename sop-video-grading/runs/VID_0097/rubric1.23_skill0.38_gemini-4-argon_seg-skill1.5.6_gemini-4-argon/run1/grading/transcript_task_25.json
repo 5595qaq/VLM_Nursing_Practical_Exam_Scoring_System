@@ -1,0 +1,64 @@
+[
+ {
+  "turn": 1,
+  "seconds": 88.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 18734,
+  "cached_input_tokens": 0,
+  "output_tokens": 225,
+  "thinking_tokens": 155,
+  "materials": [
+   "ov@222-287.2（hands_box，n=9）#0=03:42.0、#1=03:50.2、#2=03:58.3、#3=04:06.4、#4=04:14.6、#5=04:22.8、#6=04:30.9、#7=04:39.1、#8=04:47.2"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [230.2, 279.1], \"region\": [0.3, 0.0, 0.7, 0.45], \"reason\": \"放大確認針頭與針筒接合處是否有墊酒精棉片\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 7.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 19888,
+  "cached_input_tokens": 17047,
+  "output_tokens": 246,
+  "thinking_tokens": 76,
+  "materials": [
+   "ov@222-287.2（hands_box，n=9）#0=03:42.0、#1=03:50.2、#2=03:58.3、#3=04:06.4、#4=04:14.6、#5=04:22.8、#6=04:30.9、#7=04:39.1、#8=04:47.2",
+   "zoom@230.2/279.1 region=[0.300, 0.000, 0.700, 0.450]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"25a\", \"verdict\": \"正確\", \"explanation\": \"考生共進行兩次抽藥排氣：第一次於 03:50（230.2s）及第二次重抽後於 04:39（279.1s），zoom 畫面皆清楚顯示白色方形酒精棉片墊在針頭與針筒接合處（針柄）。\", \"evidence\": [\"ov@222-287.2 #1\", \"ov@222-287.2 #7\", \"zoom@230.2\", \"zoom@279.1\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": [
+   "criterion 25a: watch a clip of the window before grading 25a; overview frames 2–4 s apart cannot show whether the hands keep moving"
+  ]
+ },
+ {
+  "turn": 3,
+  "seconds": 27.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 20115,
+  "cached_input_tokens": 17048,
+  "output_tokens": 54,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@222-287.2（hands_box，n=9）#0=03:42.0、#1=03:50.2、#2=03:58.3、#3=04:06.4、#4=04:14.6、#5=04:22.8、#6=04:30.9、#7=04:39.1、#8=04:47.2",
+   "zoom@230.2/279.1 region=[0.300, 0.000, 0.700, 0.450]"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 224.0, \"end\": 236.0, \"fps\": 2, \"reason\": \"觀看步驟 25 墊上酒精棉片的連續動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 4,
+  "seconds": 7.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 22025,
+  "cached_input_tokens": 17048,
+  "output_tokens": 188,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@222-287.2（hands_box，n=9）#0=03:42.0、#1=03:50.2、#2=03:58.3、#3=04:06.4、#4=04:14.6、#5=04:22.8、#6=04:30.9、#7=04:39.1、#8=04:47.2",
+   "zoom@230.2/279.1 region=[0.300, 0.000, 0.700, 0.450]",
+   "clip@224-236（context box，有聲音；片段內 00:00 ＝ 影片 03:44.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"25a\", \"verdict\": \"正確\", \"explanation\": \"於 03:45.0–03:53.0（clip@224-236 片段內 00:01.0–00:09.0，zoom@230.2 即 03:50.2）及第二次重抽後的 04:39.1（zoom@279.1），皆清楚看到白色方形酒精棉片墊在針頭與針筒接合處（針柄）。\", \"evidence\": [\"clip@224-236\", \"zoom@230.2\", \"zoom@279.1\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

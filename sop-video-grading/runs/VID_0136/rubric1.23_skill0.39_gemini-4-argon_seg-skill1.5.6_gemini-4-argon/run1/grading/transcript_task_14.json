@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 8.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 18967,
+  "cached_input_tokens": 0,
+  "output_tokens": 145,
+  "thinking_tokens": 48,
+  "materials": [
+   "ov@117.5-141.2（hands_box，n=9）#0=01:57.5、#1=02:00.5、#2=02:03.4、#3=02:06.4、#4=02:09.3、#5=02:12.3、#6=02:15.3、#7=02:18.2、#8=02:21.2"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [123.4, 126.4, 129.3, 132.3], \"region\": [0.25, 0.25, 0.7, 0.6], \"reason\": \"放大確認抽稀釋液時右手持針心尾端環狀處的姿勢，是否碰觸外露推桿\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 7.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 20237,
+  "cached_input_tokens": 17297,
+  "output_tokens": 169,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@117.5-141.2（hands_box，n=9）#0=01:57.5、#1=02:00.5、#2=02:03.4、#3=02:06.4、#4=02:09.3、#5=02:12.3、#6=02:15.3、#7=02:18.2、#8=02:21.2",
+   "zoom@123.4/126.4/129.3/132.3 region=[0.250, 0.250, 0.700, 0.600]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"14a\", \"verdict\": \"正確\", \"explanation\": \"於 02:03.4–02:12.3 抽取稀釋液期間，清楚可見右手拇指與食指持在針心尾端圓盤（環狀處）向後拉出稀釋液，並未碰觸外露的針心推桿。\", \"times\": [[123.4, 132.3]], \"evidence\": [\"zoom@123.4\", \"zoom@126.4\", \"zoom@129.3\", \"zoom@132.3\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 25.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 19028,
+  "cached_input_tokens": 16901,
+  "output_tokens": 86,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@28-242（hands_box，n=9）#0=00:28.0、#1=00:54.8、#2=01:21.5、#3=01:48.2、#4=02:15.0、#5=02:41.8、#6=03:08.5、#7=03:35.2、#8=04:02.0"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 28.0, \"end\": 45.0, \"fps\": 2, \"reason\": \"檢查 00:28.0–00:45.0 期間步驟 5（打開 vial 瓶口）與步驟 6（以酒精棉片消毒 vial 瓶口）的連續動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 123.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 22248,
+  "cached_input_tokens": 0,
+  "output_tokens": 113,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@28-242（hands_box，n=9）#0=00:28.0、#1=00:54.8、#2=01:21.5、#3=01:48.2、#4=02:15.0、#5=02:41.8、#6=03:08.5、#7=03:35.2、#8=04:02.0",
+   "clip@28-45（context box，有聲音；片段內 00:00 ＝ 影片 00:28.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [30.5, 32.0, 39.5, 41.0], \"region\": [0.25, 0.70, 0.55, 0.99], \"reason\": \"確認 00:30–00:33 推開 vial 瓶蓋，以及 00:39–00:42 以酒精棉片擦拭 vial 瓶口\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 59.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 23489,
+  "cached_input_tokens": 17262,
+  "output_tokens": 545,
+  "thinking_tokens": 228,
+  "materials": [
+   "ov@28-242（hands_box，n=9）#0=00:28.0、#1=00:54.8、#2=01:21.5、#3=01:48.2、#4=02:15.0、#5=02:41.8、#6=03:08.5、#7=03:35.2、#8=04:02.0",
+   "clip@28-45（context box，有聲音；片段內 00:00 ＝ 影片 00:28.0）",
+   "zoom@30.5/32/39.5/41 region=[0.250, 0.700, 0.550, 0.990]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"00:30–00:33（clip@28-45 片段內 00:02.0–00:05.0）右手將 vial 上的深褐色塑膠翻蓋推開並取下放到檯面上，00:39.5 的 zoom 畫面可見瓶頂已變成銀色鋁圈。\", \"times\": [[30.0, 33.0]], \"evidence\": [\"clip@28-45\", \"zoom@30.5\", \"zoom@32\", \"zoom@39.5\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"6a\", \"verdict\": \"正確\", \"explanation\": \"00:39–00:42（clip@28-45 片段內 00:11.5–00:13.5）右手持白色方形酒精棉片在 vial 瓶口來回擦拭消毒，之後將棉片覆蓋於瓶口上。\", \"times\": [[39.5, 41.5]], \"evidence\": [\"clip@28-45\", \"zoom@39.5\", \"zoom@41\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

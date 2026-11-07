@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 121.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 19364,
+  "cached_input_tokens": 17280,
+  "output_tokens": 351,
+  "thinking_tokens": 263,
+  "materials": [
+   "clip@88-98（context box，有聲音；片段內 00:00 ＝ 影片 01:28.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [90.0, 93.5, 95.0, 96.0], \"region\": [0.25, 0.25, 0.65, 0.95], \"reason\": \"確認握持並扭開稀釋液瓶頂的動作及打開後的瓶口狀態\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 119.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 20567,
+  "cached_input_tokens": 17280,
+  "output_tokens": 393,
+  "thinking_tokens": 201,
+  "materials": [
+   "clip@88-98（context box，有聲音；片段內 00:00 ＝ 影片 01:28.0）",
+   "zoom@90/93.5/95/96 region=[0.250, 0.250, 0.650, 0.950]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"8a\", \"verdict\": \"正確\", \"explanation\": \"01:30.0–01:35.5（clip@88-98 片段內 00:02.0–00:07.5）左手握住細長塑膠稀釋液瓶身，右手捏住瓶頂用力扭轉並將稀釋液瓶頂扭開，01:36.0 將打開的稀釋液瓶放回檯面上。\", \"times\": [[90.0, 96.0]], \"evidence\": [\"clip@88-98\", \"zoom@90\", \"zoom@93.5\", \"zoom@95\", \"zoom@96\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

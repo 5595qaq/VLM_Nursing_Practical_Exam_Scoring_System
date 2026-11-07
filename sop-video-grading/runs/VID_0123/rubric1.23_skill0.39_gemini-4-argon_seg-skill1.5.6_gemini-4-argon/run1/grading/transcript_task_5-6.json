@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 108.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 19041,
+  "cached_input_tokens": 0,
+  "output_tokens": 228,
+  "thinking_tokens": 146,
+  "materials": [
+   "ov@115-260（hands_box，n=9）#0=01:55.0、#1=02:13.1、#2=02:31.2、#3=02:49.4、#4=03:07.5、#5=03:25.6、#6=03:43.8、#7=04:01.9、#8=04:20.0"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 112.0, \"end\": 125.0, \"fps\": 2, \"reason\": \"查看 01:52–02:05 期間打開 vial 瓶蓋（5a）與以酒精棉片消毒 vial 瓶口（6a）的連續動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 7.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 21317,
+  "cached_input_tokens": 17262,
+  "output_tokens": 78,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@115-260（hands_box，n=9）#0=01:55.0、#1=02:13.1、#2=02:31.2、#3=02:49.4、#4=03:07.5、#5=03:25.6、#6=03:43.8、#7=04:01.9、#8=04:20.0",
+   "clip@112-125（context box，有聲音；片段內 00:00 ＝ 影片 01:52.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [115.5, 118.0, 121.5], \"region\": [0.28, 0.5, 0.58, 0.85], \"reason\": \"確認 vial 瓶蓋打開與酒精棉片消毒瓶口\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 13.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 22553,
+  "cached_input_tokens": 17280,
+  "output_tokens": 335,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@115-260（hands_box，n=9）#0=01:55.0、#1=02:13.1、#2=02:31.2、#3=02:49.4、#4=03:07.5、#5=03:25.6、#6=03:43.8、#7=04:01.9、#8=04:20.0",
+   "clip@112-125（context box，有聲音；片段內 00:00 ＝ 影片 01:52.0）",
+   "zoom@115.5/118/121.5 region=[0.280, 0.500, 0.580, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"於 01:56.0–01:58.5（clip@112-125 片段內 00:04.0–00:06.5），學生以左手持 vial，右手將瓶頂的紅褐色塑膠翻蓋撥開並放下，01:58.5 時可見瓶頂已變成銀色鋁圈。\", \"times\": [[116.0, 118.5]], \"evidence\": [\"clip@112-125\", \"zoom@115.5\", \"zoom@118\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"6a\", \"verdict\": \"正確\", \"explanation\": \"於 02:01.0–02:02.5（clip@112-125 片段內 00:09.0–00:10.5），學生以右手持白色方形酒精棉片在 vial 瓶口擦拭消毒，擦拭後將棉片覆蓋於瓶口並放回桌面。\", \"times\": [[121.0, 122.5]], \"evidence\": [\"clip@112-125\", \"zoom@121.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

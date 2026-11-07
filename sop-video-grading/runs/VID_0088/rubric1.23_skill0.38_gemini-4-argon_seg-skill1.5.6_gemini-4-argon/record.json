@@ -1,0 +1,103 @@
+{
+ "video_id": "VID_0088",
+ "versions": {
+  "rubric": "1.23",
+  "skill": "0.38",
+  "model": "gemini-4-argon",
+  "segmentation": "skill1.5.6_gemini-4-argon"
+ },
+ "video_sha256": "c22ac624bbb7e977ea4cc8cd916bd8807a3e65e11959ad865ef20169294e0f9e",
+ "runs": [
+  {
+   "run": 1,
+   "by": "od3w",
+   "date": "2026-11-05",
+   "commit": "086706ed512f0a47305fc8ea63902dcf823e3628",
+   "video_sha256": "c22ac624bbb7e977ea4cc8cd916bd8807a3e65e11959ad865ef20169294e0f9e",
+   "steps": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    13,
+    14,
+    16,
+    17,
+    20,
+    21,
+    22,
+    23,
+    24,
+    28,
+    29,
+    30
+   ],
+   "failed_tasks": [
+    {
+     "task": "12",
+     "error": "RemoteProtocolError: Server disconnected without sending a response."
+    },
+    {
+     "task": "15",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    },
+    {
+     "task": "18",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    },
+    {
+     "task": "19",
+     "error": "RemoteProtocolError: Server disconnected without sending a response."
+    },
+    {
+     "task": "25-26-27",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    }
+   ],
+   "segmentation": "sop-video-skill 1.5.6 gemini-4-argon",
+   "usage": {
+    "input_tokens": 1314957,
+    "cached_input_tokens": 710378,
+    "output_tokens": 25901,
+    "thinking_tokens": 15948
+   },
+   "segmentation_usage": {
+    "input_tokens": 626549,
+    "cached_input_tokens": 469548,
+    "output_tokens": 56957,
+    "thinking_tokens": 0
+   }
+  },
+  {
+   "run": 2,
+   "by": "od3w",
+   "date": "2026-11-05",
+   "commit": "086706ed512f0a47305fc8ea63902dcf823e3628",
+   "video_sha256": "c22ac624bbb7e977ea4cc8cd916bd8807a3e65e11959ad865ef20169294e0f9e",
+   "steps": [
+    12,
+    15,
+    18,
+    19,
+    25,
+    26,
+    27
+   ],
+   "failed_tasks": [],
+   "segmentation": "recorded segmentation.json",
+   "usage": {
+    "input_tokens": 548180,
+    "cached_input_tokens": 238648,
+    "output_tokens": 8742,
+    "thinking_tokens": 4821
+   }
+  }
+ ]
+}

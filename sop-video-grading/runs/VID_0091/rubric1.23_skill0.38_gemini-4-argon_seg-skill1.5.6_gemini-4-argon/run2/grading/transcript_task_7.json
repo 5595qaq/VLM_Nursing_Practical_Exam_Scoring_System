@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 42.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 20233,
+  "cached_input_tokens": 0,
+  "output_tokens": 71,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@81-96（context box，有聲音；片段內 00:00 ＝ 影片 01:21.0）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 71.0, \"end\": 81.0, \"fps\": 2, \"reason\": \"依規則7a，查看任務區間開始前10秒（71-81s）是否已有消毒稀釋液瓶頂的動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 23.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 22166,
+  "cached_input_tokens": 0,
+  "output_tokens": 81,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@81-96（context box，有聲音；片段內 00:00 ＝ 影片 01:21.0）",
+   "clip@71-81（context box，有聲音；片段內 00:00 ＝ 影片 01:11.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [83.5, 85.0, 90.0], \"region\": [0.4, 0.25, 0.75, 0.6], \"reason\": \"確認以酒精棉片消毒稀釋液瓶頂及包住瓶頂扭開之細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 22.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 23391,
+  "cached_input_tokens": 17013,
+  "output_tokens": 521,
+  "thinking_tokens": 311,
+  "materials": [
+   "clip@81-96（context box，有聲音；片段內 00:00 ＝ 影片 01:21.0）",
+   "clip@71-81（context box，有聲音；片段內 00:00 ＝ 影片 01:11.0）",
+   "zoom@83.5/85/90 region=[0.400, 0.250, 0.750, 0.600]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"7a\", \"verdict\": \"正確\", \"explanation\": \"於 01:23.0（clip@81-96 片段內 00:02.0）開始以酒精棉片接觸並擦拭細長稀釋液瓶頂端，隔著棉片扭開瓶頂後，於 01:29.5–01:33.0 再次以酒精棉片擦拭稀釋液瓶口（zoom@83.5、zoom@85、zoom@90 清楚確認手中為細長稀釋液瓶與白色酒精棉片）。\", \"evidence\": [\"clip@71-81\", \"clip@81-96\", \"zoom@83.5\", \"zoom@85\", \"zoom@90\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

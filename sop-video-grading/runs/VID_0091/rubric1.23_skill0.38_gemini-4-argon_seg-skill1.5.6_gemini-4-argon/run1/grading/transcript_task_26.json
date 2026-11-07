@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 12.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 18728,
+  "cached_input_tokens": 0,
+  "output_tokens": 511,
+  "thinking_tokens": 392,
+  "materials": [
+   "ov@284-303.5（hands_box，n=9）#0=04:44.0、#1=04:46.4、#2=04:48.9、#3=04:51.3、#4=04:53.8、#5=04:56.2、#6=04:58.6、#7=05:01.1、#8=05:03.5"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [288.0, 288.5, 288.9, 289.5], \"region\": [0.35, 0.1, 0.75, 0.55], \"reason\": \"確認 04:48–04:49.5 針筒垂直針頭朝上，以及右手在針心尾端圓盤往下拉（往後抽）的動作與推桿長度變化\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 8.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 19943,
+  "cached_input_tokens": 17048,
+  "output_tokens": 474,
+  "thinking_tokens": 200,
+  "materials": [
+   "ov@284-303.5（hands_box，n=9）#0=04:44.0、#1=04:46.4、#2=04:48.9、#3=04:51.3、#4=04:53.8、#5=04:56.2、#6=04:58.6、#7=05:01.1、#8=05:03.5",
+   "zoom@288/288.5/288.9/289.5 region=[0.350, 0.100, 0.750, 0.550]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"26a\", \"verdict\": \"正確\", \"explanation\": \"04:48.0–04:48.9 右手手指捏住針心尾端圓盤往下拉，至 04:49.5 可見外露推桿略微變長，完成針心往後抽動作。\", \"evidence\": [\"ov@284-303.5 #2\", \"zoom@288\", \"zoom@288.5\", \"zoom@288.9\", \"zoom@289.5\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"26b\", \"verdict\": \"正確\", \"explanation\": \"04:48.0–04:58.6 左手持針筒垂直拿起、針頭朝上進行回抽與排氣。\", \"evidence\": [\"ov@284-303.5 #2\", \"ov@284-303.5 #5\", \"zoom@288\", \"zoom@288.9\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

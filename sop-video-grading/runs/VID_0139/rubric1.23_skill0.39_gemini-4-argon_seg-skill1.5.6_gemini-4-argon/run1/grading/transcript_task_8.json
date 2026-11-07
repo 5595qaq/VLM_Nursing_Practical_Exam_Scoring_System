@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 12.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 19040,
+  "cached_input_tokens": 0,
+  "output_tokens": 92,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@87.5-95（context box，有聲音；片段內 00:00 ＝ 影片 01:27.5）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [90.0, 91.0, 92.0, 93.0], \"region\": [0.22, 0.42, 0.52, 0.85], \"reason\": \"放大確認左手拿的細長稀釋液瓶口是否被右手扭開並將瓶蓋放到桌上\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 30.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 20261,
+  "cached_input_tokens": 17262,
+  "output_tokens": 290,
+  "thinking_tokens": 109,
+  "materials": [
+   "clip@87.5-95（context box，有聲音；片段內 00:00 ＝ 影片 01:27.5）",
+   "zoom@90/91/92/93 region=[0.220, 0.420, 0.520, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"8a\", \"verdict\": \"正確\", \"explanation\": \"01:30.0–01:31.5（clip@87.5-95 片段內 00:02.5–00:04.0）左手握住細長稀釋液瓶瓶身，右手捏住瓶頂將其扭開，並於 01:32.0 將扭下的瓶頂放在治療盤上。\", \"times\": [[90.0, 92.0]], \"evidence\": [\"clip@87.5-95\", \"zoom@90\", \"zoom@91\", \"zoom@92\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

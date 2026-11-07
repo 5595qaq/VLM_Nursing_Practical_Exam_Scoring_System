@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 16.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 26530,
+  "cached_input_tokens": 17279,
+  "output_tokens": 369,
+  "thinking_tokens": 295,
+  "materials": [
+   "clip@162-210（context box，有聲音；片段內 00:00 ＝ 影片 02:42.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [166.0, 180.0], \"region\": [0.35, 0.25, 0.6, 0.55], \"reason\": \"確認針頭與針筒接合處是否墊有白色方形酒精棉片\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 14.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 27726,
+  "cached_input_tokens": 17279,
+  "output_tokens": 196,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@162-210（context box，有聲音；片段內 00:00 ＝ 影片 02:42.0）",
+   "zoom@166/180 region=[0.350, 0.250, 0.600, 0.550]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"15a\", \"verdict\": \"正確\", \"explanation\": \"02:45.0–03:28.0（clip@162-210 片段內 00:03.0–00:46.0）考生拿起白色方形酒精棉片墊在針頭與針筒交接處，zoom@166（02:46.0）與 zoom@180（03:00.0）清楚確認酒精棉片墊於交接處。\", \"times\": [[165.0, 208.0]], \"evidence\": [\"clip@162-210\", \"zoom@166\", \"zoom@180\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

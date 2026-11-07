@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 87.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 18946,
+  "cached_input_tokens": 0,
+  "output_tokens": 282,
+  "thinking_tokens": 170,
+  "materials": [
+   "ov@23-57（hands_box，n=9）#0=00:23.0、#1=00:27.2、#2=00:31.5、#3=00:35.8、#4=00:40.0、#5=00:44.2、#6=00:48.5、#7=00:52.8、#8=00:57.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [27.2, 50.5, 52.8, 54.0], \"region\": [0.25, 0.35, 0.75, 0.85], \"reason\": \"確認學生在 00:27.2 及 00:50.5–00:54.0 拿起稀釋液瓶與 vial 藥瓶檢視的細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 73.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 20178,
+  "cached_input_tokens": 17262,
+  "output_tokens": 345,
+  "thinking_tokens": 137,
+  "materials": [
+   "ov@23-57（hands_box，n=9）#0=00:23.0、#1=00:27.2、#2=00:31.5、#3=00:35.8、#4=00:40.0、#5=00:44.2、#6=00:48.5、#7=00:52.8、#8=00:57.0",
+   "zoom@27.2/50.5/52.8/54 region=[0.250, 0.350, 0.750, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"3a\", \"verdict\": \"正確\", \"explanation\": \"00:27.2 學生左手拿起稀釋液瓶並以右手食指指著瓶身檢視；00:50.5–00:54.0 左手拿起 vial 藥瓶舉至胸前，轉動瓶身並搭配右手食指指著標籤檢視。影片限制，無法得知檢查內容是否正確。\", \"times\": [[27.2, 27.2], [50.5, 54.0]], \"evidence\": [\"ov@23-57 #1\", \"ov@23-57 #7\", \"zoom@27.2\", \"zoom@50.5\", \"zoom@52.8\", \"zoom@54\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
