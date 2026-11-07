@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 12.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 19677,
+  "cached_input_tokens": 17001,
+  "output_tokens": 302,
+  "thinking_tokens": 219,
+  "materials": [
+   "clip@56-66.5（context box，有聲音；片段內 00:00 ＝ 影片 00:56.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [58.0, 60.0, 62.0, 63.0], \"region\": [0.3, 0.25, 0.6, 0.65], \"reason\": \"確認打開vial瓶口與酒精棉片消毒vial瓶口的細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 12.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 20899,
+  "cached_input_tokens": 17262,
+  "output_tokens": 591,
+  "thinking_tokens": 270,
+  "materials": [
+   "clip@56-66.5（context box，有聲音；片段內 00:00 ＝ 影片 00:56.0）",
+   "zoom@58/60/62/63 region=[0.300, 0.250, 0.600, 0.650]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"00:58–01:01（clip@56-66.5 片段內 00:02.0–00:05.0）學生左手持 vial，右手隔著酒精棉片將 vial 上的深褐色塑膠翻蓋推開並放於檯面上，zoom@62 可見瓶頂已變成銀色鋁圈。\", \"times\": [[58.0, 61.0]], \"evidence\": [\"clip@56-66.5\", \"zoom@58\", \"zoom@60\", \"zoom@62\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"6a\", \"verdict\": \"正確\", \"explanation\": \"01:01.5–01:04.0（clip@56-66.5 片段內 00:05.5–00:08.0）學生以右手拿酒精棉片在已開蓋的 vial 瓶口上來回旋轉擦拭消毒。\", \"times\": [[61.5, 64.0]], \"evidence\": [\"clip@56-66.5\", \"zoom@62\", \"zoom@63\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

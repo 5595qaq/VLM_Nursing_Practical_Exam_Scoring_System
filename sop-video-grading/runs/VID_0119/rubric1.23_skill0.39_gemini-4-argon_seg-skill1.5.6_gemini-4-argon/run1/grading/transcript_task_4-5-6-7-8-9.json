@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 28.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 19061,
+  "cached_input_tokens": 0,
+  "output_tokens": 589,
+  "thinking_tokens": 523,
+  "materials": [
+   "ov@34-81.5（hands_box，n=9）#0=00:34.0、#1=00:39.9、#2=00:45.9、#3=00:51.8、#4=00:57.8、#5=01:03.7、#6=01:09.6、#7=01:15.6、#8=01:21.5"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 34.0, \"end\": 80.0, \"fps\": 2, \"reason\": \"查看整個context畫面是否有給藥紀錄單，並確認撕開空針包裝前是否有用手指指出空針包裝核對\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 36.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 27600,
+  "cached_input_tokens": 17296,
+  "output_tokens": 227,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@34-81.5（hands_box，n=9）#0=00:34.0、#1=00:39.9、#2=00:45.9、#3=00:51.8、#4=00:57.8、#5=01:03.7、#6=01:09.6、#7=01:15.6、#8=01:21.5",
+   "clip@34-80（context box，有聲音；片段內 00:00 ＝ 影片 00:34.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4e\", \"verdict\": \"無法判定\", \"explanation\": \"整個畫面（含治療車檯面、點滴架、牆面）都看不見給藥紀錄單（00:34–00:35.5 學生彎腰低頭看向治療車下層，紀錄單不在鏡頭畫面內）。而在 01:09.0–01:17.5（clip@34-80 片段內 00:35.0–00:43.5）學生拿起空針包裝並直接撕開，期間也未用手指指出空針包裝核對。\", \"times\": [[69.0, 77.5]], \"evidence\": [\"ov@34-81.5 #0\", \"ov@34-81.5 #6\", \"clip@34-80\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}]}",
+  "errors": []
+ }
+]

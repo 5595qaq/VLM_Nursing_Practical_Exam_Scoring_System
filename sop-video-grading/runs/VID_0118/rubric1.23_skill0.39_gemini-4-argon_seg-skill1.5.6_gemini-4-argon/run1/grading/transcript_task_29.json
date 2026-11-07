@@ -1,0 +1,65 @@
+[
+ {
+  "turn": 1,
+  "seconds": 8.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 19057,
+  "cached_input_tokens": 0,
+  "output_tokens": 99,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@344.5-443.57（hands_box，n=9）#0=05:44.5、#1=05:56.9、#2=06:09.3、#3=06:21.6、#4=06:34.0、#5=06:46.4、#6=06:58.8、#7=07:11.2、#8=07:23.6"
+  ],
+  "reply": "{\"action\": \"overview\", \"start\": 383.5, \"end\": 443.5, \"n\": 9, \"box\": \"context\", \"reason\": \"查看整個畫面（context）以尋找給藥紀錄單位置、收集筒位置，以及空瓶是否被丟棄（注意 06:58.8–07:11.2 之間桌上的 vial 消失了）\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 6.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 20403,
+  "cached_input_tokens": 17296,
+  "output_tokens": 88,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@344.5-443.57（hands_box，n=9）#0=05:44.5、#1=05:56.9、#2=06:09.3、#3=06:21.6、#4=06:34.0、#5=06:46.4、#6=06:58.8、#7=07:11.2、#8=07:23.6",
+   "ov@383.5-443.5（context_box，n=9）#0=06:23.5、#1=06:31.0、#2=06:38.5、#3=06:46.0、#4=06:53.5、#5=07:01.0、#6=07:08.5、#7=07:16.0、#8=07:23.5"
+  ],
+  "reply": "{\"action\": \"overview\", \"start\": 344.5, \"end\": 395.0, \"n\": 9, \"box\": \"context\", \"reason\": \"Check 344.5-395.0 in context box to see where the medication record is and what the student does with the empty vial around 05:56.9\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 12.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 21744,
+  "cached_input_tokens": 17298,
+  "output_tokens": 464,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@344.5-443.57（hands_box，n=9）#0=05:44.5、#1=05:56.9、#2=06:09.3、#3=06:21.6、#4=06:34.0、#5=06:46.4、#6=06:58.8、#7=07:11.2、#8=07:23.6",
+   "ov@383.5-443.5（context_box，n=9）#0=06:23.5、#1=06:31.0、#2=06:38.5、#3=06:46.0、#4=06:53.5、#5=07:01.0、#6=07:08.5、#7=07:16.0、#8=07:23.5",
+   "ov@344.5-395（context_box，n=9）#0=05:44.5、#1=05:50.8、#2=05:57.1、#3=06:03.4、#4=06:09.8、#5=06:16.1、#6=06:22.4、#7=06:28.7、#8=06:35.0"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"29a\", \"verdict\": \"無法判定\", \"explanation\": \"05:44–07:23 整個任務區間及擴大畫面（context_box）中皆看不到給藥紀錄單（檯面上只有乾洗手液瓶、稀釋液瓶、vial 空瓶、棉片包裝與針架，點滴架與牆面亦無紀錄單），無法確認學生視線是否注視給藥紀錄單。\", \"times\": [], \"evidence\": [\"ov@344.5-395 #0\", \"ov@383.5-443.5 #8\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}, {\"criterion_id\": \"29b\", \"verdict\": \"無法判定\", \"explanation\": \"05:44–07:23 畫面中看不到給藥紀錄單，無法確認學生是否用手指指出給藥紀錄單。\", \"times\": [], \"evidence\": [\"ov@344.5-395 #0\", \"ov@383.5-443.5 #8\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}, {\"criterion_id\": \"29c\", \"verdict\": \"錯誤\", \"explanation\": \"05:44–07:23 學生都在進行點滴加藥（消毒加藥口、注入藥液、調整滴速），直到影片結束（07:23.6）藥物空瓶（vial）與稀釋液瓶仍一直立在治療車檯面上，未將空瓶丟棄。\", \"times\": [[344.5, 443.57]], \"evidence\": [\"ov@344.5-443.57 #0\", \"ov@344.5-443.57 #8\", \"ov@383.5-443.5 #8\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": [
+   "criterion 29c: times 344.5-443.57 must stay within 334.5-443.567s; times are video seconds, so add the clip's start to a time read inside a clip"
+  ]
+ },
+ {
+  "turn": 4,
+  "seconds": 18.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 22280,
+  "cached_input_tokens": 17298,
+  "output_tokens": 463,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@344.5-443.57（hands_box，n=9）#0=05:44.5、#1=05:56.9、#2=06:09.3、#3=06:21.6、#4=06:34.0、#5=06:46.4、#6=06:58.8、#7=07:11.2、#8=07:23.6",
+   "ov@383.5-443.5（context_box，n=9）#0=06:23.5、#1=06:31.0、#2=06:38.5、#3=06:46.0、#4=06:53.5、#5=07:01.0、#6=07:08.5、#7=07:16.0、#8=07:23.5",
+   "ov@344.5-395（context_box，n=9）#0=05:44.5、#1=05:50.8、#2=05:57.1、#3=06:03.4、#4=06:09.8、#5=06:16.1、#6=06:22.4、#7=06:28.7、#8=06:35.0"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"29a\", \"verdict\": \"無法判定\", \"explanation\": \"05:44–07:23 整個任務區間及擴大畫面（context_box）中皆看不到給藥紀錄單（檯面上只有乾洗手液瓶、稀釋液瓶、vial 空瓶、棉片包裝與針架，點滴架與牆面亦無紀錄單），無法確認學生視線是否注視給藥紀錄單。\", \"times\": [], \"evidence\": [\"ov@344.5-395 #0\", \"ov@383.5-443.5 #8\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}, {\"criterion_id\": \"29b\", \"verdict\": \"無法判定\", \"explanation\": \"05:44–07:23 畫面中看不到給藥紀錄單，無法確認學生是否用手指指出給藥紀錄單。\", \"times\": [], \"evidence\": [\"ov@344.5-395 #0\", \"ov@383.5-443.5 #8\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}, {\"criterion_id\": \"29c\", \"verdict\": \"錯誤\", \"explanation\": \"05:44–07:23 學生都在進行點滴加藥（消毒加藥口、注入藥液、調整滴速），直到影片結束（07:23.5）藥物空瓶（vial）與稀釋液瓶仍一直立在治療車檯面上，未將空瓶丟棄。\", \"times\": [[344.5, 443.5]], \"evidence\": [\"ov@344.5-443.57 #0\", \"ov@344.5-443.57 #8\", \"ov@383.5-443.5 #8\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

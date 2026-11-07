@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 72.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 18956,
+  "cached_input_tokens": 0,
+  "output_tokens": 107,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@283.5-320（hands_box，n=9）#0=04:43.5、#1=04:48.1、#2=04:52.6、#3=04:57.2、#4=05:01.8、#5=05:06.3、#6=05:10.9、#7=05:15.4、#8=05:20.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [288.1, 297.2, 306.3, 315.4], \"region\": [0.3, 0.05, 0.65, 0.55], \"reason\": \"放大檢視右手在抽取藥液時持握針心尾端的手勢，確認是否僅持尾端環狀處且未碰觸外露推桿\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 28.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 20208,
+  "cached_input_tokens": 17296,
+  "output_tokens": 205,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@283.5-320（hands_box，n=9）#0=04:43.5、#1=04:48.1、#2=04:52.6、#3=04:57.2、#4=05:01.8、#5=05:06.3、#6=05:10.9、#7=05:15.4、#8=05:20.0",
+   "zoom@288.1/297.2/306.3/315.4 region=[0.300, 0.050, 0.650, 0.550]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"24a\", \"verdict\": \"正確\", \"explanation\": \"於 04:48–05:15 抽取藥液過程中，經 zoom 畫面確認，右手大拇指與中指持於針心尾端環狀圓盤處進行抽拉，食指靠在針筒外筒翼緣處，全程未碰觸外露的針心推桿。\", \"times\": [[288.1, 315.4]], \"evidence\": [\"ov@283.5-320 #1\", \"ov@283.5-320 #7\", \"zoom@288.1\", \"zoom@297.2\", \"zoom@306.3\", \"zoom@315.4\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

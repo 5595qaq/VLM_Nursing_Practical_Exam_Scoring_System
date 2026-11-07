@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 7.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 19233,
+  "cached_input_tokens": 0,
+  "output_tokens": 83,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@87.5-96（context box，有聲音；片段內 00:00 ＝ 影片 01:27.5）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [90.0, 91.0, 92.0, 93.0], \"region\": [0.25, 0.45, 0.55, 0.85], \"reason\": \"確認稀釋液瓶頂被扭開並脫離的細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 18.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 20454,
+  "cached_input_tokens": 17296,
+  "output_tokens": 291,
+  "thinking_tokens": 99,
+  "materials": [
+   "clip@87.5-96（context box，有聲音；片段內 00:00 ＝ 影片 01:27.5）",
+   "zoom@90/91/92/93 region=[0.250, 0.450, 0.550, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"8a\", \"verdict\": \"正確\", \"explanation\": \"01:30–01:32（clip@87.5-96 片段內 00:02.5–00:04.5）左手握住稀釋液瓶身，右手隔著酒精棉片包住稀釋液瓶頂扭開，01:32 瓶頂脫離並噴出少許液體，之後將已打開的稀釋液瓶立於檯面上。\", \"times\": [[90.0, 92.0]], \"evidence\": [\"clip@87.5-96\", \"zoom@90\", \"zoom@91\", \"zoom@92\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

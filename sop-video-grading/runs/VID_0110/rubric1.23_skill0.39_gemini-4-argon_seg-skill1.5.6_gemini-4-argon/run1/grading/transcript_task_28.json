@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 58.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 18944,
+  "cached_input_tokens": 0,
+  "output_tokens": 388,
+  "thinking_tokens": 298,
+  "materials": [
+   "ov@273-283（hands_box，n=9）#0=04:33.0、#1=04:34.2、#2=04:35.5、#3=04:36.8、#4=04:38.0、#5=04:39.2、#6=04:40.5、#7=04:41.8、#8=04:43.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [276.5, 277.5, 278.5, 279.5], \"region\": [0.25, 0.35, 0.95, 0.95], \"reason\": \"放大確認單手回套過程中雙手位置與針頭插入針套的情形\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 8.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 20214,
+  "cached_input_tokens": 17297,
+  "output_tokens": 203,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@273-283（hands_box，n=9）#0=04:33.0、#1=04:34.2、#2=04:35.5、#3=04:36.8、#4=04:38.0、#5=04:39.2、#6=04:40.5、#7=04:41.8、#8=04:43.0",
+   "zoom@276.5/277.5/278.5/279.5 region=[0.250, 0.350, 0.950, 0.950]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"28b\", \"verdict\": \"正確\", \"explanation\": \"於 04:36.5 至 04:39.5 期間，學生以右手單手持針筒將針頭插入立在針架上的針頭套中，左手全程放在身側（靠近左大腿處），未觸碰針頭套。\", \"times\": [[276.5, 279.5]], \"evidence\": [\"ov@273-283 #3\", \"ov@273-283 #4\", \"ov@273-283 #5\", \"zoom@276.5\", \"zoom@277.5\", \"zoom@278.5\", \"zoom@279.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

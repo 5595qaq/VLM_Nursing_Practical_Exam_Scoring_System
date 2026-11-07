@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 22.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 18899,
+  "cached_input_tokens": 0,
+  "output_tokens": 204,
+  "thinking_tokens": 121,
+  "materials": [
+   "ov@132-138.5（hands_box，n=9）#0=02:12.0、#1=02:12.8、#2=02:13.6、#3=02:14.4、#4=02:15.2、#5=02:16.1、#6=02:16.9、#7=02:17.7、#8=02:18.5"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [135.2, 136.1, 136.9, 137.7], \"region\": [0.3, 0.15, 0.7, 0.55], \"reason\": \"放大確認左手夾持稀釋液瓶的手指姿勢\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 5.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 20150,
+  "cached_input_tokens": 17296,
+  "output_tokens": 166,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@132-138.5（hands_box，n=9）#0=02:12.0、#1=02:12.8、#2=02:13.6、#3=02:14.4、#4=02:15.2、#5=02:16.1、#6=02:16.9、#7=02:17.7、#8=02:18.5",
+   "zoom@135.2/136.1/136.9/137.7 region=[0.300, 0.150, 0.700, 0.550]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"12a\", \"verdict\": \"正確\", \"explanation\": \"02:15.2–02:17.7 學生以左手食指及中指夾住稀釋液瓶，供右手持空針插入抽取稀釋液。\", \"times\": [[135.2, 137.7]], \"evidence\": [\"ov@132-138.5 #4\", \"ov@132-138.5 #5\", \"zoom@135.2\", \"zoom@136.1\", \"zoom@136.9\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

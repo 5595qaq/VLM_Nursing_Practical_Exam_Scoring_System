@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 119.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 20076,
+  "cached_input_tokens": 0,
+  "output_tokens": 79,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@75-88（context box，有聲音；片段內 00:00 ＝ 影片 01:15.0）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 65.0, \"end\": 75.0, \"fps\": 2, \"reason\": \"依指引，7a 必須看區間開始前 10 秒到區間開始（65-75s），確認更早時有無消毒稀釋液瓶口。\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 118.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 21989,
+  "cached_input_tokens": 17262,
+  "output_tokens": 113,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@75-88（context box，有聲音；片段內 00:00 ＝ 影片 01:15.0）",
+   "clip@65-75（context box，有聲音；片段內 00:00 ＝ 影片 01:05.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [66.0, 74.5, 79.0, 83.0], \"region\": [0.32, 0.45, 0.58, 0.85], \"reason\": \"確認 66s、74.5s 及 79s、83s 手中拿的是 vial 還是稀釋液瓶，以及酒精棉片擦拭稀釋液瓶口的動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 90.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 23248,
+  "cached_input_tokens": 0,
+  "output_tokens": 920,
+  "thinking_tokens": 639,
+  "materials": [
+   "clip@75-88（context box，有聲音；片段內 00:00 ＝ 影片 01:15.0）",
+   "clip@65-75（context box，有聲音；片段內 00:00 ＝ 影片 01:05.0）",
+   "zoom@66/74.5/79/83 region=[0.320, 0.450, 0.580, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"7a\", \"verdict\": \"正確\", \"explanation\": \"01:14.0–01:15.5（clip@65-75 片段內 00:09.0–00:09.5 及 clip@75-88 片段內 00:00.0–00:00.5）左手持細長稀釋液瓶，右手以酒精棉片擦拭稀釋液瓶頂端；01:16.0 扭開瓶頂後，01:17.0–01:24.5（clip@75-88 片段內 00:02.0–00:09.5）再次以酒精棉片擦拭並包覆稀釋液瓶口。\", \"times\": [[74.0, 75.5], [77.0, 84.5]], \"evidence\": [\"clip@65-75\", \"clip@75-88\", \"zoom@74.5\", \"zoom@79\", \"zoom@83\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

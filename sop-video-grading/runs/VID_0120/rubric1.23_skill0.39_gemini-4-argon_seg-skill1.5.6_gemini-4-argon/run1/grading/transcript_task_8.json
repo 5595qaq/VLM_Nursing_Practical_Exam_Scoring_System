@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 5.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 19416,
+  "cached_input_tokens": 17296,
+  "output_tokens": 83,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@82-91.5（context box，有聲音；片段內 00:00 ＝ 影片 01:22.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [85.0, 86.0, 87.5, 89.0], \"region\": [0.3, 0.35, 0.65, 0.85], \"reason\": \"放大確認扭開稀釋液瓶頂的動作與瓶子狀態\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 9.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 20638,
+  "cached_input_tokens": 17262,
+  "output_tokens": 309,
+  "thinking_tokens": 121,
+  "materials": [
+   "clip@82-91.5（context box，有聲音；片段內 00:00 ＝ 影片 01:22.0）",
+   "zoom@85/86/87.5/89 region=[0.300, 0.350, 0.650, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"8a\", \"verdict\": \"正確\", \"explanation\": \"01:25–01:28（clip@82-91.5 片段內 00:03.0–00:06.0）左手握住稀釋液塑膠瓶瓶身，右手隔著酒精棉片包住瓶頂並將瓶頂扭開，01:28.5 將已打開瓶口的稀釋液瓶立於治療車檯面上。\", \"times\": [[85.0, 88.0]], \"evidence\": [\"clip@82-91.5\", \"zoom@85\", \"zoom@86\", \"zoom@87.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

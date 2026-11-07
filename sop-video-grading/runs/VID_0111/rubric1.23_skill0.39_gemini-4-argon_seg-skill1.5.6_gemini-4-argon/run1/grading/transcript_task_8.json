@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 28.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 19064,
+  "cached_input_tokens": 0,
+  "output_tokens": 94,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@60.5-68（context box，有聲音；片段內 00:00 ＝ 影片 01:00.5）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [63.0, 64.0, 64.5, 65.5], \"region\": [0.22, 0.3, 0.45, 0.78], \"reason\": \"放大確認左手所持為稀釋液瓶，右手扭開瓶頂並將打開後的稀釋液瓶放在檯面上\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 6.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 20312,
+  "cached_input_tokens": 17296,
+  "output_tokens": 255,
+  "thinking_tokens": 80,
+  "materials": [
+   "clip@60.5-68（context box，有聲音；片段內 00:00 ＝ 影片 01:00.5）",
+   "zoom@63/64/64.5/65.5 region=[0.220, 0.300, 0.450, 0.780]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"8a\", \"verdict\": \"正確\", \"explanation\": \"01:03.0–01:05.5（clip@60.5-68 片段內 00:02.5–00:05.0）左手握住稀釋液瓶身，右手捏住瓶頂將其扭開取下並放到治療車上。\", \"times\": [[63.0, 65.5]], \"evidence\": [\"clip@60.5-68\", \"zoom@63\", \"zoom@64\", \"zoom@64.5\", \"zoom@65.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

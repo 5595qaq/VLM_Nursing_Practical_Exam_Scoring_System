@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 38.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 19716,
+  "cached_input_tokens": 0,
+  "output_tokens": 70,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@103-114（context box，有聲音；片段內 00:00 ＝ 影片 01:43.0）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 93.0, \"end\": 103.0, \"fps\": 2, \"reason\": \"依規則7a，查看區間開始前10秒（93-103s）是否有提前消毒稀釋液瓶口\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 9.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 21633,
+  "cached_input_tokens": 17262,
+  "output_tokens": 371,
+  "thinking_tokens": 276,
+  "materials": [
+   "clip@103-114（context box，有聲音；片段內 00:00 ＝ 影片 01:43.0）",
+   "clip@93-103（context box，有聲音；片段內 00:00 ＝ 影片 01:33.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [105.0, 107.0, 109.0, 111.0], \"region\": [0.25, 0.35, 0.6, 0.7], \"reason\": \"放大確認手握細長稀釋液瓶並以酒精棉片擦拭及包住扭開瓶頂\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 12.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 22891,
+  "cached_input_tokens": 17296,
+  "output_tokens": 555,
+  "thinking_tokens": 312,
+  "materials": [
+   "clip@103-114（context box，有聲音；片段內 00:00 ＝ 影片 01:43.0）",
+   "clip@93-103（context box，有聲音；片段內 00:00 ＝ 影片 01:33.0）",
+   "zoom@105/107/109/111 region=[0.250, 0.350, 0.600, 0.700]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"7a\", \"verdict\": \"正確\", \"explanation\": \"於 01:44.5（clip@103-114 片段內 00:01.5）起，考生左手持細長透明塑膠稀釋液瓶，右手拿白色酒精棉片包住稀釋液瓶頂端來回擦拭消毒，隨後隔著棉片扭開瓶頂並再次擦拭瓶口至 01:51.5（zoom@105、zoom@107、zoom@109、zoom@111 清楚可見棉片擦拭稀釋液瓶口）。\", \"times\": [[104.5, 111.5]], \"evidence\": [\"clip@93-103\", \"clip@103-114\", \"zoom@105\", \"zoom@107\", \"zoom@109\", \"zoom@111\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

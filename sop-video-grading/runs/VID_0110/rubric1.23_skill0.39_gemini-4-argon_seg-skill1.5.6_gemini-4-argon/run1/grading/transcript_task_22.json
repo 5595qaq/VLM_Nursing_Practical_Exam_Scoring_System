@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 11.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 19027,
+  "cached_input_tokens": 0,
+  "output_tokens": 365,
+  "thinking_tokens": 238,
+  "materials": [
+   "ov@227.5-236.5（hands_box，n=9）#0=03:47.5、#1=03:48.6、#2=03:49.8、#3=03:50.9、#4=03:52.0、#5=03:53.1、#6=03:54.2、#7=03:55.4、#8=03:56.5"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [229.0, 229.4, 229.8, 230.2], \"region\": [0.25, 0.45, 0.75, 0.95], \"reason\": \"放大檢視 03:49–03:50.2 針頭刺入 vial 時右手持針姿勢（是否持毛筆方式、針筒是否垂直）及針頭刺入 vial 橡皮塞的位置是否為中心\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 9.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 20288,
+  "cached_input_tokens": 17296,
+  "output_tokens": 290,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@227.5-236.5（hands_box，n=9）#0=03:47.5、#1=03:48.6、#2=03:49.8、#3=03:50.9、#4=03:52.0、#5=03:53.1、#6=03:54.2、#7=03:55.4、#8=03:56.5",
+   "zoom@229/229.4/229.8/230.2 region=[0.250, 0.450, 0.750, 0.950]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"22b\", \"verdict\": \"正確\", \"explanation\": \"03:49.0–03:50.2 插針時，右手以拇指與食指、中指握住針筒外管呈持毛筆姿勢，將針筒垂直向下刺入桌上的 vial，手指未碰觸針頭、針座及活塞柄內側。\", \"times\": [[229.0, 230.2]], \"evidence\": [\"zoom@229\", \"zoom@229.4\", \"zoom@229.8\", \"zoom@230.2\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"22c\", \"verdict\": \"正確\", \"explanation\": \"03:49.0–03:50.2 針頭對準並垂直刺入 vial 橡皮塞正中心。\", \"times\": [[229.0, 230.2]], \"evidence\": [\"zoom@229\", \"zoom@229.4\", \"zoom@229.8\", \"zoom@230.2\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
