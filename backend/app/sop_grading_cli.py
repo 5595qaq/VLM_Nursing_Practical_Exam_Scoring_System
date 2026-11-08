@@ -35,7 +35,8 @@ missing runner or commit, or a record folder it cannot write.
 --by (or SOP_RUN_BY) names who ran it; --commit (or GIT_COMMIT, else git) is the code version, needed to
 make the images again from the transcripts.
 Each recorded run keeps its wall-clock time in record.json's timing (started_at, segmentation_seconds when
-it segmented, grading_seconds, total_seconds). A run continued from checkpoints counts only this invocation.
+it segmented, grading_seconds, total_seconds). A run continued from checkpoints counts only this invocation
+and has checkpoints_found (its usage still counts the earlier tokens).
 """
 import argparse
 import asyncio
@@ -189,7 +190,7 @@ class Recorder:
         return json.loads(path.read_text(encoding="utf-8")) if self.record and path.exists() else None
 
     def save(self, out: Path, outcome: dict, steps: set[int] | None, segmentation: str, started: float,
-             segmentation_usage: dict | None = None, timing: dict | None = None) -> Path:
+             segmentation_usage: dict | None = None) -> Path:
         fresh = lambda p: p.exists() and p.stat().st_mtime >= started  # noqa: E731 - written by this run
         files = {f"grading/transcript_task_{key}.json": out / "grading" / f"transcript_task_{key}.json"
                  for key in outcome["tasks"]}
@@ -199,7 +200,8 @@ class Recorder:
             self.record, self.video_id, self.versions, self.video_sha256, steps=steps,
             failed_tasks=outcome["failed_tasks"], by=self.by, date=datetime.date.today().isoformat(),
             commit=self.commit, segmentation=segmentation, usage=outcome["usage"],
-            segmentation_from=self.segmentation_from, segmentation_usage=segmentation_usage, timing=timing)
+            segmentation_from=self.segmentation_from, segmentation_usage=segmentation_usage,
+            timing=outcome.get("timing"))
         seg = json.loads((out / "segmentation.json").read_text(encoding="utf-8"))
         files = {k: v for k, v in files.items() if fresh(v)}
         # a kept local segmentation was paid for by an earlier, unrecorded run: keep its transcript too
@@ -247,6 +249,7 @@ async def run(video: Path, video_id: str, out: Path, steps: set[int] | None,
     seg_path, seg_dir = out / "segmentation.json", out / "seg"
     seg_source = recorded_seg or "existing segmentation.json"
     seg_usage = None  # this run's segmentation tokens, when it segmented
+    resumed = False  # checkpoints of an unrecorded run were there: its time before this one is not counted
     if not seg_path.exists() and labels:
         print("segmentation from label times", video_id, flush=True)
         to_seg = sop_grading_service.load_grading_module("labels_to_segmentation")
@@ -259,6 +262,7 @@ async def run(video: Path, video_id: str, out: Path, steps: set[int] | None,
     if not seg_path.exists():
         seg_dir.mkdir(exist_ok=True)
         print("segmenting", video_id, flush=True)
+        resumed = resumed or any(sop_checkpoint.is_checkpoint(f.name) for f in seg_dir.iterdir())
         seg_clock = time.monotonic()
         outcome = await sop_skill_service.run_skill_loop(source, video_id, seg_dir,
                                                          sop_skill_service.default_model_call())
@@ -284,16 +288,19 @@ async def run(video: Path, video_id: str, out: Path, steps: set[int] | None,
         for stale in work.glob(f"{sop_checkpoint.TASK_PREFIX}*"):
             stale.unlink()
     print("grading", video_id, "steps", sorted(steps) if steps else "all", flush=True)
+    resumed = resumed or any(sop_checkpoint.is_checkpoint(f.name) for f in work.iterdir())
     grading_clock = time.monotonic()
     outcome = await sop_grading_service.run_grading(source, segmentation, work, probe_dir=seg_dir,
                                                     steps=steps, previous=previous)
     timing["grading_seconds"] = round(time.monotonic() - grading_clock, 1)
     timing["total_seconds"] = round(time.monotonic() - clock, 1)
+    if resumed:
+        timing["checkpoints_found"] = True
     outcome["timing"] = timing
     print("timing", timing, flush=True)
     grading_path.write_text(json.dumps(outcome["result"], ensure_ascii=False, indent=1), encoding="utf-8")
     if recorder:
-        print("recorded", recorder.save(out, outcome, steps, seg_source, started, seg_usage, timing), flush=True)
+        print("recorded", recorder.save(out, outcome, steps, seg_source, started, seg_usage), flush=True)
         if seg_tag:  # in a record now: a later version reuses it as that record's, with segmentation_from
             (out / SOURCE_MARK).write_text(f"{seg_tag}\n{RECORDED}", encoding="utf-8")
         if recorder.segmentation_from:  # again at the end, where it is not lost among the grading logs

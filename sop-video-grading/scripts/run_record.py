@@ -143,7 +143,9 @@ def add_run(record: dict | None, video_id: str, versions: dict, video_sha256: st
     output_tokens (thinking included), thinking_tokens; older records have only input / output.
     segmentation_usage (same keys) is set when this run segmented the video. timing is this run's
     wall-clock time: started_at (ISO 8601 with offset), segmentation_seconds (only when it segmented),
-    grading_seconds, total_seconds (normalizing included); runs before 2026-11-08 have none."""
+    grading_seconds, total_seconds (normalizing included), checkpoints_found when it continued from
+    checkpoints (the seconds then miss the earlier attempt). Only sop_grading_cli writes it; older runs
+    and frontend bundles have none."""
     if not record:
         record = {"video_id": video_id, "versions": versions, "video_sha256": video_sha256, "runs": []}
         if segmentation_from:

@@ -263,6 +263,16 @@ def test_a_run_that_segments_records_its_segmentation_time(tmp_path, video, fake
     assert timing["segmentation_seconds"] + timing["grading_seconds"] <= timing["total_seconds"] + 0.2
 
 
+def test_timing_marks_a_run_that_found_checkpoints(tmp_path, video, fake):
+    out = work_folder(tmp_path, "a")
+    (out / "grading").mkdir()
+    (out / "grading" / f"{cli.sop_checkpoint.TASK_PREFIX}1.json").write_text("{}", encoding="utf-8")
+    rec = recorder(video, tmp_path / "runs")
+    rec.check(None, force=False)
+    asyncio.run(cli.run(video, VID, out, None, None, rec, skill_tag()))
+    assert load_record(rec)["runs"][0]["timing"]["checkpoints_found"] is True
+
+
 def test_new_grading_version_reuses_the_recorded_segmentation(tmp_path, video, fake, capsys, request):
     runs = tmp_path / "runs"
     old = recorder(video, runs)
