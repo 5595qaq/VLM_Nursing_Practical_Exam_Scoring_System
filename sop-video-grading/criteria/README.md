@@ -12,7 +12,7 @@
 | `01-hand-washing.md` | 洗手計時 1a、七個動作 1b |
 | `02-drug-sheet.md` | 注視藥單、手指指出、核對稀釋液與空針包裝 2a/2b、4a/4b/4d/4e、29a/29b |
 | `03-drug-check.md` | 有看藥物 3a |
-| `04-needle-down-13b.md` | 針頭朝下插入稀釋液瓶 13b |
+| `04-needle-down-13b.md` | 針頭朝下插入稀釋液瓶 13b、旋轉針頭與空針交界 13c |
 | `05-flick.md` | 彈針 17a、27a，先墊棉片 15b、25b |
 | `06-plunger.md` | 排氣 17b、27b（針心往後抽 16a、26a 已取消） |
 | `07-rolling-20a.md` | 雙手旋轉 vial 20a |
