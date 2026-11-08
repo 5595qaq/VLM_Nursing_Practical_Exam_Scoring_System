@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 13.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 19064,
+  "cached_input_tokens": 0,
+  "output_tokens": 664,
+  "thinking_tokens": 575,
+  "materials": [
+   "ov@159.5-435（hands_box，n=9）#0=02:39.5、#1=03:13.9、#2=03:48.4、#3=04:22.8、#4=04:57.2、#5=05:31.7、#6=06:06.1、#7=06:40.6、#8=07:15.0"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 159.5, \"end\": 188.0, \"fps\": 2, \"reason\": \"檢視 02:39.5–03:08.0 的連續動作，確認步驟 5（打開 vial 瓶口）與步驟 6（以酒精棉片消毒 vial 瓶口）\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 40.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 24432,
+  "cached_input_tokens": 17262,
+  "output_tokens": 1191,
+  "thinking_tokens": 1100,
+  "materials": [
+   "ov@159.5-435（hands_box，n=9）#0=02:39.5、#1=03:13.9、#2=03:48.4、#3=04:22.8、#4=04:57.2、#5=05:31.7、#6=06:06.1、#7=06:40.6、#8=07:15.0",
+   "clip@159.5-188（context box，有聲音；片段內 00:00 ＝ 影片 02:39.5）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [161.5, 163.5, 179.5, 181.0], \"region\": [0.3, 0.5, 0.75, 0.85], \"reason\": \"確認步驟5打開vial瓶蓋及步驟6以酒精棉片消毒vial瓶口\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 20.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 25670,
+  "cached_input_tokens": 0,
+  "output_tokens": 779,
+  "thinking_tokens": 420,
+  "materials": [
+   "ov@159.5-435（hands_box，n=9）#0=02:39.5、#1=03:13.9、#2=03:48.4、#3=04:22.8、#4=04:57.2、#5=05:31.7、#6=06:06.1、#7=06:40.6、#8=07:15.0",
+   "clip@159.5-188（context box，有聲音；片段內 00:00 ＝ 影片 02:39.5）",
+   "zoom@161.5/163.5/179.5/181 region=[0.300, 0.500, 0.750, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"02:41.5–02:44.0（clip@159.5-188 片段內 00:02.0–00:04.5）學生左手持 vial、右手將深褐色塑膠瓶蓋撥開並放至檯面上，zoom@163.5 可見 vial 瓶頂已露出銀色鋁圈。\", \"times\": [[161.5, 164.0]], \"evidence\": [\"clip@159.5-188\", \"zoom@161.5\", \"zoom@163.5\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"6a\", \"verdict\": \"正確\", \"explanation\": \"02:58.5–03:02.5（clip@159.5-188 片段內 00:19.0–00:23.0）學生取出白色方形酒精棉片，在 vial 瓶口來回擦拭消毒，zoom@179.5 與 zoom@181 清楚可見棉片擦拭 vial 瓶頂。\", \"times\": [[178.5, 182.5]], \"evidence\": [\"clip@159.5-188\", \"zoom@179.5\", \"zoom@181\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

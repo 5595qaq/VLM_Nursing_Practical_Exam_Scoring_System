@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 37.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 19165,
+  "cached_input_tokens": 0,
+  "output_tokens": 652,
+  "thinking_tokens": 565,
+  "materials": [
+   "clip@281-289（context box，有聲音；片段內 00:00 ＝ 影片 04:41.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [283.5, 284.5, 285.5, 286.5], \"region\": [0.35, 0.55, 0.7, 0.85], \"reason\": \"確認扭開稀釋液瓶頂的動作與瓶口打開狀態\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 13.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 20411,
+  "cached_input_tokens": 0,
+  "output_tokens": 391,
+  "thinking_tokens": 198,
+  "materials": [
+   "clip@281-289（context box，有聲音；片段內 00:00 ＝ 影片 04:41.0）",
+   "zoom@283.5/284.5/285.5/286.5 region=[0.350, 0.550, 0.700, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"8a\", \"verdict\": \"正確\", \"explanation\": \"04:43–04:46（clip@281-289 片段內 00:02–00:05）左手握住稀釋液瓶身，右手隔著酒精棉片包住稀釋液瓶頂並扭開瓶口，於 04:45.5 取下瓶頂。\", \"times\": [[283.0, 286.5]], \"evidence\": [\"clip@281-289\", \"zoom@283.5\", \"zoom@284.5\", \"zoom@285.5\", \"zoom@286.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

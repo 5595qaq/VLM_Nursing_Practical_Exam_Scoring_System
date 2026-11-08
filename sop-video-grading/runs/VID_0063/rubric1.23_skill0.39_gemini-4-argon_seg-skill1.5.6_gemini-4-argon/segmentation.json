@@ -1,0 +1,1183 @@
+{
+ "video_id": "VID_0063",
+ "meta": {
+  "duration": 816.416,
+  "crop": {
+   "box": [
+    0.2,
+    0.1,
+    0.68,
+    1.0
+   ],
+   "hands_box": [
+    0.28,
+    0.16,
+    0.62,
+    0.96
+   ],
+   "rounds": 2,
+   "notes": "給藥紀錄單平放在治療車最前緣（畫面下緣偏右，透明墊下印有表格與螢光筆標記）。"
+  },
+  "budget": {
+   "crop_rounds": 2,
+   "overview_calls": 15,
+   "zoom_calls": 2,
+   "images_sent": 33,
+   "est_input_tokens": 813655
+  }
+ },
+ "steps": [
+  {
+   "step_id": 1,
+   "start": 9.4,
+   "end": 36.0,
+   "confidence": 0.85,
+   "status": "detected",
+   "evidence": "ov@0-75 #1(9.4s)伸手按壓洗手液，#2-#3(18.8-28.1s)及 global #1-#3(12.0-28.0s)雙手掌心與手背互搓，global #4(36.0s)雙手分開結束洗手",
+   "frames": [
+    12.0,
+    20.0,
+    28.0
+   ],
+   "merged_with": []
+  },
+  {
+   "step_id": 2,
+   "start": 0.8,
+   "end": 7.0,
+   "confidence": 0.6,
+   "status": "detected",
+   "evidence": "global #0(4.0s)及 ov@0-75 #0(0.0s)右手食指指著治療車最前緣的給藥紀錄單閱讀，至候選點 7.0s 轉身按洗手液（第一段 1讀，早於洗手）",
+   "frames": [
+    4.0
+   ],
+   "merged_with": []
+  },
+  {
+   "step_id": 2,
+   "start": 52.0,
+   "end": 156.8,
+   "confidence": 0.6,
+   "status": "detected",
+   "evidence": "global #6-#18(52.0-148.0s)、ov@0-75 #6-#8(56.2-75.0s)及 ov@75-165 #0-#7(75.0-153.8s)手拿 vial 與稀釋液瓶在治療車最前緣的給藥紀錄單上方反覆指著紀錄單核對比對，至候選點 156.8s 結束（此時空針與酒精棉片尚未拿出檯面）",
+   "frames": [
+    60.0,
+    92.0,
+    124.0
+   ],
+   "merged_with": []
+  },
+  {
+   "step_id": 3,
+   "start": 46.9,
+   "end": 156.8,
+   "confidence": 0.4,
+   "status": "detected",
+   "evidence": "ov@0-75 #5-#8(46.9-75.0s)及 ov@75-165 #0-#7(75.0-153.8s)手持 vial 與稀釋液瓶轉動檢視瓶身與標籤（與步驟 2 重疊）。影片缺乏資訊，無法確認學生的藥瓶是否正確",
+   "frames": [
+    52.0,
+    84.0,
+    116.0
+   ],
+   "merged_with": []
+  },
+  {
+   "step_id": 3,
+   "start": 240.0,
+   "end": 289.2,
+   "confidence": 0.4,
+   "status": "detected",
+   "evidence": "global #30-#35(244.0-284.0s)、ov@165-255 #7-#8(243.8-255.0s)及 ov@255-345 #0-#2(255.0-277.5s)再次拿起 vial、酒精棉片及稀釋液瓶檢視外觀與效期（與步驟 4 重疊）。影片缺乏資訊，無法確認學生的藥瓶是否正確",
+   "frames": [
+    244.0,
+    268.0,
+    284.0
+   ],
+   "merged_with": []
+  },
+  {
+   "step_id": 4,
+   "start": 243.8,
+   "end": 289.2,
+   "confidence": 0.6,
+   "status": "detected",
+   "evidence": "四樣器材於 236.0s(global #29 拿出酒精棉片)全部到齊檯面後，ov@165-255 #7-#8(243.8-255.0s)、ov@255-345 #0-#2(255.0-277.5s)及 global #31-#35(252.0-284.0s)拿著 vial 與稀釋液瓶在治療車最前緣紀錄單上方並以手指指著紀錄單核對，至候選點 289.2s 結束",
+   "frames": [
+    252.0,
+    276.0,
+    284.0
+   ],
+   "merged_with": []
+  },
+  {
+   "step_id": 5,
+   "start": 321.0,
+   "end": 324.0,
+   "confidence": 0.8,
+   "status": "detected",
+   "evidence": "ov@318-326 #3(321.0s)拿起 vial 與棉片，#4(322.0s)隔著酒精棉片推開 vial 紅褐色塑膠翻蓋，#5(323.0s)將翻蓋放到治療車檯面，#6(324.0s)紅褐色翻蓋已在檯面上且 vial 露出銀色鋁圈",
+   "frames": [
+    322.0,
+    323.0,
+    324.0
+   ],
+   "merged_with": []
+  },
+  {
+   "step_id": 6,
+   "start": 324.0,
+   "end": 327.0,
+   "confidence": 0.75,
+   "status": "detected",
+   "evidence": "ov@318-326 #6-#8(324.0-326.0s)推開瓶蓋後直接用酒精棉片在 vial 瓶口擦拭並將棉片留在瓶口上",
+   "frames": [
+    324.0,
+    325.0,
+    326.0
+   ],
+   "merged_with": []
+  },
+  {
+   "step_id": 6,
+   "start": 355.0,
+   "end": 370.2,
+   "confidence": 0.8,
+   "status": "detected",
+   "evidence": "global #44-#45(356.0-364.0s)及 ov@352-400 #1-#3(358.0-370.0s)再次用酒精棉片擦拭 vial 瓶口橡皮塞，至候選點 370.2s 放下（重複步驟 6）",
+   "frames": [
+    356.0,
+    364.0,
+    370.0
+   ],
+   "merged_with": []
+  },
+  {
+   "step_id": 6,
+   "start": 728.0,
+   "end": 742.0,
+   "confidence": 0.75,
+   "status": "detected",
+   "evidence": "global #91-#92(732.0-740.0s)及 ov@736-816.4 #0(736.0s)在重抽藥液前再次撕開酒精棉片擦拭 vial 瓶口（第三次執行步驟 6）",
+   "frames": [
+    732.0,
+    736.0,
+    740.0
+   ],
+   "merged_with": []
+  },
+  {
+   "step_id": 7,
+   "start": 415.0,
+   "end": 424.0,
+   "confidence": 0.8,
+   "status": "detected",
+   "evidence": "ov@415-423 #0(415.0s)酒精棉片第一次碰到稀釋液瓶頂開始擦拭，#1-#8(416.0-423.0s)及 ov@423-439 #0(423.0s)以棉片包住稀釋液瓶頂擦拭並扭開瓶頂，424.0s 棉片與瓶頂離開瓶口",
+   "frames": [
+    415.0,
+    419.0,
+    423.0
+   ],
+   "merged_with": []
+  },
+  {
+   "step_id": 8,
+   "start": 417.0,
+   "end": 424.0,
+   "confidence": 0.8,
+   "status": "detected",
+   "evidence": "ov@415-423 #2-#8(417.0-423.0s)及 ov@423-439 #0(423.0s)左手握稀釋液瓶身、右手隔著酒精棉片捏住瓶頂旋轉扭開並取下瓶頂",
+   "frames": [
+    417.0,
+    420.0,
+    423.0
+   ],
+   "merged_with": []
+  },
+  {
+   "step_id": 9,
+   "start": 384.0,
+   "end": 388.0,
+   "confidence": 0.75,
+   "status": "detected",
+   "evidence": "ov@384-416 #0-#1(384.0-388.0s)及 global #48(388.0s)雙手拿起空針包裝並從頂端撕開包裝袋",
+   "frames": [
+    384.0,
+    388.0
+   ],
+   "merged_with": []
+  },
+  {
+   "step_id": 9,
+   "start": 402.0,
+   "end": 408.0,
+   "confidence": 0.75,
+   "status": "detected",
+   "evidence": "ov@384-416 #5(404.0s)及 global #50(404.0s)將空針放回包裝袋後，雙手將空針包裝袋往兩側撕開得更大（第二段步驟 9）",
+   "frames": [
+    404.0
+   ],
+   "merged_with": []
+  },
+  {
+   "step_id": 10,
+   "start": 388.0,
+   "end": 393.0,
+   "confidence": 0.75,
+   "status": "detected",
+   "evidence": "ov@384-416 #1-#2(388.0-392.0s)從撕開的包裝中取出空針並握住針頭套與針筒接合處固定針頭",
+   "frames": [
+    388.0,
+    392.0
+   ],
+   "merged_with": []
+  },
+  {
+   "step_id": 10,
+   "start": 408.0,
+   "end": 414.8,
+   "confidence": 0.75,
+   "status": "detected",
+   "evidence": "ov@384-416 #6-#7(408.0-412.0s)及 global #51(412.0s)隔著包裝握住針頭端固定並再次抽出空針放到檯面，至候選點 414.8s 結束",
+   "frames": [
+    408.0,
+    412.0
+   ],
+   "merged_with": []
+  },
+  {
+   "step_id": 10,
+   "start": 424.0,
+   "end": 426.0,
+   "confidence": 0.75,
+   "status": "detected",
+   "evidence": "ov@423-439 #1(425.0s)固定針頭與針心（與取出分開）：打開稀釋液瓶後拿起空針，一手握針頭套與針座處旋緊固定針頭",
+   "frames": [
+    425.0
+   ],
+   "merged_with": []
+  },
+  {
+   "step_id": 11,
+   "start": null,
+   "end": null,
+   "confidence": 1.0,
+   "status": "not_performed",
+   "evidence": "評分表已移除此步驟"
+  },
+  {
+   "step_id": 12,
+   "start": 433.6,
+   "end": 436.5,
+   "confidence": 0.8,
+   "status": "detected",
+   "evidence": "ov@423-439 #5-#6(433.0-435.0s)及 global #54(436.0s)左手食指與中指夾住稀釋液瓶",
+   "frames": [
+    433.0,
+    435.0
+   ],
+   "merged_with": []
+  },
+  {
+   "step_id": 12,
+   "start": 480.0,
+   "end": 482.5,
+   "confidence": 0.7,
+   "status": "detected",
+   "evidence": "ov@465-505 #3(480.0s)第二次抽稀釋液前，以左手食指與中指夾住稀釋液瓶",
+   "frames": [
+    480.0
+   ],
+   "merged_with": []
+  },
+  {
+   "step_id": 12,
+   "start": 550.0,
+   "end": 552.5,
+   "confidence": 0.7,
+   "status": "detected",
+   "evidence": "ov@530-586 #3(551.0s)第三次抽稀釋液前，以左手食指與中指夾住稀釋液瓶",
+   "frames": [
+    551.0
+   ],
+   "merged_with": []
+  },
+  {
+   "step_id": 13,
+   "start": 428.5,
+   "end": 439.0,
+   "confidence": 0.8,
+   "status": "detected",
+   "evidence": "ov@423-439 #3(429.0s)拔除針頭套，#7-#8(437.0-439.0s)右手持空針將針頭插入稀釋液瓶口、左手手指固定針筒",
+   "frames": [
+    429.0,
+    437.0,
+    439.0
+   ],
+   "merged_with": []
+  },
+  {
+   "step_id": 13,
+   "start": 482.5,
+   "end": 485.0,
+   "confidence": 0.7,
+   "status": "detected",
+   "evidence": "ov@465-505 #3-#4(480.0-485.0s)及 global #60(484.0s)右手再次將針頭插入稀釋液瓶口並以左手固定針筒",
+   "frames": [
+    484.0
+   ],
+   "merged_with": []
+  },
+  {
+   "step_id": 13,
+   "start": 552.5,
+   "end": 555.0,
+   "confidence": 0.7,
+   "status": "detected",
+   "evidence": "ov@530-586 #3-#4(551.0-558.0s)右手第三次將針頭插入稀釋液瓶口並以左手固定針筒",
+   "frames": [
+    554.0
+   ],
+   "merged_with": []
+  },
+  {
+   "step_id": 14,
+   "start": 439.0,
+   "end": 465.0,
+   "confidence": 0.8,
+   "status": "detected",
+   "evidence": "ov@423-439 #8(439.0s)、global #55-#57(444.0-460.0s)至 ov@465-505 #0(465.0s)右手拉針心尾端抽取稀釋液並檢視刻度，於 465.0s 拔出針頭",
+   "frames": [
+    444.0,
+    452.0,
+    460.0
+   ],
+   "merged_with": []
+  },
+  {
+   "step_id": 14,
+   "start": 484.0,
+   "end": 494.0,
+   "confidence": 0.75,
+   "status": "detected",
+   "evidence": "ov@465-505 #4-#5(485.0-490.0s)及 global #61(492.0s)再次拉針心抽取稀釋液至所需刻度，494.0s 拔出針頭放下稀釋液瓶",
+   "frames": [
+    485.0,
+    490.0,
+    492.0
+   ],
+   "merged_with": []
+  },
+  {
+   "step_id": 14,
+   "start": 555.0,
+   "end": 564.0,
+   "confidence": 0.75,
+   "status": "detected",
+   "evidence": "global #69(556.0s)及 ov@530-586 #4(558.0s)第三次拉針心調整稀釋液刻度，至 global #70(564.0s)放下稀釋液瓶",
+   "frames": [
+    556.0,
+    558.0
+   ],
+   "merged_with": []
+  },
+  {
+   "step_id": 15,
+   "start": 495.6,
+   "end": 522.4,
+   "confidence": 0.9,
+   "status": "detected",
+   "evidence": "ov@465-505 #6-#8(495.0-505.0s)、global #62-#64(500.0-516.0s)及 zoom@500.0、zoom@508.0 清楚看到白色酒精棉片墊在針頭與針筒交接處，至候選點 522.4s 放下棉片",
+   "frames": [
+    500.0,
+    508.0,
+    516.0
+   ],
+   "merged_with": [
+    16,
+    17
+   ]
+  },
+  {
+   "step_id": 15,
+   "start": 565.4,
+   "end": 584.0,
+   "confidence": 0.9,
+   "status": "detected",
+   "evidence": "ov@530-586 #5-#7(565.0-579.0s)、global #71-#72(572.0-580.0s)及 zoom@572.0 清楚看到白色酒精棉片墊在針頭與針筒交接處，至 584.0s 結束",
+   "frames": [
+    565.0,
+    572.0,
+    580.0
+   ],
+   "merged_with": [
+    16,
+    17
+   ]
+  },
+  {
+   "step_id": 16,
+   "start": 495.6,
+   "end": 522.4,
+   "confidence": 0.85,
+   "status": "detected",
+   "evidence": "ov@465-505 #6-#8(495.0-505.0s)、global #62-#64(500.0-516.0s)及 zoom@500.0、zoom@508.0 針頭朝上垂直持針筒並操作針心回抽排氣，至候選點 522.4s",
+   "frames": [
+    500.0,
+    508.0,
+    516.0
+   ],
+   "merged_with": [
+    15,
+    17
+   ]
+  },
+  {
+   "step_id": 16,
+   "start": 546.0,
+   "end": 550.0,
+   "confidence": 0.7,
+   "status": "detected",
+   "evidence": "global #68(548.0s)將空針垂直舉起針頭朝上回抽排氣（此時接頭處未墊酒精棉片）",
+   "frames": [
+    548.0
+   ],
+   "merged_with": [
+    17
+   ]
+  },
+  {
+   "step_id": 16,
+   "start": 565.4,
+   "end": 584.0,
+   "confidence": 0.85,
+   "status": "detected",
+   "evidence": "ov@530-586 #5-#7(565.0-579.0s)、global #71-#72(572.0-580.0s)及 zoom@572.0 針頭朝上垂直持針筒回抽排氣，至 584.0s 結束",
+   "frames": [
+    565.0,
+    572.0,
+    580.0
+   ],
+   "merged_with": [
+    15,
+    17
+   ]
+  },
+  {
+   "step_id": 17,
+   "start": 495.6,
+   "end": 522.4,
+   "confidence": 0.5,
+   "status": "detected",
+   "handoff": "flick_detector",
+   "evidence": "彈針需高 fps 程式判定，此為候選時段（對應 15/16 第一次外框 ov@465-505 #6-#8 及 global #62-#64）",
+   "frames": [
+    500.0,
+    508.0,
+    516.0
+   ],
+   "merged_with": [
+    15,
+    16
+   ]
+  },
+  {
+   "step_id": 17,
+   "start": 546.0,
+   "end": 550.0,
+   "confidence": 0.5,
+   "status": "detected",
+   "handoff": "flick_detector",
+   "evidence": "彈針需高 fps 程式判定，此為候選時段（對應 16 第二次外框 global #68）",
+   "frames": [
+    548.0
+   ],
+   "merged_with": [
+    16
+   ]
+  },
+  {
+   "step_id": 17,
+   "start": 565.4,
+   "end": 584.0,
+   "confidence": 0.5,
+   "status": "detected",
+   "handoff": "flick_detector",
+   "evidence": "彈針需高 fps 程式判定，此為候選時段（對應 15/16 第三次外框 ov@530-586 #5-#7 及 global #71-#72）",
+   "frames": [
+    565.0,
+    572.0,
+    580.0
+   ],
+   "merged_with": [
+    15,
+    16
+   ]
+  },
+  {
+   "step_id": 18,
+   "start": 469.4,
+   "end": 478.0,
+   "confidence": 0.8,
+   "status": "detected",
+   "evidence": "ov@465-505 #1-#2(470.0-475.0s)及 global #59(476.0s)持毛筆方式將針頭垂直刺入檯面上的 vial 中心嘗試打入稀釋液，478.0s 拔出",
+   "frames": [
+    470.0,
+    475.0,
+    476.0
+   ],
+   "merged_with": []
+  },
+  {
+   "step_id": 18,
+   "start": 536.6,
+   "end": 545.0,
+   "confidence": 0.8,
+   "status": "detected",
+   "evidence": "ov@530-586 #1-#2(537.0-544.0s)及 global #67(540.0s)再次將針頭刺入 vial 中心（考官伸手協助扶住），545.0s 拔出",
+   "frames": [
+    537.0,
+    540.0,
+    544.0
+   ],
+   "merged_with": []
+  },
+  {
+   "step_id": 18,
+   "start": 584.0,
+   "end": 598.6,
+   "confidence": 0.8,
+   "status": "detected",
+   "evidence": "ov@584-656 #0-#1(584.0-593.0s)及 global #73-#74(588.0-596.0s)第三次將針頭垂直刺入 vial 中心並推針心打入稀釋液，至候選點 598.6s 拔出",
+   "frames": [
+    584.0,
+    588.0,
+    596.0
+   ],
+   "merged_with": []
+  },
+  {
+   "step_id": 19,
+   "start": 602.0,
+   "end": 606.0,
+   "confidence": 0.8,
+   "status": "detected",
+   "evidence": "ov@584-656 #2(602.0s)及 global #75(604.0s)抽出針頭後，單手持空針將針頭套入治療車針架上的針頭套中並立放",
+   "frames": [
+    604.0
+   ],
+   "merged_with": []
+  },
+  {
+   "step_id": 20,
+   "start": 608.0,
+   "end": 631.4,
+   "confidence": 0.85,
+   "status": "detected",
+   "evidence": "ov@584-656 #3-#5(611.0-629.0s)及 global #76-#78(612.0-628.0s)雙手掌心夾住 vial 旋轉搓滾使粉劑與稀釋液融合，並舉到眼前檢視溶解狀況，至候選點 631.4s 放下",
+   "frames": [
+    612.0,
+    620.0,
+    628.0
+   ],
+   "merged_with": []
+  },
+  {
+   "step_id": 21,
+   "start": 634.0,
+   "end": 648.0,
+   "confidence": 0.8,
+   "status": "detected",
+   "evidence": "global #79(636.0s)及 ov@584-656 #6(638.0s)拿起空針拔除針頭套，global #80(644.0s)及 ov@584-656 #7(647.0s)拉針心抽取空氣",
+   "frames": [
+    636.0,
+    644.0,
+    647.0
+   ],
+   "merged_with": []
+  },
+  {
+   "step_id": 21,
+   "start": 744.4,
+   "end": 760.0,
+   "confidence": 0.8,
+   "status": "detected",
+   "evidence": "ov@736-816.4 #1-#2(746.0-756.1s)及 global #93-#94(748.0-756.0s)重抽前從針架拿起空針、拔除針頭套並拉針心抽取空氣",
+   "frames": [
+    746.0,
+    748.0,
+    756.0
+   ],
+   "merged_with": []
+  },
+  {
+   "step_id": 22,
+   "start": 648.0,
+   "end": 658.0,
+   "confidence": 0.8,
+   "status": "detected",
+   "evidence": "global #81(652.0s)、ov@584-656 #8(656.0s)及 ov@656-736 #0(656.0s)持毛筆方式將空針垂直插入檯面上的 vial 中心並打入空氣",
+   "frames": [
+    652.0,
+    656.0
+   ],
+   "merged_with": []
+  },
+  {
+   "step_id": 22,
+   "start": 772.4,
+   "end": 786.4,
+   "confidence": 0.8,
+   "status": "detected",
+   "evidence": "global #96-#97(772.0-780.0s)及 ov@736-816.4 #5(786.2s)重抽時再次將空針垂直插入檯面上的 vial 中心打入空氣，至候選點 786.4s 準備倒舉",
+   "frames": [
+    772.0,
+    780.0,
+    786.2
+   ],
+   "merged_with": []
+  },
+  {
+   "step_id": 23,
+   "start": 658.0,
+   "end": 686.0,
+   "confidence": 0.85,
+   "status": "detected",
+   "evidence": "global #82-#85(660.0-684.0s)及 ov@656-736 #1-#3(666.0-686.0s)將 vial 翻轉倒舉至眼前、空針朝上瓶口朝下，於 686.0s 拔出針頭放下 vial",
+   "frames": [
+    660.0,
+    672.0,
+    684.0
+   ],
+   "merged_with": []
+  },
+  {
+   "step_id": 23,
+   "start": 786.4,
+   "end": 810.8,
+   "confidence": 0.85,
+   "status": "detected",
+   "evidence": "global #98-#100(788.0-804.0s)及 ov@736-816.4 #6-#7(796.3-806.4s)第二次將 vial 翻轉倒舉至眼前、空針朝上瓶口朝下，至候選點 810.8s 拔出針頭放下 vial",
+   "frames": [
+    788.0,
+    796.0,
+    804.0
+   ],
+   "merged_with": []
+  },
+  {
+   "step_id": 24,
+   "start": 661.0,
+   "end": 685.4,
+   "confidence": 0.8,
+   "status": "detected",
+   "evidence": "global #82-#85(660.0-684.0s)及 ov@656-736 #1-#2(666.0-676.0s)在倒舉 vial 狀態下右手持針心尾端往下拉抽取藥液並檢視刻度，至候選點 685.4s 結束",
+   "frames": [
+    666.0,
+    676.0,
+    684.0
+   ],
+   "merged_with": []
+  },
+  {
+   "step_id": 24,
+   "start": 788.0,
+   "end": 810.8,
+   "confidence": 0.8,
+   "status": "detected",
+   "evidence": "global #98-#100(788.0-804.0s)及 ov@736-816.4 #6-#7(796.3-806.4s)在第二次倒舉 vial 狀態下右手持針心尾端抽取藥液至所需刻度，至候選點 810.8s 結束",
+   "frames": [
+    788.0,
+    796.0,
+    804.0
+   ],
+   "merged_with": []
+  },
+  {
+   "step_id": 25,
+   "start": 688.0,
+   "end": 721.2,
+   "confidence": 0.9,
+   "status": "detected",
+   "evidence": "global #86-#89(692.0-716.0s)、ov@656-736 #4-#6(696.0-716.0s)及 zoom@696.0、zoom@708.0、zoom@716.0 清楚看到白色酒精棉片墊在針頭與針筒交接處，至候選點 721.2s 結束",
+   "frames": [
+    696.0,
+    708.0,
+    716.0
+   ],
+   "merged_with": [
+    26,
+    27
+   ]
+  },
+  {
+   "step_id": 25,
+   "start": 760.0,
+   "end": 772.4,
+   "confidence": 0.9,
+   "status": "detected",
+   "evidence": "global #95(764.0s)、ov@736-816.4 #3(766.1s)及 zoom@764.0 清楚看到白色酒精棉片墊在針頭與針筒交接處，至候選點 772.4s 刺入 vial 前結束",
+   "frames": [
+    764.0,
+    766.1
+   ],
+   "merged_with": [
+    26,
+    27
+   ]
+  },
+  {
+   "step_id": 26,
+   "start": 688.0,
+   "end": 721.2,
+   "confidence": 0.85,
+   "status": "detected",
+   "evidence": "global #86-#89(692.0-716.0s)、ov@656-736 #4-#6(696.0-716.0s)及 zoom@696.0、zoom@708.0、zoom@716.0 將針筒垂直拿起針頭朝上回抽排氣，至候選點 721.2s",
+   "frames": [
+    696.0,
+    708.0,
+    716.0
+   ],
+   "merged_with": [
+    25,
+    27
+   ]
+  },
+  {
+   "step_id": 26,
+   "start": 760.0,
+   "end": 772.4,
+   "confidence": 0.85,
+   "status": "detected",
+   "evidence": "global #95(764.0s)、ov@736-816.4 #3(766.1s)及 zoom@764.0 將針筒垂直拿起針頭朝上操作針心排氣，至候選點 772.4s",
+   "frames": [
+    764.0,
+    766.1
+   ],
+   "merged_with": [
+    25,
+    27
+   ]
+  },
+  {
+   "step_id": 27,
+   "start": 688.0,
+   "end": 721.2,
+   "confidence": 0.5,
+   "status": "detected",
+   "handoff": "flick_detector",
+   "evidence": "彈針需高 fps 程式判定，此為候選時段（對應 25/26 第一次外框 global #86-#89 及 ov@656-736 #4-#6）",
+   "frames": [
+    696.0,
+    708.0,
+    716.0
+   ],
+   "merged_with": [
+    25,
+    26
+   ]
+  },
+  {
+   "step_id": 27,
+   "start": 760.0,
+   "end": 772.4,
+   "confidence": 0.5,
+   "status": "detected",
+   "handoff": "flick_detector",
+   "evidence": "彈針需高 fps 程式判定，此為候選時段（對應 25/26 第二次外框 global #95 及 ov@736-816.4 #3）",
+   "frames": [
+    764.0,
+    766.1
+   ],
+   "merged_with": [
+    25,
+    26
+   ]
+  },
+  {
+   "step_id": 28,
+   "start": 721.2,
+   "end": 726.0,
+   "confidence": 0.8,
+   "status": "detected",
+   "evidence": "global #90(724.0s)及 ov@656-736 #7(726.0s)單手持空針將針頭插入治療車針架上的針頭套中並立放",
+   "frames": [
+    724.0
+   ],
+   "merged_with": []
+  },
+  {
+   "step_id": 28,
+   "start": 813.0,
+   "end": 816.4,
+   "confidence": 0.8,
+   "status": "detected",
+   "evidence": "ov@736-816.4 #8(816.4s)第二次抽完藥後，單手持空針將針頭插入治療車針架上的針頭套回套（至影片結束 816.4s 仍在回套）",
+   "frames": [
+    816.4
+   ],
+   "merged_with": []
+  },
+  {
+   "step_id": 29,
+   "start": null,
+   "end": null,
+   "confidence": 0.9,
+   "status": "not_performed",
+   "evidence": "ov@736-816.4 #7-#8(806.4-816.4s)及 global #101(812.0s)考生於 810.8s 放下 vial 後直接單手回套空針至影片結束(816.4s)，未讀單亦未將空瓶丟入收集筒"
+  },
+  {
+   "step_id": 30,
+   "start": null,
+   "end": null,
+   "confidence": 0.9,
+   "status": "not_performed",
+   "evidence": "ov@736-816.4 #8(816.4s)影片結束時考生右手正握著空針在針架上回套針頭套，尚未放手亦未將空針放入空針包裝袋"
+  }
+ ],
+ "unassigned_spans": [
+  {
+   "start": 36.0,
+   "end": 46.9,
+   "note": "洗手後從治療車抽屜取出 vial 與稀釋液瓶放到檯面"
+  },
+  {
+   "start": 156.8,
+   "end": 240.0,
+   "note": "彎腰在治療車下層抽屜翻找並陸續拿出多種尺寸空針包裝與酒精棉片、閱讀空針包裝"
+  },
+  {
+   "start": 289.2,
+   "end": 321.0,
+   "note": "撕開酒精棉片包裝並彎腰將包裝紙丟入垃圾桶"
+  },
+  {
+   "start": 327.0,
+   "end": 355.0,
+   "note": "彎腰丟垃圾、整理檯面上的空針包裝與撕開新的酒精棉片"
+  },
+  {
+   "start": 370.2,
+   "end": 384.0,
+   "note": "丟棄用過的棉片並拿起空針包裝檢視"
+  },
+  {
+   "start": 393.0,
+   "end": 402.0,
+   "note": "拿著取出的空針與針頭套檢視，隨後將空針插回包裝袋內"
+  },
+  {
+   "start": 522.4,
+   "end": 536.6,
+   "note": "手持空針在檯面上停頓並與旁邊考官交談"
+  }
+ ],
+ "package_spans": [
+  {
+   "start": 171.0,
+   "end": 175.0,
+   "evidence": "global #21(172.0s)及 ov@165-255 #1(176.2s)從車下拿出第一包空針包裝放到檯面"
+  },
+  {
+   "start": 218.0,
+   "end": 226.0,
+   "evidence": "global #27(220.0s)及 ov@165-255 #5(221.2s)雙手拿起空針包裝檢視後放回檯面"
+  },
+  {
+   "start": 348.0,
+   "end": 355.0,
+   "evidence": "global #43(348.0s)及 ov@352-400 #0(352.0s)移動並拿起檯面上的空針包裝後放下"
+  },
+  {
+   "start": 378.0,
+   "end": 392.0,
+   "evidence": "ov@352-400 #5-#7(382.0-394.0s)及 ov@384-416 #0-#2(384.0-392.0s)拿起空針包裝、撕開並抽出空針"
+  },
+  {
+   "start": 400.0,
+   "end": 414.8,
+   "evidence": "ov@384-416 #4-#7(400.0-412.0s)及 global #50-#51(404.0-412.0s)將空針插回空針包裝袋、撕開包裝、隔著包裝固定針頭並再次抽出空針"
+  },
+  {
+   "start": 426.0,
+   "end": 428.5,
+   "evidence": "ov@423-439 #2(427.0s)右手持空針、左手將空針包裝袋放到檯面上"
+  }
+ ],
+ "observations": [
+  {
+   "type": "out_of_order",
+   "start": 0.8,
+   "end": 36.0,
+   "steps": [
+    1,
+    2
+   ],
+   "confidence": 0.85,
+   "description": "步驟 2（1讀看給藥紀錄單）於 00:00.8 開始，早於步驟 1（洗手）00:09.4；SOP 標準順序為 1→2",
+   "evidence": "global #0(4.0s)先指著紀錄單閱讀，ov@0-75 #1(9.4s)才開始洗手"
+  },
+  {
+   "type": "interrupted",
+   "start": 0.8,
+   "end": 156.8,
+   "steps": [
+    2
+   ],
+   "confidence": 0.8,
+   "description": "步驟 2（1讀）分成兩段：00:00.8–00:07.0 先讀紀錄單，中間插入步驟 1（洗手）與拿藥，00:52.0–02:36.8 再次拿藥對著紀錄單核對",
+   "evidence": "global #0(4.0s)及 global #6-#18(52.0-148.0s)"
+  },
+  {
+   "type": "interrupted",
+   "start": 46.9,
+   "end": 289.2,
+   "steps": [
+    3
+   ],
+   "confidence": 0.7,
+   "description": "步驟 3（檢查藥物）分成兩段：00:46.9–02:36.8 檢視 vial 與稀釋液瓶，中間彎腰翻找空針與棉片，04:00.0–04:49.2 再次拿起藥物與棉片檢視",
+   "evidence": "ov@0-75 #5-#8、ov@75-165 #0-#7 及 ov@165-255 #7-#8、ov@255-345 #0-#2"
+  },
+  {
+   "type": "out_of_order",
+   "start": 384.0,
+   "end": 424.0,
+   "steps": [
+    7,
+    8,
+    9,
+    10
+   ],
+   "confidence": 0.85,
+   "description": "步驟 9、10（撕開空針包裝並取出空針）於 06:24.0 開始，早於步驟 7、8（消毒並打開稀釋液瓶口）06:55.0；SOP 標準順序為 7→8→9→10",
+   "evidence": "ov@384-416 #0-#7(384.0-412.0s)先撕空針包裝取出空針，ov@415-423 #0-#8(415.0-423.0s)才消毒並扭開稀釋液瓶"
+  },
+  {
+   "type": "interrupted",
+   "start": 384.0,
+   "end": 426.0,
+   "steps": [
+    9,
+    10
+   ],
+   "confidence": 0.8,
+   "description": "步驟 9、10 分成多段：06:24.0–06:33.0 先撕開包裝頂端並取出空針，06:42.0–06:54.8 將空針放回包裝袋內把包裝撕得更大後再次固定並取出，07:04.0–07:06.0 在打開稀釋液瓶後再次旋緊固定針頭",
+   "evidence": "ov@384-416 #0-#7(384.0-412.0s)及 ov@423-439 #1(425.0s)"
+  },
+  {
+   "type": "out_of_order",
+   "start": 428.5,
+   "end": 439.0,
+   "steps": [
+    12,
+    13
+   ],
+   "confidence": 0.8,
+   "description": "步驟 13 的拔針頭套動作於 07:08.5 開始，早於步驟 12（左手夾住稀釋液瓶）07:13.6；SOP 標準順序為 12→13",
+   "evidence": "ov@423-439 #3(429.0s)先拔除針套，#5(433.0s)左手才夾起稀釋液瓶"
+  },
+  {
+   "type": "out_of_order",
+   "start": 469.4,
+   "end": 522.4,
+   "steps": [
+    15,
+    16,
+    17,
+    18
+   ],
+   "confidence": 0.85,
+   "description": "第一次抽稀釋液後未先排氣（15–17），於 07:49.4 直接執行步驟 18（將針刺入 vial），之後重抽稀釋液才於 08:15.6 執行步驟 15–17；SOP 標準順序為 15→16→17→18",
+   "evidence": "ov@465-505 #1-#2(470.0-475.0s)先刺入 vial，#6-#8(495.0-505.0s)才墊棉片回抽排氣"
+  },
+  {
+   "type": "repeated",
+   "start": 480.0,
+   "end": 598.6,
+   "steps": [
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18
+   ],
+   "confidence": 0.85,
+   "description": "08:00.0–09:58.6 重複執行抽稀釋液、墊棉片排氣及打入 vial（12–14 共做三次、15–17 共做兩至三次、18 共做三次）",
+   "evidence": "ov@465-505 #1-#8、ov@530-586 #1-#7 及 ov@584-656 #0-#1"
+  },
+  {
+   "type": "other",
+   "start": 536.6,
+   "end": 544.0,
+   "steps": [
+    18
+   ],
+   "confidence": 0.9,
+   "description": "08:56.6–09:04.0 考生第二次將針刺入 vial 時，畫面左側考官伸手協助握住考生的手與空針",
+   "evidence": "global #67(540.0s)及 ov@530-586 #1(537.0s)"
+  },
+  {
+   "type": "repeated",
+   "start": 355.0,
+   "end": 370.2,
+   "steps": [
+    6
+   ],
+   "confidence": 0.85,
+   "description": "05:55.0–06:10.2 再次以酒精棉片擦拭 vial 瓶口，重複步驟 6",
+   "evidence": "ov@352-400 #1-#3(358.0-370.0s)"
+  },
+  {
+   "type": "repeated",
+   "start": 728.0,
+   "end": 816.4,
+   "steps": [
+    6,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28
+   ],
+   "confidence": 0.85,
+   "description": "12:08.0–13:36.4 第一次抽藥並單手回套針頭套（28）後，再次用酒精棉片消毒 vial 瓶口（6），並重新拔蓋抽空氣（21）、墊棉片排氣（25–27）、刺入 vial 打氣（22）、倒舉抽藥（23–24）及單手回套（28）",
+   "evidence": "ov@736-816.4 #0-#8(736.0-816.4s)及 global #91-#101(732.0-812.0s)"
+  },
+  {
+   "type": "out_of_order",
+   "start": 760.0,
+   "end": 786.4,
+   "steps": [
+    22,
+    23,
+    24,
+    25,
+    26,
+    27
+   ],
+   "confidence": 0.8,
+   "description": "第二次重抽時，於 12:40.0–12:52.4 先墊酒精棉片針頭朝上排氣（25–27），之後於 12:52.4–13:30.8 才刺入 vial 打空氣並倒舉抽藥（22–24）",
+   "evidence": "global #95(764.0s)及 zoom@764.0 先墊棉片排氣，global #96-#100(772.0-804.0s)才插 vial 抽藥"
+  },
+  {
+   "type": "skipped",
+   "start": null,
+   "end": null,
+   "steps": [
+    29,
+    30
+   ],
+   "confidence": 0.9,
+   "description": "影片於 13:36.4 結束時考生正在進行第二次單手回套針頭（步驟 28），未執行步驟 29（3讀並丟棄空瓶）與步驟 30（將空針放入空針包裝或放妥）",
+   "evidence": "ov@736-816.4 #8(816.4s)"
+  },
+  {
+   "type": "extra_action",
+   "start": 36.0,
+   "end": 46.9,
+   "steps": [],
+   "confidence": 0.7,
+   "description": "00:36.0–00:46.9 洗手後在治療車抽屜拿取 vial 與稀釋液瓶放到檯面",
+   "evidence": "global #4-#5(36.0-44.0s)及 ov@0-75 #4-#5(37.5-46.9s)"
+  },
+  {
+   "type": "extra_action",
+   "start": 156.8,
+   "end": 240.0,
+   "steps": [],
+   "confidence": 0.75,
+   "description": "02:36.8–04:00.0 多次彎腰在治療車下層抽屜翻找，陸續拿出兩包空針包裝與酒精棉片，並拿著空針包裝檢視",
+   "evidence": "global #19-#29(156.0-236.0s)及 ov@165-255 #0-#7(165.0-243.8s)"
+  },
+  {
+   "type": "extra_action",
+   "start": 289.2,
+   "end": 321.0,
+   "steps": [],
+   "confidence": 0.75,
+   "description": "04:49.2–05:21.0 彎腰至治療車下層、拿起酒精棉片包裝檢視並撕開包裝",
+   "evidence": "global #36-#39(292.0-316.0s)及 ov@255-345 #4-#6(299.9-322.5s)"
+  },
+  {
+   "type": "extra_action",
+   "start": 327.0,
+   "end": 355.0,
+   "steps": [],
+   "confidence": 0.75,
+   "description": "05:27.0–05:55.0 整理檯面物品、移動空針包裝並撕開新的酒精棉片包裝",
+   "evidence": "global #41-#43(332.0-348.0s)及 ov@255-345 #7-#8(333.8-345.0s)"
+  },
+  {
+   "type": "extra_action",
+   "start": 370.2,
+   "end": 384.0,
+   "steps": [],
+   "confidence": 0.75,
+   "description": "06:10.2–06:24.0 丟棄用過的棉片並整理檯面上的空針包裝與藥瓶",
+   "evidence": "global #46-#47(372.0-380.0s)及 ov@352-400 #3-#5(370.0-382.0s)"
+  },
+  {
+   "type": "extra_action",
+   "start": 393.0,
+   "end": 402.0,
+   "steps": [],
+   "confidence": 0.75,
+   "description": "06:33.0–06:42.0 取出空針後拿在手上檢視，隨後將空針重新插回空針包裝袋內",
+   "evidence": "global #49(396.0s)及 ov@384-416 #3-#4(396.0-400.0s)"
+  },
+  {
+   "type": "extra_action",
+   "start": 522.4,
+   "end": 536.6,
+   "steps": [],
+   "confidence": 0.75,
+   "description": "08:42.4–08:56.6 右手持空針在治療車前停頓並看向左側與考官對話",
+   "evidence": "global #65-#66(524.0-532.0s)及 ov@530-586 #0(530.0s)"
+  }
+ ],
+ "zoom_log": [
+  {
+   "times": [
+    500.0,
+    508.0,
+    572.0,
+    602.0
+   ],
+   "region": [
+    0.25,
+    0.15,
+    0.85,
+    0.7
+   ],
+   "for_steps": [
+    15,
+    16
+   ],
+   "finding": "zoom@500.0、zoom@508.0、zoom@572.0 均清楚看到白色酒精棉片墊在針頭與針筒交接處並垂直持針筒排氣（步驟 15、16）；zoom@602.0 為打入稀釋液拔出後以棉片擦針頭準備單手回套"
+  },
+  {
+   "times": [
+    696.0,
+    708.0,
+    716.0,
+    764.0
+   ],
+   "region": [
+    0.25,
+    0.15,
+    0.85,
+    0.7
+   ],
+   "for_steps": [
+    25,
+    26
+   ],
+   "finding": "zoom@696.0、zoom@708.0、zoom@716.0 及 zoom@764.0 均清楚看到白色酒精棉片墊在針頭與針筒交接處並針頭朝上排氣（步驟 25、26）"
+  }
+ ]
+}

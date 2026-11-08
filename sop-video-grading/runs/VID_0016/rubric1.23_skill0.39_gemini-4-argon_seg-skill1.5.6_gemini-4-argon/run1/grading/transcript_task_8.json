@@ -1,0 +1,101 @@
+[
+ {
+  "turn": 1,
+  "seconds": 126.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 19634,
+  "cached_input_tokens": 0,
+  "output_tokens": 563,
+  "thinking_tokens": 449,
+  "materials": [
+   "clip@128-138.5（context box，有聲音；片段內 00:00 ＝ 影片 02:08.0）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 118.0, \"end\": 148.5, \"fps\": 2, \"reason\": \"在 128.0–138.5 區間內學生僅以棉片擦拭已打開的稀釋液瓶口，未看到扭開瓶頂動作，故擴大查看前後各 10 秒（118.0–148.5）確認打開稀釋液瓶口的時間點。\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 88.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 25401,
+  "cached_input_tokens": 17301,
+  "output_tokens": 405,
+  "thinking_tokens": 330,
+  "materials": [
+   "clip@128-138.5（context box，有聲音；片段內 00:00 ＝ 影片 02:08.0）",
+   "clip@118-148.5（context box，有聲音；片段內 00:00 ＝ 影片 01:58.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [131.0, 135.5], \"region\": [0.45, 0.25, 0.85, 0.55], \"reason\": \"放大確認扭開稀釋液瓶頂的動作與瓶頂脫離\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 86.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 26592,
+  "cached_input_tokens": 17305,
+  "output_tokens": 110,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@128-138.5（context box，有聲音；片段內 00:00 ＝ 影片 02:08.0）",
+   "clip@118-148.5（context box，有聲音；片段內 00:00 ＝ 影片 01:58.0）",
+   "zoom@131/135.5 region=[0.450, 0.250, 0.850, 0.550]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [122.0, 138.0], \"region\": [0.45, 0.25, 0.85, 0.65], \"reason\": \"確認 02:02 (122s) 之前是否有打開稀釋液瓶口，以及 02:18 (138s) 擦拭後稀釋液瓶口是否已經是打開的狀態\"}",
+  "errors": []
+ },
+ {
+  "turn": 4,
+  "seconds": 91.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 27827,
+  "cached_input_tokens": 17524,
+  "output_tokens": 438,
+  "thinking_tokens": 340,
+  "materials": [
+   "clip@128-138.5（context box，有聲音；片段內 00:00 ＝ 影片 02:08.0）",
+   "clip@118-148.5（context box，有聲音；片段內 00:00 ＝ 影片 01:58.0）",
+   "zoom@131/135.5 region=[0.450, 0.250, 0.850, 0.550]",
+   "zoom@122/138 region=[0.450, 0.250, 0.850, 0.650]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [120.5, 121.5, 122.0, 123.0], \"region\": [0.5, 0.3, 0.9, 0.7], \"reason\": \"確認 02:00.5–02:03.0 雙手扭開稀釋液瓶頂的動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 5,
+  "seconds": 87.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 29084,
+  "cached_input_tokens": 17524,
+  "output_tokens": 388,
+  "thinking_tokens": 293,
+  "materials": [
+   "clip@128-138.5（context box，有聲音；片段內 00:00 ＝ 影片 02:08.0）",
+   "clip@118-148.5（context box，有聲音；片段內 00:00 ＝ 影片 01:58.0）",
+   "zoom@131/135.5 region=[0.450, 0.250, 0.850, 0.550]",
+   "zoom@122/138 region=[0.450, 0.250, 0.850, 0.650]",
+   "zoom@120.5/121.5/122/123 region=[0.500, 0.300, 0.900, 0.700]"
+  ],
+  "reply": "{\"action\": \"burst\", \"start\": 118.5, \"end\": 121.5, \"n\": 9, \"region\": [0.55, 0.35, 0.95, 0.75], \"reason\": \"確認 01:58.5–02:01.5 扭開稀釋液瓶口的動作細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 6,
+  "seconds": 190.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 30552,
+  "cached_input_tokens": 17524,
+  "output_tokens": 280,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@128-138.5（context box，有聲音；片段內 00:00 ＝ 影片 02:08.0）",
+   "clip@118-148.5（context box，有聲音；片段內 00:00 ＝ 影片 01:58.0）",
+   "zoom@131/135.5 region=[0.450, 0.250, 0.850, 0.550]",
+   "zoom@122/138 region=[0.450, 0.250, 0.850, 0.650]",
+   "zoom@120.5/121.5/122/123 region=[0.500, 0.300, 0.900, 0.700]",
+   "burst@118.5-121.5（原始解析度，9 格，每 0.38 s）#0=01:58.5、#1=01:58.9、#2=01:59.2、#3=01:59.6、#4=02:00.0、#5=02:00.4、#6=02:00.8、#7=02:01.1、#8=02:01.5 region=[0.550, 0.350, 0.950, 0.750]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"8a\", \"verdict\": \"正確\", \"explanation\": \"於 01:58.5–02:02.0（M6 burst@118.5-121.5 及 M2 clip@118-148.5 片段內 00:00.5–00:04.0），學生右手握住稀釋液瓶身，左手捏住塑膠瓶頂用力扭轉並將瓶頂轉下丟棄，完成打開稀釋液瓶口（切分標示的 02:10.0–02:16.5 為後續拿酒精棉片擦拭已打開的稀釋液瓶口）。\", \"times\": [[118.5, 122.0]], \"evidence\": [\"clip@118-148.5\", \"burst@118.5-121.5 #0\", \"burst@118.5-121.5 #6\", \"burst@118.5-121.5 #8\", \"zoom@123\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

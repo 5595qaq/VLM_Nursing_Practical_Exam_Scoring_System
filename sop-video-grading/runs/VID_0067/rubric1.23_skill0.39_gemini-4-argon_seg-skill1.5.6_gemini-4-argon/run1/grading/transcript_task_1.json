@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 152.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 21035,
+  "cached_input_tokens": 0,
+  "output_tokens": 1569,
+  "thinking_tokens": 1470,
+  "materials": [
+   "clip@0-17.6（context box，有聲音；片段內 00:00 ＝ 影片 00:00.0）"
+  ],
+  "reply": "{\"action\": \"burst\", \"start\": 9.0, \"end\": 12.0, \"n\": 12, \"region\": [0.3, 0.35, 0.7, 0.7], \"reason\": \"確認 09.0–12.0 秒之間「大」與「立」的動作細節，確認是否有做「立」（指尖搓掌心）\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 45.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 22510,
+  "cached_input_tokens": 0,
+  "output_tokens": 1232,
+  "thinking_tokens": 843,
+  "materials": [
+   "clip@0-17.6（context box，有聲音；片段內 00:00 ＝ 影片 00:00.0）",
+   "burst@9-12（原始解析度，12 格，每 0.27 s）#0=00:09.0、#1=00:09.3、#2=00:09.5、#3=00:09.8、#4=00:10.1、#5=00:10.4、#6=00:10.6、#7=00:10.9、#8=00:11.2、#9=00:11.5、#10=00:11.7、#11=00:12.0 region=[0.300, 0.350, 0.700, 0.700]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"1a\", \"verdict\": \"錯誤\", \"explanation\": \"00:01.5 雙手開始互搓，00:15.5 雙手分開放下，共約 14.0 秒，不足 15 秒。\", \"span\": [1.5, 15.5], \"evidence\": [\"clip@0-17.6\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"1b\", \"verdict\": \"正確\", \"explanation\": \"洗手七個動作皆有完成：00:01.5–00:02.5 內（掌心對掌心）、00:03.0–00:04.5 外（手心搓手背）、00:05.0–00:06.0 夾（十指交叉搓指縫）、00:06.5–00:08.0 弓（彎曲手指搓指背）、00:08.5–00:10.4 大（握住大拇指旋轉）、00:10.6–00:12.0 立（指尖立在掌心搓，見 burst@9-12 #6–#11）、00:12.5–00:15.0 腕（搓手腕）。\", \"times\": [[1.5, 15.0]], \"evidence\": [\"clip@0-17.6\", \"burst@9-12 #6\", \"burst@9-12 #10\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

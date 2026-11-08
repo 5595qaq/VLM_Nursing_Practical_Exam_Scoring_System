@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 333.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 19915,
+  "cached_input_tokens": 17262,
+  "output_tokens": 280,
+  "thinking_tokens": 211,
+  "materials": [
+   "clip@231-243（context box，有聲音；片段內 00:00 ＝ 影片 03:51.0）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 221.0, \"end\": 231.0, \"fps\": 2, \"reason\": \"M1 區間內學生已在抽取稀釋液，往前看 10 秒確認是否有打開稀釋液瓶口的動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 323.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 21856,
+  "cached_input_tokens": 17299,
+  "output_tokens": 442,
+  "thinking_tokens": 367,
+  "materials": [
+   "clip@231-243（context box，有聲音；片段內 00:00 ＝ 影片 03:51.0）",
+   "clip@221-231（context box，有聲音；片段內 00:00 ＝ 影片 03:41.0）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 243.0, \"end\": 253.0, \"fps\": 2, \"reason\": \"在任務區間與前10秒未看到打開稀釋液瓶口（此時已在抽藥），查看區間後10秒確認是否有相關動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 407.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 23807,
+  "cached_input_tokens": 17262,
+  "output_tokens": 180,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@231-243（context box，有聲音；片段內 00:00 ＝ 影片 03:51.0）",
+   "clip@221-231（context box，有聲音；片段內 00:00 ＝ 影片 03:41.0）",
+   "clip@243-253（context box，有聲音；片段內 00:00 ＝ 影片 04:03.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"8a\", \"verdict\": \"無法判定\", \"explanation\": \"切分標示的 03:53–04:01（及前後 10 秒 03:41–04:13）內，學生已經在將空針插入已打開的稀釋液瓶抽取稀釋液，並未看到打開稀釋液瓶口的動作（應發生在更早的時間點）。\", \"times\": [[221.0, 253.0]], \"evidence\": [\"clip@221-231\", \"clip@231-243\", \"clip@243-253\"], \"confidence\": 0.9, \"reason\": \"資訊不足\"}]}",
+  "errors": []
+ }
+]
