@@ -1,0 +1,1 @@
+- 文件（不改 SKILL／rubric 版本）：老師 2026-11-08 回覆「待老師確認事項」，整理在 `experiments/2026-11-08-teacher-reply.md`；`EXPERIMENTS.md`「待老師確認」只留還要追問的項目。老師決定的標準還沒寫進規則，由各 criteria 組另開分支修改。

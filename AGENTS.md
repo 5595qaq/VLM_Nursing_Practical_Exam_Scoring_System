@@ -130,6 +130,8 @@
 
 紀錄與實驗見 `sop-video-grading/experiments/2026-10-30-pkgspan.md`。
 
+老師 2026-11-08 回覆勾選「只有取出後固定才算」，但同一份回覆對 VID_0072 又寫「隔著包裝固定是可以的」，已列入 `EXPERIMENTS.md`「待老師確認」追問。老師釐清、`criteria/08-hand-posture.md` 改完之前，仍照上面的做法（`experiments/2026-11-08-teacher-reply.md`）。
+
 ## 測試與驗證
 
 - 修改後依影響範圍執行測試，涵蓋修改功能及可能受影響的功能；不得只因修改功能的測試通過，就認定其他功能不受影響。
