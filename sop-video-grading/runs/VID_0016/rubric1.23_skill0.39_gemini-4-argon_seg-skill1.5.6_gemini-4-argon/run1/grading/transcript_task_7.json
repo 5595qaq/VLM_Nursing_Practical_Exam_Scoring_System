@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 156.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 20098,
+  "cached_input_tokens": 17300,
+  "output_tokens": 198,
+  "thinking_tokens": 125,
+  "materials": [
+   "clip@128-141（context box，有聲音；片段內 00:00 ＝ 影片 02:08.0）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 118.0, \"end\": 128.0, \"fps\": 2, \"reason\": \"依規則檢查區間開始前 10 秒（118-128s）是否有更早擦拭稀釋液瓶口的動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 126.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 22039,
+  "cached_input_tokens": 17300,
+  "output_tokens": 84,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@128-141（context box，有聲音；片段內 00:00 ＝ 影片 02:08.0）",
+   "clip@118-128（context box，有聲音；片段內 00:00 ＝ 影片 01:58.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [130.5, 132.5, 135.0, 137.5], \"region\": [0.55, 0.4, 0.85, 0.65], \"reason\": \"確認稀釋液瓶口消毒與扭開的細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 86.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 23279,
+  "cached_input_tokens": 17262,
+  "output_tokens": 217,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@128-141（context box，有聲音；片段內 00:00 ＝ 影片 02:08.0）",
+   "clip@118-128（context box，有聲音；片段內 00:00 ＝ 影片 01:58.0）",
+   "zoom@130.5/132.5/135/137.5 region=[0.550, 0.400, 0.850, 0.650]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"7a\", \"verdict\": \"正確\", \"explanation\": \"02:10–02:16（clip@128-141 片段內 00:02.0–00:08.0）學生右手持細長稀釋液瓶，左手拿酒精棉片包住稀釋液瓶口擦拭消毒，並已透過 zoom@130.5、zoom@132.5、zoom@135 確認為稀釋液瓶與酒精棉片。\", \"times\": [[130.0, 136.0]], \"evidence\": [\"clip@128-141\", \"clip@118-128\", \"zoom@130.5\", \"zoom@132.5\", \"zoom@135\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 129.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 19069,
+  "cached_input_tokens": 0,
+  "output_tokens": 285,
+  "thinking_tokens": 199,
+  "materials": [
+   "ov@208-290（hands_box，n=9）#0=03:28.0、#1=03:38.2、#2=03:48.5、#3=03:58.8、#4=04:09.0、#5=04:19.2、#6=04:29.5、#7=04:39.8、#8=04:50.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [278.5, 279.8, 281.0], \"region\": [0.25, 0.35, 0.75, 0.75], \"reason\": \"確認 04:39.8 前後是否用手指指出空針包裝核對\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 6.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 20273,
+  "cached_input_tokens": 17300,
+  "output_tokens": 210,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@208-290（hands_box，n=9）#0=03:28.0、#1=03:38.2、#2=03:48.5、#3=03:58.8、#4=04:09.0、#5=04:19.2、#6=04:29.5、#7=04:39.8、#8=04:50.0",
+   "zoom@278.5/279.8/281 region=[0.250, 0.350, 0.750, 0.750]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4e\", \"verdict\": \"正確\", \"explanation\": \"治療車前緣檯面上可見給藥紀錄單（如 03:38.2 右手指出紀錄單）。在撕開空針包裝前，於 04:38.5–04:39.8 左手拿著未拆封的空針包裝，右手食指清楚指出空針包裝上的文字進行核對，04:41.0 才開始撕開包裝。\", \"times\": [[278.5, 279.8]], \"evidence\": [\"ov@208-290 #1\", \"ov@208-290 #7\", \"zoom@278.5\", \"zoom@279.8\", \"zoom@281\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

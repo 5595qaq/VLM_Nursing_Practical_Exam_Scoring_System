@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 35.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 18947,
+  "cached_input_tokens": 0,
+  "output_tokens": 664,
+  "thinking_tokens": 579,
+  "materials": [
+   "clip@300-307.5（context box，有聲音；片段內 00:00 ＝ 影片 05:00.0）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 290.0, \"end\": 300.0, \"fps\": 2, \"reason\": \"依規則看區間開始前 10 秒到區間開始（290.0–300.0 s），確認更早是否有用酒精棉片擦拭稀釋液瓶頂\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 106.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 20728,
+  "cached_input_tokens": 0,
+  "output_tokens": 807,
+  "thinking_tokens": 714,
+  "materials": [
+   "clip@300-307.5（context box，有聲音；片段內 00:00 ＝ 影片 05:00.0）",
+   "clip@290-300（context box，有聲音；片段內 00:00 ＝ 影片 04:50.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [302.0, 302.5, 303.0, 303.5], \"region\": [0.25, 0.45, 0.65, 0.85], \"reason\": \"放大確認手中使用酒精棉片擦拭稀釋液瓶頂端的動作與瓶子種類\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 78.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 21976,
+  "cached_input_tokens": 17262,
+  "output_tokens": 976,
+  "thinking_tokens": 685,
+  "materials": [
+   "clip@300-307.5（context box，有聲音；片段內 00:00 ＝ 影片 05:00.0）",
+   "clip@290-300（context box，有聲音；片段內 00:00 ＝ 影片 04:50.0）",
+   "zoom@302/302.5/303/303.5 region=[0.250, 0.450, 0.650, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"7a\", \"verdict\": \"正確\", \"explanation\": \"於 04:50–05:00（clip@290-300）學生完成注入稀釋液與單手回套，至 05:00.5（clip@300-307.5 片段內 00:00.5）左手拿起稀釋液瓶，05:01.5–05:05.5（片段內 00:01.5–00:05.5）右手持白色方形酒精棉片在稀釋液瓶口來回擦拭消毒並覆蓋於瓶口（zoom@302、zoom@302.5、zoom@303、zoom@303.5 清楚確認）。\", \"times\": [[301.5, 305.5]], \"evidence\": [\"clip@290-300\", \"clip@300-307.5\", \"zoom@302\", \"zoom@302.5\", \"zoom@303\", \"zoom@303.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

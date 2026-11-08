@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 20.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 18938,
+  "cached_input_tokens": 16384,
+  "output_tokens": 958,
+  "thinking_tokens": 864,
+  "materials": [
+   "ov@380.5-388.5（hands_box，n=9）#0=06:20.5、#1=06:21.5、#2=06:22.5、#3=06:23.5、#4=06:24.5、#5=06:25.5、#6=06:26.5、#7=06:27.5、#8=06:28.5"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [384.0, 384.5, 385.0, 385.5], \"region\": [0.2, 0.35, 0.85, 0.9], \"reason\": \"放大確認單手回套過程，包含右手持針筒插入針架上的針頭套以及左手的位置\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 18.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 20157,
+  "cached_input_tokens": 17262,
+  "output_tokens": 866,
+  "thinking_tokens": 667,
+  "materials": [
+   "ov@380.5-388.5（hands_box，n=9）#0=06:20.5、#1=06:21.5、#2=06:22.5、#3=06:23.5、#4=06:24.5、#5=06:25.5、#6=06:26.5、#7=06:27.5、#8=06:28.5",
+   "zoom@384/384.5/385/385.5 region=[0.200, 0.350, 0.850, 0.900]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"19b\", \"verdict\": \"正確\", \"explanation\": \"06:24.0–06:25.5 學生以右手單手持針筒，將針頭由上往下插入立於治療車前緣針架上的針頭套內，左手全程停留在胸前未碰觸針頭套，符合單手回套標準。\", \"times\": [[384.0, 385.5]], \"evidence\": [\"ov@380.5-388.5 #4\", \"ov@380.5-388.5 #5\", \"zoom@384\", \"zoom@384.5\", \"zoom@385\", \"zoom@385.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

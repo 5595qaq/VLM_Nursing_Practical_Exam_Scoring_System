@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 223.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 20251,
+  "cached_input_tokens": 18199,
+  "output_tokens": 1257,
+  "thinking_tokens": 1155,
+  "materials": [
+   "clip@233.5-247（context box，有聲音；片段內 00:00 ＝ 影片 03:53.5）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [236.5, 237.5, 242.0, 243.5], \"region\": [0.45, 0.45, 0.85, 0.95], \"reason\": \"放大確認打開 vial 瓶蓋（5a）及以酒精棉片擦拭消毒 vial 瓶口（6a）的細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 235.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 21493,
+  "cached_input_tokens": 0,
+  "output_tokens": 1973,
+  "thinking_tokens": 1576,
+  "materials": [
+   "clip@233.5-247（context box，有聲音；片段內 00:00 ＝ 影片 03:53.5）",
+   "zoom@236.5/237.5/242/243.5 region=[0.450, 0.450, 0.850, 0.950]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"03:56.5（zoom@236.5）左手拿起帶有褐色塑膠翻蓋的 vial，03:57.5–03:59.5（clip@233.5-247 片段內 00:04.0–00:06.0、zoom@237.5）將 vial 的褐色瓶蓋推開取下並放到治療盤上（zoom@242 清楚可見取下的褐色瓶蓋在盤面上）。\", \"times\": [[236.5, 239.5]], \"evidence\": [\"clip@233.5-247\", \"zoom@236.5\", \"zoom@237.5\", \"zoom@242\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"6a\", \"verdict\": \"正確\", \"explanation\": \"04:01.5–04:04.5（clip@233.5-247 片段內 00:08.0–00:11.0、zoom@242、zoom@243.5）左手扶住 vial，右手持白色酒精棉片在 vial 瓶口來回擦拭消毒，之後將棉片覆蓋於瓶口上。\", \"times\": [[241.5, 244.5]], \"evidence\": [\"clip@233.5-247\", \"zoom@242\", \"zoom@243.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

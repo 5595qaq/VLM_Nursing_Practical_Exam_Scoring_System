@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 55.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 19643,
+  "cached_input_tokens": 17262,
+  "output_tokens": 768,
+  "thinking_tokens": 670,
+  "materials": [
+   "clip@216.5-227（context box，有聲音；片段內 00:00 ＝ 影片 03:36.5）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [219.5, 222.5, 224.0, 224.5], \"region\": [0.45, 0.3, 0.85, 0.65], \"reason\": \"確認學生左手握稀釋液瓶、右手隔著酒精棉片扭開瓶頂並取下瓶頂的細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 90.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 20880,
+  "cached_input_tokens": 0,
+  "output_tokens": 654,
+  "thinking_tokens": 467,
+  "materials": [
+   "clip@216.5-227（context box，有聲音；片段內 00:00 ＝ 影片 03:36.5）",
+   "zoom@219.5/222.5/224/224.5 region=[0.450, 0.300, 0.850, 0.650]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"8a\", \"verdict\": \"正確\", \"explanation\": \"03:39.0–03:44.5（clip@216.5-227 片段內 00:02.5–00:08.0）左手握住稀釋液塑膠瓶身、右手捏住瓶頂扭轉並將瓶頂扭開取下。\", \"times\": [[219.0, 224.5]], \"evidence\": [\"clip@216.5-227\", \"zoom@219.5\", \"zoom@222.5\", \"zoom@224\", \"zoom@224.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

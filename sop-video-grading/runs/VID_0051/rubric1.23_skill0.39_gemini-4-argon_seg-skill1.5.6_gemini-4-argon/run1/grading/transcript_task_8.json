@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 345.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 19652,
+  "cached_input_tokens": 17303,
+  "output_tokens": 84,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@199.5-210（context box，有聲音；片段內 00:00 ＝ 影片 03:19.5）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [202.5, 204.5, 205.5], \"region\": [0.5, 0.35, 0.85, 0.7], \"reason\": \"確認以酒精棉片包住稀釋液瓶頂並扭開瓶口的動作與結果\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 728.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 20882,
+  "cached_input_tokens": 17302,
+  "output_tokens": 239,
+  "thinking_tokens": 42,
+  "materials": [
+   "clip@199.5-210（context box，有聲音；片段內 00:00 ＝ 影片 03:19.5）",
+   "zoom@202.5/204.5/205.5 region=[0.500, 0.350, 0.850, 0.700]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"8a\", \"verdict\": \"正確\", \"explanation\": \"03:21.5–03:25.5（clip@199.5-210 片段內 00:02.0–00:06.0）左手握住稀釋液瓶身，右手隔著酒精棉片包住稀釋液瓶頂扭轉打開，03:25.5 取下扭開的瓶頂放到桌上。\", \"times\": [[201.5, 205.5]], \"evidence\": [\"clip@199.5-210\", \"zoom@202.5\", \"zoom@204.5\", \"zoom@205.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

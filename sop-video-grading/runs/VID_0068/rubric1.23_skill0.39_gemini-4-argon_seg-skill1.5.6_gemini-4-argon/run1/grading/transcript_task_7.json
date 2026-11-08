@@ -1,0 +1,64 @@
+[
+ {
+  "turn": 1,
+  "seconds": 50.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 20029,
+  "cached_input_tokens": 0,
+  "output_tokens": 1037,
+  "thinking_tokens": 947,
+  "materials": [
+   "clip@191.5-204（context box，有聲音；片段內 00:00 ＝ 影片 03:11.5）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 181.5, \"end\": 191.5, \"fps\": 2, \"reason\": \"依規定查看區間開始前 10 秒（181.5–191.5s），確認拿起稀釋液瓶與撕開棉片包裝的時間，以及是否有更早接觸稀釋液瓶頂\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 19.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 21986,
+  "cached_input_tokens": 0,
+  "output_tokens": 1098,
+  "thinking_tokens": 1015,
+  "materials": [
+   "clip@191.5-204（context box，有聲音；片段內 00:00 ＝ 影片 03:11.5）",
+   "clip@181.5-191.5（context box，有聲音；片段內 00:00 ＝ 影片 03:01.5）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [194.0, 196.0, 199.0], \"region\": [0.35, 0.3, 0.65, 0.55], \"reason\": \"放大確認酒精棉片擦拭稀釋液瓶頂端的動作與瓶身種類\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 42.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 23238,
+  "cached_input_tokens": 17302,
+  "output_tokens": 327,
+  "thinking_tokens": 241,
+  "materials": [
+   "clip@191.5-204（context box，有聲音；片段內 00:00 ＝ 影片 03:11.5）",
+   "clip@181.5-191.5（context box，有聲音；片段內 00:00 ＝ 影片 03:01.5）",
+   "zoom@194/196/199 region=[0.350, 0.300, 0.650, 0.550]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [194.0, 196.0, 199.0], \"region\": [0.38, 0.48, 0.65, 0.72], \"reason\": \"將放大區域往下移以清楚看到雙手用酒精棉片消毒稀釋液瓶頂\"}",
+  "errors": []
+ },
+ {
+  "turn": 4,
+  "seconds": 138.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 24472,
+  "cached_input_tokens": 0,
+  "output_tokens": 865,
+  "thinking_tokens": 627,
+  "materials": [
+   "clip@191.5-204（context box，有聲音；片段內 00:00 ＝ 影片 03:11.5）",
+   "clip@181.5-191.5（context box，有聲音；片段內 00:00 ＝ 影片 03:01.5）",
+   "zoom@194/196/199 region=[0.350, 0.300, 0.650, 0.550]",
+   "zoom@194/196/199 region=[0.380, 0.480, 0.650, 0.720]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"7a\", \"verdict\": \"正確\", \"explanation\": \"於 03:04.5 拿起稀釋液瓶與酒精棉片包裝並撕開，03:13.5 取出酒精棉片後，於 03:14.0（clip@191.5-204 片段內 00:02.5）起以酒精棉片包住細長塑膠稀釋液瓶頂端與瓶頸來回擦拭消毒至 03:22.0（片段內 00:10.5），之後扭開瓶頂。\", \"times\": [[194.0, 202.0]], \"evidence\": [\"clip@181.5-191.5\", \"clip@191.5-204\", \"zoom@194\", \"zoom@196\", \"zoom@199\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

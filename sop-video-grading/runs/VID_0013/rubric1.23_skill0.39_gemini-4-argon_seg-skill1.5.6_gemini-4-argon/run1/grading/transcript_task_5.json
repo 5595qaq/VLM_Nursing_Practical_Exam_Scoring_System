@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 13.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 19214,
+  "cached_input_tokens": 0,
+  "output_tokens": 549,
+  "thinking_tokens": 454,
+  "materials": [
+   "clip@199.5-208.5（context box，有聲音；片段內 00:00 ＝ 影片 03:19.5）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [201.5, 204.0, 205.0, 205.5], \"region\": [0.45, 0.45, 0.78, 0.78], \"reason\": \"放大確認將 vial 塑膠瓶蓋推開及開蓋後的銀色鋁圈與橡皮塞\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 17.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 20452,
+  "cached_input_tokens": 17262,
+  "output_tokens": 719,
+  "thinking_tokens": 491,
+  "materials": [
+   "clip@199.5-208.5（context box，有聲音；片段內 00:00 ＝ 影片 03:19.5）",
+   "zoom@201.5/204/205/205.5 region=[0.450, 0.450, 0.780, 0.780]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"03:21–03:25.5（clip@199.5-208.5 片段內 00:01.5–00:06.0）左手持 vial 瓶身，右手將瓶頂的褐色塑膠翻蓋撥開取下；03:25.0–03:25.5 放大畫面清楚看到右手拿著拆下的褐色塑膠蓋，左手中的 vial 瓶頂露出銀色鋁圈與中央橡皮塞。\", \"times\": [[201.0, 205.5]], \"evidence\": [\"clip@199.5-208.5\", \"zoom@201.5\", \"zoom@204\", \"zoom@205\", \"zoom@205.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

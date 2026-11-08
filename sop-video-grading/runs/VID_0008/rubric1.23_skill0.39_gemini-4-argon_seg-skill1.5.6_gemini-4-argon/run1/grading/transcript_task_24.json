@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 671.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 18946,
+  "cached_input_tokens": 0,
+  "output_tokens": 97,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@367-403（hands_box，n=9）#0=06:07.0、#1=06:11.5、#2=06:16.0、#3=06:20.5、#4=06:25.0、#5=06:29.5、#6=06:34.0、#7=06:38.5、#8=06:43.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [371.5, 376.0, 385.0, 394.0], \"region\": [0.35, 0.0, 0.75, 0.55], \"reason\": \"放大檢視右手在抽藥過程中持握針心尾端的手勢，確認是否碰觸外露推桿\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 359.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 20189,
+  "cached_input_tokens": 17262,
+  "output_tokens": 192,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@367-403（hands_box，n=9）#0=06:07.0、#1=06:11.5、#2=06:16.0、#3=06:20.5、#4=06:25.0、#5=06:29.5、#6=06:34.0、#7=06:38.5、#8=06:43.0",
+   "zoom@371.5/376/385/394 region=[0.350, 0.000, 0.750, 0.550]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"24a\", \"verdict\": \"正確\", \"explanation\": \"於 06:11.5–06:34.0 抽取藥液期間，右手拇指與食指、中指皆持於針心尾端圓盤（環狀處）往下拉或頂在針筒翼緣處，未碰觸外露的針心推桿。\", \"times\": [[371.5, 394.0]], \"evidence\": [\"ov@367-403 #1\", \"ov@367-403 #6\", \"zoom@371.5\", \"zoom@376\", \"zoom@385\", \"zoom@394\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 15.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 18916,
+  "cached_input_tokens": 15253,
+  "output_tokens": 869,
+  "thinking_tokens": 771,
+  "materials": [
+   "ov@225.5-232（hands_box，n=9）#0=03:45.5、#1=03:46.3、#2=03:47.1、#3=03:47.9、#4=03:48.8、#5=03:49.6、#6=03:50.4、#7=03:51.2、#8=03:52.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [228.8, 229.6, 230.4, 231.2], \"region\": [0.3, 0.3, 0.8, 0.8], \"reason\": \"放大檢視學生左手持握稀釋液瓶的姿勢，確認是否以左手中指及食指夾住稀釋液瓶\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 13.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 20167,
+  "cached_input_tokens": 17262,
+  "output_tokens": 620,
+  "thinking_tokens": 442,
+  "materials": [
+   "ov@225.5-232（hands_box，n=9）#0=03:45.5、#1=03:46.3、#2=03:47.1、#3=03:47.9、#4=03:48.8、#5=03:49.6、#6=03:50.4、#7=03:51.2、#8=03:52.0",
+   "zoom@228.8/229.6/230.4/231.2 region=[0.300, 0.300, 0.800, 0.800]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"12a\", \"verdict\": \"正確\", \"explanation\": \"03:47.9–03:52.0 學生以左手食指與中指夾住稀釋液瓶頸部拿起，並在右手將針頭插入瓶口時持續以左手中指及食指穩定夾住稀釋液瓶。\", \"times\": [[227.9, 232.0]], \"evidence\": [\"ov@225.5-232 #3\", \"zoom@228.8\", \"zoom@229.6\", \"zoom@230.4\", \"zoom@231.2\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

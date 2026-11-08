@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 14.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 18947,
+  "cached_input_tokens": 0,
+  "output_tokens": 625,
+  "thinking_tokens": 526,
+  "materials": [
+   "clip@302-309.5（context box，有聲音；片段內 00:00 ＝ 影片 05:02.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [304.5, 305.0, 305.5, 306.0], \"region\": [0.3, 0.45, 0.65, 0.85], \"reason\": \"放大確認 304.5-306.0 秒間手中稀釋液瓶與打開瓶頂的動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 24.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 20188,
+  "cached_input_tokens": 17262,
+  "output_tokens": 951,
+  "thinking_tokens": 757,
+  "materials": [
+   "clip@302-309.5（context box，有聲音；片段內 00:00 ＝ 影片 05:02.0）",
+   "zoom@304.5/305/305.5/306 region=[0.300, 0.450, 0.650, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"8a\", \"verdict\": \"正確\", \"explanation\": \"05:05–05:06（clip@302-309.5 片段內 00:03–00:04）左手握住稀釋液瓶身，右手捏住瓶頂將塑膠稀釋液瓶口扭開，並於 05:06.5 將扭下的瓶頂放到檯面上。\", \"times\": [[305.0, 306.5]], \"evidence\": [\"clip@302-309.5\", \"zoom@304.5\", \"zoom@305\", \"zoom@305.5\", \"zoom@306\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

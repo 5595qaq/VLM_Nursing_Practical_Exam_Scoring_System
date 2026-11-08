@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 76.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 18995,
+  "cached_input_tokens": 0,
+  "output_tokens": 273,
+  "thinking_tokens": 172,
+  "materials": [
+   "ov@355-369.9（hands_box，n=9）#0=05:55.0、#1=05:56.9、#2=05:58.7、#3=06:00.6、#4=06:02.4、#5=06:04.3、#6=06:06.2、#7=06:08.0、#8=06:09.9"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [358.2, 358.7, 359.2, 359.7], \"region\": [0.3, 0.35, 0.65, 0.78], \"reason\": \"確認針頭刺入 vial 時的手部持針姿勢（22b）與刺入位置是否為中心（22c）\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 63.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 20238,
+  "cached_input_tokens": 17300,
+  "output_tokens": 313,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@355-369.9（hands_box，n=9）#0=05:55.0、#1=05:56.9、#2=05:58.7、#3=06:00.6、#4=06:02.4、#5=06:04.3、#6=06:06.2、#7=06:08.0、#8=06:09.9",
+   "zoom@358.2/358.7/359.2/359.7 region=[0.300, 0.350, 0.650, 0.780]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"22b\", \"verdict\": \"正確\", \"explanation\": \"於 05:58.2–05:59.7 學生以左手持毛筆方式握住針筒外管，拇指、食指與中指持握於外管處，未碰觸針頭、針座及活塞柄內側，並將針筒由上往下垂直刺入置於檯面上的 vial。\", \"times\": [[358.2, 359.7]], \"evidence\": [\"ov@355-369.9 #2\", \"zoom@358.2\", \"zoom@358.7\", \"zoom@359.2\", \"zoom@359.7\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"22c\", \"verdict\": \"正確\", \"explanation\": \"於 05:58.7–05:59.7 針頭對準並垂直刺入 vial 瓶口橡皮塞中心處。\", \"times\": [[358.7, 359.7]], \"evidence\": [\"zoom@358.7\", \"zoom@359.2\", \"zoom@359.7\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

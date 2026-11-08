@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 139.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 20539,
+  "cached_input_tokens": 0,
+  "output_tokens": 982,
+  "thinking_tokens": 891,
+  "materials": [
+   "clip@364.5-379.5（context box，有聲音；片段內 00:00 ＝ 影片 06:04.5）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [366.0, 369.5, 372.0, 373.5], \"region\": [0.3, 0.4, 0.8, 0.85], \"reason\": \"放大確認打開 vial 塑膠瓶蓋及以酒精棉片擦拭消毒 vial 瓶口的細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 17.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 21756,
+  "cached_input_tokens": 17301,
+  "output_tokens": 950,
+  "thinking_tokens": 578,
+  "materials": [
+   "clip@364.5-379.5（context box，有聲音；片段內 00:00 ＝ 影片 06:04.5）",
+   "zoom@366/369.5/372/373.5 region=[0.300, 0.400, 0.800, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"06:06–06:10（clip@364.5-379.5 片段內 00:02.0–00:05.5）左手握住 vial，右手將瓶頂深紅色塑膠翻蓋推開並放至治療盤上，zoom@366 與 zoom@369.5 可清楚看到 vial 瓶口由深紅色圓蓋變成銀色鋁圈。\", \"times\": [[366.5, 370.0]], \"evidence\": [\"clip@364.5-379.5\", \"zoom@366\", \"zoom@369.5\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"6a\", \"verdict\": \"正確\", \"explanation\": \"06:11–06:15（clip@364.5-379.5 片段內 00:06.5–00:10.5）右手持白色方形酒精棉片在 vial 瓶口來回旋轉擦拭消毒，zoom@372 與 zoom@373.5 可清楚看到酒精棉片擦拭 vial 瓶口。\", \"times\": [[371.0, 375.0]], \"evidence\": [\"clip@364.5-379.5\", \"zoom@372\", \"zoom@373.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
