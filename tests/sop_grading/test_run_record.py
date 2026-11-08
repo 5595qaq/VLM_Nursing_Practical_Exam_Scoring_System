@@ -181,6 +181,14 @@ def test_segmentation_usage_is_kept_only_when_the_run_segmented():
     assert "segmentation_usage" not in record["runs"][1]
 
 
+def test_timing_is_kept_when_given():
+    timing = {"started_at": "2026-11-08T10:00:00+08:00", "grading_seconds": 30.0, "total_seconds": 31.5}
+    record = rr.add_run(None, "VID_0083", VERSIONS, "abc", steps=None, failed_tasks=[], by="x", date="d",
+                        commit="c", segmentation="s", usage={}, timing=timing)
+    assert record["runs"][0]["timing"] == timing
+    assert "timing" not in add(record)["runs"][1]  # older callers (no timing) write no key
+
+
 def test_save_keeps_each_runs_grading(tmp_path):
     folder = tmp_path / "VID_0083" / "v"
     record = add(None)

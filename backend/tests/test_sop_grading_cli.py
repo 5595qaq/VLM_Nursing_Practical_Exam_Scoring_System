@@ -4,6 +4,7 @@ No model, ffmpeg, database or Google calls: normalizing and grading are replaced
 """
 import asyncio
 import csv
+import datetime
 import json
 import os
 import shutil
@@ -106,6 +107,10 @@ def test_run_is_recorded_and_a_rerun_is_refused(tmp_path, video, fake):
         "run": 1, "by": "5595QAQ", "commit": "ce021ed", "steps": list(range(1, 31)),
         "segmentation": "existing segmentation.json"}
     assert run["video_sha256"] == record["video_sha256"]
+    # reused the local segmentation: no segmentation time
+    assert set(run["timing"]) == {"started_at", "grading_seconds", "total_seconds"}
+    assert datetime.datetime.fromisoformat(run["timing"]["started_at"]).utcoffset() is not None
+    assert 0 <= run["timing"]["grading_seconds"] <= run["timing"]["total_seconds"]
     saved = sorted(p.relative_to(rec.folder / "run1").as_posix() for p in (rec.folder / "run1").rglob("*.json"))
     assert saved == ["grading.json", "grading/probe.json", "grading/transcript_task_1.json",
                      "grading/transcript_task_15-16-17.json"]
@@ -247,6 +252,15 @@ def new_rubric(monkeypatch):
     """Switch the grading version (as after a rubric change) for the recorders made from now on."""
     versions = cli.versions
     monkeypatch.setattr(cli, "versions", lambda tag: {**versions(tag), "rubric": "9.9"})
+
+
+def test_a_run_that_segments_records_its_segmentation_time(tmp_path, video, fake):
+    rec = recorder(video, tmp_path / "runs")
+    out = grade(rec, tmp_path / "a", None, video)
+    timing = load_record(rec)["runs"][0]["timing"]
+    assert fake["segmented"] == 1 and out["timing"] == timing
+    assert set(timing) == {"started_at", "segmentation_seconds", "grading_seconds", "total_seconds"}
+    assert timing["segmentation_seconds"] + timing["grading_seconds"] <= timing["total_seconds"] + 0.2
 
 
 def test_new_grading_version_reuses_the_recorded_segmentation(tmp_path, video, fake, capsys, request):

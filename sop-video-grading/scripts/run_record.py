@@ -134,14 +134,16 @@ def failed_steps(failed_tasks: list[dict]) -> set[int]:
 def add_run(record: dict | None, video_id: str, versions: dict, video_sha256: str, *, steps: set[int] | None,
             failed_tasks: list[dict], by: str, date: str, commit: str, segmentation: str,
             usage: dict, segmentation_from: dict | None = None,
-            segmentation_usage: dict | None = None) -> dict:
+            segmentation_usage: dict | None = None, timing: dict | None = None) -> dict:
     """Append one run. Its "steps" are the steps graded in it, minus the steps of failed tasks
     (those can be rerun without --force). Each run keeps the SHA-256 of the video it used, which can
     differ from the record's after --force. segmentation_from (segmentation_source) is written once,
     by the run that creates the record: its segmentation was copied, not made by this record.
     usage is the grading's tokens: input_tokens (cached ones included), cached_input_tokens (of those),
     output_tokens (thinking included), thinking_tokens; older records have only input / output.
-    segmentation_usage (same keys) is set when this run segmented the video."""
+    segmentation_usage (same keys) is set when this run segmented the video. timing is this run's
+    wall-clock time: started_at (ISO 8601 with offset), segmentation_seconds (only when it segmented),
+    grading_seconds, total_seconds (normalizing included); runs before 2026-11-08 have none."""
     if not record:
         record = {"video_id": video_id, "versions": versions, "video_sha256": video_sha256, "runs": []}
         if segmentation_from:
@@ -152,6 +154,8 @@ def add_run(record: dict | None, video_id: str, versions: dict, video_sha256: st
                            "segmentation": segmentation, "usage": usage})
     if segmentation_usage:
         record["runs"][-1]["segmentation_usage"] = segmentation_usage
+    if timing:
+        record["runs"][-1]["timing"] = timing
     return record
 
 
