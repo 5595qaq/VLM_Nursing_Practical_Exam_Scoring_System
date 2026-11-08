@@ -9,7 +9,7 @@ from pathlib import Path
 import pytest
 
 import review_page
-from eval_grading import (agent_spans, cited_spans, compare, load_labels, main, parse_spans, parse_time, render, spans_match,
+from eval_grading import (DEFAULT_EXCLUDE, agent_spans, cited_spans, compare, load_labels, main, parse_spans, parse_time, render, spans_match,
                           summarize)
 from grading_helpers import fill_visual, flag_review, make_segmentation
 from rules import grade_from_segmentation
@@ -235,3 +235,8 @@ def test_cli_prints_report(tmp_path, capsys):
     assert "判定一致但時間對不上：步驟 9" in text and "| ✗ 59:00.0–59:01.0／" in text
     assert "看畫面的步驟（V）：一致 0/0" in text  # steps 9 and 23 are program-only
     assert json.loads(out_json.read_text(encoding="utf-8"))["VID_0001"]["summary"]["compared"] == 2
+
+
+def test_unusable_videos_are_excluded_by_default():
+    # VID_0065 turns 90° at 03:00 and is not used (AGENTS.md, issue #148)
+    assert "VID_0065" in DEFAULT_EXCLUDE
