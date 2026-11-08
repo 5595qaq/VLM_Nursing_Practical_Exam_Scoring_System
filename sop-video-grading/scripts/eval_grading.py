@@ -39,7 +39,8 @@ from pathlib import Path
 
 from rubric import load_rubric
 
-DEFAULT_EXCLUDE = {"VID_0061", "VID_0062", "VID_0004", "VID_0008"}  # missing explanation / AI判定
+# missing explanation / AI判定 (0061, 0062, 0004, 0008); VID_0065 turns 90° at 03:00 and is not used (AGENTS.md)
+DEFAULT_EXCLUDE = {"VID_0061", "VID_0062", "VID_0004", "VID_0008", "VID_0065"}
 COMPARED = {"正確", "錯誤", "部分正確", "無法判定"}
 FAULTS = {"錯誤", "部分正確"}
 TIME_SLACK = 3.0  # seconds between starts that still count as the same span
