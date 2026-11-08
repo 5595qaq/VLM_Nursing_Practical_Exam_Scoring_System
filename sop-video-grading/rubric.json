@@ -42,14 +42,14 @@
     ]},
     {"step_id": 11, "text": "將瓶口上酒精棉片移除。", "removed": true, "criteria": []},
     {"step_id": 12, "text": "以左手中指及食指夾住稀釋液瓶。", "criteria": [
-      {"id": "12a", "text": "以左手中指及食指夾住稀釋液瓶", "category": "visual", "key": true, "window_steps": [12]}
+      {"id": "12a", "text": "以左手中指及食指夾住稀釋液瓶（左撇子左右手對調也算正確）", "category": "visual", "key": true, "window_steps": [12], "note": "老師 2026-11-08：左撇子左右手對調算正確，所有指定左右手的步驟都適用（12a、13a、14a、24a）；VID_0095 步驟 13 左右手對調判正確（rubric 1.25-handpos.1）"}
     ]},
     {"step_id": 13, "text": "右手將針頭斜面朝下插入稀釋液瓶中，左手其餘手指固定針筒。", "criteria": [
-      {"id": "13a", "text": "右手將針頭插入稀釋液瓶，左手其餘手指固定針筒", "category": "visual", "key": true, "window_steps": [13]},
+      {"id": "13a", "text": "右手將針頭插入稀釋液瓶，左手其餘手指固定針筒（左撇子左右手對調也算正確）", "category": "visual", "key": true, "window_steps": [13], "note": "老師 2026-11-08：左撇子左右手對調算正確，所有指定左右手的步驟都適用（12a、13a、14a、24a）；VID_0095 步驟 13 左右手對調判正確（rubric 1.25-handpos.1）"},
       {"id": "13b", "text": "針頭斜面朝下（斜面看不清，以插針時針頭朝下判斷）", "category": "visual", "key": false, "window_steps": [13], "note": "使用者確認（2026-10-21）：插針那一刻針頭比針筒尾端低（由上往下或斜向下插入）算正確；針筒水平或針頭朝上算錯誤"}
     ]},
     {"step_id": 14, "text": "右手持針心尾端環狀處，勿碰觸針心，抽出稀釋液至所需量之刻度。", "criteria": [
-      {"id": "14a", "text": "右手持針心尾端環狀處，未碰觸外露的針心推桿（手指在外筒或翼緣上不算碰觸）", "category": "visual", "key": true, "window_steps": [14]},
+      {"id": "14a", "text": "右手持針心尾端環狀處，未碰觸外露的針心推桿（手指在外筒或翼緣上不算碰觸）（左撇子左右手對調也算正確）", "category": "visual", "key": true, "window_steps": [14], "note": "老師 2026-11-08：左撇子左右手對調算正確，所有指定左右手的步驟都適用（12a、13a、14a、24a）；VID_0095 步驟 13 左右手對調判正確（rubric 1.25-handpos.1）"},
       {"id": "14b", "text": "抽出稀釋液至所需量之刻度", "category": "not_visible", "reason": "資訊不足", "note": "看不清針筒刻度"}
     ]},
     {"step_id": 15, "text": "酒棉墊在針心和針頭交接處。", "criteria": [
@@ -85,7 +85,7 @@
       {"id": "23a", "text": "將 vial 舉起倒置，空針朝上、瓶口朝下", "category": "program", "key": true, "rule": {"type": "detected"}}
     ]},
     {"step_id": 24, "text": "右手持針心尾端環狀處，勿碰觸針心，抽出藥液至所需藥量之刻度。", "criteria": [
-      {"id": "24a", "text": "右手持針心尾端環狀處，未碰觸外露的針心推桿（手指在外筒或翼緣上不算碰觸）", "category": "visual", "key": true, "window_steps": [24]},
+      {"id": "24a", "text": "右手持針心尾端環狀處，未碰觸外露的針心推桿（手指在外筒或翼緣上不算碰觸）（左撇子左右手對調也算正確）", "category": "visual", "key": true, "window_steps": [24], "note": "老師 2026-11-08：左撇子左右手對調算正確，所有指定左右手的步驟都適用（12a、13a、14a、24a）；VID_0095 步驟 13 左右手對調判正確（rubric 1.25-handpos.1）"},
       {"id": "24b", "text": "抽出藥液至所需藥量之刻度", "category": "not_visible", "reason": "資訊不足", "note": "看不清針筒刻度"},
       {"id": "24c", "text": "垂直抽藥：抽藥液時空針保持垂直，不可低於 90 度", "category": "visual", "key": true, "window_steps": [23, 24], "note": "老師 2026-11-08（追問回覆）：同意把「垂直抽藥，不可低於 90 度」加到抽藥液的步驟（23、24），「只要違反就是錯誤」，所以設為關鍵。步驟 23 只有程式判定的 23a，抽藥的動作在步驟 24，所以放在 24c、評分區間包含步驟 23 與 24，不在兩步重複（rubric 1.25-handpos.1，待組長確認）"}
     ]},
