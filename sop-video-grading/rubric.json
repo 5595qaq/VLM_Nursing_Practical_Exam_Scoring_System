@@ -86,7 +86,8 @@
     ]},
     {"step_id": 24, "text": "右手持針心尾端環狀處，勿碰觸針心，抽出藥液至所需藥量之刻度。", "criteria": [
       {"id": "24a", "text": "右手持針心尾端環狀處，未碰觸外露的針心推桿（手指在外筒或翼緣上不算碰觸）", "category": "visual", "key": true, "window_steps": [24]},
-      {"id": "24b", "text": "抽出藥液至所需藥量之刻度", "category": "not_visible", "reason": "資訊不足", "note": "看不清針筒刻度"}
+      {"id": "24b", "text": "抽出藥液至所需藥量之刻度", "category": "not_visible", "reason": "資訊不足", "note": "看不清針筒刻度"},
+      {"id": "24c", "text": "垂直抽藥：抽藥液時空針保持垂直，不可低於 90 度", "category": "visual", "key": true, "window_steps": [23, 24], "note": "老師 2026-11-08（追問回覆）：同意把「垂直抽藥，不可低於 90 度」加到抽藥液的步驟（23、24），「只要違反就是錯誤」，所以設為關鍵。步驟 23 只有程式判定的 23a，抽藥的動作在步驟 24，所以放在 24c、評分區間包含步驟 23 與 24，不在兩步重複（rubric 1.25-handpos.1，待組長確認）"}
     ]},
     {"step_id": 25, "text": "備用酒精棉片墊針柄。", "criteria": [
       {"id": "25a", "text": "酒精棉片墊在針柄", "category": "visual", "key": true, "window_steps": [25], "search_steps": [24, 28], "clip": true, "note": "使用者決定（2026-10-30，rubric 1.17）：由 program 改成評分 agent 判定，原因與實驗見 CHANGELOG 0.30"},
