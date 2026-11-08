@@ -10,8 +10,7 @@ span limits, remaining budget, and for final: exactly the task's criteria, each 
 per-criterion rules as validate_grading.py (reason for 無法判定, mm:ss in the explanation,
 frame/clip evidence), and times in video seconds within the same ranges. For the flick (17a/27a): 錯誤 only after at least one burst in this task, and
 無法判定（無音軌） when the task's audio_peaks result says there is no usable audio (task["audio"]).
-For the plunger pull-back (16a/26a): 錯誤 only after at least one burst, since the pull often lasts
-under a second and looks like the hands changing grip. A criterion with "clip": true in the rubric (20a,
+A criterion with "clip": true in the rubric (20a,
 rolling the vial: overview frames 2–4 s apart cannot show the hands moving) is graded only after a clip
 of this task was seen, either the opening clip (task["opening_clip"]) or a clip action. Fixing the
 needle (10b, rubric package_spans): actions may also look at the spans the hands held the syringe wrapper
@@ -40,7 +39,6 @@ CLIP_SPAN = (1.0, 60.0)
 ZOOM_MAX_AREA, ZOOM_MAX_SIDE = 0.50, 0.75
 BURST_SPAN = (0.3, 3.0)
 FLICK = {"17a", "27a"}  # need sound and the fingers seen together
-PULL_BACK = {"16a", "26a"}  # a sub-second pull a 2 fps clip or a few zooms can miss
 POINT_AT_PACKAGE = {"4e"}  # a gesture of a few seconds that opening frames ~9 s apart can miss
 TEAR_MARGIN = 5.0  # s around the segmentation's tearing start: a 4e 錯誤 needs a clip there (the start may be a few s off)
 FAST_CLIP_FPS = 5
@@ -174,10 +172,6 @@ def _check_final(action: dict, task: dict, used: dict, rubric: dict, duration: f
         if specs[cid].get("clip") and not task.get("opening_clip") and used.get("clip", 0) == 0:
             errors.append(f"criterion {cid}: watch a clip of the window before grading {cid}; overview "
                           "frames 2–4 s apart cannot show whether the hands keep moving")
-        if cid in PULL_BACK and c["verdict"] == "錯誤" and used.get("burst", 0) == 0:
-            errors.append(f"criterion {cid}: before marking 錯誤, use burst between the needle turning up and "
-                          "the first flick to check for a short pull on the plunger's end plate (it often "
-                          "lasts under a second and looks like the hands changing grip)")
         if cid in POINT_AT_PACKAGE and c["verdict"] == "錯誤" and not _clipped_before_tear(task, cid):
             errors.append(f"criterion {cid}: before marking 錯誤, use clip on the few seconds before the package "
                           "is torn open: pointing lasts two or three seconds and the opening frames can miss it")

@@ -8,7 +8,8 @@ G/H are mm:ss; several spans are written 01:47/02:49 in G and 01:51/02:50 in H (
 different counts in G and H, or a time that cannot be read, leave the step without a label time).
 The human explanation shown next to the model's is E + F + P joined (most rows only fill F,
 e.g. 步驟遺漏). Rows are skipped when the verdict is blank or 不適用, when E mentions "AI判定"
-(not a human judgement), or when the video is in --exclude.
+(not a human judgement), or when the video is in --exclude. Steps the current rubric removes (11, and 16 and 21
+since rubric 1.25) are not compared, whatever the label says, also in records graded before.
 
 Prints a per-step table for each video and a summary, overall and for the steps that have a visual
 criterion (類型 V). Steps with only program criteria (類型 P) are decided from the segmentation, so
@@ -148,16 +149,20 @@ def visual_steps() -> set[int]:
             if any(c["category"] == "visual" for c in s["criteria"])}
 
 
+def removed_steps() -> set[int]:
+    return {s["step_id"] for s in load_rubric()["steps"] if s.get("removed")}
+
+
 def compare(grading: dict, labels: dict[int, dict], segmentation: dict | None = None) -> list[dict]:
     """One row per labelled step. `time_match` is None when the time was not checked (no segmentation or
     no label time); a label time without a model time is False. `time_source` says where the model's
     times came from: agent (agent_spans) or segmentation."""
-    visual = visual_steps()
+    visual, removed = visual_steps(), removed_steps()
     seg = segmentation_spans(segmentation) if segmentation else {}
     rows = []
     for step in grading["steps"]:
         human = labels.get(step["step_id"])
-        if human is None:
+        if human is None or step["step_id"] in removed:  # not scored in the current rubric, even in older records
             continue
         cited = agent_spans(step) if segmentation else []
         model_spans = cited or seg.get(step["step_id"], [])

@@ -14,7 +14,7 @@
 | `03-drug-check.md` | 有看藥物 3a |
 | `04-needle-down-13b.md` | 針頭朝下插入稀釋液瓶 13b |
 | `05-flick.md` | 彈針 17a、27a，先墊棉片 15b、25b |
-| `06-plunger.md` | 針心往後抽 16a、26a，排氣 17b、27b |
+| `06-plunger.md` | 排氣 17b、27b（針心往後抽 16a、26a 已取消） |
 | `07-rolling-20a.md` | 雙手旋轉 vial 20a |
 | `08-hand-posture.md` | 手部姿勢 10b、12a、13a、14a、18b、18c、19b、22b、22c、24a、26b、28b |
 | `09-disposal.md` | 丟棄空瓶 29c、空針放入包裝 30a、30b |

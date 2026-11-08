@@ -1,5 +1,5 @@
 {
-  "version": "1.24",
+  "version": "1.25",
   "description": "無菌抽藥技術－vial 粉劑 30 步評分標準。category：program＝由切分結果以程式判定；visual＝評分 agent 看畫面（audio=true 時連聲音一起聽）；not_visible＝影片看不到，固定輸出「無法判定」且不影響步驟判定。visual 的 window_steps＝要看的步驟區間；task＝同名的標準共用一個評分任務（兩條都不在搜尋、且區間相距不超過 10 秒時；否則各自一個任務）；search_steps＝[第一步, 最後一步]，切分沒找到該步時，改在這兩步之間（含）所有步驟的區間內找，且該步的切分 not_performed 不直接判錯誤；after_step=true＝動作可以發生在自己的步驟之後，該步的切分 not_performed 也不直接判錯誤。key=true 的標準錯誤時整步判「錯誤」。",
   "steps": [
     {"step_id": 1, "text": "洗手。", "criteria": [
@@ -56,9 +56,7 @@
       {"id": "15a", "text": "酒精棉片墊在針心與針頭交接處", "category": "visual", "key": true, "window_steps": [15], "search_steps": [14, 18], "clip": true, "note": "使用者決定（2026-10-30，rubric 1.17）：由 program 改成評分 agent 判定，原因與實驗見 CHANGELOG 0.30"},
       {"id": "15b", "text": "先墊酒精棉片才彈針", "category": "visual", "key": false, "window_steps": [15, 16, 17], "audio": true}
     ]},
-    {"step_id": 16, "text": "針心往後抽。", "criteria": [
-      {"id": "16a", "text": "針心往後抽（外露的推桿變長）", "category": "visual", "key": true, "window_steps": [15, 16, 17], "note": "使用者確認（2026-10-21）：針頭朝上時把針心（活塞推桿）往外拉，有往外拉就算正確，不要求拉多少；原本只看切分有沒有定位到步驟"}
-    ]},
+    {"step_id": 16, "text": "針心往後抽。", "removed": true, "criteria": [], "note": "使用者決定（2026-11-08，rubric 1.25）：老師 2026-11-08 決定取消「針心往後抽」（影片很難看出推桿變化，以排氣代替），16a 移除，比照步驟 11 不評分（不適用）。切分仍標出步驟 16，15b、17a、17b 的區間照舊包含它"},
     {"step_id": 17, "text": "手指輕彈空針，排出空針內空氣。", "criteria": [
       {"id": "17a", "text": "手指輕彈空針（聽到彈擊聲且看到手指彈針筒）", "category": "visual", "key": true, "window_steps": [15, 16, 17], "audio": true},
       {"id": "17b", "text": "推針心排出空針內空氣（外露的推桿變短）", "category": "visual", "key": false, "window_steps": [15, 16, 17], "note": "使用者要求（2026-10-21）：原本 17a／27a 只檢查彈針，沒有人看排氣；VID_0106 步驟 17 人工標「彈針但沒有排出空氣」為部分正確，所以排氣設為非關鍵標準"}
@@ -75,9 +73,7 @@
     {"step_id": 20, "text": "用雙手旋轉Vial瓶，讓稀釋液和粉劑融合。", "criteria": [
       {"id": "20a", "text": "雙手旋轉 vial 讓稀釋液與粉劑融合（雙手掌心夾住 vial 來回搓滾或旋轉）", "category": "visual", "key": true, "window_steps": [20], "clip": true, "note": "暫定（標準文字未經人工核對）。使用者要求（2026-10-21）：原本只看切分有沒有定位到步驟 20；資料擴增 AUG0072_SKIP 刪掉搓滾後，切分把拿著 vial、擦瓶口的幾秒標成 20 而判正確，改由評分 agent 看畫面"}
     ]},
-    {"step_id": 21, "text": "空針拔蓋後，抽取空氣。", "criteria": [
-      {"id": "21a", "text": "空針拔蓋後抽取空氣", "category": "program", "key": true, "rule": {"type": "detected"}}
-    ]},
+    {"step_id": 21, "text": "空針拔蓋後，抽取空氣。", "removed": true, "criteria": [], "note": "使用者決定（2026-11-08，rubric 1.25）：老師 2026-11-08 決定不要求拔蓋後抽空氣（第一次打入稀釋液後原空針留有空氣），21a「空針拔蓋後抽取空氣」移除，比照步驟 11 不評分（不適用）。原本 21a 由程式在切分偵測到步驟 21 時判正確"},
     {"step_id": 22, "text": "用持毛筆方式將空針插入vial中心打入空氣。", "criteria": [
       {"id": "22a", "text": "將空氣打入 vial", "category": "program", "key": true, "rule": {"type": "detected"}},
       {"id": "22b", "text": "以持毛筆方式持針：拇指與食指、中指握住針筒外管，針筒垂直向下插入，手指不碰觸針頭、針座及活塞柄內側（只判插針那一刻，vial 可拿在手上）", "category": "visual", "key": false, "window_steps": [22]},
@@ -95,8 +91,7 @@
       {"id": "25b", "text": "先墊酒精棉片才彈針", "category": "visual", "key": false, "window_steps": [25, 26, 27], "audio": true}
     ]},
     {"step_id": 26, "text": "將針筒垂直拿起，針頭向上，針心往後抽。", "criteria": [
-      {"id": "26a", "text": "針心往後抽（外露的推桿變長）", "category": "visual", "key": true, "window_steps": [26], "note": "使用者確認（2026-10-21）：同 16a"},
-      {"id": "26b", "text": "針筒垂直、針頭向上", "category": "visual", "key": false, "window_steps": [26]}
+      {"id": "26b", "text": "針筒垂直、針頭向上", "category": "visual", "key": false, "window_steps": [26], "note": "使用者決定（2026-11-08，rubric 1.25）：老師 2026-11-08 決定取消「針心往後抽」（影片很難看出推桿變化，以排氣代替），26a 移除，步驟 26 只看 26b；步驟文字照舊。26b 不是關鍵標準，現在是唯一的標準：26b 錯誤時整步錯誤。原本 26a 錯誤時整步錯誤、26b 錯誤而 26a 正確時部分正確"}
     ]},
     {"step_id": 27, "text": "手指輕彈空針，排出空針內空氣。", "criteria": [
       {"id": "27a", "text": "手指輕彈空針（聽到彈擊聲且看到手指彈針筒）", "category": "visual", "key": true, "window_steps": [25, 26, 27], "audio": true},

@@ -26,11 +26,9 @@ def test_rubric_classification_matches_the_plan():
         assert by_id[cid]["category"] == "not_visible"
     # needle direction stands in for the bevel, which the camera cannot resolve (rubric 1.4)
     assert by_id["13b"]["category"] == "visual" and by_id["13b"]["key"] is False and by_id["13b"]["window_steps"] == [13]
-    # pulling the plunger back is checked on the frames, not inferred from the step being located (rubric 1.6)
-    assert by_id["16a"]["category"] == "visual" and by_id["16a"]["key"] is True
-    assert by_id["16a"]["window_steps"] == [15, 16, 17]  # same task as 15b + 17a
-    assert by_id["26a"]["category"] == "visual" and by_id["26a"]["key"] is True
-    assert by_id["26a"]["window_steps"] == by_id["26b"]["window_steps"] == [26]
+    # the teacher dropped pulling the plunger back (16a, 26a) and drawing air after uncapping (21a) (rubric 1.25)
+    assert not {"16a", "21a", "26a"} & by_id.keys()
+    assert by_id["26b"]["window_steps"] == [26] and by_id["26b"]["key"] is False
     # rolling the vial is watched on a clip, not inferred from the step being located (rubric 1.8)
     assert by_id["20a"]["category"] == "visual" and by_id["20a"]["key"] is True
     assert by_id["20a"]["window_steps"] == [20] and by_id["20a"]["clip"] is True
@@ -59,6 +57,18 @@ def test_rubric_classification_matches_the_plan():
 def test_removed_step_has_no_criteria():
     step11 = load_rubric()["steps"][10]
     assert step11["removed"] is True and step11["criteria"] == []
+
+
+def test_dropped_steps_16_21_and_step26_only_26b():
+    # rubric 1.25: steps 16 and 21 lose their only criterion and are removed like step 11;
+    # step 26 keeps the non-key 26b, which alone decides it
+    steps = {s["step_id"]: s for s in load_rubric()["steps"]}
+    for sid in (16, 21):
+        assert steps[sid]["removed"] is True and steps[sid]["criteria"] == []
+        assert aggregate(steps[sid], {}) == NOT_APPLICABLE
+    assert [c["id"] for c in steps[26]["criteria"]] == ["26b"]
+    assert aggregate(steps[26], {"26b": "錯誤"}) == "錯誤"
+    assert aggregate(steps[26], {"26b": "正確"}) == "正確"
 
 
 def broken(mutate) -> list[str]:
