@@ -26,7 +26,7 @@ def test_rubric_classification_matches_the_plan():
         assert by_id[cid]["category"] == "not_visible"
     # needle direction stands in for the bevel, which the camera cannot resolve (rubric 1.4)
     assert by_id["13b"]["category"] == "visual" and by_id["13b"]["key"] is False and by_id["13b"]["window_steps"] == [13]
-    # the teacher dropped pulling the plunger back (16a, 26a) and drawing air after uncapping (21a) (rubric 1.24-dropcrit.1)
+    # the teacher dropped pulling the plunger back (16a, 26a) and drawing air after uncapping (21a) (rubric 1.25)
     assert not {"16a", "21a", "26a"} & by_id.keys()
     assert by_id["26b"]["window_steps"] == [26] and by_id["26b"]["key"] is False
     # rolling the vial is watched on a clip, not inferred from the step being located (rubric 1.8)
@@ -60,7 +60,7 @@ def test_removed_step_has_no_criteria():
 
 
 def test_dropped_steps_16_21_and_step26_only_26b():
-    # rubric 1.24-dropcrit.1: steps 16 and 21 lose their only criterion and are removed like step 11;
+    # rubric 1.25: steps 16 and 21 lose their only criterion and are removed like step 11;
     # step 26 keeps the non-key 26b, which alone decides it
     steps = {s["step_id"]: s for s in load_rubric()["steps"]}
     for sid in (16, 21):

@@ -9,7 +9,7 @@ different counts in G and H, or a time that cannot be read, leave the step witho
 The human explanation shown next to the model's is E + F + P joined (most rows only fill F,
 e.g. 步驟遺漏). Rows are skipped when the verdict is blank or 不適用, when E mentions "AI判定"
 (not a human judgement), or when the video is in --exclude. Steps the current rubric removes (11, and 16 and 21
-since rubric 1.24-dropcrit.1) are not compared, whatever the label says, also in records graded before.
+since rubric 1.25) are not compared, whatever the label says, also in records graded before.
 
 Prints a per-step table for each video and a summary, overall and for the steps that have a visual
 criterion (類型 V). Steps with only program criteria (類型 P) are decided from the segmentation, so

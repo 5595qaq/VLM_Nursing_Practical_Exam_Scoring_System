@@ -70,7 +70,7 @@ def test_spans_match_overlap_or_starts_within_3s():
 
 def test_time_mismatch_counts_as_wrong():
     # steps 9 and 23 have only program criteria: the times come from the segmentation (rubric 1.17 moved 5a–8a
-    # to the grading agent, whose cited times are used first; rubric 1.24-dropcrit.1 removed step 21)
+    # to the grading agent, whose cited times are used first; rubric 1.25 removed step 21)
     seg = make_segmentation()
     grading = fill_visual(grade_from_segmentation(seg))
     s9 = next(e for e in seg["steps"] if e["step_id"] == 9)
@@ -202,7 +202,7 @@ def test_compare_and_summary():
               19: {"verdict": "部分正確", "why": ""}, 16: {"verdict": "錯誤", "why": ""},
               21: {"verdict": "正確", "why": ""}}
     rows = compare(grading, labels)
-    assert [r["step_id"] for r in rows] == [1, 9, 19]  # 16 and 21 are removed (不適用) since rubric 1.24-dropcrit.1
+    assert [r["step_id"] for r in rows] == [1, 9, 19]  # 16 and 21 are removed (不適用) since rubric 1.25
     assert [r["kind"] for r in rows] == ["V", "P", "V"]  # step 9 has only a program criterion
     old = json.loads(json.dumps(grading))  # a rubric 1.23 record still has a verdict for steps 16 and 21
     for sid in (16, 21):
