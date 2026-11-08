@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 62.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 18932,
+  "cached_input_tokens": 0,
+  "output_tokens": 132,
+  "thinking_tokens": 42,
+  "materials": [
+   "ov@94.4-100（hands_box，n=9）#0=01:34.4、#1=01:35.1、#2=01:35.8、#3=01:36.5、#4=01:37.2、#5=01:37.9、#6=01:38.6、#7=01:39.3、#8=01:40.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [97.2, 97.9, 98.6, 99.3], \"region\": [0.3, 0.35, 0.7, 0.75], \"reason\": \"放大查看左手夾住稀釋液瓶的手指姿勢（是否以中指及食指夾住）\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 21.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 20171,
+  "cached_input_tokens": 17296,
+  "output_tokens": 434,
+  "thinking_tokens": 247,
+  "materials": [
+   "ov@94.4-100（hands_box，n=9）#0=01:34.4、#1=01:35.1、#2=01:35.8、#3=01:36.5、#4=01:37.2、#5=01:37.9、#6=01:38.6、#7=01:39.3、#8=01:40.0",
+   "zoom@97.2/97.9/98.6/99.3 region=[0.300, 0.350, 0.700, 0.750]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"12a\", \"verdict\": \"錯誤\", \"explanation\": \"於 01:37.9–01:39.3 拿起並持握稀釋液瓶準備抽藥時，左手是以拇指與中指、無名指握住瓶身，食指懸空向上，並未以左手中指及食指夾住稀釋液瓶。\", \"times\": [[97.9, 99.3]], \"evidence\": [\"ov@94.4-100 #5\", \"ov@94.4-100 #6\", \"zoom@97.9\", \"zoom@98.6\", \"zoom@99.3\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
