@@ -4,6 +4,7 @@ import json
 
 from grading_helpers import criterion, fill_visual, flag_review, make_segmentation, result_step, seg_step
 from rules import grade_from_segmentation, main
+from rubric import aggregate, load_rubric
 from validate_grading import validate_grading
 from validate_result import validate_result as validate_segmentation
 
@@ -184,7 +185,21 @@ def test_window_covers_a_step_split_in_two(segmentation):
     result = grade_from_segmentation(segmentation)
     # rubric 1.16: only step 10 again (fixing after the syringe is out), covering the gap between its entries
     assert criterion(result, "10b")["window"] == [98.0, 136.0]
-    assert "01:40–01:48、02:10–02:14" in criterion(result, "10a")["explanation"]
+
+
+def test_program_explanation_lists_every_span_of_a_split_step(segmentation):
+    segmentation["steps"].append({"step_id": 9, "start": 130.0, "end": 134.0, "confidence": 0.7,
+                                  "status": "detected", "evidence": "第二次撕包裝"})
+    c = criterion(grade_from_segmentation(segmentation), "9a")
+    assert c["verdict"] == "正確" and "01:30–01:38、02:10–02:14" in c["explanation"]
+
+
+def test_step10_fixing_wrong_is_step_wrong():
+    # rubric 1.24: 10a (取出空針) is no longer scored, so a wrong 10b makes step 10 錯誤, not 部分正確
+    step = next(s for s in load_rubric()["steps"] if s["step_id"] == 10)
+    assert [c["id"] for c in step["criteria"]] == ["10b"]
+    assert aggregate(step, {"10b": "錯誤"}) == "錯誤"
+    assert aggregate(step, {"10b": "正確"}) == "正確"
 
 
 def test_window_is_clipped_to_video(segmentation):

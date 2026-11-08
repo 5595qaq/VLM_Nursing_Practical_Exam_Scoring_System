@@ -2,6 +2,15 @@
 
 未發布的修改先寫在 `changelog.d/`（一個分支一個檔，見 `changelog.d/README.md`），合併前改成正式版本時才移到這裡；規則見 `AGENTS.md`「多人協作」。
 
+## 0.40（rubric 1.24）
+
+- 取消 10a「取出空針」（program、關鍵），不列入評分；步驟 10 只看 10b 固定針頭與針心。原本切分偵測到步驟 10 就給 10a 正確，10b 錯誤時整步只會是部分正確，現在會是錯誤。說明保留在 10b 的 note，步驟文字不變（使用者決定 2026-11-08，issue #140）。
+- 服務端（不改 SKILL／rubric 版本）：切分與評分每次呼叫模型前存檔點（`sop_checkpoint.py`），429、連線中斷或 worker 被關掉後，下一次嘗試從最後一輪接續，不必重付已跑完的回合；規則、程式版本、模型、影片或切分結果不同時不沿用。前端存在該 generation 的 `artifacts.zip`，「從失敗處繼續」往回找；命令列存在 `--out`。
+- 連線中斷與逾時（httpx 的 `NetworkError`、`TimeoutException`、`RemoteProtocolError`；SDK 不重試 `RemoteProtocolError`）改算暫時性錯誤，交回 queue 退避重派。
+- `GEMINI_RETRY_ATTEMPTS` 預設由 5 改為 10（約等 4 分鐘）。第四站 VID_0121–0132 的 10 次組沒有評分任務因 429 失敗，5 次組有 13 個；兩組時段不同，只能當參考。
+- `sop_grading_cli` 在 `record.json` 每次執行記下 `timing`：`started_at`、`segmentation_seconds`（有切分時）、`grading_seconds`、`total_seconds`。之前紀錄只有日期與 token 用量，算不出每支影片花多少時間；工作資料夾有之前留下的檢查點時另記 `checkpoints_found`，那筆的秒數不含之前的嘗試。前端的紀錄 ZIP 不寫這個欄位。舊紀錄補不回來。不改 SKILL／rubric 版本。
+- 文件（不改 SKILL／rubric 版本）：老師 2026-11-08 回覆「待老師確認事項」，整理在 `experiments/2026-11-08-teacher-reply.md`；`EXPERIMENTS.md`「待老師確認」只留還要追問的項目。老師決定的標準還沒寫進規則，由各 criteria 組另開分支修改。
+
 ## 0.39（rubric 1.23）
 
 - 評分 agent 的 `final` 新增 `times`（判定依據的影片秒數），驗證器檢查是否在任務區間內；`eval_grading.py` 優先用它，舊紀錄照舊解析說明文字（issue #125）。
