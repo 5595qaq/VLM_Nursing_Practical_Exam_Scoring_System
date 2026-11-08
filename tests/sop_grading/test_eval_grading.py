@@ -204,6 +204,10 @@ def test_compare_and_summary():
     rows = compare(grading, labels)
     assert [r["step_id"] for r in rows] == [1, 9, 19]  # 16 and 21 are removed (不適用) since rubric 1.24-dropcrit.1
     assert [r["kind"] for r in rows] == ["V", "P", "V"]  # step 9 has only a program criterion
+    old = json.loads(json.dumps(grading))  # a rubric 1.23 record still has a verdict for steps 16 and 21
+    for sid in (16, 21):
+        old["steps"][sid - 1].update(verdict="正確", criteria=[])
+    assert [r["step_id"] for r in compare(old, labels)] == [1, 9, 19]
     s = summarize(rows)
     assert s["agreement"] == 1 and s["error_recall"] == "0/2" and s["false_alarms"] == "0/1"
     assert s["confusion"] == {"錯誤→正確": 1, "部分正確→正確": 1}
