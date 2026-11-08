@@ -63,7 +63,7 @@
     ]},
     {"step_id": 18, "text": "用持毛筆方式將稀釋液插入vial中心並打入稀釋液。", "criteria": [
       {"id": "18a", "text": "將稀釋液打入 vial", "category": "program", "key": true, "rule": {"type": "detected"}},
-      {"id": "18b", "text": "以持毛筆方式持針：拇指與食指、中指握住針筒外管，針筒垂直向下插入，手指不碰觸針頭、針座及活塞柄內側（只判插針那一刻，vial 可拿在手上）", "category": "visual", "key": false, "window_steps": [18]},
+      {"id": "18b", "text": "以持毛筆方式持針：拇指與食指、中指握住針筒外管，針筒一定要垂直向下插入，手指不碰觸針頭、針座及活塞柄內側（只判插針那一刻）", "category": "visual", "key": false, "window_steps": [18], "note": "老師 2026-11-08：一定要針筒垂直向下（VID_0119 步驟 22 vial 橫拿、針筒水平插入判錯誤），取消使用者 2026-11-01 暫定的「vial 可拿在手上」；vial 要不要放在桌上另外判（rubric 1.25-handpos.1）"},
       {"id": "18c", "text": "針頭插入 vial 中心", "category": "visual", "key": false, "window_steps": [18]}
     ]},
     {"step_id": 19, "text": "抽出針頭，單手套上針頭套(或針座)。", "criteria": [
@@ -76,7 +76,7 @@
     {"step_id": 21, "text": "空針拔蓋後，抽取空氣。", "removed": true, "criteria": [], "note": "使用者決定（2026-11-08，rubric 1.25）：老師 2026-11-08 決定不要求拔蓋後抽空氣（第一次打入稀釋液後原空針留有空氣），21a「空針拔蓋後抽取空氣」移除，比照步驟 11 不評分（不適用）。原本 21a 由程式在切分偵測到步驟 21 時判正確"},
     {"step_id": 22, "text": "用持毛筆方式將空針插入vial中心打入空氣。", "criteria": [
       {"id": "22a", "text": "將空氣打入 vial", "category": "program", "key": true, "rule": {"type": "detected"}},
-      {"id": "22b", "text": "以持毛筆方式持針：拇指與食指、中指握住針筒外管，針筒垂直向下插入，手指不碰觸針頭、針座及活塞柄內側（只判插針那一刻，vial 可拿在手上）", "category": "visual", "key": false, "window_steps": [22]},
+      {"id": "22b", "text": "以持毛筆方式持針：拇指與食指、中指握住針筒外管，針筒一定要垂直向下插入，手指不碰觸針頭、針座及活塞柄內側（只判插針那一刻）", "category": "visual", "key": false, "window_steps": [22], "note": "老師 2026-11-08：一定要針筒垂直向下（VID_0119 步驟 22 vial 橫拿、針筒水平插入判錯誤），取消使用者 2026-11-01 暫定的「vial 可拿在手上」；vial 要不要放在桌上另外判（rubric 1.25-handpos.1）"},
       {"id": "22c", "text": "針頭插入 vial 中心", "category": "visual", "key": false, "window_steps": [22]}
     ]},
     {"step_id": 23, "text": "將Vial舉起，空針朝上，瓶口朝下。", "criteria": [
