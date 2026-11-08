@@ -8,7 +8,8 @@ G/H are mm:ss; several spans are written 01:47/02:49 in G and 01:51/02:50 in H (
 different counts in G and H, or a time that cannot be read, leave the step without a label time).
 The human explanation shown next to the model's is E + F + P joined (most rows only fill F,
 e.g. 步驟遺漏). Rows are skipped when the verdict is blank or 不適用, when E mentions "AI判定"
-(not a human judgement), or when the video is in --exclude.
+(not a human judgement), or when the video is in --exclude. Steps the grading marks 不適用 (removed from the
+rubric: 11, and 16 and 21 since rubric 1.24-dropcrit.1) are not compared, whatever the label says.
 
 Prints a per-step table for each video and a summary, overall and for the steps that have a visual
 criterion (類型 V). Steps with only program criteria (類型 P) are decided from the segmentation, so
@@ -157,7 +158,7 @@ def compare(grading: dict, labels: dict[int, dict], segmentation: dict | None = 
     rows = []
     for step in grading["steps"]:
         human = labels.get(step["step_id"])
-        if human is None:
+        if human is None or step["verdict"] == "不適用":  # a removed step (11, 16, 21) is not scored
             continue
         cited = agent_spans(step) if segmentation else []
         model_spans = cited or seg.get(step["step_id"], [])
