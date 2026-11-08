@@ -32,12 +32,17 @@ def test_rubric_classification_matches_the_plan():
     # rolling the vial is watched on a clip, not inferred from the step being located (rubric 1.8)
     assert by_id["20a"]["category"] == "visual" and by_id["20a"]["key"] is True
     assert by_id["20a"]["window_steps"] == [20] and by_id["20a"]["clip"] is True
-    # fixing the needle may happen before, after or apart from taking the syringe out (rubric 1.9)
+    # only fixing after the syringe is out of the wrapper counts (teacher 2026-11-08, rubric 1.25-handpos.1)
     assert "取出時" not in by_id["10b"]["text"] and "取出後" in by_id["10b"]["text"]
-    assert "隔著包裝" in by_id["10b"]["text"]  # fixing through the wrapper counts (rubric 1.10)
+    assert "隔著包裝或在包裝裡旋轉不算" in by_id["10b"]["text"]
     assert by_id["10b"]["category"] == "visual" and by_id["10b"]["key"] is False
     # rubric 1.18-pkgspan.1: the agent gets the wrapper spans and judges before and after removal
     assert "手拿空針包裝時段" in by_id["10b"]["text"] and by_id["10b"]["package_spans"] is True
+    # teacher 2026-11-08 (rubric 1.25-handpos.1): vial on the table, two-handed recapping and drawing below
+    # vertical fail the whole step
+    for cid in ("18d", "22d", "19b", "28b", "24c"):
+        assert by_id[cid]["category"] == "visual" and by_id[cid]["key"] is True
+    assert by_id["24c"]["window_steps"] == [23, 24]
     assert by_id["10b"]["window_steps"] == [10]
     # pointing at the package belongs to the second read and counts until the package is torn open
     assert by_id["4e"]["category"] == "visual" and by_id["4e"]["key"] is False

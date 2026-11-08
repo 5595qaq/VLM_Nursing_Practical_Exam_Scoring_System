@@ -303,7 +303,7 @@ def test_final_times_may_reach_the_slack_and_a_wrapper_span():
         {"criterion_id": "10b", "window": [74.0, 81.0], "package_spans": [[25.6, 35.0]]}]}
     action = {"action": "final", "criteria": [
         {"criterion_id": "10b", "verdict": "正確", "times": [[30.0, 31.0]], "confidence": 0.8, "reason": None,
-         "explanation": "00:30 隔著包裝旋緊針頭。", "evidence": ["clip@28-34"]}]}
+         "explanation": "00:30 空針取出後旋緊針頭。", "evidence": ["clip@28-34"]}]}
     assert validate(action, {**task, "clips": [[28.0, 34.0]]}, {**FRESH, "clip": 1}, DURATION) == []
 
 
