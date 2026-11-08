@@ -74,7 +74,7 @@ def test_duplicate_step_is_rejected():
 
 def test_criteria_must_follow_rubric():
     result = graded()
-    result_step(result, 10)["criteria"].reverse()
+    result_step(result, 19)["criteria"].reverse()  # 19a, 19b (step 10 has one criterion since rubric 1.23-no10a.1)
     assert_rejected(result, "in rubric order")
 
 
