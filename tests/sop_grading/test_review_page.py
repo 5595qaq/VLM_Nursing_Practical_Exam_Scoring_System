@@ -139,3 +139,17 @@ def test_missing_video_is_picked_in_the_page(tmp_path, run, capsys):
     rp.main(["review_page.py", str(run / "grading.json"), "--labels", str(labels), "-o", str(out)])
     assert page_data(out.read_text(encoding="utf-8"))["videos"]["VID_0001"]["src"] == ""
     assert "要在頁面裡選檔：VID_0001" in capsys.readouterr().out
+
+
+def test_unusable_video_is_not_reviewed(tmp_path, run, capsys):
+    # VID_0065 turns 90° at 03:00 and is not used (AGENTS.md, issue #148)
+    grading = json.loads((run / "grading.json").read_text(encoding="utf-8"))
+    grading["video_id"] = "VID_0065"
+    (run / "grading.json").write_text(json.dumps(grading, ensure_ascii=False), encoding="utf-8")
+    labels = write_labels(tmp_path / "l.csv", [label(1, "錯誤")])
+    out = tmp_path / "page.html"
+    rp.main(["review_page.py", str(run), "--labels", str(labels), "--all", "-o", str(out)])
+    data = page_data(out.read_text(encoding="utf-8"))
+    assert data["items"] == [] and data["videos"] == {}
+    printed = capsys.readouterr().out
+    assert "略過不使用的影片" in printed and "VID_0065" in printed

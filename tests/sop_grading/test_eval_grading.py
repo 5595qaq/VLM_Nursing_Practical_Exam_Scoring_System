@@ -9,7 +9,7 @@ from pathlib import Path
 import pytest
 
 import review_page
-from eval_grading import (DEFAULT_EXCLUDE, agent_spans, cited_spans, compare, load_labels, main, parse_spans, parse_time, render, spans_match,
+from eval_grading import (agent_spans, cited_spans, compare, load_labels, main, parse_spans, parse_time, render, spans_match,
                           summarize)
 from grading_helpers import fill_visual, flag_review, make_segmentation
 from rules import grade_from_segmentation
@@ -237,6 +237,14 @@ def test_cli_prints_report(tmp_path, capsys):
     assert json.loads(out_json.read_text(encoding="utf-8"))["VID_0001"]["summary"]["compared"] == 2
 
 
-def test_unusable_videos_are_excluded_by_default():
-    # VID_0065 turns 90° at 03:00 and is not used (AGENTS.md, issue #148)
-    assert "VID_0065" in DEFAULT_EXCLUDE
+
+def test_unusable_video_is_skipped_even_with_another_exclude(tmp_path, capsys):
+    # VID_0065 turns 90° at 03:00 and is not used (AGENTS.md, issue #148); a user --exclude must not bring it back
+    labels = write_labels(tmp_path / "l.csv", [row("VID_0065", 9, "正確")])
+    grading = fill_visual(grade_from_segmentation(make_segmentation()))
+    grading["video_id"] = "VID_0065"
+    path = tmp_path / "g.json"
+    path.write_text(json.dumps(grading, ensure_ascii=False), encoding="utf-8")
+    assert main(["eval_grading.py", str(path), "--labels", str(labels), "--exclude", "VID_0099"]) == 0
+    assert "沒有可比對的人工標註" in capsys.readouterr().out
+    assert load_labels(labels, set()) == {}
