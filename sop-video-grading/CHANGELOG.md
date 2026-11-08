@@ -9,7 +9,6 @@
 - `eval_grading.py` 不比對目前 rubric 移除的步驟（11、16、21），舊版本的紀錄也一樣；標記表那幾步的判定不計入一致率。
 - `criteria/06-plunger.md` 補充 17b／27b 比推桿長度時，拿開始彈針時和之後的影格比（彈針前常先往後抽）。
 - 不重跑影片：既有紀錄用程式重算（`experiments/2026-11-08-dropcrit.md`）。
-- `eval_grading.py`、`compare_arms.py` 預設排除 VID_0065（03:00 起畫面轉 90 度，使用者決定不使用，issue #148）。不改 SKILL／rubric 版本。
 
 ## 0.40（rubric 1.24）
 

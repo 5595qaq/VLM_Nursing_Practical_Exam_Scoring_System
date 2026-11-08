@@ -1,0 +1,2 @@
+- `eval_grading.py`、`compare_arms.py` 預設排除 VID_0065（03:00 起畫面轉 90 度，使用者決定不使用，issue #148）。不改 SKILL／rubric 版本。
+- 文件：`AGENTS.md`「資料來源」新增已知有問題的影片清單（VID_0016 步驟 22 之後沒錄到、VID_0065 不使用）；`experiments/2026-11-08-dropcrit.md` 補上切分把步驟 26 標成沒做的 9 支影片的檢查結論（不改 sop-video-skill）。
