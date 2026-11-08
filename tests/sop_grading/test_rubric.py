@@ -29,9 +29,8 @@ def test_rubric_classification_matches_the_plan():
     # the teacher dropped pulling the plunger back (16a, 26a) and drawing air after uncapping (21a) (rubric 1.25)
     assert not {"16a", "21a", "26a"} & by_id.keys()
     assert by_id["26b"]["window_steps"] == [26] and by_id["26b"]["key"] is False
-    # turning the needle at the hub stands in for the bevel; it may happen any time from step 10 (rubric 1.25-needle13b.1)
-    assert by_id["13c"]["category"] == "visual" and by_id["13c"]["key"] is False
-    assert by_id["13c"]["window_steps"] == [10, 12, 13] and "search_steps" not in by_id["13c"]
+    # turning the needle at the hub cannot be told from the video yet: not graded until confirmed (rubric 1.25-needle13b.2)
+    assert by_id["13c"]["category"] == "not_visible" and by_id["13c"]["reason"] == "資訊不足"
     # rolling the vial is watched on a clip, not inferred from the step being located (rubric 1.8)
     assert by_id["20a"]["category"] == "visual" and by_id["20a"]["key"] is True
     assert by_id["20a"]["window_steps"] == [20] and by_id["20a"]["clip"] is True
