@@ -1,3 +1,0 @@
-- 服務端（不改 SKILL／rubric 版本）：切分與評分每次呼叫模型前存檔點（`sop_checkpoint.py`），429、連線中斷或 worker 被關掉後，下一次嘗試從最後一輪接續，不必重付已跑完的回合；規則、程式版本、模型、影片或切分結果不同時不沿用。前端存在該 generation 的 `artifacts.zip`，「從失敗處繼續」往回找；命令列存在 `--out`。
-- 連線中斷與逾時（httpx 的 `NetworkError`、`TimeoutException`、`RemoteProtocolError`；SDK 不重試 `RemoteProtocolError`）改算暫時性錯誤，交回 queue 退避重派。
-- `GEMINI_RETRY_ATTEMPTS` 預設由 5 改為 10（約等 4 分鐘）。第四站 VID_0121–0132 的 10 次組沒有評分任務因 429 失敗，5 次組有 13 個；兩組時段不同，只能當參考。

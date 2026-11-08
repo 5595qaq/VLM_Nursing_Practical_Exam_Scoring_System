@@ -1,1 +1,0 @@
-- `sop_grading_cli` 在 `record.json` 每次執行記下 `timing`：`started_at`、`segmentation_seconds`（有切分時）、`grading_seconds`、`total_seconds`。之前紀錄只有日期與 token 用量，算不出每支影片花多少時間；工作資料夾有之前留下的檢查點時另記 `checkpoints_found`，那筆的秒數不含之前的嘗試。前端的紀錄 ZIP 不寫這個欄位。舊紀錄補不回來。不改 SKILL／rubric 版本。
