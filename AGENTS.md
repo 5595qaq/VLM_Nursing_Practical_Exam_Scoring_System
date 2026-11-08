@@ -130,7 +130,7 @@
 
 紀錄與實驗見 `sop-video-grading/experiments/2026-10-30-pkgspan.md`。
 
-老師 2026-11-08 回覆勾選「只有取出後固定才算」，但同一份回覆對 VID_0072 又寫「隔著包裝固定是可以的」，已列入 `EXPERIMENTS.md`「待老師確認」追問。老師釐清、`criteria/08-hand-posture.md` 改完之前，仍照上面的做法（`experiments/2026-11-08-teacher-reply.md`）。
+老師 2026-11-08 決定**只有取出後固定才算，隔著包裝不算**（老師在 VID_0072 寫「隔著包裝固定是可以的」，只是體諒 AI 看不出來，不改變標準）。`criteria/08-hand-posture.md` 與 rubric 10b 改完之前，評分仍照上面的做法；改完後這一節要一起更新（`experiments/2026-11-08-teacher-reply.md`）。
 
 ## 測試與驗證
 
