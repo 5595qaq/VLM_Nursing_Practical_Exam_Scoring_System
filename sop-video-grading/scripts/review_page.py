@@ -26,7 +26,7 @@ import os
 import sys
 from pathlib import Path
 
-from eval_grading import load_labels
+from eval_grading import UNUSABLE_VIDEOS, load_labels
 from rubric import load_rubric
 
 REVIEW_DIR = Path(__file__).resolve().parent.parent / "review"
@@ -144,10 +144,13 @@ def main(argv: list[str]) -> int:
     labels = load_labels(a.labels, set())
     given = dict(v.split("=", 1) for v in a.video)
     relative = label_video_paths(a.labels) if a.video_root else {}
-    items, videos = [], {}
+    items, videos, skipped = [], {}, []
     for run in a.runs:
         grading, seg, folder = load_run(run)
         vid = grading["video_id"]
+        if vid in UNUSABLE_VIDEOS:  # broken video file, not reviewed (AGENTS.md, issue #148)
+            skipped.append(vid)
+            continue
         items += build_items(grading, seg, labels.get(vid, {}), rubric, a.all, run=folder.name)
         if vid in given:
             path = Path(given[vid])
@@ -164,6 +167,8 @@ def main(argv: list[str]) -> int:
             "items": items, "videos": videos}
     out.write_text(render(data), encoding="utf-8")
     sys.stdout.reconfigure(encoding="utf-8")
+    if skipped:
+        print(f"略過不使用的影片（影片檔有問題，見 AGENTS.md）：{'、'.join(sorted(set(skipped)))}")
     missing = [v for v, info in videos.items() if not info["src"]]
     print(f"{out}：{len(items)} 項（{len(videos)} 支影片）" + (f"；找不到影片，要在頁面裡選檔：{'、'.join(missing)}"
                                                                if missing else ""))

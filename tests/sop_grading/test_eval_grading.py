@@ -235,3 +235,16 @@ def test_cli_prints_report(tmp_path, capsys):
     assert "判定一致但時間對不上：步驟 9" in text and "| ✗ 59:00.0–59:01.0／" in text
     assert "看畫面的步驟（V）：一致 0/0" in text  # steps 9 and 23 are program-only
     assert json.loads(out_json.read_text(encoding="utf-8"))["VID_0001"]["summary"]["compared"] == 2
+
+
+
+def test_unusable_video_is_skipped_even_with_another_exclude(tmp_path, capsys):
+    # VID_0065 turns 90° at 03:00 and is not used (AGENTS.md, issue #148); a user --exclude must not bring it back
+    labels = write_labels(tmp_path / "l.csv", [row("VID_0065", 9, "正確")])
+    grading = fill_visual(grade_from_segmentation(make_segmentation()))
+    grading["video_id"] = "VID_0065"
+    path = tmp_path / "g.json"
+    path.write_text(json.dumps(grading, ensure_ascii=False), encoding="utf-8")
+    assert main(["eval_grading.py", str(path), "--labels", str(labels), "--exclude", "VID_0099"]) == 0
+    assert "沒有可比對的人工標註" in capsys.readouterr().out
+    assert load_labels(labels, set()) == {}

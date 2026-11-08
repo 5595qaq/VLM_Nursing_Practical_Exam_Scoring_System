@@ -8,7 +8,7 @@ G/H are mm:ss; several spans are written 01:47/02:49 in G and 01:51/02:50 in H (
 different counts in G and H, or a time that cannot be read, leave the step without a label time).
 The human explanation shown next to the model's is E + F + P joined (most rows only fill F,
 e.g. 步驟遺漏). Rows are skipped when the verdict is blank or 不適用, when E mentions "AI判定"
-(not a human judgement), or when the video is in --exclude. Steps the current rubric removes (11, and 16 and 21
+(not a human judgement), or when the video is in --exclude or UNUSABLE_VIDEOS (always skipped). Steps the current rubric removes (11, and 16 and 21
 since rubric 1.25) are not compared, whatever the label says, also in records graded before.
 
 Prints a per-step table for each video and a summary, overall and for the steps that have a visual
@@ -40,6 +40,9 @@ from pathlib import Path
 from rubric import load_rubric
 
 DEFAULT_EXCLUDE = {"VID_0061", "VID_0062", "VID_0004", "VID_0008"}  # missing explanation / AI判定
+# Never compared or reviewed, whatever --exclude says: the video file itself is broken (AGENTS.md 已知有問題的影片,
+# issue #148). VID_0065 turns 90° at 03:00 until the end.
+UNUSABLE_VIDEOS = {"VID_0065"}
 COMPARED = {"正確", "錯誤", "部分正確", "無法判定"}
 FAULTS = {"錯誤", "部分正確"}
 TIME_SLACK = 3.0  # seconds between starts that still count as the same span
@@ -135,7 +138,7 @@ def load_labels(path: Path, exclude: set[str]) -> dict[str, dict[int, dict]]:
         if len(r) < 15 or not r[1].strip().isdigit():
             continue
         vid, verdict = r[14].strip(), r[3].strip()
-        if vid in exclude or verdict not in COMPARED or "AI判定" in r[4]:
+        if vid in exclude or vid in UNUSABLE_VIDEOS or verdict not in COMPARED or "AI判定" in r[4]:
             continue
         note = r[15].strip() if len(r) > 15 else ""
         why = "；".join(x for x in (r[4].strip(), r[5].strip(), note) if x and x != "無")
@@ -242,7 +245,7 @@ def main(argv: list[str]) -> int:
     ap.add_argument("grading", nargs="+", type=Path)
     ap.add_argument("--labels", required=True, type=Path)
     ap.add_argument("--exclude", default=",".join(sorted(DEFAULT_EXCLUDE)),
-                    help="comma-separated video ids to skip")
+                    help="comma-separated video ids to skip (UNUSABLE_VIDEOS are skipped too)")
     ap.add_argument("--json", type=Path, help="also write the rows and summaries here")
     a = ap.parse_args(argv[1:])
     labels = load_labels(a.labels, {v for v in a.exclude.split(",") if v})
