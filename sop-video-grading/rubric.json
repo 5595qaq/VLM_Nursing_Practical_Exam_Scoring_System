@@ -64,7 +64,8 @@
     {"step_id": 18, "text": "用持毛筆方式將稀釋液插入vial中心並打入稀釋液。", "criteria": [
       {"id": "18a", "text": "將稀釋液打入 vial", "category": "program", "key": true, "rule": {"type": "detected"}},
       {"id": "18b", "text": "以持毛筆方式持針：拇指與食指、中指握住針筒外管，針筒一定要垂直向下插入，手指不碰觸針頭、針座及活塞柄內側（只判插針那一刻）", "category": "visual", "key": false, "window_steps": [18], "note": "老師 2026-11-08：一定要針筒垂直向下（VID_0119 步驟 22 vial 橫拿、針筒水平插入判錯誤），取消使用者 2026-11-01 暫定的「vial 可拿在手上」；vial 要不要放在桌上另外判（rubric 1.25-handpos.1）"},
-      {"id": "18c", "text": "針頭插入 vial 中心", "category": "visual", "key": false, "window_steps": [18]}
+      {"id": "18c", "text": "針頭插入 vial 中心", "category": "visual", "key": false, "window_steps": [18]},
+      {"id": "18d", "text": "vial 放在桌面上，一手固定、另一手持針筒垂直刺入（vial 拿離桌面不正確）", "category": "visual", "key": true, "window_steps": [18], "note": "老師 2026-11-08：藥瓶（vial）要放在桌面，一手固定、另一手持針筒垂直刺入；拿在空中不正確（針扎風險、針可能碰到瓶塞以外的部位、沒有支撐容易傾斜）。設為關鍵：老師在 VID_0091、0095、0119、0123 的步驟 18 都判整步錯誤，非關鍵會被合併成部分正確。訊息回覆：打入空氣（步驟 22）也一樣；稀釋液瓶照 12a 夾在手上，不適用（rubric 1.25-handpos.1）"}
     ]},
     {"step_id": 19, "text": "抽出針頭，單手套上針頭套(或針座)。", "criteria": [
       {"id": "19a", "text": "抽出針頭並套回針頭套", "category": "program", "key": true, "rule": {"type": "detected"}},
@@ -77,7 +78,8 @@
     {"step_id": 22, "text": "用持毛筆方式將空針插入vial中心打入空氣。", "criteria": [
       {"id": "22a", "text": "將空氣打入 vial", "category": "program", "key": true, "rule": {"type": "detected"}},
       {"id": "22b", "text": "以持毛筆方式持針：拇指與食指、中指握住針筒外管，針筒一定要垂直向下插入，手指不碰觸針頭、針座及活塞柄內側（只判插針那一刻）", "category": "visual", "key": false, "window_steps": [22], "note": "老師 2026-11-08：一定要針筒垂直向下（VID_0119 步驟 22 vial 橫拿、針筒水平插入判錯誤），取消使用者 2026-11-01 暫定的「vial 可拿在手上」；vial 要不要放在桌上另外判（rubric 1.25-handpos.1）"},
-      {"id": "22c", "text": "針頭插入 vial 中心", "category": "visual", "key": false, "window_steps": [22]}
+      {"id": "22c", "text": "針頭插入 vial 中心", "category": "visual", "key": false, "window_steps": [22]},
+      {"id": "22d", "text": "vial 放在桌面上，一手固定、另一手持針筒垂直刺入（vial 拿離桌面不正確）", "category": "visual", "key": true, "window_steps": [22], "note": "老師 2026-11-08：藥瓶（vial）要放在桌面，一手固定、另一手持針筒垂直刺入；拿在空中不正確（針扎風險、針可能碰到瓶塞以外的部位、沒有支撐容易傾斜）。設為關鍵：老師在 VID_0091、0095、0119、0123 的步驟 18 都判整步錯誤，非關鍵會被合併成部分正確。訊息回覆：打入空氣（步驟 22）也一樣；稀釋液瓶照 12a 夾在手上，不適用（rubric 1.25-handpos.1）"}
     ]},
     {"step_id": 23, "text": "將Vial舉起，空針朝上，瓶口朝下。", "criteria": [
       {"id": "23a", "text": "將 vial 舉起倒置，空針朝上、瓶口朝下", "category": "program", "key": true, "rule": {"type": "detected"}}
