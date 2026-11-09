@@ -265,11 +265,12 @@ def _fill_run_facts(action: dict, video_id: str, state: LoopState, duration: flo
     if not isinstance(result, dict):
         return
     result["video_id"] = video_id
-    if duration:
-        _clamp_to_end(result, round(duration, 3))
+    limit = round(duration, 3) if duration else None  # meta.duration, which validate_result compares against
+    if limit:
+        _clamp_to_end(result, limit)
     if isinstance(result.get("meta"), dict):
-        if duration:
-            result["meta"]["duration"] = round(duration, 3)
+        if limit:
+            result["meta"]["duration"] = limit
         crop = result["meta"].get("crop")
         if isinstance(crop, dict) and state.box and state.hands_box:
             crop.update(box=state.box, hands_box=state.hands_box)
@@ -284,14 +285,17 @@ def _fill_run_facts(action: dict, video_id: str, state: LoopState, duration: flo
 
 # The report gives the duration to 0.1 s (build_content), so the model ends the last spans at e.g. 552.3 in a
 # 552.285 s video; validate_result rejected that and the model wrote its whole final again (VID_0010, VID_0068).
-END_ROUNDING_SECONDS = 0.1
+# validate_action already lets an overview end and meta.duration be this far past the end.
+END_SLACK_SECONDS = 0.5
 
 
 def _clamp_to_end(result: dict, limit: float) -> None:
-    """Move times up to END_ROUNDING_SECONDS past the video's end back to its end. Larger overshoots are left
-    for validate_result to reject."""
+    """Move end times up to END_SLACK_SECONDS past the video's end back to its end. Start times are left
+    alone: a span starting past the end is not a rounding slip, and validate_result still rejects it, as it
+    does larger overshoots."""
     def clamp(value):
-        if isinstance(value, (int, float)) and not isinstance(value, bool) and limit < value <= limit + END_ROUNDING_SECONDS:
+        if (isinstance(value, (int, float)) and not isinstance(value, bool)
+                and limit < value <= limit + END_SLACK_SECONDS + 1e-9):  # 1e-9: 10.2 + 0.5 is not 10.7 in floats
             return limit
         return value
 
@@ -300,12 +304,11 @@ def _clamp_to_end(result: dict, limit: float) -> None:
         return [item for item in items if isinstance(item, dict)] if isinstance(items, list) else []
 
     for item in spans("steps") + spans("observations") + spans("unassigned_spans") + spans("package_spans"):
-        for key in ("start", "end"):
-            if key in item:
-                item[key] = clamp(item[key])
+        if "end" in item:
+            item["end"] = clamp(item["end"])
         window = item.get("logical_window")
-        if isinstance(window, list):
-            item["logical_window"] = [clamp(value) for value in window]
+        if isinstance(window, list) and len(window) == 2:
+            item["logical_window"] = [window[0], clamp(window[1])]
 
 
 def _image_block(image: Image) -> dict:

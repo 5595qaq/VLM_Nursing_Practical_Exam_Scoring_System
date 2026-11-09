@@ -23,10 +23,12 @@ REMOVED_STEP = 11  # removed from the score sheet; always not_performed
 FLICK_STEPS = {17, 27}  # handed off to flick_detector (SKILL.md 4.7)
 BUDGET_LIMITS = {"crop_rounds": 5, "overview_calls": 20, "zoom_calls": 15}
 MAX_ZOOM_CALLS = BUDGET_LIMITS["zoom_calls"]
-# SKILL.md section 6 asks for extra_action or left_work_area. `other` describing the same span is accepted
-# too: rejecting it made the model rewrite its whole final (about half of the rejected finals at 0.39+), and
-# nothing downstream reads the type, only that the span is described.
-SPAN_OBSERVATION_TYPES = {"extra_action", "left_work_area", "other"}
+SPAN_OBSERVATION_TYPES = {"extra_action", "left_work_area"}
+# SKILL.md section 6 asks for extra_action or left_work_area. An `other` written for the same span is accepted
+# too: rejecting it made the model rewrite its whole final (most of the rejected finals at 0.39+), and nothing
+# downstream reads the type. It has to cover at least this share of the span, so an unrelated short `other`
+# (e.g. a cotton pad note) inside a long unassigned span does not count as its description.
+OTHER_MIN_COVER = 0.5
 
 
 def load_schema() -> dict:
@@ -115,9 +117,8 @@ def _check_rules(result: dict) -> list[str]:
     for i, span in enumerate(result["unassigned_spans"]):
         where = f"unassigned_spans[{i}]"
         errors.extend(_check_span(where, span["start"], span["end"], duration))
-        if not any(_overlaps(span, o) for o in observations if o["type"] in SPAN_OBSERVATION_TYPES):
-            errors.append(f"{where}: needs an overlapping extra_action or left_work_area observation"
-                          " (other also counts)")
+        if not any(_describes(span, o) for o in observations):
+            errors.append(f"{where}: needs an overlapping extra_action or left_work_area observation")
 
     package_spans = result.get("package_spans", [])
     for i, span in enumerate(package_spans):
@@ -142,6 +143,18 @@ def _check_span(where: str, start: float, end: float, duration: float) -> list[s
     if start < 0 or end > duration:
         errors.append(f"{where}: [{start}, {end}] is outside the video (0-{duration} s)")
     return errors
+
+
+def _describes(span: dict, obs: dict) -> bool:
+    """obs accounts for an unassigned span: an overlapping extra_action / left_work_area, or an `other`
+    covering at least OTHER_MIN_COVER of it (a zero-length span: touching it, as _overlaps)."""
+    if obs["type"] in SPAN_OBSERVATION_TYPES:
+        return _overlaps(span, obs)
+    if obs["type"] != "other" or not _overlaps(span, obs):
+        return False
+    length = span["end"] - span["start"]
+    covered = min(span["end"], obs["end"]) - max(span["start"], obs["start"])
+    return length <= 0 or covered >= OTHER_MIN_COVER * length
 
 
 def _overlaps(span: dict, obs: dict) -> bool:
