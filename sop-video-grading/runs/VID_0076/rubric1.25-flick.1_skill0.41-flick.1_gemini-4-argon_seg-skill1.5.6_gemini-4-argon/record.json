@@ -1,0 +1,72 @@
+{
+ "video_id": "VID_0076",
+ "versions": {
+  "rubric": "1.25-flick.1",
+  "skill": "0.41-flick.1",
+  "model": "gemini-4-argon",
+  "segmentation": "skill1.5.6_gemini-4-argon"
+ },
+ "video_sha256": "5e056a691870cc4957f00604e1bbabd539d22e0d24f0c32ad5446aee3155de2c",
+ "runs": [
+  {
+   "run": 1,
+   "by": "od3w",
+   "date": "2026-11-09",
+   "commit": "0a59e15ce47890ca3018d66be18553225afc08a8",
+   "video_sha256": "5e056a691870cc4957f00604e1bbabd539d22e0d24f0c32ad5446aee3155de2c",
+   "steps": [
+    25
+   ],
+   "failed_tasks": [
+    {
+     "task": "15",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    }
+   ],
+   "segmentation": "reused segmentation.json of rubric1.23_skill0.38_gemini-4-argon_seg-skill1.5.6_gemini-4-argon",
+   "usage": {
+    "input_tokens": 223328,
+    "cached_input_tokens": 156040,
+    "output_tokens": 1901,
+    "thinking_tokens": 526
+   },
+   "timing": {
+    "started_at": "2026-11-09T14:13:21+00:00",
+    "grading_seconds": 552.6,
+    "total_seconds": 692.1
+   }
+  },
+  {
+   "run": 2,
+   "by": "od3w",
+   "date": "2026-11-09",
+   "commit": "0a59e15ce47890ca3018d66be18553225afc08a8",
+   "video_sha256": "5e056a691870cc4957f00604e1bbabd539d22e0d24f0c32ad5446aee3155de2c",
+   "steps": [
+    15
+   ],
+   "failed_tasks": [],
+   "segmentation": "recorded segmentation.json",
+   "usage": {
+    "input_tokens": 71086,
+    "cached_input_tokens": 34494,
+    "output_tokens": 1003,
+    "thinking_tokens": 455
+   },
+   "timing": {
+    "started_at": "2026-11-09T17:11:00+00:00",
+    "grading_seconds": 302.2,
+    "total_seconds": 440.9,
+    "checkpoints_found": true
+   }
+  }
+ ],
+ "segmentation_from": {
+  "record": "rubric1.23_skill0.38_gemini-4-argon_seg-skill1.5.6_gemini-4-argon",
+  "run": 1,
+  "date": "2026-11-05",
+  "by": "5595QAQ",
+  "commit": "2911f54a49e4d2b781a165928955fe86683f74dd",
+  "segmentation": "sop-video-skill 1.5.6 gemini-4-argon"
+ }
+}

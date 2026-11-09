@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 11.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 23235,
+  "cached_input_tokens": 17263,
+  "output_tokens": 103,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@273.4-304.5（context box，有聲音；片段內 00:00 ＝ 影片 04:33.4）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [287.4, 293.4], \"region\": [0.35, 0.2, 0.65, 0.55], \"reason\": \"確認 04:47.4（彈針時）針頭接合處無酒精棉片，以及 04:53.4 才將白色酒精棉片墊在針頭接合處\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 54.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 24439,
+  "cached_input_tokens": 17247,
+  "output_tokens": 434,
+  "thinking_tokens": 336,
+  "materials": [
+   "clip@273.4-304.5（context box，有聲音；片段內 00:00 ＝ 影片 04:33.4）",
+   "zoom@287.4/293.4 region=[0.350, 0.200, 0.650, 0.550]"
+  ],
+  "reply": "{\"action\": \"burst\", \"start\": 287.4, \"end\": 289.4, \"n\": 9, \"region\": [0.35, 0.15, 0.65, 0.5], \"reason\": \"確認墊酒精棉片前（04:47.4–04:49.4）右手手指彈擊針筒的動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 10.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 25908,
+  "cached_input_tokens": 0,
+  "output_tokens": 341,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@273.4-304.5（context box，有聲音；片段內 00:00 ＝ 影片 04:33.4）",
+   "zoom@287.4/293.4 region=[0.350, 0.200, 0.650, 0.550]",
+   "burst@287.4-289.4（原始解析度，9 格，每 0.25 s）#0=04:47.4、#1=04:47.6、#2=04:47.9、#3=04:48.1、#4=04:48.4、#5=04:48.6、#6=04:48.9、#7=04:49.1、#8=04:49.4 region=[0.350, 0.150, 0.650, 0.500]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"25b\", \"verdict\": \"錯誤\", \"explanation\": \"學生於 04:40.4–04:50.4（clip@273.4-304.5 片段內 00:07.0–00:17.0）未墊酒精棉片即以右手食指連續彈擊針筒（04:47.5–04:50.1 有連續彈擊聲，burst@287.4-289.4 及 zoom@287.4 清楚顯示針頭與針筒接合處無酒精棉片），直到 04:52.4–04:53.9（片段內 00:19.0–00:20.5，zoom@293.4）才拿起白色方形酒精棉片墊在針頭與針筒接合處並推針心排氣，順序顛倒（先彈針後墊棉片）。\", \"times\": [[280.4, 293.9]], \"evidence\": [\"clip@273.4-304.5\", \"zoom@287.4\", \"zoom@293.4\", \"burst@287.4-289.4 #0\", \"burst@287.4-289.4 #3\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
