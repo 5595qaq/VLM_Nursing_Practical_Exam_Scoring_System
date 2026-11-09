@@ -253,9 +253,19 @@ def test_short_other_inside_long_span_is_rejected():
     # An unrelated note (e.g. a cotton pad) inside a long span does not describe the span.
     result = make_valid_result()
     result["observations"][0].update(type="other", start=510.0, end=520.0)  # covers 10 of 30 s
-    assert_rejected(result, "unassigned_spans[0]: needs an overlapping")
+    assert_rejected(result, "covers less than 50% of it")
     result["observations"][0].update(start=500.0, end=515.0)  # half of it
     assert validate_result(result) == []
+
+
+def test_other_notes_side_by_side_add_up():
+    result = make_valid_result()
+    first = result["observations"][0]
+    first.update(type="other", start=500.0, end=512.0)  # 40 %
+    result["observations"].append({**first, "start": 508.0, "end": 520.0})  # overlaps the first; union 66 %
+    assert validate_result(result) == []
+    result["observations"][1].update(start=510.0, end=512.0)  # inside the first: still 40 %
+    assert_rejected(result, "unassigned_spans[0]: needs an overlapping")
 
 
 def test_unassigned_span_with_unrelated_observation_type_is_rejected():

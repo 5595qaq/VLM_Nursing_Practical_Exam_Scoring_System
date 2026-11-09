@@ -200,8 +200,8 @@ def test_times_rounded_past_the_end_are_clamped():
     assert result["meta"]["duration"] == 552.285
     assert result["steps"][-1]["end"] == 552.285 and result["steps"][-1]["start"] == 550.0
     assert result["steps"][1]["logical_window"] == [540.0, 552.285]
-    # A span starting past the end is not a rounding slip: only its end moves, validate_result rejects it.
-    assert result["observations"][0] == {"type": "other", "start": 552.3, "end": 552.285}
+    # A span starting past the end is left as written: validate_result rejects it as outside the video.
+    assert result["observations"][0] == {"type": "other", "start": 552.3, "end": 552.3}
     assert result["unassigned_spans"][0]["end"] == 552.285  # exactly END_SLACK_SECONDS past the end
     # More than END_SLACK_SECONDS past the end is a real mistake; validate_result still rejects it.
     assert result["package_spans"][0]["end"] == 552.9

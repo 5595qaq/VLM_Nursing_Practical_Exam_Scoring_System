@@ -290,14 +290,17 @@ END_SLACK_SECONDS = 0.5
 
 
 def _clamp_to_end(result: dict, limit: float) -> None:
-    """Move end times up to END_SLACK_SECONDS past the video's end back to its end. Start times are left
-    alone: a span starting past the end is not a rounding slip, and validate_result still rejects it, as it
-    does larger overshoots."""
-    def clamp(value):
-        if (isinstance(value, (int, float)) and not isinstance(value, bool)
-                and limit < value <= limit + END_SLACK_SECONDS + 1e-9):  # 1e-9: 10.2 + 0.5 is not 10.7 in floats
+    """Move end times up to END_SLACK_SECONDS past the video's end back to its end. A span that starts past
+    the end is not a rounding slip of its end and is left as written, so validate_result rejects it as
+    outside the video (as it does larger overshoots) instead of as an inverted span the model never wrote."""
+    def number(value) -> bool:
+        return isinstance(value, (int, float)) and not isinstance(value, bool)
+
+    def clamp(start, end):
+        if (number(end) and limit < end <= limit + END_SLACK_SECONDS + 1e-9  # 1e-9: 10.2 + 0.5 != 10.7 in floats
+                and not (number(start) and start > limit)):
             return limit
-        return value
+        return end
 
     def spans(key):
         items = result.get(key)
@@ -305,10 +308,10 @@ def _clamp_to_end(result: dict, limit: float) -> None:
 
     for item in spans("steps") + spans("observations") + spans("unassigned_spans") + spans("package_spans"):
         if "end" in item:
-            item["end"] = clamp(item["end"])
+            item["end"] = clamp(item.get("start"), item["end"])
         window = item.get("logical_window")
         if isinstance(window, list) and len(window) == 2:
-            item["logical_window"] = [window[0], clamp(window[1])]
+            item["logical_window"] = [window[0], clamp(window[0], window[1])]
 
 
 def _image_block(image: Image) -> dict:

@@ -117,8 +117,11 @@ def _check_rules(result: dict) -> list[str]:
     for i, span in enumerate(result["unassigned_spans"]):
         where = f"unassigned_spans[{i}]"
         errors.extend(_check_span(where, span["start"], span["end"], duration))
-        if not any(_describes(span, o) for o in observations):
-            errors.append(f"{where}: needs an overlapping extra_action or left_work_area observation")
+        if not _described(span, observations):
+            short = any(o["type"] == "other" and _overlaps(span, o) for o in observations)
+            errors.append(f"{where}: needs an overlapping extra_action or left_work_area observation"
+                          + (f" (the overlapping `other` covers less than {OTHER_MIN_COVER:.0%} of it)"
+                             if short else ""))
 
     package_spans = result.get("package_spans", [])
     for i, span in enumerate(package_spans):
@@ -145,16 +148,25 @@ def _check_span(where: str, start: float, end: float, duration: float) -> list[s
     return errors
 
 
-def _describes(span: dict, obs: dict) -> bool:
-    """obs accounts for an unassigned span: an overlapping extra_action / left_work_area, or an `other`
-    covering at least OTHER_MIN_COVER of it (a zero-length span: touching it, as _overlaps)."""
-    if obs["type"] in SPAN_OBSERVATION_TYPES:
-        return _overlaps(span, obs)
-    if obs["type"] != "other" or not _overlaps(span, obs):
+def _described(span: dict, observations: list[dict]) -> bool:
+    """The unassigned span has an overlapping extra_action / left_work_area, or `other` observations that
+    together cover at least OTHER_MIN_COVER of it (a zero-length span: one touching it, as _overlaps)."""
+    if any(o["type"] in SPAN_OBSERVATION_TYPES and _overlaps(span, o) for o in observations):
+        return True
+    parts = sorted((max(span["start"], o["start"]), min(span["end"], o["end"]))
+                   for o in observations if o["type"] == "other" and _overlaps(span, o))
+    if not parts:
         return False
     length = span["end"] - span["start"]
-    covered = min(span["end"], obs["end"]) - max(span["start"], obs["start"])
-    return length <= 0 or covered >= OTHER_MIN_COVER * length
+    if length <= 0:
+        return True
+    covered, reach = 0.0, span["start"]
+    for a, b in parts:  # union of the overlaps, so two `other` notes side by side add up
+        a = max(a, reach)
+        if b > a:
+            covered += b - a
+            reach = b
+    return covered >= OTHER_MIN_COVER * length
 
 
 def _overlaps(span: dict, obs: dict) -> bool:
