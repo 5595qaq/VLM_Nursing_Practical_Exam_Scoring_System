@@ -17,6 +17,8 @@ issue #150。結論：**折衷版**（只送變動的列、每 3 個動作重寫
 | 1.5.6-draftpatch.3（折衷版） | 同上，但每 3 個動作要重寫一次完整草稿（外部程式提醒；少寫步驟列會被退回） | 463e503 |
 | 1.5.7 | .3 加上 code review 修正（完整重寫時備註整段取代、`刪除（說明）`、`步驟 5`／`15–17` 視為同一列、重寫回合的退回訊息） | 87e1be7 |
 
+681fa36、463e503 是 rebase 前的 commit（紀錄記的是它們），保留在 tag `runs/draftpatch.2`、`runs/draftpatch.3`。
+
 評分只跑 `--steps 1`（產生紀錄需要），比較的是切分：`sop-video-skill/scripts/eval.py` 對標記表，開始與結束都差 ≤ 3 秒（或狀態一致）算吻合（`ok`、`status_ok`、`ok_convention`、`ok_handoff`）。
 
 ## 結果
