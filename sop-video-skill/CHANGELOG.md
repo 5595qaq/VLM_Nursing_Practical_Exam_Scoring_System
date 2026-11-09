@@ -2,6 +2,14 @@
 
 未發布的修改先寫在 `changelog.d/`（一個分支一個檔，見 `changelog.d/README.md`），合併前改成正式版本時才移到這裡；規則見 `AGENTS.md`「多人協作」。
 
+## 1.5.7
+
+schema 不變，評分端不動。分支版本 `1.5.6-finalfix.1`，實驗紀錄見 `sop-video-grading/experiments/2026-11-09-finalfix.md`。
+
+- 減少 `final` 被退回後整份重寫，降低切分的 output 成本（issue #153）。0.39 版以後的 61 次切分中，有 35 次的 `final` 被退回一次，每次重寫約 1.2 萬 output token。SKILL.md 本文與動作格式不變，模型讀到的規則不變。
+  - 外部程式把超過影片結尾不到 0.5 秒的結束時間改成影片結尾（`steps` 的 `end`、`logical_window` 的結尾，以及 `observations`、`unassigned_spans`、`package_spans` 的 `end`）。原因是回報給模型的影片長度只取到 0.1 秒，模型照著寫（552.285 秒的影片寫成 552.3）就被判超出影片。0.5 秒與 `validate_action.py` 對 overview 結尾和 `meta.duration` 的容許範圍相同。開始就在影片之後的時段整筆不改，和超過更多的一樣會被退回。
+  - `validate_result.py`：`unassigned_spans` 對應的 observation 也接受 `other`，但 `other` 合計要涵蓋那一段的一半以上，避免一段長時間只靠一則不相關的短備註過關。模型常把同一段寫成 `other` 而被退回；下游沒有程式讀這個類型。SKILL.md 第 6 節仍要求寫 `extra_action` 或 `left_work_area`。
+
 ## 1.5.6
 
 1.5.5 的 code review 修正，和 1.5.5 同一個 PR 合併（1.5.5 的評分紀錄用修正前的規則）。schema 與動作格式不變。
