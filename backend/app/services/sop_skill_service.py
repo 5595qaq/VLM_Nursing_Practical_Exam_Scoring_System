@@ -7,9 +7,9 @@ script (prepare / crop / sheets / motion), and sends the new images back.
 
 Every request is a single user turn rebuilt from scratch: pinned images (grid before set_crop,
 then the global sheets + motion plot), the latest batch of images, the action log, remaining
-budget and the draft. SKILL.md expects exactly this ("only the global overview,
-the latest images and the latest draft are kept"); each action sends only the draft rows it changes and
-draft.py merges them by step (SKILL.md 2.3), and it also means no earlier assistant turns
+budget and the merged draft. SKILL.md expects exactly this (only the global overview, the latest
+images and the current draft are kept); each action sends only the draft rows it changes, draft.py
+merges them by step (SKILL.md 2.3), and the transcript keeps the merged draft of every executed turn, and it also means no earlier assistant turns
 or thinking blocks are replayed, so trimming old images never edits conversation history.
 """
 import asyncio
@@ -484,6 +484,8 @@ async def _skill_turns(video_path, video_id, workdir, model_call, on_progress, m
                         f"開始 coarse 切分。{warn}")
             state.images_produced += len(pinned)
             state.draft = draft_rows.merge(state.draft, action["draft"])
+            entry["draft"] = state.draft
+            _write_transcript(workdir / "transcript.json", transcript)
             continue
         elif name == "overview":
             which = action.get("box", "hands")
@@ -501,6 +503,8 @@ async def _skill_turns(video_path, video_id, workdir, model_call, on_progress, m
             feedback = f"zoom 已完成（引用格式 zoom@秒數）。{warn}"
         state.images_produced += len(latest)
         state.draft = draft_rows.merge(state.draft, action["draft"])
+        entry["draft"] = state.draft  # the reply holds only the update
+        _write_transcript(workdir / "transcript.json", transcript)
 
     raise SkillRunError(f"no final action within {max_turns} turns")
 

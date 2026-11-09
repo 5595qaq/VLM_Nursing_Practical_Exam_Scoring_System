@@ -316,6 +316,9 @@ async def test_draft_updates_are_merged_and_sent_back_whole(video, tmp_path):
     assert "1 | 0-17 | global #0 | 高 | 無\n5 | 96-100 | ov@10-30 #5 | 高 | 無\n7 | 12-14 | zoom@12 | 中 | 無" in last
     assert "5 | null" not in last
     assert "1 | 0-17" in texts(model.requests[2][1])  # 無變動 kept the set_crop draft
+    turns = json.loads((tmp_path / "transcript.json").read_text(encoding="utf-8"))
+    assert turns[3]["draft"].splitlines()[1] == "5 | 96-100 | ov@10-30 #5 | 高 | 無"  # merged, not the update
+    assert "draft" not in turns[-1]  # final carries no draft
 
 
 class Quota(Exception):
