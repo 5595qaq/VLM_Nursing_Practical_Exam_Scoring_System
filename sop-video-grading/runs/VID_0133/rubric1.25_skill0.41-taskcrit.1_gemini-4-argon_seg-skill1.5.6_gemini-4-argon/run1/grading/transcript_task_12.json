@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 8.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 13510,
+  "cached_input_tokens": 0,
+  "output_tokens": 84,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@87.5-95（hands_box，n=9）#0=01:27.5、#1=01:28.4、#2=01:29.4、#3=01:30.3、#4=01:31.2、#5=01:32.2、#6=01:33.1、#7=01:34.1、#8=01:35.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [91.2, 92.2, 93.1, 94.1], \"region\": [0.35, 0.45, 0.75, 0.75], \"reason\": \"檢查左手是否以中指及食指夾住稀釋液瓶\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 20.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 14753,
+  "cached_input_tokens": 0,
+  "output_tokens": 95,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@87.5-95（hands_box，n=9）#0=01:27.5、#1=01:28.4、#2=01:29.4、#3=01:30.3、#4=01:31.2、#5=01:32.2、#6=01:33.1、#7=01:34.1、#8=01:35.0",
+   "zoom@91.2/92.2/93.1/94.1 region=[0.350, 0.450, 0.750, 0.750]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [91.2, 92.2, 93.1, 94.1], \"region\": [0.35, 0.55, 0.75, 0.85], \"reason\": \"將放大區域往下移，讓左手手指與稀釋液瓶完整呈現在畫面中以確認夾瓶手勢。\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 26.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 16010,
+  "cached_input_tokens": 0,
+  "output_tokens": 162,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@87.5-95（hands_box，n=9）#0=01:27.5、#1=01:28.4、#2=01:29.4、#3=01:30.3、#4=01:31.2、#5=01:32.2、#6=01:33.1、#7=01:34.1、#8=01:35.0",
+   "zoom@91.2/92.2/93.1/94.1 region=[0.350, 0.450, 0.750, 0.750]",
+   "zoom@91.2/92.2/93.1/94.1 region=[0.350, 0.550, 0.750, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"12a\", \"verdict\": \"正確\", \"explanation\": \"於 01:31.2–01:34.1 清楚可見學生以左手食指與中指夾住稀釋液瓶，符合標準。\", \"times\": [[91.2, 94.1]], \"evidence\": [\"ov@87.5-95 #4\", \"ov@87.5-95 #5\", \"zoom@91.2\", \"zoom@92.2\", \"zoom@93.1\", \"zoom@94.1\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
