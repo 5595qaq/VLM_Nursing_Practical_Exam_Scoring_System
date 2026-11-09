@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 48.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 19505,
+  "cached_input_tokens": 0,
+  "output_tokens": 300,
+  "thinking_tokens": 184,
+  "materials": [
+   "ov@217.8-287.2（hands_box，n=9）#0=03:37.8、#1=03:46.5、#2=03:55.2、#3=04:03.8、#4=04:12.5、#5=04:21.2、#6=04:29.9、#7=04:38.5、#8=04:47.2"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [223.0, 229.0, 275.0, 281.0], \"region\": [0.25, 0.0, 0.75, 0.45], \"reason\": \"確認兩次步驟 26（03:39–03:53 與 04:30–04:45）時，針筒是否垂直拿起、針頭向上\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 6.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 20762,
+  "cached_input_tokens": 17848,
+  "output_tokens": 197,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@217.8-287.2（hands_box，n=9）#0=03:37.8、#1=03:46.5、#2=03:55.2、#3=04:03.8、#4=04:12.5、#5=04:21.2、#6=04:29.9、#7=04:38.5、#8=04:47.2",
+   "zoom@223/229/275/281 region=[0.250, 0.000, 0.750, 0.450]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"26b\", \"verdict\": \"正確\", \"explanation\": \"學生進行兩次排氣動作：03:43.0–03:49.0 及 04:35.0–04:41.0 皆將針筒垂直拿起，針頭朝上。\", \"times\": [[223.0, 229.0], [275.0, 281.0]], \"evidence\": [\"ov@217.8-287.2 #1\", \"ov@217.8-287.2 #7\", \"zoom@223\", \"zoom@229\", \"zoom@275\", \"zoom@281\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

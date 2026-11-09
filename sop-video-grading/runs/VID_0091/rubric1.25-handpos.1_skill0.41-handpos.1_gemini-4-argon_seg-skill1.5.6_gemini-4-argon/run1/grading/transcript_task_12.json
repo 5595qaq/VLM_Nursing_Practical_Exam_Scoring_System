@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 240.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 19492,
+  "cached_input_tokens": 4096,
+  "output_tokens": 94,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@98.8-109.2（hands_box，n=9）#0=01:38.8、#1=01:40.1、#2=01:41.4、#3=01:42.7、#4=01:44.0、#5=01:45.3、#6=01:46.6、#7=01:47.9、#8=01:49.2"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [104.0, 105.3, 106.6, 107.9], \"region\": [0.35, 0.45, 0.7, 0.9], \"reason\": \"放大確認左手夾持稀釋液瓶的手指姿勢（是否以中指及食指夾住）\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 134.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 20731,
+  "cached_input_tokens": 18503,
+  "output_tokens": 82,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@98.8-109.2（hands_box，n=9）#0=01:38.8、#1=01:40.1、#2=01:41.4、#3=01:42.7、#4=01:44.0、#5=01:45.3、#6=01:46.6、#7=01:47.9、#8=01:49.2",
+   "zoom@104/105.3/106.6/107.9 region=[0.350, 0.450, 0.700, 0.900]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [108.0, 108.6, 109.2], \"region\": [0.40, 0.30, 0.75, 0.65], \"reason\": \"看左手舉起稀釋液瓶抽液時的手指夾持姿勢\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 322.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 21973,
+  "cached_input_tokens": 19748,
+  "output_tokens": 160,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@98.8-109.2（hands_box，n=9）#0=01:38.8、#1=01:40.1、#2=01:41.4、#3=01:42.7、#4=01:44.0、#5=01:45.3、#6=01:46.6、#7=01:47.9、#8=01:49.2",
+   "zoom@104/105.3/106.6/107.9 region=[0.350, 0.450, 0.700, 0.900]",
+   "zoom@108/108.6/109.2 region=[0.400, 0.300, 0.750, 0.650]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"12a\", \"verdict\": \"正確\", \"explanation\": \"01:44.0–01:49.2 學生以左手中指及食指夾住稀釋液瓶，其餘手指固定針筒抽取稀釋液。\", \"times\": [[104.0, 109.2]], \"evidence\": [\"zoom@104\", \"zoom@105.3\", \"zoom@106.6\", \"zoom@108\", \"zoom@108.6\", \"zoom@109.2\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

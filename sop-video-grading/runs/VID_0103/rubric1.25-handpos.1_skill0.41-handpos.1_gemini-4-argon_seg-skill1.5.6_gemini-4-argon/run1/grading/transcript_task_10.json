@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 4.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 19668,
+  "cached_input_tokens": 0,
+  "output_tokens": 112,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@36-59（hands_box，n=9）#0=00:36.0、#1=00:38.9、#2=00:41.8、#3=00:44.6、#4=00:47.5、#5=00:50.4、#6=00:53.2、#7=00:56.1、#8=00:59.0"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 48.0, \"end\": 56.0, \"fps\": 10, \"region\": [0.25, 0.2, 0.75, 0.65], \"reason\": \"看 00:48.0–00:56.0 空針取出後，雙手握住針頭蓋與針筒接合處及針筒時是否有旋緊固定針頭的動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 10.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 26045,
+  "cached_input_tokens": 0,
+  "output_tokens": 184,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@36-59（hands_box，n=9）#0=00:36.0、#1=00:38.9、#2=00:41.8、#3=00:44.6、#4=00:47.5、#5=00:50.4、#6=00:53.2、#7=00:56.1、#8=00:59.0",
+   "clip@48-56（region=[0.250, 0.200, 0.750, 0.650]，原始解析度裁切，有聲音；片段內 00:00 ＝ 影片 00:48.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"10b\", \"verdict\": \"正確\", \"explanation\": \"空針約於 00:38.9 完全離開包裝。在 00:49.0–00:54.5（clip@48-56 片段內 00:01.0–00:06.5），學生右手握住針筒、左手捏住針頭蓋與針筒接合處（針座）並連續旋轉旋緊固定針頭，符合取出後固定的標準。\", \"times\": [[49.0, 54.5]], \"evidence\": [\"ov@36-59 #1\", \"clip@48-56\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 4.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 19527,
+  "cached_input_tokens": 0,
+  "output_tokens": 111,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@68-80（hands_box，n=9）#0=01:08.0、#1=01:09.5、#2=01:11.0、#3=01:12.5、#4=01:14.0、#5=01:15.5、#6=01:17.0、#7=01:18.5、#8=01:20.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [75.0, 75.5, 76.5, 77.5], \"region\": [0.35, 0.42, 0.72, 0.72], \"reason\": \"放大檢視 01:15.0–01:17.5 右手將針頭插入稀釋液瓶時針筒的方向，以及左手手指固定針筒的姿勢\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 13.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 20754,
+  "cached_input_tokens": 0,
+  "output_tokens": 282,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@68-80（hands_box，n=9）#0=01:08.0、#1=01:09.5、#2=01:11.0、#3=01:12.5、#4=01:14.0、#5=01:15.5、#6=01:17.0、#7=01:18.5、#8=01:20.0",
+   "zoom@75/75.5/76.5/77.5 region=[0.350, 0.420, 0.720, 0.720]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"13a\", \"verdict\": \"正確\", \"explanation\": \"01:15.0–01:16.5 右手將針頭插入稀釋液瓶口，01:17.5–01:18.5 左手拇指與食指捏住針筒與針座交接處固定針筒。\", \"times\": [[75.0, 78.5]], \"evidence\": [\"zoom@75\", \"zoom@75.5\", \"zoom@76.5\", \"zoom@77.5\", \"ov@68-80 #7\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"13b\", \"verdict\": \"正確\", \"explanation\": \"01:15.5–01:16.5 針頭插入稀釋液瓶口時，針筒由左上往右下斜向插入，針頭低於針筒尾端。\", \"times\": [[75.5, 76.5]], \"evidence\": [\"zoom@75.5\", \"zoom@76.5\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]
