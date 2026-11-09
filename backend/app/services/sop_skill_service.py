@@ -7,8 +7,9 @@ script (prepare / crop / sheets / motion), and sends the new images back.
 
 Every request is a single user turn rebuilt from scratch: pinned images (grid before set_crop,
 then the global sheets + motion plot), the latest batch of images, the action log, remaining
-budget and the model's latest draft. SKILL.md expects exactly this ("only the global overview,
-the latest images and the latest draft are kept"), and it also means no earlier assistant turns
+budget and the draft. SKILL.md expects exactly this ("only the global overview,
+the latest images and the latest draft are kept"); each action sends only the draft rows it changes and
+draft.py merges them by step (SKILL.md 2.3), and it also means no earlier assistant turns
 or thinking blocks are replayed, so trimming old images never edits conversation history.
 """
 import asyncio
@@ -313,7 +314,7 @@ def build_content(video_id: str, duration: float, resolution: str, state: LoopSt
         feedback,
     ]
     if state.draft:
-        lines += ["", "你最新的 draft：", state.draft]
+        lines += ["", "目前的 draft（外部程式依步驟合併你每回合送的更新）：", state.draft]
     if latest:
         lines += ["", "最新一批圖片：" + "；".join(f"圖 N{i + 1}：{image.label}" for i, image in enumerate(latest))]
     lines += ["", f"請輸出下一個動作 JSON（只能一個；final.result.video_id 用 {video_id}）。"]
@@ -359,6 +360,7 @@ async def _skill_turns(video_path, video_id, workdir, model_call, on_progress, m
     path = skill_dir()
     validate_action = load_skill_module("validate_action")
     sequence_check = load_skill_module("sequence_check")
+    draft_rows = load_skill_module("draft")
     runner = ScriptRunner(path, workdir, video_path)
     system = build_system_prompt(path)
     state = LoopState()
@@ -425,7 +427,7 @@ async def _skill_turns(video_path, video_id, workdir, model_call, on_progress, m
             raise SkillRunError(refusal_error(reply))
         try:
             if reply.stop_reason == "max_tokens":
-                raise ValueError("回覆超過 max_tokens 被截斷；請精簡 draft／evidence 後重送")
+                raise ValueError("回覆超過 max_tokens 被截斷；draft 只寫有變動的列、精簡 evidence 後重送")
             action = parse_action(reply.text)
             _fill_run_facts(action, video_id, state, duration)
             errors, warnings = validate_action.validate(action, state.validator_state(), duration)
@@ -481,7 +483,7 @@ async def _skill_turns(video_path, video_id, workdir, model_call, on_progress, m
             feedback = ("裁切已確定。固定圖片改為全片總覽圖與動作能量曲線（之後每回合都會附上），"
                         f"開始 coarse 切分。{warn}")
             state.images_produced += len(pinned)
-            state.draft = action["draft"]
+            state.draft = draft_rows.merge(state.draft, action["draft"])
             continue
         elif name == "overview":
             which = action.get("box", "hands")
@@ -498,7 +500,7 @@ async def _skill_turns(video_path, video_id, workdir, model_call, on_progress, m
                              f"for_steps={action['for_steps']}（finding 請寫進 draft）")
             feedback = f"zoom 已完成（引用格式 zoom@秒數）。{warn}"
         state.images_produced += len(latest)
-        state.draft = action["draft"]
+        state.draft = draft_rows.merge(state.draft, action["draft"])
 
     raise SkillRunError(f"no final action within {max_turns} turns")
 

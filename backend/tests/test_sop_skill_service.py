@@ -303,6 +303,21 @@ async def test_failed_run_still_uploads_transcript(video, monkeypatch):
     assert "sop_runs/vid/g0/transcript.json" in uploaded
 
 
+async def test_draft_updates_are_merged_and_sent_back_whole(video, tmp_path):
+    # SKILL.md 2.3: each action sends only its changed rows; the program keeps the whole table.
+    path = [dict(action) for action in HAPPY_PATH[1:]]
+    path[0]["draft"] = "1 | 0-17 | global #0 | 高 | 無\n5 | null | 待找 | 低 | overview"
+    path[1]["draft"] = "無變動"
+    path[2]["draft"] = "5 | 96-100 | ov@10-30 #5 | 高 | 無"
+    path[3]["draft"] = "7 | 12-14 | zoom@12 | 中 | 無"
+    model = ScriptedModel(path)
+    await skill.run_skill_loop(video, "V", tmp_path, model)
+    last = texts(model.requests[-1][1])
+    assert "1 | 0-17 | global #0 | 高 | 無\n5 | 96-100 | ov@10-30 #5 | 高 | 無\n7 | 12-14 | zoom@12 | 中 | 無" in last
+    assert "5 | null" not in last
+    assert "1 | 0-17" in texts(model.requests[2][1])  # 無變動 kept the set_crop draft
+
+
 class Quota(Exception):
     """Stands for the 429 left when the SDK retries are used up."""
 
