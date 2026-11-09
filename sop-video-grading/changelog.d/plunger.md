@@ -1,6 +1,1 @@
-- issue #139 的規則修改已由 0.41（rubric 1.25，#147）完成：16a／26a 移除、步驟 16 設為 `removed`、步驟 26 只看 26b、`criteria/06-plunger.md` 只留 17b／27b、`validate_grading_action.py` 與 `eval_grading.py` 已處理。這個分支不再改規則，版本不變。
-- 暫定，待確認：
-  - 取消「針心往後抽」（16a／26a）是暫定，老師還沒正式回覆。
-  - 26b（針筒垂直、針頭向上）現在是步驟 26 唯一的標準，`key: false`，但 26b 錯誤時整步就錯誤（實際效果和關鍵標準一樣）；要不要明確設成關鍵標準待確認。
-  - 步驟 16 的定義（`sop-video-skill/references/sop_steps.md`「針心往後抽」）沒有改：切分端照舊標出步驟 16 作為 15–17 的外框，15b／17a／17b 的區間包含它（0.41 決定切分端不改）。
-- `.github/CODEOWNERS`：`criteria/06-plunger.md` 由 @od3w 負責。
+- `.github/CODEOWNERS`：`criteria/06-plunger.md` 由 @od3w 負責（issue #139；#139 的規則修改已在 0.41 完成，這個分支不改規則）。
