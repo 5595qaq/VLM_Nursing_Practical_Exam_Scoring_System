@@ -1,0 +1,1 @@
+- 評分 agent 的 system prompt 每個任務只附**標題列出這個任務標準的 criteria 檔**，接在共用部分（SKILL.md、sop_steps.md、actions.schema）之後；第 4 節原位改成一句說明（`scripts/skill_doc.py` 的 `split_for_task`）。原本每次呼叫都送全部 criteria，約 1.7 萬 token 的 system prompt 佔評分 input 的 75%。組裝出的完整 SKILL.md（`rules_SKILL.md`、`check_versions.py` 比對的內容）不變。任務的標準沒有任何 criteria 檔的標題列出時，評分在呼叫模型前就停止（issue #151）。
