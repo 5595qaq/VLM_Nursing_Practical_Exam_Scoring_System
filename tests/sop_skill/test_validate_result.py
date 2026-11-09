@@ -242,9 +242,16 @@ def test_unassigned_span_needs_matching_observation():
     assert_rejected(result, "unassigned_spans[0]: needs an overlapping")
 
 
-def test_unassigned_span_with_other_observation_type_is_rejected():
+def test_unassigned_span_with_other_observation_passes():
+    # The model often describes the span as `other`; rejecting it made it rewrite the whole final.
     result = make_valid_result()
     result["observations"][0]["type"] = "other"
+    assert validate_result(result) == []
+
+
+def test_unassigned_span_with_unrelated_observation_type_is_rejected():
+    result = make_valid_result()
+    result["observations"][0]["type"] = "out_of_order"
     assert_rejected(result, "unassigned_spans[0]: needs an overlapping")
 
 

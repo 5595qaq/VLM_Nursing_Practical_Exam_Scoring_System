@@ -187,6 +187,32 @@ async def test_invalid_final_is_returned_to_model(video, tmp_path):
     assert "被退回的動作原文" not in unparsable  # nothing parsed, nothing to echo
 
 
+def test_times_rounded_past_the_end_are_clamped():
+    # The report shows the duration to 0.1 s: the model ends spans at 552.3 in a 552.285 s video.
+    result = valid_result()
+    result["steps"][-1].update(start=550.0, end=552.3)
+    result["steps"][1].update(start=None, end=None, status="not_visually_determinable",
+                              logical_window=[540.0, 552.3])
+    result["observations"] = [{"type": "other", "start": 552.3, "end": 552.3}]
+    result["unassigned_spans"] = [{"start": 545.0, "end": 552.38, "note": ""}]
+    result["package_spans"] = [{"start": 551.0, "end": 552.4}]
+    skill._fill_run_facts({"action": "final", "result": result}, "V", skill.LoopState(), 552.2849)
+    assert result["meta"]["duration"] == 552.285
+    assert result["steps"][-1]["end"] == 552.285 and result["steps"][-1]["start"] == 550.0
+    assert result["steps"][1]["logical_window"] == [540.0, 552.285]
+    assert result["observations"][0]["start"] == result["observations"][0]["end"] == 552.285
+    assert result["unassigned_spans"][0]["end"] == 552.285
+    # More than END_ROUNDING_SECONDS past the end is a real mistake; validate_result still rejects it.
+    assert result["package_spans"][0]["end"] == 552.4
+
+
+def test_clamp_ignores_malformed_results():
+    result = {"steps": "not a list", "observations": [None, {"start": "x", "end": True}],
+              "unassigned_spans": [{"logical_window": None}]}
+    skill._fill_run_facts({"action": "final", "result": result}, "V", skill.LoopState(), 10.0)
+    assert result["observations"][1] == {"start": "x", "end": True}
+
+
 async def test_rejected_action_is_echoed_with_its_draft(video, tmp_path):
     model = ScriptedModel(HAPPY_PATH[:3] + [{"action": "final", "result": valid_result()}])
     await skill.run_skill_loop(video, "VIDEO-4", tmp_path, model)

@@ -1,0 +1,3 @@
+- 減少 `final` 被退回後整份重寫（降低切分 output 成本）。0.39 版以後 61 次切分有 35 次的 `final` 被退回一次，每次重寫約 7 千 output token。SKILL.md 本文與動作格式不變，模型看到的輸入不變；用已記錄的 35 個被退回的 `final` 離線重驗，30 個改成通過（原本 0 個）。
+  - 外部程式把超過影片結尾不到 0.1 秒的時間改成影片結尾（`steps` 的 `start`／`end`／`logical_window`、`observations`、`unassigned_spans`、`package_spans`）。回報裡的影片長度只取到 0.1 秒，模型照著寫（552.285 秒的影片寫 552.3）就被判超出影片。超過更多仍會被退回。
+  - `validate_result.py`：`unassigned_spans` 對應的 observation 也接受 `other`。模型常把同一段寫成 `other` 而被退回；下游沒有程式讀這個類型，只要那一段有描述。SKILL.md 第 6 節仍要求寫 `extra_action` 或 `left_work_area`。

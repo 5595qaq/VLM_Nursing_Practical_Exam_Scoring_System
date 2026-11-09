@@ -23,7 +23,10 @@ REMOVED_STEP = 11  # removed from the score sheet; always not_performed
 FLICK_STEPS = {17, 27}  # handed off to flick_detector (SKILL.md 4.7)
 BUDGET_LIMITS = {"crop_rounds": 5, "overview_calls": 20, "zoom_calls": 15}
 MAX_ZOOM_CALLS = BUDGET_LIMITS["zoom_calls"]
-SPAN_OBSERVATION_TYPES = {"extra_action", "left_work_area"}
+# SKILL.md section 6 asks for extra_action or left_work_area. `other` describing the same span is accepted
+# too: rejecting it made the model rewrite its whole final (about half of the rejected finals at 0.39+), and
+# nothing downstream reads the type, only that the span is described.
+SPAN_OBSERVATION_TYPES = {"extra_action", "left_work_area", "other"}
 
 
 def load_schema() -> dict:
@@ -113,7 +116,8 @@ def _check_rules(result: dict) -> list[str]:
         where = f"unassigned_spans[{i}]"
         errors.extend(_check_span(where, span["start"], span["end"], duration))
         if not any(_overlaps(span, o) for o in observations if o["type"] in SPAN_OBSERVATION_TYPES):
-            errors.append(f"{where}: needs an overlapping extra_action or left_work_area observation")
+            errors.append(f"{where}: needs an overlapping extra_action or left_work_area observation"
+                          " (other also counts)")
 
     package_spans = result.get("package_spans", [])
     for i, span in enumerate(package_spans):
