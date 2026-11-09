@@ -189,7 +189,7 @@ Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499、連線中斷，或 Claude 回�
 評分表單的「執行模式」選 **SOP 步驟切分＋評分**（API 傳 `"pipeline": "sop_grading"`，不可同時傳 `selected_agents`）。每支影片在佇列裡依序跑兩個任務：
 
 1. `sop_skill`：與「只跑 SOP 步驟切分」相同，切分結果存進該影片的 `sop_result`。
-2. `sop_grading`：切分完成時在同一個交易排入。worker 從 GCS 下載原檔，以 `sop_result` 的切分結果執行 `sop_grading_service.run_grading`，把 `grading.json` 與各組對話紀錄、影格（`artifacts.zip`，不含片段影片，但未完成的任務還要用的片段會隨存檔點放進去；另含這次讀到的 `rules_rubric.json`、`rules_SKILL.md` 副本）上傳到 `gs://<bucket>/sop_runs/<video_id>/g<generation>/grading/`，結果存進 `grading_result`。每完成一組評分任務回報一次進度。
+2. `sop_grading`：切分完成時在同一個交易排入。worker 從 GCS 下載原檔，以 `sop_result` 的切分結果執行 `sop_grading_service.run_grading`，把 `grading.json` 與各組對話紀錄、影格（`artifacts.zip`，不含片段影片，但未完成的任務還要用的片段會隨存檔點放進去；另含這次讀到的 `rules_rubric.json`、`rules_SKILL.md` 副本；每組任務只拿到 `rules_SKILL.md` 中自己的 criteria 檔，拿到哪些記在 `rules_task_criteria.json`）上傳到 `gs://<bucket>/sop_runs/<video_id>/g<generation>/grading/`，結果存進 `grading_result`。每完成一組評分任務回報一次進度。
 
 工作的總步數是「影片數 × 2」。有任務失敗或最終結果驗證不過時，會先上傳對話紀錄，並把已評好的標準存進該影片的 `grading_partial`：
 
@@ -229,7 +229,7 @@ VID_0083/rubric<版本>_skill<版本>_<模型>_seg-skill<切分版本>_<切分�
   grading.json         評分結果（video_id 改成 VID_xxxx）
   run1/criterion_texts.json   當時的評分標準文字
   run1/seg/            切分的對話紀錄、motion.json、影格、rules_SKILL.md、sequence_check.json
-  run1/grading/        各組評分對話紀錄、probe.json、影格、rules_rubric.json、rules_SKILL.md
+  run1/grading/        各組評分對話紀錄、probe.json、影格、rules_rubric.json、rules_SKILL.md（完整版）、rules_task_criteria.json（每組拿到哪些 criteria 檔）
 ```
 
 - `video_id` 由前端從原始檔名取出 `VID_xxxx`（只送這個 ID，不送檔名），並顯示在下載按鈕上，下載前請確認。前後接著英數字（`VID_00831`、`XVID_0083`）或重拍編號（`VID_0083-2`、`VID_0083_2`）時不採用；這時資料夾改用 `job<工作編號>_<序號>`，`record.json` 的 `video_id` 為空。

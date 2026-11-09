@@ -121,6 +121,8 @@ async def test_each_task_gets_only_its_criteria_files_after_the_shared_part(vide
         assert ("### 彈針（17a、27a）" in system) == bool(ids & {"17a", "27a", "15b", "25b"})
         assert ("### 洗手計時（1a）" in system) == bool(ids & {"1a", "1b"})
     assert len(set(model.systems)) > 1
+    files = json.loads((tmp_path / "rules_task_criteria.json").read_text(encoding="utf-8"))
+    assert "05-flick.md" in files["15-16-17"] and "01-hand-washing.md" not in files["15-16-17"]
 
 
 async def test_washing_task_asks_for_a_timed_span(video, tmp_path):
@@ -464,18 +466,15 @@ def test_gemini_parts_sends_video_with_fps(tmp_path):
 
 
 def test_system_prompt_includes_skill_steps_and_actions():
-    system = grading.build_system_prompt()
-    assert "SOP 影片評分" in system and "30 步驟定義" in system and '"const": "clip"' in system
-    # SKILL.md's marker line is replaced by every criteria/*.md, in file-name order
-    criteria = grading.load_grading_module("skill_doc").criteria_files(grading.grading_dir())
-    assert criteria and "<!-- criteria/" not in system
-    texts = [c.read_text(encoding="utf-8") for c in criteria]
-    assert "".join(texts) in system
     # a task's prompt: everything shared, then only the files whose headings list its criteria
-    task = grading.build_system_prompt({"13b"})
-    assert "<!-- criteria/" not in task and "30 步驟定義" in task and '"const": "clip"' in task
-    assert task.endswith(criteria[3].read_text(encoding="utf-8").rstrip("\n")) and "04-needle" in criteria[3].name
-    assert all(t.strip() not in task for i, t in enumerate(texts) if i != 3)
+    doc = grading.load_grading_module("skill_doc")
+    system = grading.build_system_prompt({"13b"})
+    assert "SOP 影片評分" in system and "30 步驟定義" in system and '"const": "clip"' in system
+    assert "<!-- criteria/" not in system and doc.TASK_NOTE.strip() in system
+    criteria = doc.criteria_files(grading.grading_dir())
+    mine = [c for c in criteria if "13b" in doc.heading_ids(c.read_text(encoding="utf-8"))]
+    assert len(mine) == 1 and system.endswith(mine[0].read_text(encoding="utf-8").rstrip("\n"))
+    assert all(c.read_text(encoding="utf-8").strip() not in system for c in criteria if c not in mine)
 
 
 def test_long_windows_are_analysed_in_pieces(tmp_path, monkeypatch):
