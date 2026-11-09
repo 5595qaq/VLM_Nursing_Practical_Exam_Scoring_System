@@ -7,8 +7,10 @@ script (prepare / crop / sheets / motion), and sends the new images back.
 
 Every request is a single user turn rebuilt from scratch: pinned images (grid before set_crop,
 then the global sheets + motion plot), the latest batch of images, the action log, remaining
-budget and the model's latest draft. SKILL.md expects exactly this ("only the global overview,
-the latest images and the latest draft are kept"), and it also means no earlier assistant turns
+budget and the merged draft. SKILL.md expects exactly this (only the global overview, the latest
+images and the current draft are kept); most actions send only the draft rows they change, every
+draft.FULL_EVERY-th one rewrites the whole draft, draft.py merges them by step (SKILL.md 2.3), and the
+transcript keeps the merged draft of every executed turn. It also means no earlier assistant turns
 or thinking blocks are replayed, so trimming old images never edits conversation history.
 """
 import asyncio
@@ -244,6 +246,7 @@ class LoopState:
     hands_box: list | None = None
     crop_notes: str = ""
     draft: str = ""
+    since_full: int = 0  # accepted actions since the last full draft (SKILL.md 2.3)
     log: list[str] = field(default_factory=list)
     images_produced: int = 0
     input_tokens: int = 0
@@ -281,6 +284,17 @@ def _fill_run_facts(action: dict, video_id: str, state: LoopState, duration: flo
             "images_sent": state.images_produced,
             "est_input_tokens": state.input_tokens,
         }
+
+
+def full_draft_due(state: LoopState) -> bool:
+    """Every draft.FULL_EVERY-th action rewrites the whole draft (once there is one to rewrite)."""
+    return bool(state.draft) and state.since_full >= load_skill_module("draft").FULL_EVERY - 1
+
+
+def _take_draft(state: LoopState, update: str, draft_rows) -> None:
+    full = not state.draft or not draft_rows.missing_rows(state.draft, update)  # the first draft is whole
+    state.draft = draft_rows.merge(state.draft, update)
+    state.since_full = 0 if full else state.since_full + 1
 
 
 # The report gives the duration to 0.1 s (build_content), so the model ends the last spans at e.g. 552.3 in a
@@ -347,7 +361,10 @@ def build_content(video_id: str, duration: float, resolution: str, state: LoopSt
         feedback,
     ]
     if state.draft:
-        lines += ["", "你最新的 draft：", state.draft]
+        lines += ["", "目前的 draft（外部程式依步驟合併你每回合送的更新）：", state.draft]
+        if full_draft_due(state):
+            lines += ["", "本回合的 draft 要重寫完整草稿：每一步重新檢查估計區間與依據，寫出全部的列"
+                      "（不是只寫有變動的列）。"]
     if latest:
         lines += ["", "最新一批圖片：" + "；".join(f"圖 N{i + 1}：{image.label}" for i, image in enumerate(latest))]
     lines += ["", f"請輸出下一個動作 JSON（只能一個；final.result.video_id 用 {video_id}）。"]
@@ -393,6 +410,7 @@ async def _skill_turns(video_path, video_id, workdir, model_call, on_progress, m
     path = skill_dir()
     validate_action = load_skill_module("validate_action")
     sequence_check = load_skill_module("sequence_check")
+    draft_rows = load_skill_module("draft")
     runner = ScriptRunner(path, workdir, video_path)
     system = build_system_prompt(path)
     state = LoopState()
@@ -459,10 +477,17 @@ async def _skill_turns(video_path, video_id, workdir, model_call, on_progress, m
             raise SkillRunError(refusal_error(reply))
         try:
             if reply.stop_reason == "max_tokens":
-                raise ValueError("回覆超過 max_tokens 被截斷；請精簡 draft／evidence 後重送")
+                raise ValueError("回覆超過 max_tokens 被截斷；" + (
+                    "這回合仍要寫出 draft 的全部列，請精簡每列的依據與 evidence 後重送" if full_draft_due(state)
+                    else "draft 只寫有變動的列、精簡 evidence 後重送"))
             action = parse_action(reply.text)
             _fill_run_facts(action, video_id, state, duration)
             errors, warnings = validate_action.validate(action, state.validator_state(), duration)
+            if not errors and action.get("draft") is not None and full_draft_due(state):
+                missing = draft_rows.missing_rows(state.draft, action["draft"])
+                if missing:
+                    errors = [f"這回合要重寫完整 draft（每 {draft_rows.FULL_EVERY} 個動作一次）：缺少 "
+                              + "、".join(missing) + " 的列；每一步重新檢查區間與依據後寫出整列"]
         except ValueError as exc:
             errors, warnings, action = [str(exc)], [], None
         entry.update(action=action.get("action") if isinstance(action, dict) else None,
@@ -478,8 +503,10 @@ async def _skill_turns(video_path, video_id, workdir, model_call, on_progress, m
             if isinstance(action, dict):
                 # Without its own rejected reply the model rewrites from the old draft, and a
                 # retried final drifts in places the errors never mentioned.
-                feedback += ("\n\n被退回的動作原文如下。只修改上面列出的錯誤，其餘內容（draft、evidence 等）"
-                             "照原樣保留；若錯誤表示這個動作現在不能執行，改送其他動作。\n```json\n"
+                keep = ("其餘欄位照原樣保留，但 draft 要逐步重新檢查後寫出全部的列（這回合要重寫完整草稿）"
+                        if full_draft_due(state) else "其餘內容（draft、evidence 等）照原樣保留")
+                feedback += (f"\n\n被退回的動作原文如下。只修改上面列出的錯誤，{keep}；"
+                             "若錯誤表示這個動作現在不能執行，改送其他動作。\n```json\n"
                              + json.dumps(action, ensure_ascii=False) + "\n```")
             continue
         rejects = 0
@@ -515,7 +542,9 @@ async def _skill_turns(video_path, video_id, workdir, model_call, on_progress, m
             feedback = ("裁切已確定。固定圖片改為全片總覽圖與動作能量曲線（之後每回合都會附上），"
                         f"開始 coarse 切分。{warn}")
             state.images_produced += len(pinned)
-            state.draft = action["draft"]
+            _take_draft(state, action["draft"], draft_rows)
+            entry["draft"] = state.draft
+            _write_transcript(workdir / "transcript.json", transcript)
             continue
         elif name == "overview":
             which = action.get("box", "hands")
@@ -532,7 +561,9 @@ async def _skill_turns(video_path, video_id, workdir, model_call, on_progress, m
                              f"for_steps={action['for_steps']}（finding 請寫進 draft）")
             feedback = f"zoom 已完成（引用格式 zoom@秒數）。{warn}"
         state.images_produced += len(latest)
-        state.draft = action["draft"]
+        _take_draft(state, action["draft"], draft_rows)
+        entry["draft"] = state.draft  # the reply may hold only the update
+        _write_transcript(workdir / "transcript.json", transcript)
 
     raise SkillRunError(f"no final action within {max_turns} turns")
 

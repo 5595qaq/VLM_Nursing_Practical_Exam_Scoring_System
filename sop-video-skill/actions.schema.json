@@ -10,7 +10,7 @@
       "maxItems": 4,
       "description": "[x0, y0, x1, y1] 正規化 0–1，x0<x1、y0<y1"
     },
-    "draft": {"type": "string", "minLength": 1, "description": "工作草稿（SKILL.md 2.3）"},
+    "draft": {"type": "string", "minLength": 1, "description": "工作草稿的更新：只寫新增或改變的列，沒有變動寫「無變動」（SKILL.md 2.3）"},
     "reason": {"type": "string", "minLength": 1}
   },
   "oneOf": [

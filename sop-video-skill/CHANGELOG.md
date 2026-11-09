@@ -2,13 +2,21 @@
 
 未發布的修改先寫在 `changelog.d/`（一個分支一個檔，見 `changelog.d/README.md`），合併前改成正式版本時才移到這裡；規則見 `AGENTS.md`「多人協作」。
 
-## 1.5.7
+## 1.5.8
 
-schema 不變，評分端不動。分支版本 `1.5.6-finalfix.1`，實驗紀錄見 `sop-video-grading/experiments/2026-11-09-finalfix.md`。
+在 1.5.7（draftpatch）之上；schema 不變，評分端不動。分支版本 `1.5.6-finalfix.1`，實驗紀錄見 `sop-video-grading/experiments/2026-11-09-finalfix.md`。
 
 - 減少 `final` 被退回後整份重寫，降低切分的 output 成本（issue #153）。0.39 版以後的 61 次切分中，有 35 次的 `final` 被退回一次，每次重寫約 1.2 萬 output token。SKILL.md 本文與動作格式不變，模型讀到的規則不變。
   - 外部程式把超過影片結尾不到 0.5 秒的結束時間改成影片結尾（`steps` 的 `end`、`logical_window` 的結尾，以及 `observations`、`unassigned_spans`、`package_spans` 的 `end`）。原因是回報給模型的影片長度只取到 0.1 秒，模型照著寫（552.285 秒的影片寫成 552.3）就被判超出影片。0.5 秒與 `validate_action.py` 對 overview 結尾和 `meta.duration` 的容許範圍相同。開始就在影片之後的時段整筆不改，和超過更多的一樣會被退回。
   - `validate_result.py`：`unassigned_spans` 對應的 observation 也接受 `other`，但 `other` 合計要涵蓋那一段的一半以上，避免一段長時間只靠一則不相關的短備註過關。模型常把同一段寫成 `other` 而被退回；下游沒有程式讀這個類型。SKILL.md 第 6 節仍要求寫 `extra_action` 或 `left_work_area`。
+
+## 1.5.7
+
+動作的 `draft` 改成只送變動的列、每 3 個動作重寫一次完整草稿（issue #150），切分 output 約少 57%、切分費用約少 42%。分支版本 `1.5.6-draftpatch.2`（只送變動）與 `.3`（折衷版）的紀錄見 `sop-video-grading/experiments/2026-11-09-draftpatch.md`。schema 不變，動作格式只改 `draft` 的寫法。
+
+- 動作的 `draft` 改成只寫這回合新增或改變的列（沒有變動寫 `無變動`），外部程式依第一欄（步驟編號）合併成完整草稿，每回合附回（`scripts/draft.py`、SKILL.md 第 0 節與 2.3、`actions.schema.json` 的說明）。同一步驟的新列取代舊列，`步驟 | 刪除` 刪掉一列，沒有 `|` 的備註接在之前的備註後面；`transcript.json` 每個執行的回合另存合併後的 `draft`。原本每回合重寫 30 步的完整草稿，約佔切分 output 的 65%（issue #150）。
+- 每 3 個動作重寫一次完整草稿（外部程式在那一回合提醒；少寫任何一列會被退回）。只送變動的列時，6 支影片切分和標記表吻合的步驟 121 → 109，主要是邊界停在早期粗估（2026-11-09，`draft.FULL_EVERY`）。
+- 完整重寫時備註也整段重寫（舊備註可以刪掉）；開頭的「無變動」行不保留；`刪除` 後面可以接說明；`步驟 5`、`15–17`、`15 - 17` 視為同一列。該重寫的回合被截斷或退回時，回饋要求寫出全部的列。這些是 code review 的修正，6 支影片的驗證用的是修正前的 `.3`。
 
 ## 1.5.6
 
