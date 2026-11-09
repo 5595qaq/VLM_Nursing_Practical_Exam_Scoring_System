@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 6.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 13510,
+  "cached_input_tokens": 0,
+  "output_tokens": 115,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@179-187（hands_box，n=9）#0=02:59.0、#1=03:00.0、#2=03:01.0、#3=03:02.0、#4=03:03.0、#5=03:04.0、#6=03:05.0、#7=03:06.0、#8=03:07.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [183.5, 184.0, 184.5, 185.0], \"region\": [0.3, 0.55, 0.9, 1.0], \"reason\": \"確認 03:03.5–03:05.0 右手將空針單手插回針架上針頭套的過程，並確認左手位置沒有碰觸針頭套\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 7.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 14757,
+  "cached_input_tokens": 0,
+  "output_tokens": 190,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@179-187（hands_box，n=9）#0=02:59.0、#1=03:00.0、#2=03:01.0、#3=03:02.0、#4=03:03.0、#5=03:04.0、#6=03:05.0、#7=03:06.0、#8=03:07.0",
+   "zoom@183.5/184/184.5/185 region=[0.300, 0.550, 0.900, 1.000]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"19b\", \"verdict\": \"正確\", \"explanation\": \"於 03:03.5–03:05.0，學生以右手持針筒將針頭垂直插入立在木製針架上的針頭套中，過程中左手自然垂放在腹部前方，完全沒有碰觸針頭套，符合單手回套標準。\", \"times\": [[183.5, 185.0]], \"evidence\": [\"ov@179-187 #5\", \"ov@179-187 #6\", \"zoom@183.5\", \"zoom@184\", \"zoom@184.5\", \"zoom@185\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 302.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 15146,
+  "cached_input_tokens": 0,
+  "output_tokens": 145,
+  "thinking_tokens": 70,
+  "materials": [
+   "clip@254-277.5（context box，有聲音；片段內 00:00 ＝ 影片 04:14.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [257.5, 260.0, 265.0], \"region\": [0.2, 0.25, 0.55, 0.65], \"reason\": \"確認針柄處是否墊有酒精棉片\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 60.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 16396,
+  "cached_input_tokens": 0,
+  "output_tokens": 278,
+  "thinking_tokens": 74,
+  "materials": [
+   "clip@254-277.5（context box，有聲音；片段內 00:00 ＝ 影片 04:14.0）",
+   "zoom@257.5/260/265 region=[0.200, 0.250, 0.550, 0.650]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"25a\", \"verdict\": \"正確\", \"explanation\": \"於 04:17–04:35（clip@254-277.5 的 00:03–00:21），考生拿起酒精棉片墊在針頭與針筒接合處（針柄），經 zoom@257.5、zoom@260、zoom@265 清楚確認白色方形酒精棉片包覆在針柄處，直到排氣結束後取下。\", \"times\": [[257.0, 275.0]], \"evidence\": [\"clip@254-277.5\", \"zoom@257.5\", \"zoom@260\", \"zoom@265\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 6.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 12146,
+  "cached_input_tokens": 0,
+  "output_tokens": 99,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@28-242（hands_box，n=9）#0=00:28.0、#1=00:54.8、#2=01:21.5、#3=01:48.2、#4=02:15.0、#5=02:41.8、#6=03:08.5、#7=03:35.2、#8=04:02.0"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 28.0, \"end\": 45.0, \"fps\": 2, \"reason\": \"檢查 5a（00:30.0-00:33.5 打開 vial 瓶口）與 6a（00:39.0-00:42.5 以酒精棉片消毒 vial 瓶口）的連續動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 7.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 15366,
+  "cached_input_tokens": 0,
+  "output_tokens": 85,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@28-242（hands_box，n=9）#0=00:28.0、#1=00:54.8、#2=01:21.5、#3=01:48.2、#4=02:15.0、#5=02:41.8、#6=03:08.5、#7=03:35.2、#8=04:02.0",
+   "clip@28-45（context box，有聲音；片段內 00:00 ＝ 影片 00:28.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [30.5, 32.0, 39.5, 41.0], \"region\": [0.25, 0.75, 0.55, 1.0], \"reason\": \"確認打開vial瓶蓋及使用酒精棉片消毒vial瓶口的細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 19.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 16592,
+  "cached_input_tokens": 0,
+  "output_tokens": 582,
+  "thinking_tokens": 249,
+  "materials": [
+   "ov@28-242（hands_box，n=9）#0=00:28.0、#1=00:54.8、#2=01:21.5、#3=01:48.2、#4=02:15.0、#5=02:41.8、#6=03:08.5、#7=03:35.2、#8=04:02.0",
+   "clip@28-45（context box，有聲音；片段內 00:00 ＝ 影片 00:28.0）",
+   "zoom@30.5/32/39.5/41 region=[0.250, 0.750, 0.550, 1.000]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"00:30–00:33（clip@28-45 片段內 00:02–00:05）學生左手扶住 vial 瓶身，右手將 vial 瓶口上的褐色塑膠翻蓋撥開取下，zoom@39.5 可見瓶口已露出銀色鋁圈。\", \"times\": [[30.0, 33.5]], \"evidence\": [\"clip@28-45\", \"zoom@30.5\", \"zoom@32\", \"zoom@39.5\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"6a\", \"verdict\": \"正確\", \"explanation\": \"00:39–00:42（clip@28-45 片段內 00:11–00:14）學生撕開酒精棉片包裝後，以酒精棉片在 vial 瓶口上來回擦拭消毒，並由 zoom@39.5、zoom@41 清楚確認棉片擦拭 vial 瓶口。\", \"times\": [[39.5, 41.5]], \"evidence\": [\"clip@28-45\", \"zoom@39.5\", \"zoom@41\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

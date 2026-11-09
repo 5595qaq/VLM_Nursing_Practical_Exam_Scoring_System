@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 25.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 12158,
+  "cached_input_tokens": 0,
+  "output_tokens": 85,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@87.5-95（context box，有聲音；片段內 00:00 ＝ 影片 01:27.5）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [90.0, 90.5, 91.0, 91.5], \"region\": [0.25, 0.38, 0.52, 0.68], \"reason\": \"確認學生扭開稀釋液瓶頂的動作與瓶頂脫離\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 9.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 13379,
+  "cached_input_tokens": 0,
+  "output_tokens": 220,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@87.5-95（context box，有聲音；片段內 00:00 ＝ 影片 01:27.5）",
+   "zoom@90/90.5/91/91.5 region=[0.250, 0.380, 0.520, 0.680]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"8a\", \"verdict\": \"正確\", \"explanation\": \"於 01:29.5–01:32.0（clip@87.5-95 片段內 00:02.0–00:04.5），學生左手握住稀釋液塑膠瓶身，右手捏住瓶頂於 01:30.0–01:31.5 將瓶頂扭開，並於 01:32.0 將扭下的瓶頂放到治療車上，完成打開稀釋液瓶口之動作。\", \"times\": [[89.5, 92.0]], \"evidence\": [\"clip@87.5-95\", \"zoom@90\", \"zoom@90.5\", \"zoom@91\", \"zoom@91.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
