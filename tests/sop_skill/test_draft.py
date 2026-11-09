@@ -1,4 +1,5 @@
 """Tests for draft.py (SKILL.md 2.3: each action sends only the changed rows)."""
+from pathlib import Path
 
 import draft
 
@@ -69,3 +70,29 @@ def test_missing_rows_lists_what_a_full_rewrite_left_out():
     assert draft.missing_rows(FULL, "無變動") == ["1", "5", "15-17"]
     rewrite = "1 | 0-17 | g | 高 | 無\n5 | 96 | ov | 高 | 無\n15-17 | 刪除\n15 | 120 | z | 中 | 無"
     assert draft.missing_rows(FULL, rewrite) == []  # no header needed; deleting a row counts
+
+
+def test_a_full_rewrite_replaces_the_notes():
+    with_notes = draft.merge(FULL, "尚未切分，等 set_crop\n步驟 5 還沒找到")
+    rewrite = "1 | 0-17 | g | 高 | 無\n5 | 96 | ov | 高 | 無\n15-17 | 120 | z | 中 | 無\n藥單在桌面右下角"
+    merged = draft.merge(with_notes, rewrite)
+    assert merged.endswith("15-17 | 120 | z | 中 | 無\n藥單在桌面右下角") and "尚未切分" not in merged
+    assert "尚未切分" in draft.merge(with_notes, "5 | 96 | ov | 高 | 無")  # a partial update keeps them
+
+
+def test_a_leading_no_change_line_is_not_kept_and_the_rest_is_merged():
+    merged = draft.merge(FULL, "無變動\n5 | 96 | ov #5 | 高 | 無")
+    assert "無變動" not in merged and "5 | 96 | ov #5" in merged
+    assert draft.merge(FULL, "無變動\n藥單在桌面右下角").endswith("藥單在桌面右下角")
+
+
+def test_delete_with_a_remark_and_keys_written_other_ways():
+    merged = draft.merge(FULL, "15–17 | 刪除（已拆成 15、16、17）\n步驟 5 | 96 | ov | 高 | 無\n15 | 120 | z | 中 | 無")
+    keys = [line.split("|")[0].strip() for line in merged.splitlines()]
+    assert keys == ["step_id", "1", "5", "15"]
+    assert draft.merge(FULL, "15 - 17 | Delete") .count("15-17") == 0
+
+
+def test_skill_md_states_the_same_rewrite_interval():
+    skill = (Path(draft.__file__).resolve().parents[1] / "SKILL.md").read_text(encoding="utf-8")
+    assert f"每 {draft.FULL_EVERY} 個動作" in skill

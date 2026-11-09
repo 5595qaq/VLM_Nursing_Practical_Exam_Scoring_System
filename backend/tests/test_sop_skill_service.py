@@ -334,6 +334,8 @@ async def test_a_due_full_draft_that_leaves_out_steps_is_sent_back(video, tmp_pa
     outcome = await skill.run_skill_loop(video, "V", tmp_path, model)
     turns = json.loads((tmp_path / "transcript.json").read_text(encoding="utf-8"))
     assert "重寫完整 draft" in turns[3]["errors"][0] and "1、5" in turns[3]["errors"][0]
+    retry = texts(model.requests[4][1])  # the feedback asks for the whole draft, not the old one kept
+    assert "draft 要逐步重新檢查後寫出全部的列" in retry and "draft、evidence 等）照原樣保留" not in retry
     assert outcome["result"]["meta"]["budget"]["zoom_calls"] == 1  # the rejected zoom used no budget
 
 

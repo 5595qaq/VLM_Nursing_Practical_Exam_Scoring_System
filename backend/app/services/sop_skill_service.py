@@ -443,7 +443,9 @@ async def _skill_turns(video_path, video_id, workdir, model_call, on_progress, m
             raise SkillRunError(refusal_error(reply))
         try:
             if reply.stop_reason == "max_tokens":
-                raise ValueError("回覆超過 max_tokens 被截斷；draft 只寫有變動的列、精簡 evidence 後重送")
+                raise ValueError("回覆超過 max_tokens 被截斷；" + (
+                    "這回合仍要寫出 draft 的全部列，請精簡每列的依據與 evidence 後重送" if full_draft_due(state)
+                    else "draft 只寫有變動的列、精簡 evidence 後重送"))
             action = parse_action(reply.text)
             _fill_run_facts(action, video_id, state, duration)
             errors, warnings = validate_action.validate(action, state.validator_state(), duration)
@@ -467,8 +469,10 @@ async def _skill_turns(video_path, video_id, workdir, model_call, on_progress, m
             if isinstance(action, dict):
                 # Without its own rejected reply the model rewrites from the old draft, and a
                 # retried final drifts in places the errors never mentioned.
-                feedback += ("\n\n被退回的動作原文如下。只修改上面列出的錯誤，其餘內容（draft、evidence 等）"
-                             "照原樣保留；若錯誤表示這個動作現在不能執行，改送其他動作。\n```json\n"
+                keep = ("其餘欄位照原樣保留，但 draft 要逐步重新檢查後寫出全部的列（這回合要重寫完整草稿）"
+                        if full_draft_due(state) else "其餘內容（draft、evidence 等）照原樣保留")
+                feedback += (f"\n\n被退回的動作原文如下。只修改上面列出的錯誤，{keep}；"
+                             "若錯誤表示這個動作現在不能執行，改送其他動作。\n```json\n"
                              + json.dumps(action, ensure_ascii=False) + "\n```")
             continue
         rejects = 0
