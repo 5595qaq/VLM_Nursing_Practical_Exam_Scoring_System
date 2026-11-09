@@ -22,6 +22,8 @@ def test_rubric_classification_matches_the_plan():
         assert by_id[cid]["category"] == "visual"
     for cid in ("17a", "27a", "15b", "25b"):  # flicking is judged with audio
         assert by_id[cid]["audio"] is True
+    # pad before flicking is key: flicking first makes the whole step wrong (teacher 2026-11-08, rubric 1.25-flick.1)
+    assert by_id["15b"]["key"] is True and by_id["25b"]["key"] is True
     for cid in ("2c", "3b", "14b", "24b"):
         assert by_id[cid]["category"] == "not_visible"
     # needle direction stands in for the bevel, which the camera cannot resolve (rubric 1.4)
