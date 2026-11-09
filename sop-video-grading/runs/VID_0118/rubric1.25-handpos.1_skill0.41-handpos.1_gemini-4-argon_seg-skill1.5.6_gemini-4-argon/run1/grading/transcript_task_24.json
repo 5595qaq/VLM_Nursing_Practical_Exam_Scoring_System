@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 5.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 19543,
+  "cached_input_tokens": 17475,
+  "output_tokens": 98,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@270-317（hands_box，n=9）#0=04:30.0、#1=04:35.9、#2=04:41.8、#3=04:47.6、#4=04:53.5、#5=04:59.4、#6=05:05.2、#7=05:11.1、#8=05:17.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [275.9, 287.6, 299.4, 311.1], \"region\": [0.35, 0.2, 0.65, 0.55], \"reason\": \"放大檢視抽藥液時右手持針心尾端之手部姿勢，確認是否碰觸外露推桿\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 6.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 20794,
+  "cached_input_tokens": 17814,
+  "output_tokens": 181,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@270-317（hands_box，n=9）#0=04:30.0、#1=04:35.9、#2=04:41.8、#3=04:47.6、#4=04:53.5、#5=04:59.4、#6=05:05.2、#7=05:11.1、#8=05:17.0",
+   "zoom@275.9/287.6/299.4/311.1 region=[0.350, 0.200, 0.650, 0.550]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"24a\", \"verdict\": \"正確\", \"explanation\": \"於 04:35.9、04:47.6、04:59.4、05:11.1 抽取藥液過程中，學生右手手指持於針心尾端環狀處及針筒外筒翼緣進行抽拉，未捏住或碰觸外露的針心推桿內側。\", \"times\": [[275.9, 311.1]], \"evidence\": [\"zoom@275.9\", \"zoom@287.6\", \"zoom@299.4\", \"zoom@311.1\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

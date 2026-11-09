@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 12.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 19516,
+  "cached_input_tokens": 0,
+  "output_tokens": 107,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@338-346（hands_box，n=9）#0=05:38.0、#1=05:39.0、#2=05:40.0、#3=05:41.0、#4=05:42.0、#5=05:43.0、#6=05:44.0、#7=05:45.0、#8=05:46.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [341.8, 342.0, 342.5, 343.0], \"region\": [0.25, 0.35, 0.75, 0.75], \"reason\": \"放大確認 05:41.8-05:43.0 回套時左手是否拿著針頭套在空中雙手回套\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 28.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 20778,
+  "cached_input_tokens": 0,
+  "output_tokens": 210,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@338-346（hands_box，n=9）#0=05:38.0、#1=05:39.0、#2=05:40.0、#3=05:41.0、#4=05:42.0、#5=05:43.0、#6=05:44.0、#7=05:45.0、#8=05:46.0",
+   "zoom@341.8/342/342.5/343 region=[0.250, 0.350, 0.750, 0.750]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"28b\", \"verdict\": \"錯誤\", \"explanation\": \"05:40.0–05:41.0 左手從桌面拿起針頭套舉至胸前，05:41.8–05:43.0 左手拿著針頭套、右手持針筒在空中雙手對準將針頭套回，未將針頭套放在桌上或針架上進行單手回套。\", \"times\": [[340.0, 343.0]], \"evidence\": [\"ov@338-346 #2\", \"ov@338-346 #3\", \"zoom@341.8\", \"zoom@342\", \"zoom@342.5\", \"zoom@343\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

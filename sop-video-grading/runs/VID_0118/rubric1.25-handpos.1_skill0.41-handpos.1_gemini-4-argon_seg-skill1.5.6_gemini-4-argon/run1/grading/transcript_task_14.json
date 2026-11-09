@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 22.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 19549,
+  "cached_input_tokens": 0,
+  "output_tokens": 251,
+  "thinking_tokens": 151,
+  "materials": [
+   "ov@119-145.2（hands_box，n=9）#0=01:59.0、#1=02:02.3、#2=02:05.5、#3=02:08.8、#4=02:12.1、#5=02:15.4、#6=02:18.7、#7=02:21.9、#8=02:25.2"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [125.5, 128.8, 135.4, 138.7], \"region\": [0.3, 0.25, 0.7, 0.55], \"reason\": \"放大查看右手拉針心時手指持握位置，確認是否持於尾端環狀處且未碰觸外露推桿\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 11.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 20804,
+  "cached_input_tokens": 17814,
+  "output_tokens": 442,
+  "thinking_tokens": 240,
+  "materials": [
+   "ov@119-145.2（hands_box，n=9）#0=01:59.0、#1=02:02.3、#2=02:05.5、#3=02:08.8、#4=02:12.1、#5=02:15.4、#6=02:18.7、#7=02:21.9、#8=02:25.2",
+   "zoom@125.5/128.8/135.4/138.7 region=[0.300, 0.250, 0.700, 0.550]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"14a\", \"verdict\": \"正確\", \"explanation\": \"學生左右手對調操作：於 02:05–02:18 抽取稀釋液時，右手夾住稀釋液瓶並固定針筒外管，左手手指持針心尾端圓盤處拉動針心，全程未碰觸外露的針心推桿。\", \"times\": [[125.5, 138.7]], \"evidence\": [\"ov@119-145.2 #2\", \"ov@119-145.2 #5\", \"zoom@125.5\", \"zoom@128.8\", \"zoom@135.4\", \"zoom@138.7\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

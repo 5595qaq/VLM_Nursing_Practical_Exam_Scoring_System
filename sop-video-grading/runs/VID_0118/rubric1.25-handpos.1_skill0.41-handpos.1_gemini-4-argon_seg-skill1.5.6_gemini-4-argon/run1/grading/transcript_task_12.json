@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 7.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 19505,
+  "cached_input_tokens": 0,
+  "output_tokens": 182,
+  "thinking_tokens": 100,
+  "materials": [
+   "ov@115.5-121.5（hands_box，n=9）#0=01:55.5、#1=01:56.2、#2=01:57.0、#3=01:57.8、#4=01:58.5、#5=01:59.2、#6=02:00.0、#7=02:00.8、#8=02:01.5"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [118.5, 119.2, 120.0, 120.8], \"region\": [0.3, 0.35, 0.7, 0.75], \"reason\": \"放大查看左手夾住稀釋液瓶的姿勢\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 86.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 20744,
+  "cached_input_tokens": 17814,
+  "output_tokens": 340,
+  "thinking_tokens": 194,
+  "materials": [
+   "ov@115.5-121.5（hands_box，n=9）#0=01:55.5、#1=01:56.2、#2=01:57.0、#3=01:57.8、#4=01:58.5、#5=01:59.2、#6=02:00.0、#7=02:00.8、#8=02:01.5",
+   "zoom@118.5/119.2/120/120.8 region=[0.300, 0.350, 0.700, 0.750]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"12a\", \"verdict\": \"正確\", \"explanation\": \"01:58.5–01:59.2 左手拿起稀釋液瓶並將針頭插入後，於 02:00.0–02:00.8 清楚看到左手中指與食指夾住稀釋液瓶。\", \"times\": [[120.0, 120.8]], \"evidence\": [\"zoom@120\", \"zoom@120.8\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
