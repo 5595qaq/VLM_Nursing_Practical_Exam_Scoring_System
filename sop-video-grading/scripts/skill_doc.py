@@ -10,8 +10,6 @@ The grading agent does not get all of it: a task only needs the criteria files w
 headings list its criteria. split_for_task gives the part every task shares (SKILL.md with a note at the
 marker line) and the task's criteria; sop_grading_service puts the task's part after everything shared,
 so the shared prefix stays the same in every request and can be cached.
-check_versions.py compares only the full text: changing TASK_NOTE, TASK_HEADING or how files are picked
-changes what the agent reads without changing that text, so bump SKILL.md's version by hand then.
 
 usage: python skill_doc.py [-o OUT] [--ids 17a,17b]   print (or write) the assembled SKILL.md;
        with --ids, the shared part and then what a task grading those criteria gets
@@ -27,7 +25,6 @@ MARKER = "<!-- criteria/*.md"  # the line that starts with this is replaced by t
 CRITERIA_NAME_RE = re.compile(r"\d{2}-[a-z0-9-]+\.md")  # 06-plunger.md: the prefix sets the order
 MARKER_RE = re.compile(r"^" + re.escape(MARKER) + r".*(\r?\n|$)", re.MULTILINE)
 CRITERION_ID_RE = re.compile(r"(?<!\d)\d{1,2}[a-z](?![a-z])")  # 1a, 29b; not 10 秒
-PARENS_RE = re.compile(r"[（(]([^）)]*)[）)]")  # ids are read only inside the heading's parentheses
 TASK_NOTE = "本任務用到的標準怎麼判，附在本文最後的〈本任務的標準怎麼判〉；其他標準的寫法沒有附上。\n\n"
 TASK_HEADING = "## 本任務的標準怎麼判（第 4 節）\n\n"
 
@@ -43,15 +40,8 @@ def assemble(skill: str, criteria: list[tuple[str, str]]) -> str:
 
 
 def heading_ids(text: str) -> set[str]:
-    """Criterion ids in the parentheses of a criteria file's `### ` headings (01-hand-washing.md: 1a and 1b).
-    Body text and other heading text are ignored, so a "15s" in a title is not read as an id."""
-    return {i for line in text.splitlines() if line.startswith("### ")
-            for group in PARENS_RE.findall(line) for i in CRITERION_ID_RE.findall(group)}
-
-
-def files_for(criteria: list[tuple[str, str]], ids: set[str]) -> list[str]:
-    """Names of the criteria files a task grading ids gets, in prompt order."""
-    return [name for name, text in sorted(criteria) if heading_ids(text) & set(ids)]
+    """Criterion ids listed in a criteria file's `### ` headings (01-hand-washing.md: 1a and 1b)."""
+    return {i for line in text.splitlines() if line.startswith("### ") for i in CRITERION_ID_RE.findall(line)}
 
 
 def split_for_task(skill: str, criteria: list[tuple[str, str]], ids: set[str]) -> tuple[str, str]:

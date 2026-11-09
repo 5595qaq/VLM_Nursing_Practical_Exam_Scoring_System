@@ -64,37 +64,21 @@ def load_grading_module(name: str):
     return importlib.import_module(name)
 
 
-def task_prompts(tasks: list[dict]) -> tuple[dict[str, str], dict[str, list[str]]]:
-    """Each task's system prompt and the criteria files in it, by task key, from one read of the rules.
-
-    A task gets only the criteria files whose headings list its criteria, after everything shared
-    (skill_doc.split_for_task), so every task's prompt starts with the same text and that part can be
-    cached (Gemini's implicit cache hit the shared system prefix across tasks in the 2026-11-09 probe).
-    rules_SKILL.md keeps the full SKILL.md; which files each task got is in rules_task_criteria.json."""
+def build_system_prompt(criterion_ids: set[str] | None = None) -> str:
+    """The grading agent's system prompt. With criterion_ids (a task's criteria), only the criteria files
+    covering them go in, at the end after everything shared (skill_doc.split_for_task), so every task's
+    prompt starts with the same text and the shared part can be cached; without, the full SKILL.md."""
     path = grading_dir()
     doc = load_grading_module("skill_doc")
-    skill = (path / "SKILL.md").read_text(encoding="utf-8")
-    criteria = [(p.name, p.read_text(encoding="utf-8")) for p in doc.criteria_files(path)]
-    appendix = [
+    skill, task_part = (doc.assemble_dir(path), "") if criterion_ids is None else doc.split_dir(criterion_ids, path)
+    return "\n\n".join([
+        _strip_frontmatter(skill),
         "---\n\n" + (skill_dir() / "references" / "sop_steps.md").read_text(encoding="utf-8"),
         "---\n\n# 附錄：actions.schema.json（每回合的動作格式）\n\n```json\n"
         + (path / "actions.schema.json").read_text(encoding="utf-8") + "\n```",
         "# 回覆格式\n\n每次回覆只輸出一個動作 JSON 物件，不要輸出其他 JSON。",
-    ]
-    systems, files = {}, {}
-    for task in tasks:
-        ids = {c["criterion_id"] for c in task["criteria"]}
-        shared, task_part = doc.split_for_task(skill, criteria, ids)
-        systems[task["key"]] = "\n\n".join([_strip_frontmatter(shared), *appendix,
-                                            *([task_part.rstrip("\n")] if task_part else [])])
-        files[task["key"]] = doc.files_for(criteria, ids)
-    return systems, files
-
-
-def build_system_prompt(criterion_ids: set[str]) -> str:
-    """The system prompt of a task grading criterion_ids (see task_prompts)."""
-    task = {"key": "", "criteria": [{"criterion_id": i} for i in criterion_ids]}
-    return task_prompts([task])[0][""]
+        *([task_part.rstrip("\n")] if task_part else []),
+    ])
 
 
 @dataclass
@@ -618,9 +602,7 @@ async def run_grading(video_path: Path, segmentation: dict, workdir: Path, model
     crop = segmentation["meta"]["crop"]
     boxes = {"context": crop["box"], "hands": crop["hands_box"]}
     # Before any model call: a criterion without its criteria/*.md stops the run here.
-    systems, files = await asyncio.to_thread(task_prompts, tasks)
-    (workdir / "rules_task_criteria.json").write_text(json.dumps(files, ensure_ascii=False, indent=1),
-                                                      encoding="utf-8")
+    systems = {task["key"]: build_system_prompt({c["criterion_id"] for c in task["criteria"]}) for task in tasks}
     semaphore = asyncio.Semaphore(GRADING_CONCURRENCY)
     grading_rules = await asyncio.to_thread(sop_skill_service.tree_digest, grading_dir())
     skill_rules = await asyncio.to_thread(sop_skill_service.tree_digest, skill_dir())
@@ -745,8 +727,7 @@ def _snapshot_rules(workdir: Path, resumed: bool) -> tuple[list[dict], dict]:
         if earlier.exists() and not kept.exists():
             earlier.replace(kept)
     shutil.copyfile(root / "rubric.json", workdir / "rules_rubric.json")
-    # SKILL.md with every criteria/*.md put in (skill_doc.py); each task read only part of the criteria
-    # (rules_task_criteria.json, written by run_grading)
+    # SKILL.md with criteria/*.md put in (skill_doc.py): the whole text the model read
     (workdir / "rules_SKILL.md").write_bytes(load_grading_module("skill_doc").assemble_dir(root).encode("utf-8"))
     rubric = load_grading_module("rubric").load_rubric(workdir / "rules_rubric.json")
     history.append({"versions": {"rubric": rubric["version"],

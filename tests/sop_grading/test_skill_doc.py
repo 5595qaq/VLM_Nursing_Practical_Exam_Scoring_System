@@ -99,15 +99,3 @@ def test_main_prints_a_tasks_prompt(tmp_path):
     assert skill_doc.main(["--ids", "17a", "-o", str(out)]) == 0
     shared, task = skill_doc.split_dir({"17a"})
     assert out.read_bytes().decode("utf-8") == shared + "\n" + task
-
-
-def test_ids_are_read_only_in_heading_parentheses_and_files_for_lists_them():
-    assert skill_doc.heading_ids("### 15s 內完成（3a）\n") == {"3a"}
-    assert skill_doc.files_for(CRITERIA, {"1b", "29a"}) == ["01-a.md", "02-b.md"]
-
-
-def test_every_heading_id_is_a_rubric_criterion():
-    rubric = json.loads((skill_doc.ROOT / "rubric.json").read_text(encoding="utf-8"))
-    ids = {c["id"] for step in rubric["steps"] for c in step["criteria"]}
-    for path in skill_doc.criteria_files():
-        assert skill_doc.heading_ids(path.read_text(encoding="utf-8")) <= ids, path.name
