@@ -1,7 +1,7 @@
 ---
 name: sop-video-grading
 description: 依切分結果，對護理技術操作影片（無菌抽藥技術－vial 粉劑）中需要看畫面的評分標準逐條判定「正確／錯誤／部分正確／無法判定」並寫出說明。輸入是外部程式提供的影格圖片與帶聲音的短片段。
-version: 0.41-taskcrit.1
+version: 0.41
 ---
 
 # SOP 影片評分（看畫面的標準）
@@ -87,7 +87,7 @@ version: 0.41-taskcrit.1
 
 ## 4. 各類標準怎麼判
 
-<!-- criteria/*.md 依檔名順序插在這一行（由 scripts/skill_doc.py 替換；評分 agent 的每個任務只拿到標題列出它的標準的那幾個檔，接在 system prompt 最後，這一行換成一句說明）；各組標準的寫法改在 criteria/ 的檔案 -->
+<!-- criteria/*.md 依檔名順序插在這一行（組 prompt 時由 scripts/skill_doc.py 替換）；各組標準的寫法改在 criteria/ 的檔案 -->
 ## 5. 不要做的事
 
 - 不評任務以外的標準，也不改切分結果的時間。

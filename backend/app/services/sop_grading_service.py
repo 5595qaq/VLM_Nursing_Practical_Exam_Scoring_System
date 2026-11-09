@@ -64,20 +64,14 @@ def load_grading_module(name: str):
     return importlib.import_module(name)
 
 
-def build_system_prompt(criterion_ids: set[str] | None = None) -> str:
-    """The grading agent's system prompt. With criterion_ids (a task's criteria), only the criteria files
-    covering them go in, at the end after everything shared (skill_doc.split_for_task), so every task's
-    prompt starts with the same text and the shared part can be cached; without, the full SKILL.md."""
+def build_system_prompt() -> str:
     path = grading_dir()
-    doc = load_grading_module("skill_doc")
-    skill, task_part = (doc.assemble_dir(path), "") if criterion_ids is None else doc.split_dir(criterion_ids, path)
     return "\n\n".join([
-        _strip_frontmatter(skill),
+        _strip_frontmatter(load_grading_module("skill_doc").assemble_dir(path)),
         "---\n\n" + (skill_dir() / "references" / "sop_steps.md").read_text(encoding="utf-8"),
         "---\n\n# 附錄：actions.schema.json（每回合的動作格式）\n\n```json\n"
         + (path / "actions.schema.json").read_text(encoding="utf-8") + "\n```",
         "# 回覆格式\n\n每次回覆只輸出一個動作 JSON 物件，不要輸出其他 JSON。",
-        *([task_part.rstrip("\n")] if task_part else []),
     ])
 
 
@@ -601,8 +595,7 @@ async def run_grading(video_path: Path, segmentation: dict, workdir: Path, model
     await asyncio.to_thread(runner.load_or_prepare)
     crop = segmentation["meta"]["crop"]
     boxes = {"context": crop["box"], "hands": crop["hands_box"]}
-    # Before any model call: a criterion without its criteria/*.md stops the run here.
-    systems = {task["key"]: build_system_prompt({c["criterion_id"] for c in task["criteria"]}) for task in tasks}
+    system = build_system_prompt()
     semaphore = asyncio.Semaphore(GRADING_CONCURRENCY)
     grading_rules = await asyncio.to_thread(sop_skill_service.tree_digest, grading_dir())
     skill_rules = await asyncio.to_thread(sop_skill_service.tree_digest, skill_dir())
@@ -616,8 +609,7 @@ async def run_grading(video_path: Path, segmentation: dict, workdir: Path, model
         async with semaphore:
             try:
                 criteria, _ = await run_task(task, segmentation["video_id"], runner, boxes, segmentation,
-                                             model_call, systems[task["key"]], workdir, state, rule_digest,
-                                             on_checkpoint)
+                                             model_call, system, workdir, state, rule_digest, on_checkpoint)
                 return task, criteria, state, None
             except Exception as exc:  # noqa: BLE001 - see comment above
                 return task, [], state, exc

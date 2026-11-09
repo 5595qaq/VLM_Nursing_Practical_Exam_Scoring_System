@@ -79,11 +79,9 @@ class FakeModel:
     def __init__(self, script=None):
         self.script = {k: list(v) for k, v in (script or {}).items()}
         self.requests = []
-        self.systems = []
 
     async def __call__(self, system, content):
         self.requests.append(content)
-        self.systems.append(system)
         ids = CRITERION.findall(content[0]["text"])
         key = next((k for k in self.script if ids and ids[0] == k), None)
         action = self.script[key].pop(0) if key and self.script[key] else final_for(content)
@@ -109,18 +107,6 @@ async def test_grading_grades_every_visual_criterion(video, tmp_path):
     assert "15-16-17" in outcome["tasks"] and "25-26-27" in outcome["tasks"]
     assert outcome["usage"]["input_tokens"] == 100 * len(model.requests)
     assert (tmp_path / "grading.json").exists() and (tmp_path / "transcript_task_15-16-17.json").exists()
-
-
-async def test_each_task_gets_only_its_criteria_files_after_the_shared_part(video, tmp_path):
-    model = FakeModel()
-    await grading.run_grading(video, segmentation(), tmp_path, model)
-    shared = grading.build_system_prompt(set())
-    for content, system in zip(model.requests, model.systems):
-        ids = set(CRITERION.findall(content[0]["text"]))
-        assert system == grading.build_system_prompt(ids) and system.startswith(shared)  # cacheable prefix
-        assert ("### 彈針（17a、27a）" in system) == bool(ids & {"17a", "27a", "15b", "25b"})
-        assert ("### 洗手計時（1a）" in system) == bool(ids & {"1a", "1b"})
-    assert len(set(model.systems)) > 1
 
 
 async def test_washing_task_asks_for_a_timed_span(video, tmp_path):
@@ -471,11 +457,6 @@ def test_system_prompt_includes_skill_steps_and_actions():
     assert criteria and "<!-- criteria/" not in system
     texts = [c.read_text(encoding="utf-8") for c in criteria]
     assert "".join(texts) in system
-    # a task's prompt: everything shared, then only the files whose headings list its criteria
-    task = grading.build_system_prompt({"13b"})
-    assert "<!-- criteria/" not in task and "30 步驟定義" in task and '"const": "clip"' in task
-    assert task.endswith(criteria[3].read_text(encoding="utf-8").rstrip("\n")) and "04-needle" in criteria[3].name
-    assert all(t.strip() not in task for i, t in enumerate(texts) if i != 3)
 
 
 def test_long_windows_are_analysed_in_pieces(tmp_path, monkeypatch):

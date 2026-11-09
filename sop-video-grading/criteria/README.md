@@ -4,7 +4,6 @@
 
 - 評分 agent 看到的 system prompt 是 `SKILL.md` 把 `<!-- criteria/*.md ... -->` 那一行換成這裡的 `*.md`（依檔名順序，`README.md` 除外）；由 `scripts/skill_doc.py` 組裝，`python sop-video-grading/scripts/skill_doc.py` 可以印出完整內容。
 - 每個檔以 `### 標題（標準編號）` 開頭，結尾留一個空行，接起來才和原本的單一檔案一樣。
-- **評分 agent 每個任務只拿到標題列出它的標準的那幾個檔**（接在 system prompt 最後）。所以標準編號一定要寫在 `### ` 標題裡（一個檔可以有好幾個 `### ` 標題）；只寫在內文的標準拿不到這個檔，沒有任何標題列出的標準會讓評分在呼叫模型前停止。也不要依賴其他 criteria 檔的內容，同一個任務不一定拿得到。`python sop-video-grading/scripts/skill_doc.py --ids 17a,17b` 印出某個任務會拿到的內容。
 - 新增一組標準就新增一個檔，用兩位數前綴決定在 prompt 中的位置；改檔名會改變順序，也就是改了 prompt。
 - 版本仍是 `SKILL.md` 的 `version`：改了這裡任何一個檔（或新增、刪除檔案），都要遞增它，CI（`check_versions.py`）以組裝後的全文判斷有沒有改。
 

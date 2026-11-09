@@ -161,9 +161,9 @@ Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499、連線中斷，或 Claude 回�
 | `scripts/rules.py` | 由切分結果判定 `program` 標準，並為 `visual` 標準算出要看的影片區間（先標為待判定） |
 | `scripts/validate_grading.py` | 驗證評分結果；`--final` 另外拒絕還在待判定的標準 |
 | `SKILL.md` | 評分 agent 的 system prompt 中所有任務共用的部分（輸入、動作、final 格式、說明怎麼寫、不要做的事），版本號也在這裡 |
-| `criteria/` | 各組看畫面標準怎麼判，一組一個檔（清單見 `criteria/README.md`）；完整 SKILL.md 依檔名順序放進 `SKILL.md` 的標記行。評分 agent 的每個任務只拿到 `### ` 標題列出它的標準的那幾個檔，接在 system prompt 最後，讓共用部分各任務相同、可以快取 |
+| `criteria/` | 各組看畫面標準怎麼判，一組一個檔（清單見 `criteria/README.md`）；組 prompt 時依檔名順序放進 `SKILL.md` 的標記行 |
 | `scripts/git_commit.py` | 印出要記錄的 `GIT_COMMIT`：HEAD，有未 commit 的修改或還沒加入 Git 的 `criteria/*.md` 時加 `-dirty` |
-| `scripts/skill_doc.py` | 組出完整的評分 SKILL.md（`SKILL.md` + `criteria/`，`rules_SKILL.md` 與 `check_versions.py` 用它），以及每個任務的 system prompt（共用部分＋該任務的 criteria 檔）；直接執行會印出全文，`--ids 17a,17b` 印出判這些標準的任務拿到的內容 |
+| `scripts/skill_doc.py` | 組出完整的評分 SKILL.md（`SKILL.md` + `criteria/`）：system prompt、`rules_SKILL.md` 與 `check_versions.py` 都用它；直接執行會印出全文 |
 | `actions.schema.json` | 評分 agent 的動作格式（`overview`、`zoom`、`burst`、`clip`、`final`），由 `scripts/validate_grading_action.py` 檢查 |
 | `scripts/clip.py` | 從原檔剪出帶聲音的片段（裁到 context box，或用 `--rel-to-crop` 只裁其中一塊，例如雙手），給彈針、洗手七個動作與旋緊針頭用 |
 | `scripts/motion_peaks.py` | 以每秒 15 格分析任務區間內 hands_box 的畫面變化，找出手有明顯動作的時間點（不呼叫模型） |
