@@ -61,3 +61,11 @@ def test_a_row_can_be_deleted_when_a_merged_row_is_split():
 def test_merging_the_full_draft_again_changes_nothing():
     # A model that still sends the whole table gets the same draft back.
     assert draft.merge(FULL, FULL) == FULL
+
+
+def test_missing_rows_lists_what_a_full_rewrite_left_out():
+    assert draft.missing_rows(FULL, FULL) == []
+    assert draft.missing_rows(FULL, "5 | 96 | ov #5 | 高 | 無") == ["1", "15-17"]
+    assert draft.missing_rows(FULL, "無變動") == ["1", "5", "15-17"]
+    rewrite = "1 | 0-17 | g | 高 | 無\n5 | 96 | ov | 高 | 無\n15-17 | 刪除\n15 | 120 | z | 中 | 無"
+    assert draft.missing_rows(FULL, rewrite) == []  # no header needed; deleting a row counts

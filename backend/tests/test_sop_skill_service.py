@@ -309,16 +309,32 @@ async def test_draft_updates_are_merged_and_sent_back_whole(video, tmp_path):
     path[0]["draft"] = "1 | 0-17 | global #0 | 高 | 無\n5 | null | 待找 | 低 | overview"
     path[1]["draft"] = "無變動"
     path[2]["draft"] = "5 | 96-100 | ov@10-30 #5 | 高 | 無"
-    path[3]["draft"] = "7 | 12-14 | zoom@12 | 中 | 無"
+    # the fourth action is the third since the first (whole) draft: it must rewrite every step row
+    path[3]["draft"] = "1 | 0-16 | global #0 | 高 | 無\n5 | 96-100 | ov@10-30 #5 | 高 | 無\n7 | 12-14 | zoom@12 | 中 | 無"
     model = ScriptedModel(path)
     await skill.run_skill_loop(video, "V", tmp_path, model)
     last = texts(model.requests[-1][1])
-    assert "1 | 0-17 | global #0 | 高 | 無\n5 | 96-100 | ov@10-30 #5 | 高 | 無\n7 | 12-14 | zoom@12 | 中 | 無" in last
+    assert "1 | 0-16 | global #0 | 高 | 無\n5 | 96-100 | ov@10-30 #5 | 高 | 無\n7 | 12-14 | zoom@12 | 中 | 無" in last
     assert "5 | null" not in last
     assert "1 | 0-17" in texts(model.requests[2][1])  # 無變動 kept the set_crop draft
+    assert "要重寫完整草稿" in texts(model.requests[3][1]) and "要重寫完整草稿" not in texts(model.requests[2][1])
     turns = json.loads((tmp_path / "transcript.json").read_text(encoding="utf-8"))
-    assert turns[3]["draft"].splitlines()[1] == "5 | 96-100 | ov@10-30 #5 | 高 | 無"  # merged, not the update
+    assert turns[2]["draft"].splitlines()[1] == "5 | 96-100 | ov@10-30 #5 | 高 | 無"  # merged, not the update
     assert "draft" not in turns[-1]  # final carries no draft
+
+
+async def test_a_due_full_draft_that_leaves_out_steps_is_sent_back(video, tmp_path):
+    path = [dict(action) for action in HAPPY_PATH[1:]]
+    path[0]["draft"] = "1 | 0-17 | global #0 | 高 | 無\n5 | null | 待找 | 低 | overview"
+    path[1]["draft"] = "無變動"
+    path[2]["draft"] = "5 | 96-100 | ov@10-30 #5 | 高 | 無"
+    partial = dict(path[3], draft="7 | 12-14 | zoom@12 | 中 | 無")  # due: every step row again
+    path[3]["draft"] = "1 | 0-17 | global #0 | 高 | 無\n5 | 96-100 | ov | 高 | 無\n7 | 12-14 | zoom@12 | 中 | 無"
+    model = ScriptedModel([*path[:3], partial, *path[3:]])
+    outcome = await skill.run_skill_loop(video, "V", tmp_path, model)
+    turns = json.loads((tmp_path / "transcript.json").read_text(encoding="utf-8"))
+    assert "重寫完整 draft" in turns[3]["errors"][0] and "1、5" in turns[3]["errors"][0]
+    assert outcome["result"]["meta"]["budget"]["zoom_calls"] == 1  # the rejected zoom used no budget
 
 
 class Quota(Exception):

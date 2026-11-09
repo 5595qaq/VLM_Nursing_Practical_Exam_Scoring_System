@@ -29,7 +29,7 @@ pytest backend/tests/test_agents.py backend/tests/test_model_retries.py -q
 pytest backend/tests/test_worker_reliability.py -k in_memory -q
 ```
 
-SOP skill（`sop-video-skill/`）的結果驗證（`schema.json`、`sop-video-skill/scripts/`）不需要資料庫，測試在 `tests/sop_skill/`；`test_draft.py` 檢查 draft 更新的合併（同一步驟取代、Markdown 表格列與分隔線、`05`／`5.` 視為同一步、`步驟 | 刪除`、備註接在後面不重複、各種 `無變動` 寫法）：
+SOP skill（`sop-video-skill/`）的結果驗證（`schema.json`、`sop-video-skill/scripts/`）不需要資料庫，測試在 `tests/sop_skill/`；`test_draft.py` 檢查 draft 更新的合併（同一步驟取代、Markdown 表格列與分隔線、`05`／`5.` 視為同一步、`步驟 | 刪除`、備註接在後面不重複、各種 `無變動` 寫法、`missing_rows` 找出完整重寫漏掉的步驟列）：
 
 ```bash
 pip install -r tests/sop_skill/requirements.txt
@@ -79,7 +79,7 @@ pytest backend/tests/test_sop_run_bundle.py -q
 
 真實影片的評分要呼叫 Vertex AI（會計費），用 `python -m app.sop_grading_cli` 在 worker 容器內逐支執行，再以 `eval_grading.py` 比對人工標註，見 README「SOP 評分」。
 
-sop-video-skill 執行迴圈（`backend/tests/test_sop_skill_service.py`）用 ffmpeg 產生 60 秒合成影片，以真實的 skill 腳本執行 crop／set_crop／overview／zoom／final，模型以腳本化假回覆取代（包括每回合只送 draft 更新、外部程式合併後附回完整 draft，transcript 也存合併後的 draft）；需要 ffmpeg 與 `opencv-python-headless`、`matplotlib`、`jsonschema`（已列在 `backend/requirements.txt`），不需資料庫與 Google 憑證：
+sop-video-skill 執行迴圈（`backend/tests/test_sop_skill_service.py`）用 ffmpeg 產生 60 秒合成影片，以真實的 skill 腳本執行 crop／set_crop／overview／zoom／final，模型以腳本化假回覆取代（包括每回合只送 draft 更新、外部程式合併後附回完整 draft，transcript 也存合併後的 draft；每 3 個動作要重寫完整 draft，少寫步驟的列會被退回）；需要 ffmpeg 與 `opencv-python-headless`、`matplotlib`、`jsonschema`（已列在 `backend/requirements.txt`），不需資料庫與 Google 憑證：
 
 ```bash
 pytest backend/tests/test_sop_skill_service.py backend/tests/test_sop_skill_gemini.py backend/tests/test_sop_skill_claude.py -q
