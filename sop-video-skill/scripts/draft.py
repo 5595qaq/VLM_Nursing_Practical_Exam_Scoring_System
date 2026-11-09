@@ -8,6 +8,9 @@ whole table and sends it back every turn.
 - Lines without `|` are notes. They are added after the earlier notes (a line already there is not
   repeated), so one new note never erases the earlier ones.
 - An update that is only `無變動` (any punctuation or a short remark after it) keeps the draft.
+Every FULL_EVERY-th action the external program asks for the whole draft again, each step re-checked
+(only-changed-rows segmentation was less accurate at the boundaries, 2026-11-09); missing_rows tells
+which rows such a rewrite left out.
 
 usage: python draft.py OLD_FILE UPDATE_FILE   print the merged draft
 """
@@ -15,6 +18,7 @@ import re
 import sys
 from pathlib import Path
 
+FULL_EVERY = 3  # every third action rewrites the whole draft (SKILL.md 2.3); the others send only changes
 DELETE = {"刪除", "delete"}
 NO_CHANGE = re.compile(r"^\s*[（(]?\s*(無變動|沒有變動|no change)", re.IGNORECASE)
 SEPARATOR = re.compile(r"^[\s|:\-]+$")
@@ -62,6 +66,13 @@ def merge(old: str, update: str) -> str:
     notes += [line for line in new_notes if line not in notes]
     table = [rows[key] for key in sorted(rows, key=_order) if rows[key] is not None]
     return "\n".join(table + notes)
+
+
+def missing_rows(current: str, update: str) -> list[str]:
+    """Step rows of the current draft the update leaves out (a full rewrite has none; `key | 刪除`
+    counts). Rows without a step number, such as the header, are not required."""
+    have = {} if NO_CHANGE.match(update.strip() or "無變動") and "|" not in update else _parse(update)[0]
+    return [key for key in sorted(_parse(current)[0], key=_order) if LEAD_NUMBER.match(key) and key not in have]
 
 
 def main(argv: list[str]) -> int:
