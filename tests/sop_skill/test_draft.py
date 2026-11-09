@@ -24,7 +24,7 @@ def test_new_rows_go_in_step_order_after_the_header():
 
 
 def test_no_change_keeps_the_draft():
-    for update in ("無變動", "（無變動）", "  ", ""):
+    for update in ("無變動", "（無變動）", "無變動。", "無變動（只看了 overview）", "No change.", "  ", ""):
         assert draft.merge(FULL, update) == FULL
 
 
@@ -32,13 +32,30 @@ def test_first_draft_is_taken_as_is():
     assert draft.merge("", FULL) == FULL
 
 
-def test_note_lines_replace_earlier_notes_as_a_block():
+def test_note_lines_are_added_after_the_earlier_notes():
     first = draft.merge(FULL, "藥單在桌面右下角")
     assert first.endswith("藥單在桌面右下角")
     second = draft.merge(first, "5 | 96.5-100.5 | ov #5 | 高 | 無")
-    assert "藥單在桌面右下角" in second  # an update without notes keeps them
-    third = draft.merge(second, "藥單找不到\n左手拿 vial")
-    assert "藥單在桌面右下角" not in third and third.endswith("藥單找不到\n左手拿 vial")
+    assert second.endswith("藥單在桌面右下角")  # an update without notes keeps them
+    third = draft.merge(second, "左手拿 vial\n藥單在桌面右下角")
+    assert third.endswith("藥單在桌面右下角\n左手拿 vial")  # one new note does not erase the others
+
+
+def test_markdown_table_rows_and_separators():
+    merged = draft.merge(FULL, "| 5 | 96 | ov #5 | 高 | 無 |\n|---|---|---|---|---|\n| 7 | 12 | zoom@12 | 中 | 無 |")
+    assert "5 | 96 | ov #5 | 高 | 無" in merged and "5 | null" not in merged
+    assert "7 | 12 | zoom@12 | 中 | 無" in merged and "---" not in merged
+
+
+def test_same_step_written_differently_is_one_row():
+    merged = draft.merge(FULL, "05 | 96 | ov #5 | 高 | 無\n5. | 97 | ov #6 | 高 | 無")
+    assert [line for line in merged.splitlines() if line.startswith("5 ")] == ["5 | 97 | ov #6 | 高 | 無"]
+
+
+def test_a_row_can_be_deleted_when_a_merged_row_is_split():
+    merged = draft.merge(FULL, "15-17 | 刪除\n15 | 120-130 | zoom@125 | 高 | 無\n16 | 130-140 | zoom@135 | 中 | 無")
+    keys = [line.split("|")[0].strip() for line in merged.splitlines()]
+    assert keys == ["step_id", "1", "5", "15", "16"]
 
 
 def test_merging_the_full_draft_again_changes_nothing():
