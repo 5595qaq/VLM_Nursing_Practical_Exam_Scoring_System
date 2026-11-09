@@ -1,0 +1,16 @@
+[
+ {
+  "turn": 1,
+  "seconds": 10.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 20791,
+  "cached_input_tokens": 0,
+  "output_tokens": 565,
+  "thinking_tokens": 255,
+  "materials": [
+   "clip@0-19（context box，有聲音；片段內 00:00 ＝ 影片 00:00.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"1a\", \"verdict\": \"錯誤\", \"explanation\": \"00:03.0 雙手開始互搓，00:14.0 雙手分開去拿藥瓶，共約 11.0 秒，不足 15 秒。\", \"span\": [3.0, 14.0], \"evidence\": [\"clip@0-19\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"1b\", \"verdict\": \"正確\", \"explanation\": \"洗手七個動作皆有完成：內（00:03.0–00:04.0）、外（00:04.5–00:05.5）、夾（00:06.0–00:07.0）、弓（00:07.5–00:08.0）、大（00:08.5–00:09.5）、立（00:10.0–00:11.0）、腕（00:12.0–00:13.5）。\", \"times\": [[3.0, 13.5]], \"evidence\": [\"clip@0-19\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

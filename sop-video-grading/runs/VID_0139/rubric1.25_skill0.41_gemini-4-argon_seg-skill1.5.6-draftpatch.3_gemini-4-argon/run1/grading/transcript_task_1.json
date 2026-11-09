@@ -1,0 +1,16 @@
+[
+ {
+  "turn": 1,
+  "seconds": 21.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 20587,
+  "cached_input_tokens": 0,
+  "output_tokens": 652,
+  "thinking_tokens": 342,
+  "materials": [
+   "clip@0-17（context box，有聲音；片段內 00:00 ＝ 影片 00:00.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"1a\", \"verdict\": \"錯誤\", \"explanation\": \"00:01.0 雙手開始互搓，至 00:15.0 雙手分開去拿器材，共 14.0 秒，不足 15 秒。\", \"span\": [1.0, 15.0], \"evidence\": [\"clip@0-17\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"1b\", \"verdict\": \"正確\", \"explanation\": \"洗手七個動作皆有完成：內（00:01.0–00:02.5）、外（00:03.0–00:05.5）、夾（00:06.0–00:07.0）、弓（00:07.5–00:09.0）、大（00:09.5–00:11.0）、立（00:11.5–00:12.5）、腕（00:13.0–00:14.5）。\", \"times\": [[1.0, 14.5]], \"evidence\": [\"clip@0-17\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]
