@@ -268,9 +268,12 @@ def _fill_run_facts(action: dict, video_id: str, state: LoopState, duration: flo
     if not isinstance(result, dict):
         return
     result["video_id"] = video_id
+    limit = round(duration, 3) if duration else None  # meta.duration, which validate_result compares against
+    if limit:
+        _clamp_to_end(result, limit)
     if isinstance(result.get("meta"), dict):
-        if duration:
-            result["meta"]["duration"] = round(duration, 3)
+        if limit:
+            result["meta"]["duration"] = limit
         crop = result["meta"].get("crop")
         if isinstance(crop, dict) and state.box and state.hands_box:
             crop.update(box=state.box, hands_box=state.hands_box)
@@ -292,6 +295,37 @@ def _take_draft(state: LoopState, update: str, draft_rows) -> None:
     full = not state.draft or not draft_rows.missing_rows(state.draft, update)  # the first draft is whole
     state.draft = draft_rows.merge(state.draft, update)
     state.since_full = 0 if full else state.since_full + 1
+
+
+# The report gives the duration to 0.1 s (build_content), so the model ends the last spans at e.g. 552.3 in a
+# 552.285 s video; validate_result rejected that and the model wrote its whole final again (VID_0010, VID_0068).
+# validate_action already lets an overview end and meta.duration be this far past the end.
+END_SLACK_SECONDS = 0.5
+
+
+def _clamp_to_end(result: dict, limit: float) -> None:
+    """Move end times up to END_SLACK_SECONDS past the video's end back to its end. A span that starts past
+    the end is not a rounding slip of its end and is left as written, so validate_result rejects it as
+    outside the video (as it does larger overshoots) instead of as an inverted span the model never wrote."""
+    def number(value) -> bool:
+        return isinstance(value, (int, float)) and not isinstance(value, bool)
+
+    def clamp(start, end):
+        if (number(end) and limit < end <= limit + END_SLACK_SECONDS + 1e-9  # 1e-9: 10.2 + 0.5 != 10.7 in floats
+                and not (number(start) and start > limit)):
+            return limit
+        return end
+
+    def spans(key):
+        items = result.get(key)
+        return [item for item in items if isinstance(item, dict)] if isinstance(items, list) else []
+
+    for item in spans("steps") + spans("observations") + spans("unassigned_spans") + spans("package_spans"):
+        if "end" in item:
+            item["end"] = clamp(item.get("start"), item["end"])
+        window = item.get("logical_window")
+        if isinstance(window, list) and len(window) == 2:
+            item["logical_window"] = [window[0], clamp(window[0], window[1])]
 
 
 def _image_block(image: Image) -> dict:

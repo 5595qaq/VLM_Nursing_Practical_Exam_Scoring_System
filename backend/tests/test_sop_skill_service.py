@@ -187,6 +187,49 @@ async def test_invalid_final_is_returned_to_model(video, tmp_path):
     assert "被退回的動作原文" not in unparsable  # nothing parsed, nothing to echo
 
 
+def test_times_rounded_past_the_end_are_clamped():
+    # The report shows the duration to 0.1 s: the model ends spans at 552.3 in a 552.285 s video.
+    result = valid_result()
+    result["steps"][-1].update(start=550.0, end=552.3)
+    result["steps"][1].update(start=None, end=None, status="not_visually_determinable",
+                              logical_window=[540.0, 552.3])
+    result["observations"] = [{"type": "other", "start": 552.3, "end": 552.3}]
+    result["unassigned_spans"] = [{"start": 545.0, "end": 552.785, "note": ""}]
+    result["package_spans"] = [{"start": 551.0, "end": 552.9}]
+    skill._fill_run_facts({"action": "final", "result": result}, "V", skill.LoopState(), 552.2849)
+    assert result["meta"]["duration"] == 552.285
+    assert result["steps"][-1]["end"] == 552.285 and result["steps"][-1]["start"] == 550.0
+    assert result["steps"][1]["logical_window"] == [540.0, 552.285]
+    # A span starting past the end is left as written: validate_result rejects it as outside the video.
+    assert result["observations"][0] == {"type": "other", "start": 552.3, "end": 552.3}
+    assert result["unassigned_spans"][0]["end"] == 552.285  # exactly END_SLACK_SECONDS past the end
+    # More than END_SLACK_SECONDS past the end is a real mistake; validate_result still rejects it.
+    assert result["package_spans"][0]["end"] == 552.9
+
+
+def test_clamp_bound_survives_float_sums():
+    result = {"steps": [{"start": 9.0, "end": 10.7}]}  # 10.2 + 0.5 == 10.7 is False in floats
+    skill._fill_run_facts({"action": "final", "result": result}, "V", skill.LoopState(), 10.2)
+    assert result["steps"][0]["end"] == 10.2
+
+
+def test_clamp_ignores_malformed_results():
+    result = {"steps": "not a list", "observations": [None, {"start": "x", "end": True}],
+              "unassigned_spans": [{"logical_window": None}]}
+    skill._fill_run_facts({"action": "final", "result": result}, "V", skill.LoopState(), 10.0)
+    assert result["observations"][1] == {"start": "x", "end": True}
+
+
+async def test_final_ending_just_past_the_video_is_accepted_first_time(video, tmp_path):
+    result = valid_result()
+    result["steps"][-1]["end"] = DURATION + 0.3  # the report rounds the duration; the model copies it
+    model = ScriptedModel(HAPPY_PATH[1:5] + [{"action": "final", "result": result}])
+    outcome = await skill.run_skill_loop(video, "VIDEO-5", tmp_path, model)
+    assert outcome["turns"] == 5  # no rejected final, no rewrite
+    final = outcome["result"]
+    assert final["steps"][-1]["end"] == final["meta"]["duration"]
+
+
 async def test_rejected_action_is_echoed_with_its_draft(video, tmp_path):
     model = ScriptedModel(HAPPY_PATH[:3] + [{"action": "final", "result": valid_result()}])
     await skill.run_skill_loop(video, "VIDEO-4", tmp_path, model)
