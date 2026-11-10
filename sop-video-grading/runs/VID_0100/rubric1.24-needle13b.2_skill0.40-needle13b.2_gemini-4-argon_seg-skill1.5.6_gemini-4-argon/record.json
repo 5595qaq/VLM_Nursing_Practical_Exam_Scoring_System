@@ -1,0 +1,70 @@
+{
+ "video_id": "VID_0100",
+ "versions": {
+  "rubric": "1.24-needle13b.2",
+  "skill": "0.40-needle13b.2",
+  "model": "gemini-4-argon",
+  "segmentation": "skill1.5.6_gemini-4-argon"
+ },
+ "video_sha256": "3df2b9c90c8d9213c391f9ba9148c65453725b55fff9550e7518b0b81edb5aa2",
+ "runs": [
+  {
+   "run": 1,
+   "by": "od3w",
+   "date": "2026-11-08",
+   "commit": "e440490ddf09ab687436d9f1fbd1a4e4fb45ba4b",
+   "video_sha256": "3df2b9c90c8d9213c391f9ba9148c65453725b55fff9550e7518b0b81edb5aa2",
+   "steps": [],
+   "failed_tasks": [
+    {
+     "task": "13",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    }
+   ],
+   "segmentation": "reused segmentation.json of rubric1.23_skill0.38_gemini-4-argon_seg-skill1.5.6_gemini-4-argon",
+   "usage": {
+    "input_tokens": 19564,
+    "cached_input_tokens": 17515,
+    "output_tokens": 178,
+    "thinking_tokens": 74
+   },
+   "timing": {
+    "started_at": "2026-11-08T22:23:11+00:00",
+    "grading_seconds": 298.7,
+    "total_seconds": 417.7
+   }
+  },
+  {
+   "run": 2,
+   "by": "od3w",
+   "date": "2026-11-08",
+   "commit": "e440490ddf09ab687436d9f1fbd1a4e4fb45ba4b",
+   "video_sha256": "3df2b9c90c8d9213c391f9ba9148c65453725b55fff9550e7518b0b81edb5aa2",
+   "steps": [
+    13
+   ],
+   "failed_tasks": [],
+   "segmentation": "recorded segmentation.json",
+   "usage": {
+    "input_tokens": 20808,
+    "cached_input_tokens": 18575,
+    "output_tokens": 314,
+    "thinking_tokens": 0
+   },
+   "timing": {
+    "started_at": "2026-11-08T23:15:48+00:00",
+    "grading_seconds": 37.2,
+    "total_seconds": 138.4,
+    "checkpoints_found": true
+   }
+  }
+ ],
+ "segmentation_from": {
+  "record": "rubric1.23_skill0.38_gemini-4-argon_seg-skill1.5.6_gemini-4-argon",
+  "run": 1,
+  "date": "2026-11-05",
+  "by": "od3w",
+  "commit": "086706ed512f0a47305fc8ea63902dcf823e3628",
+  "segmentation": "sop-video-skill 1.5.6 gemini-4-argon"
+ }
+}

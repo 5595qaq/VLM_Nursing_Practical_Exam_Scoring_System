@@ -30,6 +30,13 @@ def test_rubric_classification_matches_the_plan():
     # the teacher dropped pulling the plunger back (16a, 26a) and drawing air after uncapping (21a) (rubric 1.25)
     assert not {"16a", "21a", "26a"} & by_id.keys()
     assert by_id["26b"]["window_steps"] == [26] and by_id["26b"]["key"] is False
+    # turning the needle at the hub cannot be told from the video yet: not graded until confirmed (rubric 1.27)
+    assert by_id["13c"]["category"] == "not_visible" and by_id["13c"]["reason"] == "資訊不足"
+    step13 = next(s for s in load_rubric()["steps"] if s["step_id"] == 13)
+    assert [c["id"] for c in step13["criteria"]] == ["13a", "13b", "13c"]
+    # 13c (always undetermined) must not drag step 13 down
+    assert aggregate(step13, {"13a": CORRECT, "13b": CORRECT, "13c": UNDETERMINED}) == CORRECT
+    assert aggregate(step13, {"13a": CORRECT, "13b": WRONG, "13c": UNDETERMINED}) == PARTIAL
     # rolling the vial is watched on a clip, not inferred from the step being located (rubric 1.8)
     assert by_id["20a"]["category"] == "visual" and by_id["20a"]["key"] is True
     assert by_id["20a"]["window_steps"] == [20] and by_id["20a"]["clip"] is True
