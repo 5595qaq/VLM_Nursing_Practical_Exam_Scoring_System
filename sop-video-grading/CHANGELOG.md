@@ -2,6 +2,14 @@
 
 未發布的修改先寫在 `changelog.d/`（一個分支一個檔，見 `changelog.d/README.md`），合併前改成正式版本時才移到這裡；規則見 `AGENTS.md`「多人協作」。
 
+## 0.44（rubric 1.28）
+
+- 15b／25b「先墊酒精棉片才彈針」改成關鍵標準（issue #138，老師 2026-11-08：一定要先墊酒精棉片再彈針，順序不可顛倒；先彈後墊是關鍵錯誤，相關步驟全部錯誤，`experiments/2026-11-08-teacher-reply.md`）：
+  - `rubric.json`：15b、25b 改 `key: true`。
+  - `criteria/05-flick.md`：先彈後墊從部分正確改成**錯誤**（整步錯誤）；判順序時，墊棉片前**只彈一下、一聲響也算先彈**（使用者確認，VID_0079、VID_0125）。17a／27a 判「有沒有彈針」的連續彈擊規則不變。
+  - 待確認：「順序錯全部錯誤」是兩步都錯還是只扣後一步（例：VID_0001 08:58 先彈後墊，之前決定只在步驟 25 扣分、步驟 27 不再扣，見 `EXPERIMENTS.md`）。目前只改 15b／25b，17a／27a 不受影響。
+- `.github/CODEOWNERS`：`criteria/05-flick.md` 由 @od3w 負責。
+
 ## 0.43（rubric 1.27）
 
 - 13b 拆成兩條（issue #137，老師 2026-11-08 Q9，`experiments/2026-11-08-teacher-reply.md`）：
