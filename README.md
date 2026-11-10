@@ -84,7 +84,7 @@ PgQueuer 提供 at-least-once delivery。已提交結果會跳過重跑，重複
 | `references/sop_steps.md` | 30 個步驟的定義、視覺線索與易混淆配對 |
 | `actions.schema.json` | 動作請求格式，由 `scripts/validate_action.py` 檢查 |
 | `schema.json` | `final` 結果格式，由 `scripts/validate_result.py` 驗證 |
-| `scripts/` | 抽幀／裁切（`prepare.py`、`crop.py`、`sheets.py`、`grid_overlay.py`）、動作能量（`motion.py`）、順序檢查（`sequence_check.py`）、與標準答案比對（`eval.py`）、Structured Outputs schema 轉換（`schema_tools.py`） |
+| `scripts/` | 抽幀／裁切（`prepare.py`、`crop.py`、`sheets.py`、`grid_overlay.py`）、動作能量（`motion.py`）、順序檢查（`sequence_check.py`）、合併 draft 更新（`draft.py`）、與標準答案比對（`eval.py`）、Structured Outputs schema 轉換（`schema_tools.py`） |
 | `CHANGELOG.md` | 各版本的修改紀錄 |
 | `changelog.d/` | 還沒進正式版本的修改，一個分支一個檔（見 [AGENTS.md](AGENTS.md)「多人協作」） |
 
@@ -103,8 +103,8 @@ python sop-video-skill/scripts/schema_tools.py sop-video-skill/schema.json > out
 
 1. worker 從 GCS 下載上傳時產生的 `_src.mp4` 原檔，執行 `prepare.py` 產生 proxy 與格線圖。
 2. 每回合模型回覆一個動作 JSON（`crop_preview`／`set_crop`／`overview`／`zoom`／`final`）；worker 先用 `validate_action.py` 驗證，不合格就把錯誤和被退回的動作原文回傳（要求模型只修正錯誤的地方）、不執行也不扣預算，合格才執行對應腳本並把新圖片送回。
-3. 每次請求只附「全片總覽圖＋動作能量圖＋最新一批圖片＋最新 draft＋動作紀錄＋剩餘預算」（SKILL.md 第 0 節），不重送舊的對話回合。每回合不變的 system prompt 與固定圖片（`set_crop` 前是格線圖，之後是總覽圖與動作能量圖）一律放在最前面、逐位元組相同，會變的部分放在最後。送 Gemini 時，固定內容自成一個 user 回合，後面接一句固定的 model 回覆（「已收到固定圖片…」），再接本回合的 user 內容：實測 `gemini-4-argon` 的隱式快取只在前綴剛好結束一個回合時命中，固定內容與本回合內容放在同一個（或兩個連續的）user 回合時完全不命中。`gemini-4-argon` 不支援明確快取；隱式快取是否命中仍由 Google 決定，不保證。
-4. `final` 通過 `schema.json` 與 `validate_result.py` 規則後，`video_id`、`meta.duration`（實際影片長度）、`meta.crop` 的 `box`／`hands_box`（`set_crop` 確定的框）與 `meta.budget` 由 worker 依實際執行紀錄填入；`sequence_check.py` 的自動比對另存於 `sequence_check`，不寫進 result。
+3. 每次請求只附「全片總覽圖＋動作能量圖＋最新一批圖片＋目前的 draft＋動作紀錄＋剩餘預算」（SKILL.md 第 0 節），不重送舊的對話回合。模型每個動作的 `draft` 只寫這回合新增或改變的列（沒有變動寫 `無變動`），外部程式用 `scripts/draft.py` 依步驟編號合併成完整草稿再附回；每 3 個動作有一次要重寫完整草稿、逐步重新檢查邊界（少寫步驟的列會被退回），其餘回合不必重寫，省下 output token（SKILL.md 2.3）。每回合不變的 system prompt 與固定圖片（`set_crop` 前是格線圖，之後是總覽圖與動作能量圖）一律放在最前面、逐位元組相同，會變的部分放在最後。送 Gemini 時，固定內容自成一個 user 回合，後面接一句固定的 model 回覆（「已收到固定圖片…」），再接本回合的 user 內容：實測 `gemini-4-argon` 的隱式快取只在前綴剛好結束一個回合時命中，固定內容與本回合內容放在同一個（或兩個連續的）user 回合時完全不命中。`gemini-4-argon` 不支援明確快取；隱式快取是否命中仍由 Google 決定，不保證。
+4. `final` 通過 `schema.json` 與 `validate_result.py` 規則後，`video_id`、`meta.duration`（實際影片長度）、`meta.crop` 的 `box`／`hands_box`（`set_crop` 確定的框）與 `meta.budget` 由 worker 依實際執行紀錄填入；超過影片結尾不到 0.5 秒的結束時間（模型照回報裡取到 0.1 秒的影片長度寫）也由 worker 改成影片結尾，免得整份 final 被退回重寫；`sequence_check.py` 的自動比對另存於 `sequence_check`，不寫進 result。
 5. 結果 JSON、模型對話紀錄（`transcript.json`）與全部中間圖片（`artifacts.zip`，另含這次讀到的 SKILL.md 副本 `rules_SKILL.md`）上傳到 `gs://<bucket>/sop_runs/<video_id>/g<generation>/`。失敗的執行也會上傳對話紀錄，方便除錯。工作結果另記 `versions`（`{"skill": SKILL.md 版本}`）、`rules_digest`（skill 目錄全部檔案的 SHA-256）、`rules_changed_during_run`、`commit`（`GIT_COMMIT`）與 `finished_at`，供實驗紀錄 ZIP 使用。
 
 前端完成後顯示每支影片的 30 步表格與流程觀察，可下載「步驟切分 CSV」，以及每支影片的結果 JSON、圖片 ZIP、模型對話紀錄（後端 `GET /api/v1/evaluations/{job_id}/sop-skill/{影片序號}/{result|artifacts|transcript}` 代為從 GCS 讀取）。API 建立工作時傳 `"pipeline": "sop_skill"` 即為此模式（不可同時傳 `selected_agents`）；省略時為原本的 `"agents"` 模式。
@@ -144,10 +144,10 @@ Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499、連線中斷，或 Claude 回�
 | 類別 | 判定方式 | 例子 |
 | --- | --- | --- |
 | `program` | 由切分結果以程式判定 | 步驟有沒有做 |
-| `visual` | 評分 agent 看畫面（彈針連聲音一起聽） | 洗手是否 ≥ 15 秒（評分 agent 量時間、程式檢查秒數）、洗手七個動作（每 0.5 秒一格）、注視藥單 ≥ 10 秒、持毛筆姿勢、單手回套、彈針、雙手旋轉 vial（要看過片段才能判定） |
-| `not_visible` | 影片看不到，固定輸出「無法判定」，不影響步驟判定 | 藥物是否正確、刻度（針頭斜面改看針筒方向，見 13b） |
+| `visual` | 評分 agent 看畫面（彈針連聲音一起聽） | 洗手從按壓洗手液起是否 ≥ 10 秒、七個動作是否齊全（任一不足即整步錯誤）、注視藥單 ≥ 10 秒、持毛筆姿勢、單手回套、彈針、雙手旋轉 vial（要看過片段才能判定） |
+| `not_visible` | 影片看不到，固定輸出「無法判定」，不影響步驟判定 | 藥物是否正確、刻度（針頭斜面改看針筒方向，見 13b）、旋轉針頭與空針交界（13c，暫定不計分） |
 
-`visual` 標準的 `window_steps` 決定評分 agent 要看的區間（這些步驟在切分中的時間）。切分說步驟沒做時，該步的標準直接判錯誤；設了 `after_step` 的標準（4e 指空針包裝，動作可以在自己的步驟之後）除外。步驟裡有標準設了 `search_steps`（5a–8a 開瓶與消毒、15a／25a 墊棉片）時，改由評分 agent 確認：切分沒找到這一步，就把 `search_steps`（`[第一步, 最後一步]`）之間所有步驟的區間交給 agent 去找，任務說明會寫出「切分未找到」與這些步驟的時間。要搜尋的標準一律自己一個評分任務；`window_steps` 相同、或 `task` 同名（5a／6a 的 `"5-6"`，各自保留自己的區間，相距不超過 10 秒時才合併）的其他標準共用一個任務，避免只有幾秒的區間被拉長成整個搜尋範圍。
+`visual` 標準的 `window_steps` 決定評分 agent 要看的區間（這些步驟在切分中的時間）。切分說步驟沒做時，該步的標準直接判錯誤；設了 `after_step` 的標準（4d 檢查稀釋液、4e 指空針包裝，可在第二次核對時段之外發生）除外。步驟裡有標準設了 `search_steps`（5a–8a 開瓶與消毒、15a／25a 墊棉片）時，改由評分 agent 確認：切分沒找到這一步，就把 `search_steps`（`[第一步, 最後一步]`）之間所有步驟的區間交給 agent 去找，任務說明會寫出「切分未找到」與這些步驟的時間。要搜尋的標準一律自己一個評分任務；`window_steps` 相同、或 `task` 同名（5a／6a 的 `"5-6"`，各自保留自己的區間，相距不超過 10 秒時才合併）的其他標準共用一個任務，避免只有幾秒的區間被拉長成整個搜尋範圍。
 
 步驟判定由程式從各條標準彙整：`key` 標準錯誤 → 錯誤；有標準判部分正確，或有錯誤也有正確 → 部分正確；有無法判定 → 無法判定；其餘 → 正確。
 
@@ -181,6 +181,8 @@ Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499、連線中斷，或 Claude 回�
 多人同時修改規則時的分工、分支版本與合併前的步驟見 [AGENTS.md](AGENTS.md)「多人協作」。
 
 步驟定義沿用 `sop-video-skill/references/sop_steps.md`。
+
+步驟 1 從按壓洗手液起算，至少 10 秒並完成七個動作，且在步驟 2 及所有後續步驟開始前完成。步驟 2 在取出 vial 時結束；步驟 4 在取出後、抽藥前核對；步驟 29 沿用原有切分方式。評分時確認抽完藥並把空針放上針座後，有持瓶核對紀錄單。三步各自累計實際查看給藥紀錄單的時間，未滿 10 秒整步錯誤；時間達標且其他關鍵項目通過，但沒有指讀時判部分正確。
 
 評分 agent（`backend/app/services/sop_grading_service.py`）把待判定的標準依 `window_steps` 分組（例如 15b 與 17a 共用步驟 15–17 的區間），`rubric.json` 的 `task` 同名的標準（5a／6a）也放在同一組但各自保留區間（區間相距超過 10 秒時分開）；切分未找到、要在 `search_steps` 範圍內搜尋的標準一律自己一組（任務名稱加 `-search`）。每組跑一段短對話：外部程式先附上區間的 3×3 影格，需要聲音、每 0.5 秒一格或看連續動作（`rubric.json` 標 `clip: true`，例如 20a 雙手旋轉 vial）時改附 2 fps 的帶聲音片段；任務說明列出相關步驟的切分時間（只有時間，不附切分模型的依據文字，避免評分照抄切分的描述）與程式算出的動作峰值，告訴模型短動作可能在哪裡（區間超過 180 秒時分段分析再合併，不會只看前 180 秒）；模型可再要求 `overview`／`zoom`／`burst`／`clip`（每組各 3／3／3／2 次；`clip` 可加 `region` 只裁一塊、fps 最高 10，超過 5 時 ≤ 8 秒），最後以 `final` 判定該組的每一條標準。不合格的動作（`validate_grading_action.py` 檢查不過，或腳本以 `REJECTED` 拒絕，例如要求的時間超出原檔長度）會連同錯誤訊息退回給模型，不執行也不扣預算；連續 4 次不合格，該組才算失敗。開場影格每 2–4 秒才一張，不到 1 秒的短動作（彈針、墊棉片、碰觸的瞬間）可能落在兩格之間，所以 SKILL.md 要求在峰值附近用 `burst` 確認；持續的持握姿勢（持毛筆、夾瓶、持針心尾端、單手回套）則在手穩定持握的時間點用 overview 或 zoom 看，判錯誤前要在兩個以上時間點都看到同樣的問題（依據見 `sop-video-grading/EXPERIMENTS.md`）。有幾條標準由 `validate_grading_action.py` 檢查判錯誤前用過對應的素材，否則退回：彈針（17a／27a）要先用過 `burst`。固定針頭（10b，`rubric.json` 標 `package_spans: true`）的任務說明會列出切分的 `package_spans`（每一段手拿空針包裝的時間，只列第一次使用空針（步驟 13）之前開始的），模型在這些時段（各 ±10 秒）也可以要求素材，判取出前隔著包裝與取出後有沒有固定：可判正確、錯誤或無法判定，判錯誤前要先用過 `clip`；判無法判定或錯誤時程式加上需人工複核，並在 `review_reason` 列出這些時段（另列取出後到拔針頭蓋的時間：最後一段手拿包裝時段結束，到第一次使用空針後 10 秒）。片段帶聲音只有 Gemini 支援，所以評分一律使用 Gemini（`SOP_SKILL_GEMINI_MODEL`）。
 

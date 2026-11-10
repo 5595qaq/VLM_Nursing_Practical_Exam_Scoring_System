@@ -1,0 +1,16 @@
+[
+ {
+  "turn": 1,
+  "seconds": 14.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 20440,
+  "cached_input_tokens": 17043,
+  "output_tokens": 403,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@0-16.8（context box，有聲音；片段內 00:00 ＝ 影片 00:00.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [\n  {\n    \"criterion_id\": \"1a\",\n    \"verdict\": \"錯誤\",\n    \"explanation\": \"00:02.0 雙手開始互搓，00:14.5 雙手分開去拿桌上物品，共約 12.5 秒，不足 15 秒。\",\n    \"span\": [2.0, 14.5],\n    \"evidence\": [\"clip@0-16.8\"],\n    \"confidence\": 0.9,\n    \"reason\": null\n  },\n  {\n    \"criterion_id\": \"1b\",\n    \"verdict\": \"正確\",\n    \"explanation\": \"內（00:02.0–00:03.0 掌心對掌心）、外（00:03.5–00:05.0 手心搓手背）、夾（00:05.5–00:06.5 十指交叉搓指縫）、弓（00:07.0–00:07.5 彎曲手指在掌心搓指背）、大（00:08.0–00:09.5 握住大拇指旋轉）、立（00:10.0–00:11.0 指尖立在掌心搓）、腕（00:11.5–00:14.0 搓手腕）七個動作皆有做到。\",\n    \"times\": [[2.0, 14.0]],\n    \"evidence\": [\"clip@0-16.8\"],\n    \"confidence\": 0.9,\n    \"reason\": null\n  }\n]}",
+  "errors": []
+ }
+]

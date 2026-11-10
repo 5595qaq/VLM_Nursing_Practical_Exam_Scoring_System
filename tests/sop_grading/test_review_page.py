@@ -43,6 +43,7 @@ def run(tmp_path):
 
 def test_build_items_lists_disputed_and_flagged_steps():
     seg = make_segmentation()
+    seg["steps"][1].update(start=20.0, end=32.0, status="detected", logical_window=None)
     grading = flag_review(fill_visual(grade_from_segmentation(seg)), "18b")
     labels = {1: {"verdict": "錯誤", "why": "洗手不足 15 秒"}, 5: {"verdict": "正確", "why": ""}}
     items = rp.build_items(grading, seg, labels, load_rubric())
@@ -90,7 +91,7 @@ def test_merge_proposals():
         {"type": "standard", "id": "19b", "title": "雙手回套", "before": "部分正確", "after": "錯誤", "why": "老師"},
     ], rubric)
     assert (items[0]["proposal"], items[0]["proposal_src"]) == ("錯誤", "Claude")
-    assert items[1]["key"] == "VID_0002--Claude--29" and items[1]["name"].startswith("看給藥治療紀錄單")
+    assert items[1]["key"] == "VID_0002--Claude--29" and "放在針座" in items[1]["name"]
     assert items[2] == {"type": "standard", "key": "standard-19b", "id": "19b", "title": "雙手回套",
                         "before": "部分正確", "after": "錯誤", "why": "老師"}
     with pytest.raises(ValueError, match="建議判定"):

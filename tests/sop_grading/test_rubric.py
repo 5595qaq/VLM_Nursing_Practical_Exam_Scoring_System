@@ -15,22 +15,30 @@ def test_rubric_json_is_valid():
 
 def test_rubric_classification_matches_the_plan():
     by_id = criteria_by_id(load_rubric())
-    assert by_id["1a"]["category"] == "visual" and by_id["1a"]["min_seconds"] == 15  # timed on the clip (rubric 1.5)
-    assert by_id["1a"]["key"] is True and by_id["1b"]["key"] is False
+    assert by_id["1a"]["category"] == "visual" and by_id["1a"]["min_seconds"] == 10
+    assert by_id["1a"]["key"] is True and by_id["1b"]["key"] is True
+    assert by_id["1b"]["allow_partial"] is False
     assert by_id["1b"]["category"] == "visual" and by_id["1b"]["sample_interval"] == 0.5
     for cid in ("2a", "4a", "29a"):  # gaze >= 10 s is judged from frames
         assert by_id[cid]["category"] == "visual"
     for cid in ("17a", "27a", "15b", "25b"):  # flicking is judged with audio
         assert by_id[cid]["audio"] is True
-    # pad before flicking is key: flicking first makes the whole step wrong (teacher 2026-11-08, rubric 1.25-flick.1)
+    # pad before flicking is key: flicking first makes the whole step wrong (teacher 2026-11-08, rubric 1.28)
     assert by_id["15b"]["key"] is True and by_id["25b"]["key"] is True
-    for cid in ("2c", "3b", "14b", "24b"):
+    for cid in ("3b", "14b", "24b"):
         assert by_id[cid]["category"] == "not_visible"
     # needle direction stands in for the bevel, which the camera cannot resolve (rubric 1.4)
     assert by_id["13b"]["category"] == "visual" and by_id["13b"]["key"] is False and by_id["13b"]["window_steps"] == [13]
     # the teacher dropped pulling the plunger back (16a, 26a) and drawing air after uncapping (21a) (rubric 1.25)
     assert not {"16a", "21a", "26a"} & by_id.keys()
     assert by_id["26b"]["window_steps"] == [26] and by_id["26b"]["key"] is False
+    # turning the needle at the hub cannot be told from the video yet: not graded until confirmed (rubric 1.27)
+    assert by_id["13c"]["category"] == "not_visible" and by_id["13c"]["reason"] == "資訊不足"
+    step13 = next(s for s in load_rubric()["steps"] if s["step_id"] == 13)
+    assert [c["id"] for c in step13["criteria"]] == ["13a", "13b", "13c"]
+    # 13c (always undetermined) must not drag step 13 down
+    assert aggregate(step13, {"13a": CORRECT, "13b": CORRECT, "13c": UNDETERMINED}) == CORRECT
+    assert aggregate(step13, {"13a": CORRECT, "13b": WRONG, "13c": UNDETERMINED}) == PARTIAL
     # rolling the vial is watched on a clip, not inferred from the step being located (rubric 1.8)
     assert by_id["20a"]["category"] == "visual" and by_id["20a"]["key"] is True
     assert by_id["20a"]["window_steps"] == [20] and by_id["20a"]["clip"] is True
@@ -44,7 +52,7 @@ def test_rubric_classification_matches_the_plan():
     # pointing at the package belongs to the second read and counts until the package is torn open
     assert by_id["4e"]["category"] == "visual" and by_id["4e"]["key"] is False
     assert by_id["4e"]["window_steps"] == [4, 5, 6, 7, 8, 9] and by_id["4e"]["after_step"] is True
-    assert by_id["4d"]["window_steps"] == [4, 5] and "after_step" not in by_id["4d"]
+    assert by_id["4d"]["window_steps"] == [2, 4, 5, 13] and by_id["4d"]["after_step"]
     assert "9b" not in by_id and by_id["9a"]["category"] == "program"
     # 5a and 6a share one task but keep their own windows; 7a and 8a stay apart (rubric 1.18)
     assert by_id["5a"]["task"] == by_id["6a"]["task"] == "5-6"
@@ -184,12 +192,37 @@ def test_removed_step_aggregates_to_not_applicable():
     assert aggregate({"step_id": 11, "removed": True, "criteria": []}, {}) == NOT_APPLICABLE
 
 
+def test_first_and_second_comparison_have_independent_required_thresholds():
+    rubric = load_rubric()
+    first, second = rubric["steps"][1], rubric["steps"][3]
+    assert [c["id"] for c in first["criteria"]] == ["2a", "2b", "2d"]
+    assert first["criteria"][0]["key"] and first["criteria"][0]["min_seconds"] == 10
+    first_pass = {"2a": CORRECT, "2b": CORRECT, "2d": CORRECT}
+    assert aggregate(first, {**first_pass, "2a": WRONG}) == WRONG
+    assert aggregate(first, {**first_pass, "2d": WRONG}) == WRONG
+    assert aggregate(first, {**first_pass, "2b": WRONG}) == PARTIAL
+    assert aggregate(first, {**first_pass, "2a": UNDETERMINED, "2b": WRONG}) == WRONG
+    assert aggregate(first, {**first_pass, "2a": UNDETERMINED, "2b": UNDETERMINED}) == WRONG
+    assert aggregate(first, {**first_pass, "2a": PENDING}) == PENDING
+    assert aggregate(first, {**first_pass, "2d": UNDETERMINED}) == UNDETERMINED
+    assert second["criteria"][0]["key"] and second["criteria"][0]["min_seconds"] == 10
+    passed = {"4a": CORRECT, "4b": CORRECT, "4c": UNDETERMINED, "4d": CORRECT, "4e": CORRECT}
+    assert aggregate(second, {**passed, "4a": WRONG}) == WRONG
+    assert aggregate(second, {**passed, "4b": WRONG}) == PARTIAL
+    assert aggregate(second, {**passed, "4a": UNDETERMINED, "4b": WRONG}) == UNDETERMINED
+    assert aggregate(second, {**passed, "4d": WRONG, "4e": WRONG}) == PARTIAL
+
+
 def test_step29_needs_the_record_sheet():
     step29 = load_rubric()["steps"][28]
     # looked at the empty vial and discarded it, but never looked at the record sheet
-    assert aggregate(step29, {"29a": WRONG, "29b": WRONG, "29c": CORRECT}) == WRONG
-    assert aggregate(step29, {"29a": CORRECT, "29b": CORRECT, "29c": WRONG}) == PARTIAL
-    assert aggregate(step29, {"29a": UNDETERMINED, "29b": UNDETERMINED, "29c": WRONG}) == WRONG
+    assert [c["id"] for c in step29["criteria"]] == ["29a", "29b", "29d"]
+    passed = {"29a": CORRECT, "29b": CORRECT, "29d": CORRECT}
+    assert aggregate(step29, passed) == CORRECT
+    assert aggregate(step29, {**passed, "29a": WRONG}) == WRONG
+    assert aggregate(step29, {**passed, "29d": WRONG}) == WRONG
+    assert aggregate(step29, {**passed, "29b": WRONG}) == PARTIAL
+    assert aggregate(step29, {**passed, "29a": UNDETERMINED, "29b": WRONG}) == UNDETERMINED
 
 
 @pytest.mark.parametrize("v30a, v30b, expected", [

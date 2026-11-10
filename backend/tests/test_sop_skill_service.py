@@ -187,6 +187,49 @@ async def test_invalid_final_is_returned_to_model(video, tmp_path):
     assert "被退回的動作原文" not in unparsable  # nothing parsed, nothing to echo
 
 
+def test_times_rounded_past_the_end_are_clamped():
+    # The report shows the duration to 0.1 s: the model ends spans at 552.3 in a 552.285 s video.
+    result = valid_result()
+    result["steps"][-1].update(start=550.0, end=552.3)
+    result["steps"][1].update(start=None, end=None, status="not_visually_determinable",
+                              logical_window=[540.0, 552.3])
+    result["observations"] = [{"type": "other", "start": 552.3, "end": 552.3}]
+    result["unassigned_spans"] = [{"start": 545.0, "end": 552.785, "note": ""}]
+    result["package_spans"] = [{"start": 551.0, "end": 552.9}]
+    skill._fill_run_facts({"action": "final", "result": result}, "V", skill.LoopState(), 552.2849)
+    assert result["meta"]["duration"] == 552.285
+    assert result["steps"][-1]["end"] == 552.285 and result["steps"][-1]["start"] == 550.0
+    assert result["steps"][1]["logical_window"] == [540.0, 552.285]
+    # A span starting past the end is left as written: validate_result rejects it as outside the video.
+    assert result["observations"][0] == {"type": "other", "start": 552.3, "end": 552.3}
+    assert result["unassigned_spans"][0]["end"] == 552.285  # exactly END_SLACK_SECONDS past the end
+    # More than END_SLACK_SECONDS past the end is a real mistake; validate_result still rejects it.
+    assert result["package_spans"][0]["end"] == 552.9
+
+
+def test_clamp_bound_survives_float_sums():
+    result = {"steps": [{"start": 9.0, "end": 10.7}]}  # 10.2 + 0.5 == 10.7 is False in floats
+    skill._fill_run_facts({"action": "final", "result": result}, "V", skill.LoopState(), 10.2)
+    assert result["steps"][0]["end"] == 10.2
+
+
+def test_clamp_ignores_malformed_results():
+    result = {"steps": "not a list", "observations": [None, {"start": "x", "end": True}],
+              "unassigned_spans": [{"logical_window": None}]}
+    skill._fill_run_facts({"action": "final", "result": result}, "V", skill.LoopState(), 10.0)
+    assert result["observations"][1] == {"start": "x", "end": True}
+
+
+async def test_final_ending_just_past_the_video_is_accepted_first_time(video, tmp_path):
+    result = valid_result()
+    result["steps"][-1]["end"] = DURATION + 0.3  # the report rounds the duration; the model copies it
+    model = ScriptedModel(HAPPY_PATH[1:5] + [{"action": "final", "result": result}])
+    outcome = await skill.run_skill_loop(video, "VIDEO-5", tmp_path, model)
+    assert outcome["turns"] == 5  # no rejected final, no rewrite
+    final = outcome["result"]
+    assert final["steps"][-1]["end"] == final["meta"]["duration"]
+
+
 async def test_rejected_action_is_echoed_with_its_draft(video, tmp_path):
     model = ScriptedModel(HAPPY_PATH[:3] + [{"action": "final", "result": valid_result()}])
     await skill.run_skill_loop(video, "VIDEO-4", tmp_path, model)
@@ -301,6 +344,42 @@ async def test_failed_run_still_uploads_transcript(video, monkeypatch):
         await skill.run_sop_skill("gs://b/v.mp4", "vid", 0,
                                   model_call=ScriptedModel([ModelReply(text="", stop_reason="refusal")]))
     assert "sop_runs/vid/g0/transcript.json" in uploaded
+
+
+async def test_draft_updates_are_merged_and_sent_back_whole(video, tmp_path):
+    # SKILL.md 2.3: each action sends only its changed rows; the program keeps the whole table.
+    path = [dict(action) for action in HAPPY_PATH[1:]]
+    path[0]["draft"] = "1 | 0-17 | global #0 | 高 | 無\n5 | null | 待找 | 低 | overview"
+    path[1]["draft"] = "無變動"
+    path[2]["draft"] = "5 | 96-100 | ov@10-30 #5 | 高 | 無"
+    # the fourth action is the third since the first (whole) draft: it must rewrite every step row
+    path[3]["draft"] = "1 | 0-16 | global #0 | 高 | 無\n5 | 96-100 | ov@10-30 #5 | 高 | 無\n7 | 12-14 | zoom@12 | 中 | 無"
+    model = ScriptedModel(path)
+    await skill.run_skill_loop(video, "V", tmp_path, model)
+    last = texts(model.requests[-1][1])
+    assert "1 | 0-16 | global #0 | 高 | 無\n5 | 96-100 | ov@10-30 #5 | 高 | 無\n7 | 12-14 | zoom@12 | 中 | 無" in last
+    assert "5 | null" not in last
+    assert "1 | 0-17" in texts(model.requests[2][1])  # 無變動 kept the set_crop draft
+    assert "要重寫完整草稿" in texts(model.requests[3][1]) and "要重寫完整草稿" not in texts(model.requests[2][1])
+    turns = json.loads((tmp_path / "transcript.json").read_text(encoding="utf-8"))
+    assert turns[2]["draft"].splitlines()[1] == "5 | 96-100 | ov@10-30 #5 | 高 | 無"  # merged, not the update
+    assert "draft" not in turns[-1]  # final carries no draft
+
+
+async def test_a_due_full_draft_that_leaves_out_steps_is_sent_back(video, tmp_path):
+    path = [dict(action) for action in HAPPY_PATH[1:]]
+    path[0]["draft"] = "1 | 0-17 | global #0 | 高 | 無\n5 | null | 待找 | 低 | overview"
+    path[1]["draft"] = "無變動"
+    path[2]["draft"] = "5 | 96-100 | ov@10-30 #5 | 高 | 無"
+    partial = dict(path[3], draft="7 | 12-14 | zoom@12 | 中 | 無")  # due: every step row again
+    path[3]["draft"] = "1 | 0-17 | global #0 | 高 | 無\n5 | 96-100 | ov | 高 | 無\n7 | 12-14 | zoom@12 | 中 | 無"
+    model = ScriptedModel([*path[:3], partial, *path[3:]])
+    outcome = await skill.run_skill_loop(video, "V", tmp_path, model)
+    turns = json.loads((tmp_path / "transcript.json").read_text(encoding="utf-8"))
+    assert "重寫完整 draft" in turns[3]["errors"][0] and "1、5" in turns[3]["errors"][0]
+    retry = texts(model.requests[4][1])  # the feedback asks for the whole draft, not the old one kept
+    assert "draft 要逐步重新檢查後寫出全部的列" in retry and "draft、evidence 等）照原樣保留" not in retry
+    assert outcome["result"]["meta"]["budget"]["zoom_calls"] == 1  # the rejected zoom used no budget
 
 
 class Quota(Exception):
