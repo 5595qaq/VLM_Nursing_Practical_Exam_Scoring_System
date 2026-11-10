@@ -101,6 +101,7 @@ def build_tasks(result: dict, rubric: dict, steps: set[int] | None, segmentation
                     "window_steps": spec["window_steps"],
                     "audio": spec.get("audio", False),
                     "min_seconds": spec.get("min_seconds"),
+                    "cumulative_seconds": spec.get("cumulative_seconds", False),
                     "dense": spec.get("sample_interval") is not None,
                     "clip": spec.get("clip", False),
                     "search_steps": spec.get("search_steps")}
@@ -294,7 +295,9 @@ def build_task_content(task: dict, video_id: str, duration: float, state: TaskSt
           + ("；要看 clip 的連續動作" if c["clip"] else "")
           + ("；" + load_grading_module("rules").search_note(c["step_id"], c["search_steps"])
              if c["searching"] else "")
-          + (f"；要計時：final 填 span=[開始, 結束]（影片秒數），滿 {c['min_seconds']:g} 秒才是正確"
+          + (f"；累計計時：final 填 times=[[開始, 結束], ...]，只填實際查看給藥紀錄單的影片秒數，滿 {c['min_seconds']:g} 秒才正確；沒看到查看紀錄單填 []"
+             if c.get("cumulative_seconds") else
+             f"；要計時：final 填 span=[開始, 結束]（影片秒數），滿 {c['min_seconds']:g} 秒才是正確"
              if c.get("min_seconds") else "")
           + _package_note(c)
           for c in task["criteria"]),
@@ -578,7 +581,10 @@ async def run_grading(video_path: Path, segmentation: dict, workdir: Path, model
     rubric = rubric_mod.load_rubric()
     model_call = model_call or gemini_call
     result = rules.grade_from_segmentation(segmentation, rubric)
-    old = {c["criterion_id"]: c for s in previous["steps"] for c in s["criteria"]} if previous else {}
+    same_rubric = previous is not None and previous.get("rubric_version") == rubric["version"]
+    # Older results used different read boundaries and did not report the measured comparison times.
+    old = {c["criterion_id"]: c for s in previous["steps"]
+           if same_rubric or s["step_id"] not in (1, 2, 4, 29) for c in s["criteria"]} if previous else {}
     if old and (steps or resume):
         for step in result["steps"]:
             if steps and step["step_id"] not in steps:
@@ -646,7 +652,7 @@ async def run_grading(video_path: Path, segmentation: dict, workdir: Path, model
         criteria = [graded.get(c["criterion_id"])
                     or (old.get(c["criterion_id"], c) if c["verdict"] == "待判定" else c)
                     for c in step["criteria"]]
-        result["steps"][i] = rules.build_step(specs[step["step_id"]], criteria)
+        result["steps"][i] = rules.build_step(specs[step["step_id"]], criteria, segmentation=segmentation)
 
     failed = [{"task": t["key"], "error": f"{type(exc).__name__}: {exc}"[:500]} for t, _, _, exc in outcomes if exc]
     errors = validate.validate_grading(result, rubric, final=not failed)

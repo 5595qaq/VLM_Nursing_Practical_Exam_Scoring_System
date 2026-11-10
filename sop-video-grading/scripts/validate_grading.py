@@ -15,6 +15,7 @@ import argparse
 import json
 import re
 import sys
+from decimal import Decimal
 from pathlib import Path
 
 from jsonschema import Draft202012Validator
@@ -89,11 +90,29 @@ def _check_step(where: str, step: dict, spec: dict, final: bool) -> list[str]:
     for c, rule in zip(step["criteria"], spec["criteria"]):
         errors.extend(check_criterion(f"{where} criterion {c['criterion_id']}", c, rule, final))
 
+    errors.extend(check_vial_cutoff(step["criteria"]))
     expected = aggregate(spec, {c["criterion_id"]: c["verdict"] for c in step["criteria"]})
     if step["verdict"] != expected:
         errors.append(f"{where}: verdict {step['verdict']} does not match its criteria (expected {expected})")
     if step.get("needs_review", False) != any(c.get("needs_review") for c in step["criteria"]):
         errors.append(f"{where}: needs_review must be true exactly when a criterion needs review")
+    return errors
+
+
+def check_vial_cutoff(criteria: list[dict]) -> list[str]:
+    grades = {c["criterion_id"]: c for c in criteria}
+    vial = grades.get("2d")
+    if vial is None or vial["verdict"] != CORRECT:
+        return []
+    times = vial.get("times") or []
+    if len(times) != 1 or times[0][0] != times[0][1]:
+        return ["criterion 2d: use one video timestamp as times [[t, t]] for taking out the vial"]
+    cutoff = times[0][0]
+    errors = []
+    for cid in ("2a", "2b"):
+        c = grades.get(cid)
+        if c and (cid == "2a" or c["verdict"] == CORRECT) and any(end > cutoff for _, end in c.get("times", [])):
+            errors.append(f"criterion {cid}: reading or pointing must end by the vial removal at {cutoff:g} s")
     return errors
 
 
@@ -107,6 +126,8 @@ def check_criterion(where: str, c: dict, rule: dict, final: bool) -> list[str]:
         errors.append(f"{where}: {NOT_APPLICABLE} is only for removed steps")
     if category == "not_visible" and verdict != UNDETERMINED:
         errors.append(f"{where}: not_visible criterion must be {UNDETERMINED}")
+    if verdict == PARTIAL and not rule.get("allow_partial", True):
+        errors.append(f"{where}: {PARTIAL} is not allowed by the rubric")
 
     if verdict == PENDING:
         if category != "visual" or source != "vlm":
@@ -154,7 +175,7 @@ SPAN_SLACK = 10.0  # seconds a measured span may reach outside the criterion win
 
 
 def _check_span(where: str, c: dict, rule: dict) -> list[str]:
-    """Timed criteria (min_seconds, e.g. 1a washing >= 15 s): the grading agent measures the action
+    """Timed criteria (min_seconds, e.g. 1a washing >= 10 s): the grading agent measures the action
     and the verdict must follow from the measured span, so the threshold is applied by code."""
     need = rule.get("min_seconds")
     span = c.get("span")
@@ -164,6 +185,8 @@ def _check_span(where: str, c: dict, rule: dict) -> list[str]:
         return []
     if c["verdict"] == PARTIAL:
         return [f"{where}: a timed criterion is {CORRECT} or {WRONG}, not {PARTIAL}"]
+    if rule.get("cumulative_seconds"):
+        return _check_cumulative_times(where, c, need)
     if span is None:
         return [f"{where}: {c['verdict']} needs span [start, end] (video seconds of the measured action)"]
     start, end = span
@@ -179,6 +202,28 @@ def _check_span(where: str, c: dict, rule: dict) -> list[str]:
     if window and (start < window[0] - SPAN_SLACK or end > window[1] + SPAN_SLACK):
         errors.append(f"{where}: span {start:g}-{end:g} is outside the window {window[0]:g}-{window[1]:g} "
                       f"(±{SPAN_SLACK:g} s)")
+    return errors
+
+
+def _check_cumulative_times(where: str, c: dict, need: float) -> list[str]:
+    if c.get("span") is not None:
+        return [f"{where}: use times, not span, for cumulative timing"]
+    if "times" not in c:
+        return [f"{where}: cumulative timing needs times [[start, end], ...]; use [] if no comparison was seen"]
+    errors = []
+    last_end = -1.0
+    lasted = Decimal(0)
+    for start, end in c["times"]:
+        if end <= start or start < last_end:
+            return [f"{where}: times must have positive duration, in order, with no overlap"]
+        last_end = end
+        lasted += Decimal(str(end)) - Decimal(str(start))
+        window = c.get("window")
+        if window and (start < window[0] - SPAN_SLACK or end > window[1] + SPAN_SLACK):
+            errors.append(f"{where}: times {start:g}-{end:g} are outside the criterion window")
+    expected = CORRECT if lasted >= Decimal(str(need)) else WRONG
+    if c["verdict"] != expected:
+        errors.append(f"{where}: times total {lasted} s, so the verdict must be {expected} (needs >= {need:g} s)")
     return errors
 
 

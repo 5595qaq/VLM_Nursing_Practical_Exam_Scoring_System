@@ -10,9 +10,9 @@ from validate_result import validate_result
 
 def test_check_marks_findings_as_auto():
     result = make_valid_result()
-    step(result, 5)["start"] = 35.0  # step 5 now starts before step 4 (40 s)
+    step(result, 6)["start"] = 45.0  # step 6 now starts before step 5 (50 s)
     found = sequence_check.check(result)
-    assert [f["steps"] for f in found] == [[4, 5]]
+    assert [f["steps"] for f in found] == [[5, 6]]
     assert found[0]["auto"] is True
 
 
@@ -24,12 +24,16 @@ def test_flick_may_start_before_the_cotton_pad():
 
 
 def test_reading_the_record_sheet_may_overlap_checking_the_vial():
-    # SKILL.md section 5: 2 and 4 mark only the reading, often while holding the vial (3).
-    for starts in ({2: 25.0, 3: 24.0}, {3: 30.0, 4: 29.0}):  # 3 starts first; 4 starts first
-        result = make_valid_result()
-        for sid, start in starts.items():
-            step(result, sid).update(status="detected", start=start, end=start + 3, logical_window=None)
-        assert sequence_check.check(result) == []
+    result = make_valid_result()
+    step(result, 4).update(start=29.0, end=35.0)
+    assert sequence_check.check(result) == []
+
+
+def test_vial_inspection_and_comparison_must_follow_vial_removal():
+    result = make_valid_result()
+    step(result, 2).update(status="detected", start=20.0, end=45.0, logical_window=None)
+    findings = [f["steps"] for f in sequence_check.check(result)]
+    assert [2, 3] in findings and [2, 4] in findings
 
 
 def test_reading_the_record_sheet_apart_from_checking_the_vial_is_reported():
@@ -49,9 +53,35 @@ def test_reading_the_record_sheet_before_washing_hands_is_reported():
     assert [1, 2] in [f["steps"] for f in sequence_check.check(result)]
 
 
+def test_step_two_during_washing_is_reported_even_when_washing_started_first():
+    result = make_valid_result()
+    step(result, 2).update(status="detected", start=17.5, end=27.0, logical_window=None)
+    assert [1, 2] in [f["steps"] for f in sequence_check.check(result)]
+    step(result, 2)["start"] = 18.0
+    assert [1, 2] not in [f["steps"] for f in sequence_check.check(result)]
+
+
+def test_any_later_step_during_washing_is_reported():
+    result = make_valid_result()
+    step(result, 1)["end"] = 36.0
+    assert [1, 3] in [f["steps"] for f in sequence_check.check(result)]
+
+
+def test_syringe_preparation_may_precede_second_read():
+    result = make_valid_result()
+    step(result, 4).update(start=105.0, end=115.0)
+    assert sequence_check.check(result) == []
+
+
+def test_step_29_keeps_the_original_sequence_check():
+    result = make_valid_result()
+    step(result, 30).update(start=285.0, end=288.0)
+    assert [29, 30] in [f["steps"] for f in sequence_check.check(result)]
+
+
 def test_write_keeps_result_valid(tmp_path, monkeypatch):
     result = make_valid_result()
-    step(result, 5)["start"] = 35.0
+    step(result, 6)["start"] = 45.0
     assert validate_result(result) == []
     path = tmp_path / "result.json"
     path.write_text(json.dumps(result, ensure_ascii=False), encoding="utf-8")
@@ -61,7 +91,7 @@ def test_write_keeps_result_valid(tmp_path, monkeypatch):
 
     written = json.loads(path.read_text(encoding="utf-8"))
     added = written["observations"][-1]
-    assert added["type"] == "out_of_order" and added["steps"] == [4, 5]
+    assert added["type"] == "out_of_order" and added["steps"] == [5, 6]
     assert "auto" not in added
     assert validate_result(written) == []
 
