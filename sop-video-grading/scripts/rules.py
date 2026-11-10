@@ -19,7 +19,7 @@ import json
 import sys
 from pathlib import Path
 
-from rubric import (CORRECT, NOT_APPLICABLE, PENDING, SOURCE_FOR, UNDETERMINED, WRONG, aggregate,
+from rubric import (CORRECT, NOT_APPLICABLE, PENDING, SOURCE_FOR, STEP_COUNT, UNDETERMINED, WRONG, aggregate,
                     fmt_time, load_rubric, search_range)
 
 WINDOW_MARGIN = 2.0  # seconds added on both sides of a visual criterion's window
@@ -41,11 +41,17 @@ def grade_from_segmentation(seg: dict, rubric: dict | None = None,
     return {"video_id": seg["video_id"], "rubric_version": rubric["version"], "steps": steps}
 
 
-def build_step(step: dict, criteria: list[dict]) -> dict:
+def build_step(step: dict, criteria: list[dict], *, segmentation: dict | None = None) -> dict:
     """Step entry from graded criteria; also used after the grading agent fills visual criteria."""
     if step.get("removed"):
         return {"step_id": step["step_id"], "verdict": NOT_APPLICABLE,
                 "explanation": "評分表已移除此步驟，不評分。", "confidence": 1.0, "criteria": []}
+    if segmentation is not None and step["step_id"] == 1:
+        measured = next((c.get("span") for c in criteria if c["criterion_id"] == "1a"), None)
+        if measured is not None:
+            later = [e for e in segmentation["steps"] if e["step_id"] >= 2]
+            criteria = [_wash_before_later_steps(measured[1], later) if c["criterion_id"] == "1c" else c
+                        for c in criteria]
     texts = {c["id"]: c["text"] for c in step["criteria"]}
     verdict = aggregate(step, {c["criterion_id"]: c["verdict"] for c in criteria})
     scored = [c for c, r in zip(criteria, step["criteria"]) if r["category"] != "not_visible"]
@@ -99,6 +105,23 @@ def search_note(sid: int, steps: list[int]) -> str:
     return f"切分未找到步驟 {sid}，要在整個區間（步驟 {steps[0]}–{steps[-1]} 之間）內找"
 
 
+def _wash_before_later_steps(wash_end: float | None, later: list[dict]) -> dict:
+    evidence = ["seg:step 1"]
+    first = min(_detected(later), key=lambda e: (e["start"], e["step_id"]), default=None)
+    if wash_end is not None and first is not None:
+        sid, start = first["step_id"], first["start"]
+        evidence.append(f"seg:step {sid}")
+        verdict = WRONG if start < wash_end else CORRECT
+        detail = f"洗手於 {fmt_time(wash_end)}（{wash_end:g} 秒）結束，最早的後續步驟 {sid} 於 {fmt_time(start)}（{start:g} 秒）開始。"
+        reason = None
+    elif wash_end is not None and {e["step_id"] for e in later if e["status"] == "not_performed"} == set(range(2, STEP_COUNT + 1)):
+        verdict, detail, reason = CORRECT, f"洗手於 {fmt_time(wash_end)} 結束，未執行任何後續步驟。", None
+    else:
+        verdict, detail, reason = UNDETERMINED, "無法定位洗手結束或後續步驟開始。", "切分未定位"
+    return _criterion({"id": "1c", "category": "program"}, verdict, detail, evidence=evidence,
+                      reason=reason, confidence=0.0 if reason else (first["confidence"] if first else 1.0))
+
+
 def _grade(c: dict, sid: int, entries: dict[int, list[dict]], duration: float, margin: float,
            search_step: bool = False) -> dict:
     own = entries.get(sid, [])
@@ -108,6 +131,11 @@ def _grade(c: dict, sid: int, entries: dict[int, list[dict]], duration: float, m
     if c["category"] == "not_visible":
         return _criterion(c, UNDETERMINED, f"{c['note']}，無法判定。", confidence=1.0,
                           reason=c["reason"])
+
+    if c.get("rule", {}).get("type") == "wash_before_later_steps" and status != "not_performed":
+        wash = _detected(own)
+        later = [e for step_id, items in entries.items() if step_id >= 2 for e in items]
+        return _wash_before_later_steps(wash[0]["end"] if wash else None, later)
 
     if status == "not_performed" and not ((search_step or c.get("after_step")) and c["category"] == "visual"):
         conf = max(e["confidence"] for e in own)

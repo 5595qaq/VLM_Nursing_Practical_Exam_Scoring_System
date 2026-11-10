@@ -9,13 +9,13 @@
 
 | 檔案 | 標準 |
 | --- | --- |
-| `01-hand-washing.md` | 洗手計時 1a、七個動作 1b |
-| `02-drug-sheet.md` | 注視藥單、手指指出、核對稀釋液與空針包裝 2a/2b、4a/4b/4d/4e、29a/29b |
+| `01-hand-washing.md` | 洗手計時 1a、七個動作 1b、洗手順序 1c |
+| `02-drug-sheet.md` | 查看紀錄單的時間、指讀、取藥及抽藥後核對 2a/2b/2d、4a/4b/4d/4e、29a/29b/29d |
 | `03-drug-check.md` | 有看藥物 3a |
 | `04-needle-down-13b.md` | 針頭朝下插入稀釋液瓶 13b |
 | `05-flick.md` | 彈針 17a、27a，先墊棉片 15b、25b |
 | `06-plunger.md` | 排氣 17b、27b（針心往後抽 16a、26a 已取消） |
 | `07-rolling-20a.md` | 雙手旋轉 vial 20a |
 | `08-hand-posture.md` | 手部姿勢 10b、12a、13a、14a、18b、18c、19b、22b、22c、24a、26b、28b |
-| `09-disposal.md` | 丟棄空瓶 29c、空針放入包裝 30a、30b |
+| `09-disposal.md` | 空針放入包裝或針架 30a、30b |
 | `10-presence.md` | 開瓶、消毒、墊棉片 5a、6a、7a、8a、15a、25a |

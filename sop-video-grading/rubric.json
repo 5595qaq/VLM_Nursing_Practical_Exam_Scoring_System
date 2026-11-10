@@ -1,26 +1,27 @@
 {
-  "version": "1.25",
-  "description": "無菌抽藥技術－vial 粉劑 30 步評分標準。category：program＝由切分結果以程式判定；visual＝評分 agent 看畫面（audio=true 時連聲音一起聽）；not_visible＝影片看不到，固定輸出「無法判定」且不影響步驟判定。visual 的 window_steps＝要看的步驟區間；task＝同名的標準共用一個評分任務（兩條都不在搜尋、且區間相距不超過 10 秒時；否則各自一個任務）；search_steps＝[第一步, 最後一步]，切分沒找到該步時，改在這兩步之間（含）所有步驟的區間內找，且該步的切分 not_performed 不直接判錯誤；after_step=true＝動作可以發生在自己的步驟之後，該步的切分 not_performed 也不直接判錯誤。key=true 的標準錯誤時整步判「錯誤」。",
+  "version": "1.26",
+  "description": "無菌抽藥技術－vial 粉劑 30 步評分標準。category：program＝由切分結果以程式判定；visual＝評分 agent 看畫面（audio=true 時連聲音一起聽）；not_visible＝影片看不到，固定輸出「無法判定」且不影響步驟判定。visual 的 window_steps＝要看的步驟區間；task＝同名的標準共用一個評分任務（兩條都不在搜尋、且區間相距不超過 10 秒時；否則各自一個任務）；search_steps＝[第一步, 最後一步]，切分沒找到該步時，改在這兩步之間（含）所有步驟的區間內找，且該步的切分 not_performed 不直接判錯誤；after_step=true＝動作可以發生在自己的步驟之後，該步的切分 not_performed 也不直接判錯誤。key=true 的標準錯誤時整步判「錯誤」。require_key_confirmation=true 時，關鍵標準須確認達標才可判整步正確或部分正確。cumulative_seconds=true 時，用 times 加總實際動作時間。",
   "steps": [
     {"step_id": 1, "text": "洗手。", "criteria": [
-      {"id": "1a", "text": "洗手至少 15 秒（從雙手開始互搓到雙手分開）", "category": "visual", "key": true, "window_steps": [1], "sample_interval": 0.5, "min_seconds": 15, "note": "使用者確認（2026-10-21）：由評分 agent 在 0.5 秒一格的片段上量開始互搓與雙手分開的時間（按壓洗手液不算），回傳 span，程式檢查是否滿 15 秒；不再用切分邊界計時（切分會把邊界貼到伸手拿洗手液等動作，多算 1–2 秒）"},
-      {"id": "1b", "text": "內、外、夾、弓、大、立、腕七個動作都有做到", "category": "visual", "key": false, "window_steps": [1], "sample_interval": 0.5, "note": "使用者確認（2026-10-21）：洗手滿 15 秒、只缺某個動作 → 整步部分正確；不足 15 秒一律錯誤（1a 是關鍵標準）"}
+      {"id": "1a", "text": "洗手至少 10 秒（從按壓洗手液到洗手結束、雙手分開）", "category": "visual", "key": true, "window_steps": [1], "sample_interval": 0.5, "min_seconds": 10, "note": "使用者確認（2026-11-09）：在 0.5 秒一格的片段找出實際按壓洗手液及洗手結束的時間，回傳 span；程式以實測時間檢查是否至少 10 秒，不足時整步錯誤"},
+      {"id": "1b", "text": "內、外、夾、弓、大、立、腕七個動作都有做到", "category": "visual", "key": true, "allow_partial": false, "window_steps": [1], "sample_interval": 0.5, "note": "使用者確認（2026-11-09）：確認少做任一動作即判錯誤，整步也判錯誤；畫面不足以確認是否完成時判無法判定"},
+      {"id": "1c", "text": "步驟 2 及所有後續步驟開始前完成洗手", "category": "program", "key": true, "rule": {"type": "wash_before_later_steps"}}
     ]},
-    {"step_id": 2, "text": "看給藥紀錄單取出所需的藥物。(1讀)", "criteria": [
-      {"id": "2a", "text": "目光注視給藥紀錄單累計至少 10 秒", "category": "visual", "key": false, "window_steps": [2]},
-      {"id": "2b", "text": "明顯用手指指出給藥紀錄單", "category": "visual", "key": false, "window_steps": [2]},
-      {"id": "2c", "text": "取出的是紀錄單上所需的藥物", "category": "not_visible", "reason": "資訊不足", "note": "鏡頭看不到藥瓶標籤與紀錄單內容"}
+    {"step_id": 2, "text": "查看給藥紀錄單後取出藥瓶。(1讀)", "require_key_confirmation": true, "criteria": [
+      {"id": "2a", "text": "取出 vial 前須確認實際查看給藥紀錄單累計至少 10 秒（無法確認則整步錯誤）", "category": "visual", "key": true, "unconfirmed_is_wrong": true, "window_steps": [2], "sample_interval": 0.5, "min_seconds": 10, "cumulative_seconds": true},
+      {"id": "2b", "text": "取出 vial 前查看紀錄單時有用手指指出紀錄單", "category": "visual", "key": false, "window_steps": [2], "allow_partial": false},
+      {"id": "2d", "text": "取出 vial，並標出藥瓶取出的時間點", "category": "visual", "key": true, "window_steps": [2], "allow_partial": false}
     ]},
     {"step_id": 3, "text": "檢查藥物有無變質、過期等。", "criteria": [
       {"id": "3a", "text": "學生有拿起藥物檢視（舉到眼前、轉動看標籤或粉末）", "category": "visual", "key": true, "window_steps": [3]},
       {"id": "3b", "text": "確實檢查出藥物有無變質、過期", "category": "not_visible", "reason": "資訊不足", "note": "影片限制，無法得知學生的檢查是否正確；本步驟暫以是否有看藥物為標準"}
     ]},
-    {"step_id": 4, "text": "看給藥治療紀錄單確認藥物。(2讀)", "criteria": [
-      {"id": "4a", "text": "目光注視給藥紀錄單累計至少 10 秒", "category": "visual", "key": false, "window_steps": [4, 5]},
-      {"id": "4b", "text": "明顯用手指指出給藥紀錄單", "category": "visual", "key": false, "window_steps": [4, 5]},
+    {"step_id": 4, "text": "看給藥治療紀錄單確認藥物。(2讀)", "require_key_confirmation": true, "criteria": [
+      {"id": "4a", "text": "取出 vial 後、抽藥前持藥瓶核對，實際查看給藥紀錄單累計至少 10 秒", "category": "visual", "key": true, "window_steps": [4], "sample_interval": 0.5, "min_seconds": 10, "cumulative_seconds": true},
+      {"id": "4b", "text": "查看給藥紀錄單時明顯用手指指出紀錄單", "category": "visual", "key": false, "allow_partial": false, "window_steps": [4]},
       {"id": "4c", "text": "確認的藥物與紀錄單相符", "category": "not_visible", "reason": "資訊不足", "note": "鏡頭看不到藥瓶標籤與紀錄單內容"},
-      {"id": "4d", "text": "核對時除了藥物，也拿起稀釋液和紀錄單比對", "category": "visual", "key": false, "window_steps": [4, 5], "note": "暫定（使用者 2026-11-02，待老師確認）：2讀要核對藥物＋稀釋液；沒有比對稀釋液時 4d 錯誤，整步部分正確；給藥紀錄單不在畫面內時 4d 也判無法判定（藥單看不見）。指空針包裝在 4e"},
-      {"id": "4e", "text": "用手指指出空針包裝核對（撕開空針包裝之前都算，開瓶蓋之後也可以）", "category": "visual", "key": false, "window_steps": [4, 5, 6, 7, 8, 9], "after_step": true, "note": "暫定（使用者 2026-11-03，待老師確認）：指空針包裝是 2讀的核對，從 9b 移到步驟 4；學生常在開瓶蓋之後、撕包裝前才指（VID_0014 04:38–04:40、VID_0001 03:26），所以只有這條看到撕開為止，區間是步驟 4 到 9；切分說步驟 4 沒做時仍要看。沒有指 → 4e 錯誤，整步部分正確；給藥紀錄單不在畫面內時 4e 也判無法判定（藥單看不見）"}
+      {"id": "4d", "text": "抽藥前拿起稀釋液檢查效期與有無異物", "category": "visual", "key": false, "window_steps": [2, 4, 5, 13], "after_step": true, "note": "老師確認：可以先檢查稀釋液再做 2 讀；有無做此項不改變 2 讀的計時。"},
+      {"id": "4e", "text": "撕開空針包裝前，用手指指出包裝核對", "category": "visual", "key": false, "window_steps": [4, 5, 6, 7, 8, 9], "after_step": true, "note": "空針可先準備，包裝核對可早於第二次五對；此項不計入 2 讀的秒數。"}
     ]},
     {"step_id": 5, "text": "將vial瓶口打開。", "criteria": [
       {"id": "5a", "text": "將 vial 瓶口打開", "category": "visual", "key": true, "window_steps": [5], "task": "5-6", "search_steps": [4, 18], "clip": true, "note": "使用者決定（2026-10-30，rubric 1.17）：由 program 改成評分 agent 判定，原因與實驗見 CHANGELOG 0.30；rubric 1.18 起 5a／6a 同一個任務（CHANGELOG 0.31）"}
@@ -101,10 +102,10 @@
       {"id": "28a", "text": "套回針頭套", "category": "program", "key": true, "rule": {"type": "detected"}},
       {"id": "28b", "text": "單手套回（針尖進入針頭套之前，另一手沒有碰針頭套）", "category": "visual", "key": false, "window_steps": [28]}
     ]},
-    {"step_id": 29, "text": "看給藥治療紀錄單丟棄藥物空瓶。(3讀)", "criteria": [
-      {"id": "29a", "text": "目光注視給藥紀錄單累計至少 10 秒", "category": "visual", "key": true, "window_steps": [29]},
-      {"id": "29b", "text": "明顯用手指指出給藥紀錄單", "category": "visual", "key": false, "window_steps": [29]},
-      {"id": "29c", "text": "丟棄藥物空瓶", "category": "visual", "key": false, "window_steps": [29]}
+    {"step_id": 29, "text": "抽完藥並把空針放在針座後，再次核對給藥紀錄單。(3讀)", "require_key_confirmation": true, "criteria": [
+      {"id": "29a", "text": "抽藥並放好空針後持 vial 核對，實際查看給藥紀錄單累計至少 10 秒", "category": "visual", "key": true, "window_steps": [29, 30], "sample_interval": 0.5, "min_seconds": 10, "cumulative_seconds": true},
+      {"id": "29b", "text": "查看給藥紀錄單時有用手指指出紀錄單", "category": "visual", "key": false, "window_steps": [29, 30], "allow_partial": false},
+      {"id": "29d", "text": "抽完藥並將空針放上針座後，再拿起 vial 與給藥紀錄單核對", "category": "visual", "key": true, "window_steps": [29, 30], "allow_partial": false}
     ]},
     {"step_id": 30, "text": "抽藥後之空針由針心處放入空針包裝或放在針架。", "criteria": [
       {"id": "30a", "text": "空針放入空針包裝或針架（放在桌上或丟棄為錯誤）", "category": "visual", "key": true, "window_steps": [30]},
