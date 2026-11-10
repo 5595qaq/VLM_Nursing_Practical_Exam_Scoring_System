@@ -60,6 +60,9 @@ def check_rubric(rubric: dict) -> list[str]:
             if "cumulative_seconds" in c and (not isinstance(c["cumulative_seconds"], bool)
                                               or not c.get("min_seconds")):
                 errors.append(f"criterion {cid}: cumulative_seconds needs min_seconds and true/false")
+            if "unconfirmed_is_wrong" in c and (cat != "visual" or not c.get("key")
+                                                or not isinstance(c["unconfirmed_is_wrong"], bool)):
+                errors.append(f"criterion {cid}: unconfirmed_is_wrong needs a key visual criterion and true/false")
             if "allow_partial" in c and (cat != "visual" or not isinstance(c["allow_partial"], bool)):
                 errors.append(f"criterion {cid}: allow_partial needs a visual criterion and true/false")
             if "clip" in c and (cat != "visual" or not isinstance(c["clip"], bool)):
@@ -106,7 +109,7 @@ def aggregate(step: dict, verdicts: dict[str, str]) -> str:
     """Step verdict from its criteria (`verdicts` maps criterion id -> verdict).
 
     not_visible criteria never count. Order of the checks matters:
-      a key criterion 錯誤 -> 錯誤;
+      a key criterion 錯誤 or an unconfirmed required visual criterion with unconfirmed_is_wrong -> 錯誤;
       for steps requiring key confirmation, wait for pending key criteria or return 無法判定 for unseen ones;
       any criterion 部分正確 -> 部分正確;
       some 錯誤 -> 部分正確 if another criterion is 正確, 待判定 if one is still pending, else 錯誤;
@@ -117,7 +120,7 @@ def aggregate(step: dict, verdicts: dict[str, str]) -> str:
     scored = [(c, verdicts[c["id"]]) for c in step["criteria"] if c["category"] != "not_visible"]
     values = [v for _, v in scored]
     key_verdicts = {v for c, v in scored if c.get("key")}
-    if WRONG in key_verdicts:
+    if WRONG in key_verdicts or any(v == UNDETERMINED and c.get("unconfirmed_is_wrong") for c, v in scored):
         return WRONG
     if step.get("require_key_confirmation"):
         if PENDING in key_verdicts:

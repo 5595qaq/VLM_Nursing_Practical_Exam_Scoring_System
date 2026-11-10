@@ -187,12 +187,12 @@ def test_not_performed_does_not_decide_the_other_criteria_of_a_searched_step(seg
     assert c["verdict"] == "待判定" and c["window"] == [158.0, 180.0]  # its own window_steps 15-17
 
 
-def test_visual_without_any_span_is_undetermined(segmentation):
+def test_step2_without_any_span_preserves_missing_evidence_but_fails_the_step(segmentation):
     del seg_step(segmentation, 2)["logical_window"]
     result = grade_from_segmentation(segmentation)
     c = criterion(result, "2a")
     assert c["verdict"] == "無法判定" and c["reason"] == "切分未定位" and c["window"] is None
-    assert result_step(result, 2)["verdict"] == "無法判定"
+    assert result_step(result, 2)["verdict"] == "錯誤"
 
 
 def test_flick_window_covers_outer_steps(segmentation):

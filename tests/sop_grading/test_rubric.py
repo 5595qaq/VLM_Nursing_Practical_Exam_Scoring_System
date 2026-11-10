@@ -192,7 +192,10 @@ def test_first_and_second_comparison_have_independent_required_thresholds():
     assert aggregate(first, {**first_pass, "2a": WRONG}) == WRONG
     assert aggregate(first, {**first_pass, "2d": WRONG}) == WRONG
     assert aggregate(first, {**first_pass, "2b": WRONG}) == PARTIAL
-    assert aggregate(first, {**first_pass, "2a": UNDETERMINED, "2b": WRONG}) == UNDETERMINED
+    assert aggregate(first, {**first_pass, "2a": UNDETERMINED, "2b": WRONG}) == WRONG
+    assert aggregate(first, {**first_pass, "2a": UNDETERMINED, "2b": UNDETERMINED}) == WRONG
+    assert aggregate(first, {**first_pass, "2a": PENDING}) == PENDING
+    assert aggregate(first, {**first_pass, "2d": UNDETERMINED}) == UNDETERMINED
     assert second["criteria"][0]["key"] and second["criteria"][0]["min_seconds"] == 10
     passed = {"4a": CORRECT, "4b": CORRECT, "4c": UNDETERMINED, "4d": CORRECT, "4e": CORRECT}
     assert aggregate(second, {**passed, "4a": WRONG}) == WRONG

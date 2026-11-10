@@ -1,5 +1,5 @@
 {
-  "version": "1.25-handwash.3",
+  "version": "1.25-handwash.4",
   "description": "無菌抽藥技術－vial 粉劑 30 步評分標準。category：program＝由切分結果以程式判定；visual＝評分 agent 看畫面（audio=true 時連聲音一起聽）；not_visible＝影片看不到，固定輸出「無法判定」且不影響步驟判定。visual 的 window_steps＝要看的步驟區間；task＝同名的標準共用一個評分任務（兩條都不在搜尋、且區間相距不超過 10 秒時；否則各自一個任務）；search_steps＝[第一步, 最後一步]，切分沒找到該步時，改在這兩步之間（含）所有步驟的區間內找，且該步的切分 not_performed 不直接判錯誤；after_step=true＝動作可以發生在自己的步驟之後，該步的切分 not_performed 也不直接判錯誤。key=true 的標準錯誤時整步判「錯誤」。require_key_confirmation=true 時，關鍵標準須確認達標才可判整步正確或部分正確。cumulative_seconds=true 時，用 times 加總實際動作時間。",
   "steps": [
     {"step_id": 1, "text": "洗手。", "criteria": [
@@ -8,7 +8,7 @@
       {"id": "1c", "text": "步驟 2 及所有後續步驟開始前完成洗手", "category": "program", "key": true, "rule": {"type": "wash_before_later_steps"}}
     ]},
     {"step_id": 2, "text": "查看給藥紀錄單後取出藥瓶。(1讀)", "require_key_confirmation": true, "criteria": [
-      {"id": "2a", "text": "取出 vial 前實際查看給藥紀錄單累計至少 10 秒", "category": "visual", "key": true, "window_steps": [2], "sample_interval": 0.5, "min_seconds": 10, "cumulative_seconds": true},
+      {"id": "2a", "text": "取出 vial 前須確認實際查看給藥紀錄單累計至少 10 秒（無法確認則整步錯誤）", "category": "visual", "key": true, "unconfirmed_is_wrong": true, "window_steps": [2], "sample_interval": 0.5, "min_seconds": 10, "cumulative_seconds": true},
       {"id": "2b", "text": "取出 vial 前查看紀錄單時有用手指指出紀錄單", "category": "visual", "key": false, "window_steps": [2], "allow_partial": false},
       {"id": "2d", "text": "取出 vial，並標出藥瓶取出的時間點", "category": "visual", "key": true, "window_steps": [2], "allow_partial": false}
     ]},
