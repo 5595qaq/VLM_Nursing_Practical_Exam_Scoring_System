@@ -84,7 +84,7 @@ PgQueuer 提供 at-least-once delivery。已提交結果會跳過重跑，重複
 | `references/sop_steps.md` | 30 個步驟的定義、視覺線索與易混淆配對 |
 | `actions.schema.json` | 動作請求格式，由 `scripts/validate_action.py` 檢查 |
 | `schema.json` | `final` 結果格式，由 `scripts/validate_result.py` 驗證 |
-| `scripts/` | 抽幀／裁切（`prepare.py`、`crop.py`、`sheets.py`、`grid_overlay.py`）、動作能量（`motion.py`）、順序檢查（`sequence_check.py`）、與標準答案比對（`eval.py`）、Structured Outputs schema 轉換（`schema_tools.py`） |
+| `scripts/` | 抽幀／裁切（`prepare.py`、`crop.py`、`sheets.py`、`grid_overlay.py`）、動作能量（`motion.py`）、順序檢查（`sequence_check.py`）、合併 draft 更新（`draft.py`）、與標準答案比對（`eval.py`）、Structured Outputs schema 轉換（`schema_tools.py`） |
 | `CHANGELOG.md` | 各版本的修改紀錄 |
 | `changelog.d/` | 還沒進正式版本的修改，一個分支一個檔（見 [AGENTS.md](AGENTS.md)「多人協作」） |
 
@@ -103,8 +103,8 @@ python sop-video-skill/scripts/schema_tools.py sop-video-skill/schema.json > out
 
 1. worker 從 GCS 下載上傳時產生的 `_src.mp4` 原檔，執行 `prepare.py` 產生 proxy 與格線圖。
 2. 每回合模型回覆一個動作 JSON（`crop_preview`／`set_crop`／`overview`／`zoom`／`final`）；worker 先用 `validate_action.py` 驗證，不合格就把錯誤和被退回的動作原文回傳（要求模型只修正錯誤的地方）、不執行也不扣預算，合格才執行對應腳本並把新圖片送回。
-3. 每次請求只附「全片總覽圖＋動作能量圖＋最新一批圖片＋最新 draft＋動作紀錄＋剩餘預算」（SKILL.md 第 0 節），不重送舊的對話回合。每回合不變的 system prompt 與固定圖片（`set_crop` 前是格線圖，之後是總覽圖與動作能量圖）一律放在最前面、逐位元組相同，會變的部分放在最後。送 Gemini 時，固定內容自成一個 user 回合，後面接一句固定的 model 回覆（「已收到固定圖片…」），再接本回合的 user 內容：實測 `gemini-4-argon` 的隱式快取只在前綴剛好結束一個回合時命中，固定內容與本回合內容放在同一個（或兩個連續的）user 回合時完全不命中。`gemini-4-argon` 不支援明確快取；隱式快取是否命中仍由 Google 決定，不保證。
-4. `final` 通過 `schema.json` 與 `validate_result.py` 規則後，`video_id`、`meta.duration`（實際影片長度）、`meta.crop` 的 `box`／`hands_box`（`set_crop` 確定的框）與 `meta.budget` 由 worker 依實際執行紀錄填入；`sequence_check.py` 的自動比對另存於 `sequence_check`，不寫進 result。
+3. 每次請求只附「全片總覽圖＋動作能量圖＋最新一批圖片＋目前的 draft＋動作紀錄＋剩餘預算」（SKILL.md 第 0 節），不重送舊的對話回合。模型每個動作的 `draft` 只寫這回合新增或改變的列（沒有變動寫 `無變動`），外部程式用 `scripts/draft.py` 依步驟編號合併成完整草稿再附回；每 3 個動作有一次要重寫完整草稿、逐步重新檢查邊界（少寫步驟的列會被退回），其餘回合不必重寫，省下 output token（SKILL.md 2.3）。每回合不變的 system prompt 與固定圖片（`set_crop` 前是格線圖，之後是總覽圖與動作能量圖）一律放在最前面、逐位元組相同，會變的部分放在最後。送 Gemini 時，固定內容自成一個 user 回合，後面接一句固定的 model 回覆（「已收到固定圖片…」），再接本回合的 user 內容：實測 `gemini-4-argon` 的隱式快取只在前綴剛好結束一個回合時命中，固定內容與本回合內容放在同一個（或兩個連續的）user 回合時完全不命中。`gemini-4-argon` 不支援明確快取；隱式快取是否命中仍由 Google 決定，不保證。
+4. `final` 通過 `schema.json` 與 `validate_result.py` 規則後，`video_id`、`meta.duration`（實際影片長度）、`meta.crop` 的 `box`／`hands_box`（`set_crop` 確定的框）與 `meta.budget` 由 worker 依實際執行紀錄填入；超過影片結尾不到 0.5 秒的結束時間（模型照回報裡取到 0.1 秒的影片長度寫）也由 worker 改成影片結尾，免得整份 final 被退回重寫；`sequence_check.py` 的自動比對另存於 `sequence_check`，不寫進 result。
 5. 結果 JSON、模型對話紀錄（`transcript.json`）與全部中間圖片（`artifacts.zip`，另含這次讀到的 SKILL.md 副本 `rules_SKILL.md`）上傳到 `gs://<bucket>/sop_runs/<video_id>/g<generation>/`。失敗的執行也會上傳對話紀錄，方便除錯。工作結果另記 `versions`（`{"skill": SKILL.md 版本}`）、`rules_digest`（skill 目錄全部檔案的 SHA-256）、`rules_changed_during_run`、`commit`（`GIT_COMMIT`）與 `finished_at`，供實驗紀錄 ZIP 使用。
 
 前端完成後顯示每支影片的 30 步表格與流程觀察，可下載「步驟切分 CSV」，以及每支影片的結果 JSON、圖片 ZIP、模型對話紀錄（後端 `GET /api/v1/evaluations/{job_id}/sop-skill/{影片序號}/{result|artifacts|transcript}` 代為從 GCS 讀取）。API 建立工作時傳 `"pipeline": "sop_skill"` 即為此模式（不可同時傳 `selected_agents`）；省略時為原本的 `"agents"` 模式。
