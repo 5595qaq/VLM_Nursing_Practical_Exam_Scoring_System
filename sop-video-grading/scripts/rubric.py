@@ -12,7 +12,7 @@ RUBRIC_PATH = Path(__file__).resolve().parent.parent / "rubric.json"
 STEP_COUNT = 30
 CATEGORIES = {"program", "visual", "not_visible"}
 SOURCE_FOR = {"program": "rule", "visual": "vlm", "not_visible": "fixed"}
-RULE_TYPES = {"detected"}
+RULE_TYPES = {"detected", "wash_before_later_steps"}
 
 CORRECT, WRONG, PARTIAL = "正確", "錯誤", "部分正確"
 UNDETERMINED, NOT_APPLICABLE, PENDING = "無法判定", "不適用", "待判定"
@@ -36,6 +36,8 @@ def check_rubric(rubric: dict) -> list[str]:
     tasks: dict[str, int] = {}
     for step in rubric["steps"]:
         sid = step["step_id"]
+        if "require_key_confirmation" in step and not isinstance(step["require_key_confirmation"], bool):
+            errors.append(f"step {sid}: require_key_confirmation needs true/false")
         if step.get("removed"):
             if step["criteria"]:
                 errors.append(f"step {sid}: removed step must have no criteria")
@@ -55,6 +57,11 @@ def check_rubric(rubric: dict) -> list[str]:
                 errors.append(f"criterion {cid}: program criterion needs rule.type in {sorted(RULE_TYPES)}")
             if "min_seconds" in c and (cat != "visual" or not isinstance(c["min_seconds"], (int, float))):
                 errors.append(f"criterion {cid}: min_seconds needs a visual criterion and a number")
+            if "cumulative_seconds" in c and (not isinstance(c["cumulative_seconds"], bool)
+                                              or not c.get("min_seconds")):
+                errors.append(f"criterion {cid}: cumulative_seconds needs min_seconds and true/false")
+            if "allow_partial" in c and (cat != "visual" or not isinstance(c["allow_partial"], bool)):
+                errors.append(f"criterion {cid}: allow_partial needs a visual criterion and true/false")
             if "clip" in c and (cat != "visual" or not isinstance(c["clip"], bool)):
                 errors.append(f"criterion {cid}: clip needs a visual criterion and true/false")
             if "package_spans" in c and (cat != "visual" or not isinstance(c["package_spans"], bool)):
@@ -100,6 +107,7 @@ def aggregate(step: dict, verdicts: dict[str, str]) -> str:
 
     not_visible criteria never count. Order of the checks matters:
       a key criterion 錯誤 -> 錯誤;
+      for steps requiring key confirmation, wait for pending key criteria or return 無法判定 for unseen ones;
       any criterion 部分正確 -> 部分正確;
       some 錯誤 -> 部分正確 if another criterion is 正確, 待判定 if one is still pending, else 錯誤;
       any pending -> 待判定; any 無法判定 -> 無法判定; otherwise 正確.
@@ -108,8 +116,14 @@ def aggregate(step: dict, verdicts: dict[str, str]) -> str:
         return NOT_APPLICABLE
     scored = [(c, verdicts[c["id"]]) for c in step["criteria"] if c["category"] != "not_visible"]
     values = [v for _, v in scored]
-    if any(c.get("key") and v == WRONG for c, v in scored):
+    key_verdicts = {v for c, v in scored if c.get("key")}
+    if WRONG in key_verdicts:
         return WRONG
+    if step.get("require_key_confirmation"):
+        if PENDING in key_verdicts:
+            return PENDING
+        if UNDETERMINED in key_verdicts:
+            return UNDETERMINED
     if PARTIAL in values:
         return PARTIAL
     if WRONG in values:

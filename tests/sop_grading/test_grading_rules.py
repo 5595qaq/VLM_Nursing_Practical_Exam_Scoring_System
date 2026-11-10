@@ -3,7 +3,7 @@
 import json
 
 from grading_helpers import criterion, fill_visual, flag_review, make_segmentation, result_step, seg_step
-from rules import grade_from_segmentation, main
+from rules import build_step, grade_from_segmentation, main
 from rubric import aggregate, load_rubric
 from validate_grading import validate_grading
 from validate_result import validate_result as validate_segmentation
@@ -37,22 +37,45 @@ def test_washing_too_short_makes_step_wrong(segmentation):
     step = result_step(result, 1)
     for c in step["criteria"]:
         if c["criterion_id"] == "1a":
-            c.update(verdict="錯誤", span=[2.0, 14.0], explanation="00:02 開始互搓，00:14 雙手分開，共 12 秒。")
+            c.update(verdict="錯誤", span=[2.0, 11.5], explanation="00:02 按壓洗手液，00:11.5 雙手分開，共 9.5 秒。")
     from rubric import load_rubric
     from rules import build_step
     assert build_step(load_rubric()["steps"][0], step["criteria"])["verdict"] == "錯誤"  # key, even with 1b 正確
 
 
 
-def test_missing_motion_with_enough_time_is_partial(segmentation):
-    # rubric 1.5: 1b is not key; washing >= 15 s with a motion missing is 部分正確 (user, 2026-10-21)
+def test_missing_motion_with_enough_time_makes_step_wrong(segmentation):
     step = result_step(fill_visual(grade_from_segmentation(segmentation), "正確"), 1)
     for c in step["criteria"]:
         if c["criterion_id"] == "1b":
             c["verdict"] = "錯誤"
     from rubric import load_rubric
     from rules import build_step
-    assert build_step(load_rubric()["steps"][0], step["criteria"])["verdict"] == "部分正確"
+    assert build_step(load_rubric()["steps"][0], step["criteria"])["verdict"] == "錯誤"
+
+
+def test_wash_order_uses_the_actual_wash_end_and_earliest_step_two_start(segmentation):
+    second = seg_step(segmentation, 2)
+    second.update(status="detected", start=20.0, end=32.0, logical_window=None)
+    segmentation["steps"].append({**second, "start": 24.0, "end": 28.0})
+    result = fill_visual(grade_from_segmentation(segmentation))
+    assert criterion(result, "1c")["verdict"] == "正確"
+
+    spec = load_rubric()["steps"][0]
+    step = result_step(result, 1)
+    criterion(result, "1a")["span"] = [0.0, 21.0]
+    assert build_step(spec, step["criteria"], segmentation=segmentation)["verdict"] == "錯誤"
+    criterion(result, "1a")["span"] = [0.0, 20.0]
+    assert build_step(spec, step["criteria"], segmentation=segmentation)["verdict"] == "正確"
+
+
+def test_wash_order_detects_any_later_step_even_if_step_two_is_skipped(segmentation):
+    seg_step(segmentation, 2).update(status="not_performed", logical_window=None)
+    seg_step(segmentation, 3).update(start=15.0, end=18.0)
+    result = grade_from_segmentation(segmentation)
+    order = criterion(result, "1c")
+    assert order["verdict"] == "錯誤" and "seg:step 3" in order["evidence"]
+    assert result_step(result, 1)["verdict"] == "錯誤"
 
 
 def test_flick_without_pushing_air_out_is_partial(segmentation):
@@ -118,7 +141,7 @@ def test_pointing_at_the_package_window_runs_through_the_steps_before_tearing(se
     # with step 9 not located, the window must still go past step 4 (it lists 5-8 too)
     seg_step(segmentation, 9).update(start=None, end=None, status="not_visually_determinable", logical_window=None)
     result = grade_from_segmentation(segmentation)
-    assert criterion(result, "4e")["window"][1] > criterion(result, "4d")["window"][1]
+    assert criterion(result, "4e")["window"][1] > criterion(result, "4a")["window"][1]
 
 
 def test_step_not_found_is_searched_between_search_steps(segmentation):
@@ -167,9 +190,8 @@ def test_not_performed_does_not_decide_the_other_criteria_of_a_searched_step(seg
 def test_visual_without_any_span_is_undetermined(segmentation):
     del seg_step(segmentation, 2)["logical_window"]
     result = grade_from_segmentation(segmentation)
-    for cid in ("2a", "2b"):
-        c = criterion(result, cid)
-        assert c["verdict"] == "無法判定" and c["reason"] == "切分未定位" and c["window"] is None
+    c = criterion(result, "2a")
+    assert c["verdict"] == "無法判定" and c["reason"] == "切分未定位" and c["window"] is None
     assert result_step(result, 2)["verdict"] == "無法判定"
 
 

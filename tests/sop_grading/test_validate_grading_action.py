@@ -243,9 +243,9 @@ WASH = {"window": [38.6, 57.4], "criteria": [{"criterion_id": "1a", "window": [3
                                             {"criterion_id": "1b", "window": [38.6, 57.4]}]}
 
 
-def wash_final(verdict="錯誤", span=(42.3, 54.2), **changes) -> dict:
+def wash_final(verdict="錯誤", span=(42.0, 51.5), **changes) -> dict:
     a = {"criterion_id": "1a", "verdict": verdict, "confidence": 0.8, "reason": None, "evidence": ["clip@38.6-57.4"],
-         "explanation": "00:42.3 開始互搓，00:54.2 雙手分開，共約 11.9 秒。"}
+         "explanation": "00:42.0 按壓洗手液，00:51.5 雙手分開，共 9.5 秒。"}
     if span is not None:
         a["span"] = list(span)
     a.update(changes)
@@ -256,9 +256,20 @@ def wash_final(verdict="錯誤", span=(42.3, 54.2), **changes) -> dict:
 
 def test_washing_span_decides_the_verdict():
     assert validate(wash_final(), WASH, FRESH, DURATION) == []
-    assert validate(wash_final("正確", (40.0, 56.0)), WASH, FRESH, DURATION) == []
+    assert validate(wash_final("正確", (42.0, 52.0), explanation="00:42 按壓洗手液，00:52 雙手分開，共 10 秒。"),
+                    WASH, FRESH, DURATION) == []
     errors = validate(wash_final("正確"), WASH, FRESH, DURATION)
-    assert any("lasts 11.9 s, so the verdict must be 錯誤" in e for e in errors), errors
+    assert any("lasts 9.5 s, so the verdict must be 錯誤" in e for e in errors), errors
+
+
+def test_missing_washing_motion_cannot_be_partial():
+    action = wash_final()
+    motion = action["criteria"][1]
+    motion.update(verdict="部分正確", explanation="00:42–00:51 洗手期間缺少搓手腕。")
+    errors = validate(action, WASH, FRESH, DURATION)
+    assert any("criterion 1b: 部分正確 is not allowed" in e for e in errors), errors
+    motion["verdict"] = "錯誤"
+    assert validate(action, WASH, FRESH, DURATION) == []
 
 
 @pytest.mark.parametrize("changes, expected", [
@@ -275,6 +286,45 @@ def test_washing_span_errors(changes, expected):
         del a["span"]
     errors = validate(action, WASH, FRESH, DURATION)
     assert any(expected in e for e in errors), errors
+
+
+@pytest.mark.parametrize("cid", ["2a", "4a", "29a"])
+@pytest.mark.parametrize("times, verdict, expected", [
+    ([[45.1, 50.2], [53.2, 58.1]], "正確", None),
+    ([[45.1, 50.2], [53.2, 58.0]], "正確", "so the verdict must be 錯誤"),
+    ([[45.1, 50.2], [53.2, 58.0]], "錯誤", None),
+    ([[45, 51], [50, 56]], "正確", "no overlap"),
+    ([], "錯誤", None),
+    ([], "正確", "so the verdict must be 錯誤"),
+    (None, "錯誤", "cumulative timing needs times"),
+])
+def test_comparison_checks_only_the_sum_of_distinct_times(cid, times, verdict, expected):
+    task = {"window": [40, 60], "criteria": [{"criterion_id": cid, "window": [40, 60]}]}
+    c = {"criterion_id": cid, "verdict": verdict, "confidence": 0.8, "reason": None, "evidence": ["clip@40-60"],
+         "explanation": "00:45–00:58 檢查核對紀錄單的動作。"}
+    if times is not None:
+        c["times"] = times
+    errors = validate({"action": "final", "criteria": [c]}, task, FRESH, DURATION)
+    if expected:
+        assert any(expected in e for e in errors), errors
+    else:
+        assert errors == []
+
+
+def test_step_two_cannot_count_reading_or_pointing_after_vial_removal():
+    ids = ("2a", "2b", "2d")
+    task = {"window": [40, 65], "criteria": [{"criterion_id": cid, "window": [40, 65]} for cid in ids]}
+    action = {"action": "final", "criteria": [
+        {"criterion_id": cid, "verdict": "正確", "confidence": 0.8, "reason": None, "evidence": ["clip@40-65"],
+         "explanation": "00:45–00:58 查看紀錄單及取出藥瓶。", "times": times}
+        for cid, times in zip(ids, ([[45, 55]], [[49, 50]], [[55, 55]]), strict=True)
+    ]}
+    assert validate(action, task, FRESH, DURATION) == []
+    action["criteria"][2]["times"] = [[54, 54]]
+    assert any("criterion 2a" in e and "vial removal" in e for e in validate(action, task, FRESH, DURATION))
+    action["criteria"][0]["times"] = [[44, 54]]
+    action["criteria"][1]["times"] = [[55, 56]]
+    assert any("criterion 2b" in e and "vial removal" in e for e in validate(action, task, FRESH, DURATION))
 
 
 def test_span_only_on_timed_criteria():

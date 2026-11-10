@@ -197,7 +197,9 @@ def test_cli_skips_another_videos_segmentation(tmp_path, capsys):
 
 
 def test_compare_and_summary():
-    grading = fill_visual(grade_from_segmentation(make_segmentation()))
+    seg = make_segmentation()
+    seg["steps"][1].update(start=20.0, end=32.0, status="detected", logical_window=None)
+    grading = fill_visual(grade_from_segmentation(seg))
     labels = {1: {"verdict": "錯誤", "why": "洗手時間不足15秒"}, 9: {"verdict": "正確", "why": ""},
               19: {"verdict": "部分正確", "why": ""}, 16: {"verdict": "錯誤", "why": ""},
               21: {"verdict": "正確", "why": ""}}
