@@ -1,0 +1,76 @@
+{
+ "video_id": "VID_0133",
+ "versions": {
+  "rubric": "1.25",
+  "skill": "0.41-taskcrit.1",
+  "model": "gemini-4-argon",
+  "segmentation": "skill1.5.6_gemini-4-argon"
+ },
+ "video_sha256": "e818a22a3f97cb3abec31283b02f253db801511187a58506fe5ea82125485af3",
+ "runs": [
+  {
+   "run": 1,
+   "by": "5595QAQ",
+   "date": "2026-11-09",
+   "commit": "3245d6087188fff81aae853641a78800d3677838",
+   "video_sha256": "e818a22a3f97cb3abec31283b02f253db801511187a58506fe5ea82125485af3",
+   "steps": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30
+   ],
+   "failed_tasks": [
+    {
+     "task": "7",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    }
+   ],
+   "segmentation": "reused segmentation.json of rubric1.23_skill0.39_gemini-4-argon_seg-skill1.5.6_gemini-4-argon",
+   "usage": {
+    "input_tokens": 842873,
+    "cached_input_tokens": 0,
+    "output_tokens": 14016,
+    "thinking_tokens": 4198
+   },
+   "timing": {
+    "started_at": "2026-11-09T11:31:34+00:00",
+    "grading_seconds": 1264.3,
+    "total_seconds": 1368.0
+   }
+  }
+ ],
+ "segmentation_from": {
+  "record": "rubric1.23_skill0.39_gemini-4-argon_seg-skill1.5.6_gemini-4-argon",
+  "run": 1,
+  "date": "2026-11-06",
+  "by": "5595QAQ",
+  "commit": "5d926b4d0917fa5cca2535789094941dde9a25ed",
+  "segmentation": "sop-video-skill 1.5.6 gemini-4-argon"
+ }
+}

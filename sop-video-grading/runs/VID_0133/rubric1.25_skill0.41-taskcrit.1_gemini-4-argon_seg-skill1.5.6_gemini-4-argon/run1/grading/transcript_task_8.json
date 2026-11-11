@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 6.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 12553,
+  "cached_input_tokens": 0,
+  "output_tokens": 84,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@50.5-60（context box，有聲音；片段內 00:00 ＝ 影片 00:50.5）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [53.5, 55.5, 56.5], \"region\": [0.32, 0.52, 0.62, 0.85], \"reason\": \"確認以酒精棉片包住稀釋液瓶頂扭開並取下瓶頂的細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 256.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 13774,
+  "cached_input_tokens": 0,
+  "output_tokens": 209,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@50.5-60（context box，有聲音；片段內 00:00 ＝ 影片 00:50.5）",
+   "zoom@53.5/55.5/56.5 region=[0.320, 0.520, 0.620, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"8a\", \"verdict\": \"正確\", \"explanation\": \"於 00:53–00:57（clip@50.5-60 片段內 00:02.5–00:06.5），學生左手握住細長稀釋液瓶身，右手隔著酒精棉片捏住瓶頂並用力扭轉，於 00:56.0–00:56.5 成功將稀釋液瓶頂扭開取下，符合打開稀釋液瓶口之標準。\", \"times\": [[53.0, 56.5]], \"evidence\": [\"clip@50.5-60\", \"zoom@53.5\", \"zoom@55.5\", \"zoom@56.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

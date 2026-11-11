@@ -1,4 +1,4 @@
-- **手部姿勢照老師 2026-11-08 回覆修改（issue #140，`criteria/08-hand-posture.md`、rubric；分支版本 SKILL 0.41-handpos.1／rubric 1.25-handpos.1；紀錄 `experiments/2026-11-08-teacher-reply.md`）：**
+- **手部姿勢照老師 2026-11-08 回覆修改（issue #140，`criteria/08-hand-posture.md`、rubric；分支版本 SKILL 0.44-handpos.1／rubric 1.28-handpos.1（評分紀錄用 0.41-handpos.1／1.25-handpos.1 跑）；紀錄 `experiments/2026-11-08-teacher-reply.md`）：**
   - 10b：只有空針**取出後**固定才算，隔著包裝或在包裝裡旋轉不算（VID_0098 01:07–01:12 判沒做；VID_0072「隔著包裝可以」只是體諒 AI）。取消 rubric 1.10／1.19 起「取出前隔著包裝固定也合法」。評分 agent 仍拿到 `package_spans`，用來找出空針離開包裝的時間；判錯誤前要用 clip、錯誤與無法判定轉人工都不變（程式沒改）。`AGENTS.md`「步驟 10」一節同步改寫。
   - 18b／22b：針筒**一定要垂直向下**插入，拿掉 rubric 文字的「vial 可拿在手上」（VID_0119 步驟 22 水平插入判錯誤）。
   - 新增 18d、22d（**關鍵**）：打入稀釋液、打入空氣時 vial 放在桌面上，一手固定、另一手垂直刺入；拿離桌面錯誤（VID_0091、0095、0119、0123 步驟 18）。稀釋液瓶照 12a 夾在手上，不適用。

@@ -1,0 +1,43 @@
+{
+ "video_id": "VID_0119",
+ "versions": {
+  "rubric": "1.24-needle13b.2",
+  "skill": "0.40-needle13b.2",
+  "model": "gemini-4-argon",
+  "segmentation": "skill1.5.6_gemini-4-argon"
+ },
+ "video_sha256": "3491718b31699092a0c8be9b9d1d25dc04887f29e7356786178aa9f1a04a08a5",
+ "runs": [
+  {
+   "run": 1,
+   "by": "od3w",
+   "date": "2026-11-08",
+   "commit": "e440490ddf09ab687436d9f1fbd1a4e4fb45ba4b",
+   "video_sha256": "3491718b31699092a0c8be9b9d1d25dc04887f29e7356786178aa9f1a04a08a5",
+   "steps": [
+    13
+   ],
+   "failed_tasks": [],
+   "segmentation": "reused segmentation.json of rubric1.23_skill0.39_gemini-4-argon_seg-skill1.5.6_gemini-4-argon",
+   "usage": {
+    "input_tokens": 105615,
+    "cached_input_tokens": 53532,
+    "output_tokens": 946,
+    "thinking_tokens": 233
+   },
+   "timing": {
+    "started_at": "2026-11-08T22:46:09+00:00",
+    "grading_seconds": 147.0,
+    "total_seconds": 255.5
+   }
+  }
+ ],
+ "segmentation_from": {
+  "record": "rubric1.23_skill0.39_gemini-4-argon_seg-skill1.5.6_gemini-4-argon",
+  "run": 1,
+  "date": "2026-11-06",
+  "by": "余亮岑",
+  "commit": "8edf6e9154aa4b83d7a0a688d71ce06395248d6d",
+  "segmentation": "sop-video-skill 1.5.6 gemini-4-argon"
+ }
+}

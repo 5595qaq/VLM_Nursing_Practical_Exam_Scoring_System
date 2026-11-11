@@ -14,7 +14,7 @@ def make_segmentation() -> dict:
             start = sid * 10.0
             steps.append({"step_id": sid, "start": start, "end": start + 8.0, "confidence": 0.8,
                           "status": "detected", "evidence": f"global #{sid}"})
-        steps[0].update(start=0.0, end=18.0)  # washing long enough (>= 15 s)
+        steps[0].update(start=0.0, end=18.0)  # washing long enough (>= 10 s)
         steps[1] = {"step_id": 2, "start": None, "end": None, "confidence": 0.0,
                     "status": "not_visually_determinable", "evidence": "未見注視紀錄單 ≥ 10 s",
                     "logical_window": [20.0, 40.0]}
@@ -61,7 +61,13 @@ def fill_visual(result: dict, verdict: str = "正確") -> dict:
                          explanation=f"{fmt_time(start)}–{fmt_time(end)} 片段中看到該動作完成。")
                 need = specs[c["criterion_id"]].get("min_seconds")
                 if need and verdict in ("正確", "錯誤"):  # timed criterion: a span that matches the verdict
-                    c["span"] = [start, start + need + 1] if verdict == "正確" else [start, start + need - 3]
+                    span = [start, start + need + 1] if verdict == "正確" else [start, start + need - 3]
+                    if specs[c["criterion_id"]].get("cumulative_seconds"):
+                        c["times"] = [span]
+                    else:
+                        c["span"] = span
+                if c["criterion_id"] == "2d" and verdict == "正確":
+                    c["times"] = [[start + 11, start + 11]]
         result["steps"][i] = build_step(rubric[step["step_id"]], step["criteria"])
     return result
 

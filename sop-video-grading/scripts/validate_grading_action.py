@@ -28,7 +28,7 @@ from pathlib import Path
 from jsonschema import Draft202012Validator
 
 from rubric import criteria_by_id, load_rubric
-from validate_grading import WRAPPER, check_criterion
+from validate_grading import WRAPPER, check_criterion, check_vial_cutoff
 
 SCHEMA_PATH = Path(__file__).resolve().parent.parent / "actions.schema.json"
 
@@ -138,9 +138,9 @@ def _check_times(cid: str, c: dict, spec: dict, ranges: list[tuple[float, float]
     """times: the video seconds the verdict rests on, so nobody has to read them out of the explanation. A clip's
     own 00:00-based times fall outside the allowed ranges unless the clip starts near the beginning of the video."""
     times = c.get("times") or []
-    if spec.get("min_seconds"):
+    if spec.get("min_seconds") and not spec.get("cumulative_seconds"):
         return [f"criterion {cid}: use span, not times, for a timed criterion"] if times else []
-    if not times and c["verdict"] != "無法判定":
+    if not times and not spec.get("cumulative_seconds") and c["verdict"] != "無法判定":
         return [f"criterion {cid}: {c['verdict']} needs times [[start, end], ...]: the video seconds the verdict "
                 "rests on (the part you watched when the action did not happen)"]
     errors = []
@@ -181,7 +181,7 @@ def _check_final(action: dict, task: dict, used: dict, rubric: dict, duration: f
             errors.append(f"criterion {cid}: before marking 錯誤, use clip with a region on both hands and the "
                           "syringe (fps up to 10, ≤ 8 s) on a listed wrapper span (where it comes out) and after it: "
                           "a twist lasts a second or two and frames 2–4 s apart miss it")
-    return errors
+    return errors + check_vial_cutoff(action["criteria"])
 
 
 def _check_flick(cid: str, c: dict, audio: dict | None, used: dict) -> list[str]:

@@ -1,0 +1,16 @@
+[
+ {
+  "turn": 1,
+  "seconds": 19.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 22762,
+  "cached_input_tokens": 0,
+  "output_tokens": 775,
+  "thinking_tokens": 439,
+  "materials": [
+   "clip@10-38（context box，有聲音；片段內 00:00 ＝ 影片 00:10.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"1a\", \"verdict\": \"正確\", \"explanation\": \"於 00:13.0（片段 00:03.0）雙手開始互搓，至 00:33.5（片段 00:23.5）雙手分開，共計 20.5 秒，滿 15 秒。\", \"span\": [13.0, 33.5], \"evidence\": [\"clip@10-38\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"1b\", \"verdict\": \"正確\", \"explanation\": \"洗手七個動作皆有完成：內（00:13.0–00:13.5）、外（00:14.0–00:16.5）、夾（00:17.0–00:18.5）、弓（00:19.0–00:20.5）、大（00:21.0–00:23.0）、立（00:23.5–00:27.5）、腕（00:28.0–00:33.0）。\", \"times\": [[13.0, 33.0]], \"evidence\": [\"clip@10-38\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

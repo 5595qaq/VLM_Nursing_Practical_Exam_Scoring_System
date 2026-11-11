@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 56.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 20243,
+  "cached_input_tokens": 0,
+  "output_tokens": 124,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@280-294（context box，有聲音；片段內 00:00 ＝ 影片 04:40.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [283.0, 285.0, 287.0, 288.0], \"region\": [0.25, 0.25, 0.6, 0.65], \"reason\": \"檢查 282.5–288.5 秒（04:42.5–04:48.5）排氣期間針頭與針筒接合處是否有墊酒精棉片，或有沒有彈針動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 7.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 21477,
+  "cached_input_tokens": 17247,
+  "output_tokens": 286,
+  "thinking_tokens": 190,
+  "materials": [
+   "clip@280-294（context box，有聲音；片段內 00:00 ＝ 影片 04:40.0）",
+   "zoom@283/285/287/288 region=[0.250, 0.250, 0.600, 0.650]"
+  ],
+  "reply": "{\"action\": \"burst\", \"start\": 286.5, \"end\": 289.2, \"n\": 12, \"region\": [0.25, 0.25, 0.6, 0.65], \"reason\": \"確認 04:46.5–04:49.2 是否有彈針動作及是否有墊酒精棉片\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 26.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 23032,
+  "cached_input_tokens": 17717,
+  "output_tokens": 380,
+  "thinking_tokens": 110,
+  "materials": [
+   "clip@280-294（context box，有聲音；片段內 00:00 ＝ 影片 04:40.0）",
+   "zoom@283/285/287/288 region=[0.250, 0.250, 0.600, 0.650]",
+   "burst@286.5-289.2（原始解析度，12 格，每 0.25 s）#0=04:46.5、#1=04:46.7、#2=04:47.0、#3=04:47.2、#4=04:47.5、#5=04:47.7、#6=04:48.0、#7=04:48.2、#8=04:48.5、#9=04:48.7、#10=04:49.0、#11=04:49.2 region=[0.250, 0.250, 0.600, 0.650]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"25b\", \"verdict\": \"錯誤\", \"explanation\": \"04:42.5–04:48.5（clip@280-294 片段內 00:02.5–00:08.5）學生將針筒直立調整針心，針頭與針筒接合處全程未墊酒精棉片，亦未見手指彈針筒的動作（04:48.5–04:49.1 的響聲為準備回套時手部移動與碰觸器材所致）。\", \"times\": [[282.5, 288.5]], \"evidence\": [\"clip@280-294\", \"zoom@283\", \"zoom@285\", \"zoom@287\", \"zoom@288\", \"burst@286.5-289.2 #0\", \"burst@286.5-289.2 #6\", \"burst@286.5-289.2 #8\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

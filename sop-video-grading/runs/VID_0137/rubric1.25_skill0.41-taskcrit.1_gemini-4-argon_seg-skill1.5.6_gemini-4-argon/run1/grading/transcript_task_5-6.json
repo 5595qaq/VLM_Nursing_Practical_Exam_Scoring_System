@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 9.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 12906,
+  "cached_input_tokens": 0,
+  "output_tokens": 108,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@36.5-47.5（context box，有聲音；片段內 00:00 ＝ 影片 00:36.5）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [39.5, 40.5, 43.0, 44.0], \"region\": [0.3, 0.45, 0.65, 0.85], \"reason\": \"確認打開 vial 瓶蓋（39.5, 40.5）與以酒精棉片消毒瓶口（43.0, 44.0）的細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 9.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 14135,
+  "cached_input_tokens": 0,
+  "output_tokens": 320,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@36.5-47.5（context box，有聲音；片段內 00:00 ＝ 影片 00:36.5）",
+   "zoom@39.5/40.5/43/44 region=[0.300, 0.450, 0.650, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"00:39–00:40（clip@36.5-47.5 片段內 00:02.5–00:04.0）雙手推開 vial 上的深色塑膠翻蓋，zoom@40.5 清楚看到瓶頂已露出銀色鋁圈與中間的橡皮塞。\", \"times\": [[39.0, 40.5]], \"evidence\": [\"clip@36.5-47.5\", \"zoom@39.5\", \"zoom@40.5\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"6a\", \"verdict\": \"正確\", \"explanation\": \"00:42–00:44（clip@36.5-47.5 片段內 00:06.0–00:08.0）右手拿白色酒精棉片在 vial 瓶口來回擦拭消毒，並將棉片蓋在瓶口上。\", \"times\": [[42.5, 44.5]], \"evidence\": [\"clip@36.5-47.5\", \"zoom@43\", \"zoom@44\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

@@ -42,13 +42,20 @@ def video(tmp_path_factory):
     return path
 
 
-def segmentation():
+def segmentation(*, wash_first=False):
     steps = []
     for sid in range(1, 31):
         start = sid * 1.8
         steps.append({"step_id": sid, "start": start, "end": start + 1.5, "confidence": 0.6,
                       "status": "detected", "evidence": f"global #{sid % 8}"})
     steps[0].update(start=0.0, end=16.0)
+    steps[1].update(start=16.0, end=26.0)
+    steps[3].update(start=27.0, end=37.0)
+    steps[28].update(start=50.0, end=60.0)
+    if wash_first:
+        for entry in steps[1:]:
+            if entry["start"] < 16:
+                entry.update(start=16.0, end=17.5)
     steps[10] = {"step_id": 11, "start": None, "end": None, "confidence": 1.0,
                  "status": "not_performed", "evidence": "已自評分表移除"}
     for sid in (17, 27):
@@ -70,6 +77,12 @@ def final_for(content, verdict="正確"):
         if c["criterion_id"] == "1a":
             c["span"] = [0.0, 16.0] if verdict == "正確" else [0.0, 10.0]
             del c["times"]
+        elif c["criterion_id"] in {"2a", "4a", "29a"}:
+            start = c["times"][0][0]
+            c["times"] = [[start, start + 10.0]] if verdict == "正確" else []
+        elif c["criterion_id"] == "2d" and verdict == "正確":
+            start = c["times"][0][0]
+            c["times"] = [[start + 10.0, start + 10.0]]
     return {"action": "final", "criteria": criteria}
 
 
@@ -100,7 +113,7 @@ def requests_for(model, cid):
 
 async def test_grading_grades_every_visual_criterion(video, tmp_path):
     model = FakeModel()
-    outcome = await grading.run_grading(video, segmentation(), tmp_path, model)
+    outcome = await grading.run_grading(video, segmentation(wash_first=True), tmp_path, model)
     assert outcome["failed_tasks"] == [] and outcome["validation_errors"] == []
     steps = {s["step_id"]: s for s in outcome["result"]["steps"]}
     assert steps[1]["verdict"] == "正確" and steps[11]["verdict"] == "不適用"
@@ -217,7 +230,7 @@ async def test_sheet_out_of_frame_in_4a_decides_the_package_pointing(video, tmp_
     pointed = {"action": "final", "criteria": [
         {"criterion_id": "4e", "verdict": "正確", "times": [[5.0, 5.0]], "confidence": 0.7, "reason": None,
          "explanation": "00:08 右手食指指著空針包裝。", "evidence": ["clip@0-10"]}]}
-    model = FakeModel({"4a": [sheet_final("4a", "4b", "4d")], "4e": [pointed]})
+    model = FakeModel({"4a": [sheet_final("4a", "4b")], "4d": [sheet_final("4d")], "4e": [pointed]})
     outcome = await grading.run_grading(video, segmentation(), tmp_path, model, steps={4})
     assert outcome["failed_tasks"] == []
     step = next(s for s in outcome["result"]["steps"] if s["step_id"] == 4)
@@ -230,11 +243,13 @@ async def test_sheet_out_of_frame_decides_across_attempts(video, tmp_path):
     # 4a and 4e are separate tasks: a failed one is graded by a later attempt, and the other comes from `previous`
     sheet = {"action": "final", "criteria": [
         {"criterion_id": cid, "verdict": "無法判定", "confidence": 0.7, "reason": "藥單看不見",
-         "explanation": "00:05 找過治療車前緣與桌面，都沒有紀錄單。", "evidence": ["clip@0-10"]} for cid in ("4a", "4b", "4d")]}
+         "explanation": "00:05 找過治療車前緣與桌面，都沒有紀錄單。", "evidence": ["clip@0-10"]} for cid in ("4a", "4b")]}
     pointed = {"action": "final", "criteria": [
         {"criterion_id": "4e", "verdict": "正確", "times": [[5.0, 5.0]], "confidence": 0.7, "reason": None,
          "explanation": "00:08 右手食指指著空針包裝。", "evidence": ["clip@0-10"]}]}
-    first = await grading.run_grading(video, segmentation(), tmp_path / "a", FakeModel({"4a": [sheet], "4e": [pointed]}),
+    diluent = {"action": "final", "criteria": [{**sheet["criteria"][0], "criterion_id": "4d"}]}
+    first = await grading.run_grading(video, segmentation(), tmp_path / "a",
+                                      FakeModel({"4a": [sheet], "4d": [diluent], "4e": [pointed]}),
                                       steps={4})
 
     def previous_with_pending(*ids):
@@ -256,7 +271,7 @@ async def test_sheet_out_of_frame_decides_across_attempts(video, tmp_path):
     assert c["verdict"] == "無法判定" and "原判正確" in c["explanation"] and step["verdict"] == "無法判定"
 
     # 4a failed the first time: 4e comes from `previous`, marked 正確 by its agent
-    previous = previous_with_pending("4a", "4b", "4d")
+    previous = previous_with_pending("4a", "4b")
     kept = next(c for s in previous["steps"] for c in s["criteria"] if c["criterion_id"] == "4e")
     kept.update(verdict="正確", reason=None, explanation="00:08 右手食指指著空針包裝。")
     later = await grading.run_grading(video, segmentation(), tmp_path / "c", FakeModel({"4a": [sheet]}),
@@ -675,7 +690,7 @@ async def test_failed_grading_keeps_partial_and_resume_regrades_only_the_rest(vi
             return await super().__call__(system, content)
 
     with pytest.raises(grading.GradingIncomplete) as failed:
-        await grading.run_sop_grading("gs://test-bucket/videos/x_src.mp4", "vid", 0, segmentation(),
+        await grading.run_sop_grading("gs://test-bucket/videos/x_src.mp4", "vid", 0, segmentation(wash_first=True),
                                       model_call=Exhausted())
     assert failed.value.errors == [quota]
     partial = failed.value.partial
@@ -683,7 +698,7 @@ async def test_failed_grading_keeps_partial_and_resume_regrades_only_the_rest(vi
     assert verdicts["12a"] == "待判定" and verdicts["1a"] == "正確"
 
     model = FakeModel()
-    outcome = await grading.run_sop_grading("gs://test-bucket/videos/x_src.mp4", "vid", 1, segmentation(),
+    outcome = await grading.run_sop_grading("gs://test-bucket/videos/x_src.mp4", "vid", 1, segmentation(wash_first=True),
                                             model_call=model, previous=partial)
     assert outcome["tasks"] == ["12"]  # only the failed group goes back to the model
     assert all(CRITERION.findall(c[0]["text"]) == ["12a"] for c in model.requests)
