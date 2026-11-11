@@ -365,7 +365,8 @@ async def test_steps_filter_keeps_previous_grades(video, tmp_path):
     second = await grading.run_grading(video, segmentation(), tmp_path / "b", model, steps={19},
                                        previous=first["result"])
     steps = {s["step_id"]: s for s in second["result"]["steps"]}
-    assert second["tasks"] == ["19"] and steps[19]["verdict"] == "部分正確"
+    # 19b is a key criterion from rubric 1.29 (two-handed recapping fails the whole step)
+    assert second["tasks"] == ["19"] and steps[19]["verdict"] == "錯誤"
     assert steps[12]["verdict"] == "正確" and second["validation_errors"] == []
 
 
