@@ -71,6 +71,8 @@ def check_rubric(rubric: dict) -> list[str]:
                 errors.append(f"criterion {cid}: package_spans needs a visual criterion and true/false")
             if "after_step" in c and (cat != "visual" or not isinstance(c["after_step"], bool)):
                 errors.append(f"criterion {cid}: after_step needs a visual criterion and true/false")
+            if "through_video_end" in c and (cat != "visual" or not isinstance(c["through_video_end"], bool)):
+                errors.append(f"criterion {cid}: through_video_end needs a visual criterion and true/false")
             if "task" in c and (cat != "visual" or not isinstance(c["task"], str) or not c["task"]):
                 errors.append(f"criterion {cid}: task needs a visual criterion and a name")
             elif "task" in c:
