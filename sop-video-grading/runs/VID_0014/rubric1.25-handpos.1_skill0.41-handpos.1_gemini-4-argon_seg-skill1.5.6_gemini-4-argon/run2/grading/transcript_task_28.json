@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 6.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 19536,
+  "cached_input_tokens": 0,
+  "output_tokens": 76,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@751.8-759（hands_box，n=9）#0=12:31.8、#1=12:32.7、#2=12:33.6、#3=12:34.5、#4=12:35.4、#5=12:36.3、#6=12:37.2、#7=12:38.1、#8=12:39.0"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 753.0, \"end\": 762.1, \"fps\": 2, \"reason\": \"看清楚何時單手套回針頭套（12:37–12:42 左右右手把針插進針架上的針頭套）\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 10.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 21313,
+  "cached_input_tokens": 17848,
+  "output_tokens": 94,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@751.8-759（hands_box，n=9）#0=12:31.8、#1=12:32.7、#2=12:33.6、#3=12:34.5、#4=12:35.4、#5=12:36.3、#6=12:37.2、#7=12:38.1、#8=12:39.0",
+   "clip@753-762.1（context box，有聲音；片段內 00:00 ＝ 影片 12:33.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [757.5, 758.0, 758.5, 759.5], \"region\": [0.25, 0.45, 0.65, 0.95], \"reason\": \"確認右手單手將針頭插入針架上的針頭套，左手位置與是否碰觸\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 8.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 22558,
+  "cached_input_tokens": 17848,
+  "output_tokens": 214,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@751.8-759（hands_box，n=9）#0=12:31.8、#1=12:32.7、#2=12:33.6、#3=12:34.5、#4=12:35.4、#5=12:36.3、#6=12:37.2、#7=12:38.1、#8=12:39.0",
+   "clip@753-762.1（context box，有聲音；片段內 00:00 ＝ 影片 12:33.0）",
+   "zoom@757.5/758/758.5/759.5 region=[0.250, 0.450, 0.650, 0.950]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"28b\", \"verdict\": \"正確\", \"explanation\": \"12:37.5–12:39.5（clip@753-762.1 片段內 00:04.5–00:06.5）針頭套立在治療盤前方的針架上，學生以右手持空針單手將針頭插入針架上的針頭套中並下壓固定，左手全程懸空放在胸前，沒有碰觸針頭套。\", \"times\": [[757.5, 759.5]], \"evidence\": [\"clip@753-762.1\", \"zoom@757.5\", \"zoom@758\", \"zoom@758.5\", \"zoom@759.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

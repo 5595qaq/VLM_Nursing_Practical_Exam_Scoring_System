@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 86.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 19530,
+  "cached_input_tokens": 0,
+  "output_tokens": 387,
+  "thinking_tokens": 283,
+  "materials": [
+   "ov@246.5-284.5（hands_box，n=9）#0=04:06.5、#1=04:11.2、#2=04:16.0、#3=04:20.8、#4=04:25.5、#5=04:30.2、#6=04:35.0、#7=04:39.8、#8=04:44.5"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [256.0, 260.8, 270.2, 279.8], \"region\": [0.35, 0.05, 0.75, 0.6], \"reason\": \"放大確認抽藥液時（04:16.0–04:39.8）空針與倒置 vial 是否保持垂直\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 65.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 20762,
+  "cached_input_tokens": 17814,
+  "output_tokens": 204,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@246.5-284.5（hands_box，n=9）#0=04:06.5、#1=04:11.2、#2=04:16.0、#3=04:20.8、#4=04:25.5、#5=04:30.2、#6=04:35.0、#7=04:39.8、#8=04:44.5",
+   "zoom@256/260.8/270.2/279.8 region=[0.350, 0.050, 0.750, 0.600]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"24c\", \"verdict\": \"正確\", \"explanation\": \"於 04:11.2–04:39.8 期間，學生將 vial 倒置舉起進行抽藥液，從 04:16.0、04:20.8、04:30.2、04:39.8 的放大畫面可見空針全程保持垂直朝上，未低於 90 度。\", \"times\": [[251.2, 279.8]], \"evidence\": [\"ov@246.5-284.5 #1\", \"zoom@256\", \"zoom@260.8\", \"zoom@270.2\", \"zoom@279.8\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

@@ -16,6 +16,6 @@
 | `05-flick.md` | 彈針 17a、27a，先墊棉片 15b、25b |
 | `06-plunger.md` | 排氣 17b、27b（針心往後抽 16a、26a 已取消） |
 | `07-rolling-20a.md` | 雙手旋轉 vial 20a |
-| `08-hand-posture.md` | 手部姿勢 10b、12a、13a、14a、18b、18c、19b、22b、22c、24a、26b、28b |
+| `08-hand-posture.md` | 手部姿勢 10b、12a、13a、14a、18b、18c、18d、19b、22b、22c、22d、24a、24c、26b、28b |
 | `09-disposal.md` | 空針放入包裝或針架 30a、30b |
 | `10-presence.md` | 開瓶、消毒、墊棉片 5a、6a、7a、8a、15a、25a |

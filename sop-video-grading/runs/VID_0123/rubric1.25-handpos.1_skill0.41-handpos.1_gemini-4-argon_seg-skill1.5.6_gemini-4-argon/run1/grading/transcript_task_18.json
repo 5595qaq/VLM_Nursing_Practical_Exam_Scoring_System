@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 11.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 19608,
+  "cached_input_tokens": 17464,
+  "output_tokens": 109,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@187-211（hands_box，n=9）#0=03:07.0、#1=03:10.0、#2=03:13.0、#3=03:16.0、#4=03:19.0、#5=03:22.0、#6=03:25.0、#7=03:28.0、#8=03:31.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [189.0, 190.0, 191.0, 192.0], \"region\": [0.3, 0.25, 0.7, 0.75], \"reason\": \"確認針頭刺入 vial 那一刻（約 03:09–03:12）的持針手勢、刺入位置與 vial 是否拿離桌面\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 10.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 20840,
+  "cached_input_tokens": 17814,
+  "output_tokens": 412,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@187-211（hands_box，n=9）#0=03:07.0、#1=03:10.0、#2=03:13.0、#3=03:16.0、#4=03:19.0、#5=03:22.0、#6=03:25.0、#7=03:28.0、#8=03:31.0",
+   "zoom@189/190/191/192 region=[0.300, 0.250, 0.700, 0.750]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"18b\", \"verdict\": \"錯誤\", \"explanation\": \"03:10.0–03:12.0 插針時，右手拇指與食指直接捏住藍色針座，且針筒與 vial 皆呈斜向（未垂直向下刺入），不符合持毛筆方式、不碰觸針座與垂直向下插入的要求。\", \"times\": [[190.0, 192.0]], \"evidence\": [\"zoom@190\", \"zoom@191\", \"zoom@192\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"18c\", \"verdict\": \"正確\", \"explanation\": \"03:10.0–03:12.0 針頭對準並刺入 vial 瓶口橡皮塞中央。\", \"times\": [[190.0, 192.0]], \"evidence\": [\"zoom@190\", \"zoom@191\", \"zoom@192\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"18d\", \"verdict\": \"錯誤\", \"explanation\": \"03:09.0–03:12.0 插針及後續打入稀釋液期間，學生將 vial 拿離桌面懸空握在左手胸前刺入，未將 vial 放在桌面上固定刺入。\", \"times\": [[189.0, 192.0]], \"evidence\": [\"ov@187-211 #1\", \"zoom@189\", \"zoom@190\", \"zoom@191\", \"zoom@192\"], \"confidence\": 0.98, \"reason\": null}]}",
+  "errors": []
+ }
+]

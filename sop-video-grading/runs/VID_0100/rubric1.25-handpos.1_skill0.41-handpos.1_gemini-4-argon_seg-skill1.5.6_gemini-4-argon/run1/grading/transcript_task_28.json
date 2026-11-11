@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 20.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 19481,
+  "cached_input_tokens": 15799,
+  "output_tokens": 98,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@300.5-307（hands_box，n=9）#0=05:00.5、#1=05:01.3、#2=05:02.1、#3=05:02.9、#4=05:03.8、#5=05:04.6、#6=05:05.4、#7=05:06.2、#8=05:07.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [302.6, 303.2, 303.8, 304.4], \"region\": [0.1, 0.45, 0.7, 0.98], \"reason\": \"確認右手將針頭插入針架上的針頭套時，是否為單手操作且左手未碰觸針頭套\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 8.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 20746,
+  "cached_input_tokens": 17814,
+  "output_tokens": 192,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@300.5-307（hands_box，n=9）#0=05:00.5、#1=05:01.3、#2=05:02.1、#3=05:02.9、#4=05:03.8、#5=05:04.6、#6=05:05.4、#7=05:06.2、#8=05:07.0",
+   "zoom@302.6/303.2/303.8/304.4 region=[0.100, 0.450, 0.700, 0.980]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"28b\", \"verdict\": \"正確\", \"explanation\": \"05:02.9–05:04.6 學生以右手持空針，單手將針頭插入立在針架上的針頭套中，左手放在檯面右側並未碰觸針頭套。\", \"times\": [[302.9, 304.6]], \"evidence\": [\"ov@300.5-307 #3\", \"ov@300.5-307 #4\", \"ov@300.5-307 #5\", \"zoom@303.2\", \"zoom@303.8\", \"zoom@304.4\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 120.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 19481,
+  "cached_input_tokens": 0,
+  "output_tokens": 422,
+  "thinking_tokens": 322,
+  "materials": [
+   "ov@212-218.5（hands_box，n=9）#0=03:32.0、#1=03:32.8、#2=03:33.6、#3=03:34.4、#4=03:35.2、#5=03:36.1、#6=03:36.9、#7=03:37.7、#8=03:38.5"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [214.8, 215.5, 216.3, 216.9], \"region\": [0.1, 0.45, 0.75, 0.95], \"reason\": \"放大確認右手單手將針頭套入針架上的針頭套，以及左手位置是否全程未碰觸針頭套\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 89.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 20736,
+  "cached_input_tokens": 0,
+  "output_tokens": 209,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@212-218.5（hands_box，n=9）#0=03:32.0、#1=03:32.8、#2=03:33.6、#3=03:34.4、#4=03:35.2、#5=03:36.1、#6=03:36.9、#7=03:37.7、#8=03:38.5",
+   "zoom@214.8/215.5/216.3/216.9 region=[0.100, 0.450, 0.750, 0.950]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"19b\", \"verdict\": \"正確\", \"explanation\": \"03:34.8–03:36.9 學生以右手單手持針筒，將針頭垂直向下插入立在桌面針架上的針頭套中；回套過程中左手全程停留在桌面 vial 上方，未碰觸針頭套。\", \"times\": [[214.8, 216.9]], \"evidence\": [\"ov@212-218.5 #3\", \"ov@212-218.5 #4\", \"ov@212-218.5 #5\", \"zoom@214.8\", \"zoom@215.5\", \"zoom@216.3\", \"zoom@216.9\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

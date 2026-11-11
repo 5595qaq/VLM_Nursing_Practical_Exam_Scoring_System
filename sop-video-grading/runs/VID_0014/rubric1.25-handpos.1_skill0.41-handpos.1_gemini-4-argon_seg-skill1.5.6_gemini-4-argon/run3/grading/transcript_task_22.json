@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 7.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 19666,
+  "cached_input_tokens": 0,
+  "output_tokens": 134,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@668-689（hands_box，n=9）#0=11:08.0、#1=11:10.6、#2=11:13.2、#3=11:15.9、#4=11:18.5、#5=11:21.1、#6=11:23.8、#7=11:26.4、#8=11:29.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [670.5, 671.5, 683.0, 684.0], \"region\": [0.35, 0.45, 0.75, 0.85], \"reason\": \"放大檢視兩次針頭刺入 vial 的瞬間（約 11:10.5-11:11.5 及 11:23.0-11:24.0），確認持針姿勢、插入位置及 vial 是否置於桌面\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 10.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 20909,
+  "cached_input_tokens": 18243,
+  "output_tokens": 497,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@668-689（hands_box，n=9）#0=11:08.0、#1=11:10.6、#2=11:13.2、#3=11:15.9、#4=11:18.5、#5=11:21.1、#6=11:23.8、#7=11:26.4、#8=11:29.0",
+   "zoom@670.5/671.5/683/684 region=[0.350, 0.450, 0.750, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"22b\", \"verdict\": \"正確\", \"explanation\": \"學生插針兩次（11:10.5–11:11.5 及 11:23.0–11:24.0），兩次皆以右手拇指、食指、中指持毛筆方式握住針筒外管，針筒垂直向下插入 vial，手指未碰觸針頭、針座及活塞柄內側。\", \"times\": [[670.5, 671.5], [683.0, 684.0]], \"evidence\": [\"zoom@670.5\", \"zoom@671.5\", \"zoom@683\", \"zoom@684\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"22c\", \"verdict\": \"正確\", \"explanation\": \"11:11.5 與 11:24.0 兩次插針時，針頭皆刺入 vial 橡皮塞中心。\", \"times\": [[670.5, 671.5], [683.0, 684.0]], \"evidence\": [\"zoom@670.5\", \"zoom@671.5\", \"zoom@683\", \"zoom@684\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"22d\", \"verdict\": \"正確\", \"explanation\": \"11:10.5–11:11.5 與 11:23.0–11:24.0 兩次插針時，vial 皆放在治療車檯面上，以左手固定瓶身、右手持針筒垂直刺入。\", \"times\": [[670.5, 671.5], [683.0, 684.0]], \"evidence\": [\"zoom@670.5\", \"zoom@671.5\", \"zoom@683\", \"zoom@684\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

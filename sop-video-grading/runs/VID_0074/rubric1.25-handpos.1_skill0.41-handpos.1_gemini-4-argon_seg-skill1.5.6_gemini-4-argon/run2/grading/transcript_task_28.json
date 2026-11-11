@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 149.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 19512,
+  "cached_input_tokens": 17463,
+  "output_tokens": 325,
+  "thinking_tokens": 221,
+  "materials": [
+   "ov@305-314.5（hands_box，n=9）#0=05:05.0、#1=05:06.2、#2=05:07.4、#3=05:08.6、#4=05:09.8、#5=05:10.9、#6=05:12.1、#7=05:13.3、#8=05:14.5"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [309.5, 310.5, 311.5, 312.5], \"region\": [0.15, 0.3, 0.85, 0.65], \"reason\": \"放大確認 05:09.5–05:12.5 回套時雙手位置及針頭套是否拿在手上\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 183.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 20753,
+  "cached_input_tokens": 0,
+  "output_tokens": 202,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@305-314.5（hands_box，n=9）#0=05:05.0、#1=05:06.2、#2=05:07.4、#3=05:08.6、#4=05:09.8、#5=05:10.9、#6=05:12.1、#7=05:13.3、#8=05:14.5",
+   "zoom@309.5/310.5/311.5/312.5 region=[0.150, 0.300, 0.850, 0.650]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"28b\", \"verdict\": \"錯誤\", \"explanation\": \"05:09.5–05:12.5 學生左手拿著針頭套舉在胸前，右手持空針將針頭插入左手的針頭套中，為雙手拿在空中回套，未將針頭套放在桌上或針架上單手回套。\", \"times\": [[309.5, 312.5]], \"evidence\": [\"ov@305-314.5 #4\", \"ov@305-314.5 #5\", \"zoom@309.5\", \"zoom@310.5\", \"zoom@311.5\", \"zoom@312.5\"], \"confidence\": 0.98, \"reason\": null}]}",
+  "errors": []
+ }
+]

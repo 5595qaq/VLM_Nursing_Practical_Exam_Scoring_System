@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 6.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 19524,
+  "cached_input_tokens": 0,
+  "output_tokens": 93,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@199-208（hands_box，n=9）#0=03:19.0、#1=03:20.1、#2=03:21.2、#3=03:22.4、#4=03:23.5、#5=03:24.6、#6=03:25.8、#7=03:26.9、#8=03:28.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [202.4, 203.0, 203.5, 204.6], \"region\": [0.3, 0.5, 0.8, 0.95], \"reason\": \"確認右手將針頭插入針架上的針頭套時，左手的位置以及是否有觸碰針頭套\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 12.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 20747,
+  "cached_input_tokens": 17814,
+  "output_tokens": 200,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@199-208（hands_box，n=9）#0=03:19.0、#1=03:20.1、#2=03:21.2、#3=03:22.4、#4=03:23.5、#5=03:24.6、#6=03:25.8、#7=03:26.9、#8=03:28.0",
+   "zoom@202.4/203/203.5/204.6 region=[0.300, 0.500, 0.800, 0.950]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"19b\", \"verdict\": \"正確\", \"explanation\": \"03:22.4–03:24.6 針頭套立在桌面針架上，學生以右手單手持針筒將針頭由上往下插入針頭套，左手全程放在一旁桌面上，未碰觸針頭套。\", \"times\": [[202.4, 204.6]], \"evidence\": [\"ov@199-208 #3\", \"ov@199-208 #4\", \"ov@199-208 #5\", \"zoom@202.4\", \"zoom@203\", \"zoom@203.5\", \"zoom@204.6\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

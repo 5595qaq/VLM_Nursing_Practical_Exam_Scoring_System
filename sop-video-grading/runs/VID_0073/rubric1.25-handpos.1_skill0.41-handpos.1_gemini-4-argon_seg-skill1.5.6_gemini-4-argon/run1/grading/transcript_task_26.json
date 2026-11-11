@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 63.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 19498,
+  "cached_input_tokens": 0,
+  "output_tokens": 82,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@307.8-356.5（hands_box，n=9）#0=05:07.8、#1=05:13.9、#2=05:20.0、#3=05:26.1、#4=05:32.1、#5=05:38.2、#6=05:44.3、#7=05:50.4、#8=05:56.5"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [313.9, 320.0, 332.1, 350.4], \"region\": [0.35, 0.15, 0.65, 0.55], \"reason\": \"確認針筒是否垂直、針頭向上\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 9.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 20742,
+  "cached_input_tokens": 17814,
+  "output_tokens": 218,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@307.8-356.5（hands_box，n=9）#0=05:07.8、#1=05:13.9、#2=05:20.0、#3=05:26.1、#4=05:32.1、#5=05:38.2、#6=05:44.3、#7=05:50.4、#8=05:56.5",
+   "zoom@313.9/320/332.1/350.4 region=[0.350, 0.150, 0.650, 0.550]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"26b\", \"verdict\": \"正確\", \"explanation\": \"於 05:13.9–05:50.4 期間（如 05:13.9、05:20.0、05:32.1、05:50.4），學生將針筒垂直拿起且針頭向上。\", \"times\": [[313.9, 350.4]], \"evidence\": [\"ov@307.8-356.5 #1\", \"ov@307.8-356.5 #2\", \"ov@307.8-356.5 #7\", \"zoom@313.9\", \"zoom@320\", \"zoom@332.1\", \"zoom@350.4\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

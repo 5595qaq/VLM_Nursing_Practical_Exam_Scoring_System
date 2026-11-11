@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 18.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 19602,
+  "cached_input_tokens": 0,
+  "output_tokens": 268,
+  "thinking_tokens": 141,
+  "materials": [
+   "ov@211-219.5（hands_box，n=9）#0=03:31.0、#1=03:32.1、#2=03:33.1、#3=03:34.2、#4=03:35.2、#5=03:36.3、#6=03:37.4、#7=03:38.4、#8=03:39.5"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [213.1, 213.6, 214.0, 214.4], \"region\": [0.3, 0.45, 0.7, 0.95], \"reason\": \"放大查看 03:33.1–03:34.4 針頭刺入 vial 時的持針姿勢（22b）、刺入位置是否為中心（22c）及 vial 是否放在桌面上（22d）。\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 13.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 20834,
+  "cached_input_tokens": 17814,
+  "output_tokens": 376,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@211-219.5（hands_box，n=9）#0=03:31.0、#1=03:32.1、#2=03:33.1、#3=03:34.2、#4=03:35.2、#5=03:36.3、#6=03:37.4、#7=03:38.4、#8=03:39.5",
+   "zoom@213.1/213.6/214/214.4 region=[0.300, 0.450, 0.700, 0.950]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"22b\", \"verdict\": \"正確\", \"explanation\": \"03:33.1–03:34.0 右手以拇指、食指、中指持毛筆方式握住針筒外管，針筒垂直向下刺入 vial，手指未碰觸針頭、針座及活塞柄內側。\", \"times\": [[213.1, 214.0]], \"evidence\": [\"zoom@213.1\", \"zoom@213.6\", \"zoom@214\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"22c\", \"verdict\": \"正確\", \"explanation\": \"03:33.6–03:34.4 針頭垂直插入 vial 瓶口橡皮塞中心。\", \"times\": [[213.6, 214.4]], \"evidence\": [\"zoom@213.6\", \"zoom@214\", \"zoom@214.4\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"22d\", \"verdict\": \"正確\", \"explanation\": \"03:33.1–03:34.4 vial 放在桌面上，左手固定瓶身，右手持針筒垂直刺入。\", \"times\": [[213.1, 214.4]], \"evidence\": [\"zoom@213.1\", \"zoom@213.6\", \"zoom@214.4\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
