@@ -42,13 +42,13 @@ def test_rubric_classification_matches_the_plan():
     # rolling the vial is watched on a clip, not inferred from the step being located (rubric 1.8)
     assert by_id["20a"]["category"] == "visual" and by_id["20a"]["key"] is True
     assert by_id["20a"]["window_steps"] == [20] and by_id["20a"]["clip"] is True
-    # only fixing after the syringe is out of the wrapper counts (teacher 2026-11-08, rubric 1.25-handpos.1)
+    # only fixing after the syringe is out of the wrapper counts (teacher 2026-11-08, rubric 1.29)
     assert "取出時" not in by_id["10b"]["text"] and "取出後" in by_id["10b"]["text"]
     assert "隔著包裝或在包裝裡旋轉不算" in by_id["10b"]["text"]
     assert by_id["10b"]["category"] == "visual" and by_id["10b"]["key"] is False
     # rubric 1.18-pkgspan.1: the agent gets the wrapper spans and judges before and after removal
     assert "手拿空針包裝時段" in by_id["10b"]["text"] and by_id["10b"]["package_spans"] is True
-    # teacher 2026-11-08 (rubric 1.25-handpos.1): vial on the table, two-handed recapping and drawing below
+    # teacher 2026-11-08 (rubric 1.29): vial on the table, two-handed recapping and drawing below
     # vertical fail the whole step
     for cid in ("18d", "22d", "19b", "28b", "24c"):
         assert by_id[cid]["category"] == "visual" and by_id[cid]["key"] is True
