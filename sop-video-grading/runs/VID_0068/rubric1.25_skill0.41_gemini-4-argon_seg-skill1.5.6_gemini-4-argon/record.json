@@ -1,0 +1,46 @@
+{
+ "video_id": "VID_0068",
+ "versions": {
+  "rubric": "1.25",
+  "skill": "0.41",
+  "model": "gemini-4-argon",
+  "segmentation": "skill1.5.6_gemini-4-argon"
+ },
+ "video_sha256": "8085757c3af5200365e59173def8a96c001184a064ff940b32e045df7138d61c",
+ "runs": [
+  {
+   "run": 1,
+   "by": "5595QAQ",
+   "date": "2026-11-09",
+   "commit": "35fb4a13d5f9c889cc382530f76068e471d847e2",
+   "video_sha256": "8085757c3af5200365e59173def8a96c001184a064ff940b32e045df7138d61c",
+   "steps": [],
+   "failed_tasks": [
+    {
+     "task": "1",
+     "error": "TimeoutError: "
+    }
+   ],
+   "segmentation": "sop-video-skill 1.5.6 gemini-4-argon",
+   "usage": {
+    "input_tokens": 0,
+    "cached_input_tokens": 0,
+    "output_tokens": 0,
+    "thinking_tokens": 0
+   },
+   "segmentation_usage": {
+    "input_tokens": 820240,
+    "cached_input_tokens": 388125,
+    "output_tokens": 77657,
+    "thinking_tokens": 1139
+   },
+   "timing": {
+    "started_at": "2026-11-09T15:34:50+00:00",
+    "segmentation_seconds": 1541.8,
+    "grading_seconds": 902.8,
+    "total_seconds": 2444.7,
+    "checkpoints_found": true
+   }
+  }
+ ]
+}

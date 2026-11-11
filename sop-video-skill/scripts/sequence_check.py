@@ -7,14 +7,17 @@ usage: python sequence_check.py result.json [--write]
 
 Pairs that SOP allows to overlap (outer/inner steps, see sop_steps.md) are ignored:
   15/16/17 overlap (16 is the outer step, 17 spans the whole 15/16 box and may start before 15) ;
-  23 contains 24 ; 25/26/27 overlap ; 2 and 4 (reading the record sheet) may overlap 3 (looking at the vial), so those two pairs are
+  23 contains 24 ; 25/26/27 overlap ; 4 (checking against the record sheet) may overlap 3 (looking at the vial), so that pair is
   ignored only when their spans do overlap.
+  Preparations before the second read are allowed.
+  Every later step must wait for the first washing to end, even if washing started first.
 """
 import argparse
 import json
 
 ALLOWED = {frozenset(p) for p in [(15, 16), (15, 17), (16, 17), (23, 24), (25, 26), (25, 27), (26, 27)]}
-ALLOWED_IF_OVERLAPPING = {frozenset(p) for p in [(2, 3), (3, 4)]}
+ALLOWED.update(frozenset((4, sid)) for sid in range(5, 24))
+ALLOWED_IF_OVERLAPPING = {frozenset(p) for p in [(3, 4)]}
 
 
 def first_starts(steps):
@@ -36,8 +39,26 @@ def check(res):
     st, reps = first_starts(res["steps"])
     found = []
     ids = sorted(st)
+    if 1 in st:
+        wash_end = min(reps[1])[1]
+        for sid in ids:
+            if sid > 1 and st[sid] < wash_end:
+                found.append({"type": "out_of_order", "start": st[sid], "end": wash_end, "steps": [1, sid],
+                              "description": f"步驟 {sid} 於 {st[sid]:g}s 開始，早於洗手結束（{wash_end:g}s）",
+                              "evidence": "sequence_check.py 比對後續步驟起點與洗手終點",
+                              "confidence": 0.5, "auto": True})
+    if 2 in st:
+        vial_time = max(end for _, end in reps[2])
+        for sid in (3, 4):
+            if sid in st and st[sid] < vial_time:
+                found.append({"type": "out_of_order", "start": st[sid], "end": vial_time, "steps": [2, sid],
+                              "description": f"步驟 {sid} 於 {st[sid]:g}s 開始，早於步驟 2 結束（{vial_time:g}s）",
+                              "evidence": "sequence_check.py 比對步驟 2 終點與後續核對起點",
+                              "confidence": 0.5, "auto": True})
     for i in ids:
         for j in ids:
+            if i == 1 or (i == 2 and j in (3, 4)):
+                continue
             pair = frozenset((i, j))
             if pair in ALLOWED_IF_OVERLAPPING and overlaps(reps[i], reps[j]):
                 continue

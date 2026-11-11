@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 10.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 26144,
+  "cached_input_tokens": 0,
+  "output_tokens": 92,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@309-356.5（context box，有聲音；片段內 00:00 ＝ 影片 05:09.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [311.5, 313.5, 327.0, 348.0], \"region\": [0.35, 0.35, 0.65, 0.75], \"reason\": \"確認白色方形酒精棉片墊在針頭與針筒接合處（針柄）\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 10.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 27382,
+  "cached_input_tokens": 17247,
+  "output_tokens": 380,
+  "thinking_tokens": 171,
+  "materials": [
+   "clip@309-356.5（context box，有聲音；片段內 00:00 ＝ 影片 05:09.0）",
+   "zoom@311.5/313.5/327/348 region=[0.350, 0.350, 0.650, 0.750]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"25a\", \"verdict\": \"正確\", \"explanation\": \"05:12.0–05:54.0（clip@309-356.5 片段內 00:03.0–00:45.0）學生拿起白色方形酒精棉片墊在針頭與針筒接合處（針柄），於 zoom@313.5、zoom@327、zoom@348 清楚可見白色方形酒精棉片墊在針頭與針筒交接處。\", \"times\": [[312.0, 354.0]], \"evidence\": [\"clip@309-356.5\", \"zoom@313.5\", \"zoom@327\", \"zoom@348\"], \"confidence\": 1.0, \"reason\": null}]}",
+  "errors": []
+ }
+]
