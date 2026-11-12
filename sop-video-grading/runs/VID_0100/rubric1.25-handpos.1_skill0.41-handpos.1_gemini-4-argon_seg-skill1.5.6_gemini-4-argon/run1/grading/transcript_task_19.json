@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 5.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 19503,
+  "cached_input_tokens": 0,
+  "output_tokens": 147,
+  "thinking_tokens": 55,
+  "materials": [
+   "ov@207.5-213.5（hands_box，n=9）#0=03:27.5、#1=03:28.2、#2=03:29.0、#3=03:29.8、#4=03:30.5、#5=03:31.2、#6=03:32.0、#7=03:32.8、#8=03:33.5"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [209.8, 210.5, 211.2, 211.5], \"region\": [0.22, 0.45, 0.72, 0.95], \"reason\": \"放大確認單手將針頭插回針架上的針頭套，以及左手位置\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 10.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 20751,
+  "cached_input_tokens": 0,
+  "output_tokens": 225,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@207.5-213.5（hands_box，n=9）#0=03:27.5、#1=03:28.2、#2=03:29.0、#3=03:29.8、#4=03:30.5、#5=03:31.2、#6=03:32.0、#7=03:32.8、#8=03:33.5",
+   "zoom@209.8/210.5/211.2/211.5 region=[0.220, 0.450, 0.720, 0.950]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"19b\", \"verdict\": \"正確\", \"explanation\": \"03:29.8–03:31.5 針頭套立在桌面上的透明針架內，學生右手單手持針筒將針頭由上往下插入針架上的針頭套中並壓緊，左手全程扶著桌上的 vial 瓶，完全沒有觸碰針頭套。\", \"times\": [[209.8, 211.5]], \"evidence\": [\"ov@207.5-213.5 #3\", \"ov@207.5-213.5 #4\", \"ov@207.5-213.5 #5\", \"zoom@209.8\", \"zoom@210.5\", \"zoom@211.2\", \"zoom@211.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

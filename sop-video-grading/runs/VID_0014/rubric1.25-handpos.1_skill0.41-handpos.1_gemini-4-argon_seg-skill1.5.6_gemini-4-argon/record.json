@@ -1,0 +1,147 @@
+{
+ "video_id": "VID_0014",
+ "versions": {
+  "rubric": "1.25-handpos.1",
+  "skill": "0.41-handpos.1",
+  "model": "gemini-4-argon",
+  "segmentation": "skill1.5.6_gemini-4-argon"
+ },
+ "video_sha256": "a0b4e06f2741029494c628e2feed4860eb66d611bdd87fdf82ac9d6e2f245f05",
+ "runs": [
+  {
+   "run": 1,
+   "by": "余亮岑",
+   "date": "2026-11-09",
+   "commit": "e23a64ea115ad11d975fb7a64b5cbaf3d7850d85",
+   "video_sha256": "a0b4e06f2741029494c628e2feed4860eb66d611bdd87fdf82ac9d6e2f245f05",
+   "steps": [
+    12
+   ],
+   "failed_tasks": [
+    {
+     "task": "10",
+     "error": "SkillRunError: clip.py failed (1):  70, in main\n    info = cut(a.video, a.start, a.end, a.out, box, a.width)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/sop-video-grading/scripts/clip.py\", line 51, in cut\n    subprocess.run(cmd + [out], check=True)\n  File \"/usr/local/lib/python3.11/subprocess.py\", line 571, in run\n    raise CalledProcessError(retcode, process.args,\nsubprocess.CalledProcessError: Command '['ffmpeg', '-y', '-v', 'error', '-ss', '284.000', '-i', '/work/han"
+    },
+    {
+     "task": "13",
+     "error": "ClientError: 400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': 'The provided file is malformed or corrupted and could not be decoded.', 'status': 'INVALID_ARGUMENT'}}"
+    },
+    {
+     "task": "14",
+     "error": "SkillRunError: sheets.py failed (1): Traceback (most recent call last):\n  File \"/sop-video-skill/scripts/sheets.py\", line 50, in <module>\n    main()\n  File \"/sop-video-skill/scripts/sheets.py\", line 40, in main\n    imgs.append(label(crop_norm(grab(a.video, t), box), f\"#{k} {fmt_t(t)}\"))\n                                ^^^^^^^^^^^^^^^^\n  File \"/sop-video-skill/scripts/_video.py\", line 106, in grab\n    raise RuntimeError(f\"cannot grab frame at {t}s from {path}\")\nRuntimeError: cannot grab frame at "
+    },
+    {
+     "task": "18",
+     "error": "SkillRunError: sheets.py failed (1): Traceback (most recent call last):\n  File \"/sop-video-skill/scripts/sheets.py\", line 50, in <module>\n    main()\n  File \"/sop-video-skill/scripts/sheets.py\", line 40, in main\n    imgs.append(label(crop_norm(grab(a.video, t), box), f\"#{k} {fmt_t(t)}\"))\n                                ^^^^^^^^^^^^^^^^\n  File \"/sop-video-skill/scripts/_video.py\", line 106, in grab\n    raise RuntimeError(f\"cannot grab frame at {t}s from {path}\")\nRuntimeError: cannot grab frame at "
+    },
+    {
+     "task": "19",
+     "error": "SkillRunError: sheets.py failed (1): Traceback (most recent call last):\n  File \"/sop-video-skill/scripts/sheets.py\", line 50, in <module>\n    main()\n  File \"/sop-video-skill/scripts/sheets.py\", line 40, in main\n    imgs.append(label(crop_norm(grab(a.video, t), box), f\"#{k} {fmt_t(t)}\"))\n                                ^^^^^^^^^^^^^^^^\n  File \"/sop-video-skill/scripts/_video.py\", line 106, in grab\n    raise RuntimeError(f\"cannot grab frame at {t}s from {path}\")\nRuntimeError: cannot grab frame at "
+    },
+    {
+     "task": "22",
+     "error": "SkillRunError: sheets.py failed (1): Traceback (most recent call last):\n  File \"/sop-video-skill/scripts/sheets.py\", line 50, in <module>\n    main()\n  File \"/sop-video-skill/scripts/sheets.py\", line 40, in main\n    imgs.append(label(crop_norm(grab(a.video, t), box), f\"#{k} {fmt_t(t)}\"))\n                                ^^^^^^^^^^^^^^^^\n  File \"/sop-video-skill/scripts/_video.py\", line 106, in grab\n    raise RuntimeError(f\"cannot grab frame at {t}s from {path}\")\nRuntimeError: cannot grab frame at "
+    },
+    {
+     "task": "24",
+     "error": "SkillRunError: sheets.py failed (1): Traceback (most recent call last):\n  File \"/sop-video-skill/scripts/sheets.py\", line 50, in <module>\n    main()\n  File \"/sop-video-skill/scripts/sheets.py\", line 40, in main\n    imgs.append(label(crop_norm(grab(a.video, t), box), f\"#{k} {fmt_t(t)}\"))\n                                ^^^^^^^^^^^^^^^^\n  File \"/sop-video-skill/scripts/_video.py\", line 106, in grab\n    raise RuntimeError(f\"cannot grab frame at {t}s from {path}\")\nRuntimeError: cannot grab frame at "
+    },
+    {
+     "task": "23-24",
+     "error": "SkillRunError: sheets.py failed (1): Traceback (most recent call last):\n  File \"/sop-video-skill/scripts/sheets.py\", line 50, in <module>\n    main()\n  File \"/sop-video-skill/scripts/sheets.py\", line 40, in main\n    imgs.append(label(crop_norm(grab(a.video, t), box), f\"#{k} {fmt_t(t)}\"))\n                                ^^^^^^^^^^^^^^^^\n  File \"/sop-video-skill/scripts/_video.py\", line 106, in grab\n    raise RuntimeError(f\"cannot grab frame at {t}s from {path}\")\nRuntimeError: cannot grab frame at "
+    },
+    {
+     "task": "26",
+     "error": "SkillRunError: sheets.py failed (1): Traceback (most recent call last):\n  File \"/sop-video-skill/scripts/sheets.py\", line 50, in <module>\n    main()\n  File \"/sop-video-skill/scripts/sheets.py\", line 40, in main\n    imgs.append(label(crop_norm(grab(a.video, t), box), f\"#{k} {fmt_t(t)}\"))\n                                ^^^^^^^^^^^^^^^^\n  File \"/sop-video-skill/scripts/_video.py\", line 106, in grab\n    raise RuntimeError(f\"cannot grab frame at {t}s from {path}\")\nRuntimeError: cannot grab frame at "
+    },
+    {
+     "task": "28",
+     "error": "SkillRunError: sheets.py failed (1): Traceback (most recent call last):\n  File \"/sop-video-skill/scripts/sheets.py\", line 50, in <module>\n    main()\n  File \"/sop-video-skill/scripts/sheets.py\", line 40, in main\n    imgs.append(label(crop_norm(grab(a.video, t), box), f\"#{k} {fmt_t(t)}\"))\n                                ^^^^^^^^^^^^^^^^\n  File \"/sop-video-skill/scripts/_video.py\", line 106, in grab\n    raise RuntimeError(f\"cannot grab frame at {t}s from {path}\")\nRuntimeError: cannot grab frame at "
+    }
+   ],
+   "segmentation": "reused segmentation.json of rubric1.22_skill0.37_gemini-4-argon_seg-skill1.5.6_gemini-4-argon",
+   "usage": {
+    "input_tokens": 277186,
+    "cached_input_tokens": 166990,
+    "output_tokens": 2688,
+    "thinking_tokens": 1341
+   },
+   "timing": {
+    "started_at": "2026-11-09T10:55:20+00:00",
+    "grading_seconds": 173.1,
+    "total_seconds": 685.7
+   }
+  },
+  {
+   "run": 2,
+   "by": "余亮岑",
+   "date": "2026-11-09",
+   "commit": "e23a64ea115ad11d975fb7a64b5cbaf3d7850d85",
+   "video_sha256": "a0b4e06f2741029494c628e2feed4860eb66d611bdd87fdf82ac9d6e2f245f05",
+   "steps": [
+    10,
+    14,
+    18,
+    19,
+    24,
+    26,
+    28
+   ],
+   "failed_tasks": [
+    {
+     "task": "13",
+     "error": "ClientError: 400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': 'The provided file is malformed or corrupted and could not be decoded.', 'status': 'INVALID_ARGUMENT'}}"
+    },
+    {
+     "task": "22",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    }
+   ],
+   "segmentation": "recorded segmentation.json",
+   "usage": {
+    "input_tokens": 631409,
+    "cached_input_tokens": 348325,
+    "output_tokens": 5942,
+    "thinking_tokens": 1951
+   },
+   "timing": {
+    "started_at": "2026-11-09T12:26:48+00:00",
+    "grading_seconds": 490.7,
+    "total_seconds": 854.8,
+    "checkpoints_found": true
+   }
+  },
+  {
+   "run": 3,
+   "by": "余亮岑",
+   "date": "2026-11-09",
+   "commit": "e23a64ea115ad11d975fb7a64b5cbaf3d7850d85",
+   "video_sha256": "a0b4e06f2741029494c628e2feed4860eb66d611bdd87fdf82ac9d6e2f245f05",
+   "steps": [
+    13,
+    22
+   ],
+   "failed_tasks": [],
+   "segmentation": "recorded segmentation.json",
+   "usage": {
+    "input_tokens": 151959,
+    "cached_input_tokens": 72047,
+    "output_tokens": 1501,
+    "thinking_tokens": 98
+   },
+   "timing": {
+    "started_at": "2026-11-09T12:43:02+00:00",
+    "grading_seconds": 408.1,
+    "total_seconds": 408.2
+   }
+  }
+ ],
+ "segmentation_from": {
+  "record": "rubric1.22_skill0.37_gemini-4-argon_seg-skill1.5.6_gemini-4-argon",
+  "run": 1,
+  "date": "2026-11-02",
+  "by": "5595QAQ",
+  "commit": "25bcacfef1b506b743054e062e650544b52b5725",
+  "segmentation": "sop-video-skill 1.5.6 gemini-4-argon"
+ }
+}

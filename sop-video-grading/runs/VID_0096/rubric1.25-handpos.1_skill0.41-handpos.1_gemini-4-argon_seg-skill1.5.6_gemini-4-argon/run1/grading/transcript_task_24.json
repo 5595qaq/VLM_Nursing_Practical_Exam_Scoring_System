@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 21.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 19497,
+  "cached_input_tokens": 0,
+  "output_tokens": 104,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@289-318（hands_box，n=9）#0=04:49.0、#1=04:52.6、#2=04:56.2、#3=04:59.9、#4=05:03.5、#5=05:07.1、#6=05:10.8、#7=05:14.4、#8=05:18.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [292.6, 299.9, 307.1, 314.4], \"region\": [0.35, 0.0, 0.70, 0.35], \"reason\": \"放大檢視抽藥液時右手持握針心尾端的手勢，確認是否僅持環狀處而未碰觸外露推桿\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 85.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 20748,
+  "cached_input_tokens": 17849,
+  "output_tokens": 210,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@289-318（hands_box，n=9）#0=04:49.0、#1=04:52.6、#2=04:56.2、#3=04:59.9、#4=05:03.5、#5=05:07.1、#6=05:10.8、#7=05:14.4、#8=05:18.0",
+   "zoom@292.6/299.9/307.1/314.4 region=[0.350, 0.000, 0.700, 0.350]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"24a\", \"verdict\": \"正確\", \"explanation\": \"於 04:52.6–05:14.4 抽藥過程中，右手持針心尾端環狀處往下拉，拇指頂在針筒翼緣，未碰觸外露的針心推桿。\", \"times\": [[292.6, 314.4]], \"evidence\": [\"ov@289-318 #1\", \"ov@289-318 #3\", \"ov@289-318 #5\", \"ov@289-318 #7\", \"zoom@292.6\", \"zoom@299.9\", \"zoom@307.1\", \"zoom@314.4\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

@@ -1,0 +1,52 @@
+{
+ "video_id": "VID_0001",
+ "versions": {
+  "rubric": "1.25-handpos.1",
+  "skill": "0.41-handpos.1",
+  "model": "gemini-4-argon",
+  "segmentation": "skill1.5.6_gemini-4-argon"
+ },
+ "video_sha256": "7893e4266b9987dadff50e02e192a3d1c09120164320c3dc2e298720d7687d18",
+ "runs": [
+  {
+   "run": 1,
+   "by": "余亮岑",
+   "date": "2026-11-09",
+   "commit": "e23a64ea115ad11d975fb7a64b5cbaf3d7850d85",
+   "video_sha256": "7893e4266b9987dadff50e02e192a3d1c09120164320c3dc2e298720d7687d18",
+   "steps": [
+    10,
+    12,
+    13,
+    14,
+    18,
+    19,
+    22,
+    24,
+    26,
+    28
+   ],
+   "failed_tasks": [],
+   "segmentation": "reused segmentation.json of rubric1.22-pack4e.2_skill0.37-pack4e.2_gemini-4-argon_seg-skill1.5.6_gemini-4-argon",
+   "usage": {
+    "input_tokens": 720947,
+    "cached_input_tokens": 377292,
+    "output_tokens": 7943,
+    "thinking_tokens": 2361
+   },
+   "timing": {
+    "started_at": "2026-11-09T08:27:53+00:00",
+    "grading_seconds": 438.1,
+    "total_seconds": 690.8
+   }
+  }
+ ],
+ "segmentation_from": {
+  "record": "rubric1.22-pack4e.2_skill0.37-pack4e.2_gemini-4-argon_seg-skill1.5.6_gemini-4-argon",
+  "run": 1,
+  "date": "2026-11-04",
+  "by": "5595QAQ",
+  "commit": "0000b27a3944a88e911fed4764731a7d9647baf2",
+  "segmentation": "sop-video-skill 1.5.6 gemini-4-argon"
+ }
+}

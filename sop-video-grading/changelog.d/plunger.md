@@ -1,1 +1,0 @@
-- `.github/CODEOWNERS`：`criteria/06-plunger.md` 由 @od3w 負責（issue #139；#139 的規則修改已在 0.41 完成，這個分支不改規則）。

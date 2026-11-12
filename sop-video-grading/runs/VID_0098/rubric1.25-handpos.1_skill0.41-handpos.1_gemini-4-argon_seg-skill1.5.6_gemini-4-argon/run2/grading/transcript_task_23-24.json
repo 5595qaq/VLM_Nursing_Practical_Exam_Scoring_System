@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 7.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 19528,
+  "cached_input_tokens": 0,
+  "output_tokens": 323,
+  "thinking_tokens": 239,
+  "materials": [
+   "ov@257.6-296（hands_box，n=9）#0=04:17.6、#1=04:22.4、#2=04:27.2、#3=04:32.0、#4=04:36.8、#5=04:41.6、#6=04:46.4、#7=04:51.2、#8=04:56.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [267.2, 276.8, 281.6, 286.4], \"region\": [0.3, 0.0, 0.75, 0.55], \"reason\": \"放大確認抽藥液時 vial 與空針是否保持垂直\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 5.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 20776,
+  "cached_input_tokens": 17814,
+  "output_tokens": 220,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@257.6-296（hands_box，n=9）#0=04:17.6、#1=04:22.4、#2=04:27.2、#3=04:32.0、#4=04:36.8、#5=04:41.6、#6=04:46.4、#7=04:51.2、#8=04:56.0",
+   "zoom@267.2/276.8/281.6/286.4 region=[0.300, 0.000, 0.750, 0.550]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"24c\", \"verdict\": \"正確\", \"explanation\": \"04:22.4–04:51.2 學生將 vial 倒置舉至臉部高度抽取藥液，於 04:27.2、04:36.8、04:41.6、04:46.4 放大畫面中清楚可見空針全程保持垂直朝上，未低於 90 度。\", \"times\": [[262.4, 291.2]], \"evidence\": [\"ov@257.6-296 #1\", \"ov@257.6-296 #7\", \"zoom@267.2\", \"zoom@276.8\", \"zoom@281.6\", \"zoom@286.4\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

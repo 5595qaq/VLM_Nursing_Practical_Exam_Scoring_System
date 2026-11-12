@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 5.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 19512,
+  "cached_input_tokens": 17463,
+  "output_tokens": 106,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@359.5-404（hands_box，n=9）#0=05:59.5、#1=06:05.1、#2=06:10.6、#3=06:16.2、#4=06:21.8、#5=06:27.3、#6=06:32.9、#7=06:38.4、#8=06:44.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [370.6, 381.8, 392.9, 398.4], \"region\": [0.35, 0.0, 0.75, 0.45], \"reason\": \"放大檢視抽藥液過程中（06:10.6–06:38.4）空針與倒置 vial 是否保持垂直。\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 5.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 20748,
+  "cached_input_tokens": 17848,
+  "output_tokens": 193,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@359.5-404（hands_box，n=9）#0=05:59.5、#1=06:05.1、#2=06:10.6、#3=06:16.2、#4=06:21.8、#5=06:27.3、#6=06:32.9、#7=06:38.4、#8=06:44.0",
+   "zoom@370.6/381.8/392.9/398.4 region=[0.350, 0.000, 0.750, 0.450]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"24c\", \"verdict\": \"正確\", \"explanation\": \"06:05–06:38 將 vial 倒置舉起抽取藥液時，空針在下方全程保持垂直、針頭朝上，未低於 90 度。\", \"times\": [[365.1, 398.4]], \"evidence\": [\"ov@359.5-404 #1\", \"ov@359.5-404 #2\", \"ov@359.5-404 #3\", \"zoom@370.6\", \"zoom@381.8\", \"zoom@392.9\", \"zoom@398.4\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

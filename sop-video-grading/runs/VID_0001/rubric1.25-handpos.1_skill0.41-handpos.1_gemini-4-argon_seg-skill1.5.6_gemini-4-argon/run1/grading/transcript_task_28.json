@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 16.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 19510,
+  "cached_input_tokens": 0,
+  "output_tokens": 95,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@545.5-554.6（hands_box，n=9）#0=09:05.5、#1=09:06.6、#2=09:07.8、#3=09:08.9、#4=09:10.0、#5=09:11.2、#6=09:12.3、#7=09:13.5、#8=09:14.6"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [548.9, 550.0, 551.2, 552.3], \"region\": [0.1, 0.45, 0.75, 0.85], \"reason\": \"放大查看右手單手將空針回套至針架上針頭套的過程，以及左手的位置\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 7.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 20744,
+  "cached_input_tokens": 17848,
+  "output_tokens": 344,
+  "thinking_tokens": 168,
+  "materials": [
+   "ov@545.5-554.6（hands_box，n=9）#0=09:05.5、#1=09:06.6、#2=09:07.8、#3=09:08.9、#4=09:10.0、#5=09:11.2、#6=09:12.3、#7=09:13.5、#8=09:14.6",
+   "zoom@548.9/550/551.2/552.3 region=[0.100, 0.450, 0.750, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"28b\", \"verdict\": \"正確\", \"explanation\": \"09:07–09:12 右手單手持空針，將針頭垂直插入立在治療盤針架上的針頭套內並壓緊，左手在旁整理棉片未碰觸針頭套，完成單手回套。\", \"times\": [[547.8, 552.3]], \"evidence\": [\"ov@545.5-554.6 #2\", \"zoom@548.9\", \"zoom@550\", \"zoom@551.2\", \"zoom@552.3\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
