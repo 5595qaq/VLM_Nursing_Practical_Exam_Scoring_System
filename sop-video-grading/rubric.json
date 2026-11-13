@@ -1,5 +1,5 @@
 {
-  "version": "1.29",
+  "version": "1.29-handpos22d.1",
   "description": "無菌抽藥技術－vial 粉劑 30 步評分標準。category：program＝由切分結果以程式判定；visual＝評分 agent 看畫面（audio=true 時連聲音一起聽）；not_visible＝影片看不到，固定輸出「無法判定」且不影響步驟判定。visual 的 window_steps＝要看的步驟區間；task＝同名的標準共用一個評分任務（兩條都不在搜尋、且區間相距不超過 10 秒時；否則各自一個任務）；search_steps＝[第一步, 最後一步]，切分沒找到該步時，改在這兩步之間（含）所有步驟的區間內找，且該步的切分 not_performed 不直接判錯誤；after_step=true＝動作可以發生在自己的步驟之後，該步的切分 not_performed 也不直接判錯誤。key=true 的標準錯誤時整步判「錯誤」。require_key_confirmation=true 時，關鍵標準須確認達標才可判整步正確或部分正確。cumulative_seconds=true 時，用 times 加總實際動作時間。",
   "steps": [
     {"step_id": 1, "text": "洗手。", "criteria": [
@@ -81,7 +81,7 @@
       {"id": "22a", "text": "將空氣打入 vial", "category": "program", "key": true, "rule": {"type": "detected"}},
       {"id": "22b", "text": "以持毛筆方式持針：拇指與食指、中指握住針筒外管，針筒一定要垂直向下插入，手指不碰觸針頭、針座及活塞柄內側（只判插針那一刻）", "category": "visual", "key": false, "window_steps": [22], "note": "老師 2026-11-08：一定要針筒垂直向下（VID_0119 步驟 22 vial 橫拿、針筒水平插入判錯誤），取消使用者 2026-11-01 暫定的「vial 可拿在手上」；vial 要不要放在桌上另外判（rubric 1.29）"},
       {"id": "22c", "text": "針頭插入 vial 中心", "category": "visual", "key": false, "window_steps": [22]},
-      {"id": "22d", "text": "vial 放在桌面上，一手固定、另一手持針筒垂直刺入（vial 拿離桌面不正確）", "category": "visual", "key": true, "window_steps": [22], "note": "老師 2026-11-08：藥瓶（vial）要放在桌面，一手固定、另一手持針筒垂直刺入；拿在空中不正確（針扎風險、針可能碰到瓶塞以外的部位、沒有支撐容易傾斜）。設為關鍵：老師在 VID_0091、0095、0119、0123 的步驟 18 都判整步錯誤，非關鍵會被合併成部分正確。訊息回覆：打入空氣（步驟 22）也一樣；稀釋液瓶照 12a 夾在手上，不適用（rubric 1.29）"}
+      {"id": "22d", "text": "vial 放在桌面上，一手固定、另一手持針筒垂直刺入並打入空氣；刺入或打入空氣時 vial 拿離桌面不正確（打完空氣後舉起倒置屬步驟 23）", "category": "visual", "key": true, "window_steps": [22], "note": "老師 2026-11-08：藥瓶（vial）要放在桌面，一手固定、另一手持針筒垂直刺入；拿在空中不正確（針扎風險、針可能碰到瓶塞以外的部位、沒有支撐容易傾斜）。設為關鍵：老師在 VID_0091、0095、0119、0123 的步驟 18 都判整步錯誤，非關鍵會被合併成部分正確。訊息回覆：打入空氣（步驟 22）也一樣；稀釋液瓶照 12a 夾在手上，不適用（rubric 1.29）。老師 2026-11-14（使用者轉述）：要放在桌上打空氣，刺入時在桌上、打空氣時把 vial 拿起來也錯誤（VID_0014、0072 步驟 22）；打完空氣後舉起倒置是步驟 23，不算（rubric 1.29-handpos22d.1）"}
     ]},
     {"step_id": 23, "text": "將Vial舉起，空針朝上，瓶口朝下。", "criteria": [
       {"id": "23a", "text": "將 vial 舉起倒置，空針朝上、瓶口朝下", "category": "program", "key": true, "rule": {"type": "detected"}}
