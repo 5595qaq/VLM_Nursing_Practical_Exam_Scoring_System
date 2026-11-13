@@ -225,8 +225,20 @@ def test_step10_fixing_wrong_is_step_wrong():
 
 
 def test_window_is_clipped_to_video(segmentation):
-    seg_step(segmentation, 30).update(start=399.0, end=400.0)
-    assert criterion(grade_from_segmentation(segmentation), "30a")["window"] == [397.0, 400.0]
+    segmentation["meta"]["duration"] = 300.0
+    seg_step(segmentation, 27).update(start=297.0, end=300.0)
+    assert criterion(grade_from_segmentation(segmentation), "27b")["window"] == [248.0, 300.0]
+
+
+def test_disposal_checks_video_end_even_if_step_30_is_missing(segmentation):
+    seg_step(segmentation, 30).update(status="not_performed", start=None, end=None, logical_window=None)
+    result = grade_from_segmentation(segmentation)
+    disposal = criterion(result, "30a")
+    assert disposal["verdict"] == "待判定"
+    assert disposal["window"] == [278.0, 400.0]
+    after = criterion(result, "30b")
+    assert after["verdict"] == "待判定"
+    assert after["window"] == disposal["window"]
 
 
 def test_not_visible_criterion_is_fixed_and_explained(segmentation):

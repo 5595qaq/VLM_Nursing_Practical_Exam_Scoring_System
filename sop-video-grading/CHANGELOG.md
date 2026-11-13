@@ -2,6 +2,15 @@
 
 未發布的修改先寫在 `changelog.d/`（一個分支一個檔，見 `changelog.d/README.md`），合併前改成正式版本時才移到這裡；規則見 `AGENTS.md`「多人協作」。
 
+## 0.46（rubric 1.30）
+
+- **步驟 30 依老師在 issue #141 的回覆，分開評給藥前與給藥後的放置（`criteria/09-disposal.md`、rubric；分支版本 SKILL 0.44-disposal.1／rubric 1.28-disposal.1，合併 main 後為 0.45-disposal.1／1.29-disposal.1；`experiments/2026-11-12-disposal30-followup.md`）：**
+  - 步驟 30 依 #141 老師回覆區分給藥前的暫放或回套後持針，及給藥後投入針筒收集盒。
+  - 評分以步驟 28–30 的切分線索定位，可查看到影片結尾以確認給藥後是否有可見證據（rubric 新增 `through_video_end`，`rubric.py` 檢查格式、`rules.py` 把時間窗延伸到影片結尾）。
+  - 30a、30b 的 `window_steps` 改為 [28, 29, 30] 並加 `after_step`；30b 只檢查放回原包裝的持握方式。
+  - `tests/sop_grading/test_grading_rules.py`：步驟 30 未定位時仍交給評分 agent，30a 時間窗延伸到影片結尾。
+  - 原步驟 30 標記未依新規則驗證，30 支調整組只列模型判定，沒有正式一致率。**暫定**：未拍到給藥後處置的影片與 VID_0106 的整步判定待人工核對。
+
 ## 0.45（rubric 1.29）
 
 - **手部姿勢照老師 2026-11-08 回覆修改（issue #140，`criteria/08-hand-posture.md`、rubric；分支版本 SKILL 0.44-handpos.1／rubric 1.28-handpos.1，評分紀錄用 0.41-handpos.1／1.25-handpos.1 跑，`experiments/2026-11-09-handpos.md`；紀錄 `experiments/2026-11-08-teacher-reply.md`）：**
