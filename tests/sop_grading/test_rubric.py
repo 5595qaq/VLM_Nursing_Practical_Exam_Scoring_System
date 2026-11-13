@@ -231,14 +231,19 @@ def test_step29_needs_the_record_sheet():
 
 
 @pytest.mark.parametrize("v30a, v30b, expected", [
-    ("錯誤", "正確", WRONG),        # placed on the table: wrong even if held by the plunger end
-    ("部分正確", "正確", PARTIAL),  # put on the table first, then into the package
-    ("正確", "錯誤", PARTIAL),      # into the package but held by the needle
-    ("正確", "正確", CORRECT),
+    (CORRECT, CORRECT, CORRECT),
+    (WRONG, CORRECT, PARTIAL),
+    (CORRECT, WRONG, PARTIAL),
+    (CORRECT, UNDETERMINED, PARTIAL),
+    (UNDETERMINED, CORRECT, PARTIAL),
+    (WRONG, WRONG, WRONG),
+    (WRONG, UNDETERMINED, UNDETERMINED),
+    (UNDETERMINED, UNDETERMINED, UNDETERMINED),
+    (CORRECT, PENDING, PENDING),
 ])
-def test_step30_table_is_wrong(v30a, v30b, expected):
+def test_step30_counts_completed_phases(v30a, v30b, expected):
     step30 = load_rubric()["steps"][29]
-    assert [c["key"] for c in step30["criteria"]] == [True, False]
+    assert all(c["allow_partial"] is False for c in step30["criteria"])
     assert aggregate(step30, {"30a": v30a, "30b": v30b}) == expected
 
 
