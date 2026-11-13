@@ -1,6 +1,6 @@
 # VLM+LLM Nursing Practical Exam Scoring System
 
-這是一個基於 VLM (視覺語言模型) 與 LLM 架構的護理術科評分系統。系統包含 JavaScript 前端與 FastAPI (Python) 後端。影片先上傳到 Google Cloud Storage (GCS)，後端透過 Vertex AI 呼叫 Gemini 模型對 `gs://` 路徑的影片進行解析與術科自動評分；另有「只跑 SOP 步驟切分」模式，同樣透過 Vertex AI 由 Gemini（預設 `gemini-4-argon`）執行 `sop-video-skill/`。
+這是一個基於 VLM (視覺語言模型) 與 LLM 架構的護理術科評分系統。系統包含 JavaScript 前端與 FastAPI (Python) 後端。影片先上傳到 Google Cloud Storage (GCS)，後端透過 Vertex AI 呼叫 Gemini 模型對 `gs://` 路徑的影片進行解析與術科自動評分；另有「只跑 SOP 步驟切分」模式，同樣透過 Vertex AI 由 Gemini（預設 `gemini-4-carbon`）執行 `sop-video-skill/`。
 
 > 目前僅供組內測試使用，前端是設計給組員測試 prompt/影片評分效果的工具，尚未考慮一般使用者的多人權限管理。
 
@@ -99,11 +99,11 @@ python sop-video-skill/scripts/schema_tools.py sop-video-skill/schema.json > out
 
 #### 執行模式：只跑 SOP 步驟切分
 
-評分表單的「執行模式」可選 **只跑 SOP 步驟切分**。此模式不執行 Time_cuting、Gazelle 與 Agent A–D，而是由 worker 依 `sop-video-skill/SKILL.md` 執行外部程式迴圈，透過 Vertex AI 呼叫 Gemini（預設 `gemini-4-argon`；設定 `SOP_SKILL_PROVIDER=claude` 可改用 Vertex AI 上的 Claude），輸出 30 個步驟各自的時間區段（`sop-video-skill/schema.json`，不評分），以及每一段手拿空針包裝的時間（`package_spans`，給評分的 10b 看取出前的固定與轉人工用）。
+評分表單的「執行模式」可選 **只跑 SOP 步驟切分**。此模式不執行 Time_cuting、Gazelle 與 Agent A–D，而是由 worker 依 `sop-video-skill/SKILL.md` 執行外部程式迴圈，透過 Vertex AI 呼叫 Gemini（預設 `gemini-4-carbon`；設定 `SOP_SKILL_PROVIDER=claude` 可改用 Vertex AI 上的 Claude），輸出 30 個步驟各自的時間區段（`sop-video-skill/schema.json`，不評分），以及每一段手拿空針包裝的時間（`package_spans`，給評分的 10b 看取出前的固定與轉人工用）。
 
 1. worker 從 GCS 下載上傳時產生的 `_src.mp4` 原檔，執行 `prepare.py` 產生 proxy 與格線圖。
 2. 每回合模型回覆一個動作 JSON（`crop_preview`／`set_crop`／`overview`／`zoom`／`final`）；worker 先用 `validate_action.py` 驗證，不合格就把錯誤和被退回的動作原文回傳（要求模型只修正錯誤的地方）、不執行也不扣預算，合格才執行對應腳本並把新圖片送回。
-3. 每次請求只附「全片總覽圖＋動作能量圖＋最新一批圖片＋目前的 draft＋動作紀錄＋剩餘預算」（SKILL.md 第 0 節），不重送舊的對話回合。模型每個動作的 `draft` 只寫這回合新增或改變的列（沒有變動寫 `無變動`），外部程式用 `scripts/draft.py` 依步驟編號合併成完整草稿再附回；每 3 個動作有一次要重寫完整草稿、逐步重新檢查邊界（少寫步驟的列會被退回），其餘回合不必重寫，省下 output token（SKILL.md 2.3）。每回合不變的 system prompt 與固定圖片（`set_crop` 前是格線圖，之後是總覽圖與動作能量圖）一律放在最前面、逐位元組相同，會變的部分放在最後。送 Gemini 時，固定內容自成一個 user 回合，後面接一句固定的 model 回覆（「已收到固定圖片…」），再接本回合的 user 內容：實測 `gemini-4-argon` 的隱式快取只在前綴剛好結束一個回合時命中，固定內容與本回合內容放在同一個（或兩個連續的）user 回合時完全不命中。`gemini-4-argon` 不支援明確快取；隱式快取是否命中仍由 Google 決定，不保證。
+3. 每次請求只附「全片總覽圖＋動作能量圖＋最新一批圖片＋目前的 draft＋動作紀錄＋剩餘預算」（SKILL.md 第 0 節），不重送舊的對話回合。模型每個動作的 `draft` 只寫這回合新增或改變的列（沒有變動寫 `無變動`），外部程式用 `scripts/draft.py` 依步驟編號合併成完整草稿再附回；每 3 個動作有一次要重寫完整草稿、逐步重新檢查邊界（少寫步驟的列會被退回），其餘回合不必重寫，省下 output token（SKILL.md 2.3）。每回合不變的 system prompt 與固定圖片（`set_crop` 前是格線圖，之後是總覽圖與動作能量圖）一律放在最前面、逐位元組相同，會變的部分放在最後。送 Gemini 時，固定內容自成一個 user 回合，後面接一句固定的 model 回覆（「已收到固定圖片…」），再接本回合的 user 內容：實測 `gemini-4-argon` 的隱式快取只在前綴剛好結束一個回合時命中，固定內容與本回合內容放在同一個（或兩個連續的）user 回合時完全不命中。`gemini-4-argon` 不支援明確快取；隱式快取是否命中仍由 Google 決定，不保證。以上快取行為是在 `gemini-4-argon` 上實測的，預設改成 `gemini-4-carbon` 後尚未重測。
 4. `final` 通過 `schema.json` 與 `validate_result.py` 規則後，`video_id`、`meta.duration`（實際影片長度）、`meta.crop` 的 `box`／`hands_box`（`set_crop` 確定的框）與 `meta.budget` 由 worker 依實際執行紀錄填入；超過影片結尾不到 0.5 秒的結束時間（模型照回報裡取到 0.1 秒的影片長度寫）也由 worker 改成影片結尾，免得整份 final 被退回重寫；`sequence_check.py` 的自動比對另存於 `sequence_check`，不寫進 result。
 5. 結果 JSON、模型對話紀錄（`transcript.json`）與全部中間圖片（`artifacts.zip`，另含這次讀到的 SKILL.md 副本 `rules_SKILL.md`）上傳到 `gs://<bucket>/sop_runs/<video_id>/g<generation>/`。失敗的執行也會上傳對話紀錄，方便除錯。工作結果另記 `versions`（`{"skill": SKILL.md 版本}`）、`rules_digest`（skill 目錄全部檔案的 SHA-256）、`rules_changed_during_run`、`commit`（`GIT_COMMIT`）與 `finished_at`，供實驗紀錄 ZIP 使用。
 
@@ -114,7 +114,7 @@ python sop-video-skill/scripts/schema_tools.py sop-video-skill/schema.json > out
 | 設定 | 預設 | 意義 |
 | --- | --- | --- |
 | `SOP_SKILL_PROVIDER` | `gemini` | 執行 skill 的模型：`gemini`，或 `claude`（Vertex AI 上的 Claude） |
-| `SOP_SKILL_GEMINI_MODEL` | `gemini-4-argon` | Gemini 模型 ID（region 沿用 `GCP_LOCATION`） |
+| `SOP_SKILL_GEMINI_MODEL` | `gemini-4-carbon` | Gemini 模型 ID（region 沿用 `GCP_LOCATION`） |
 | `SOP_SKILL_GEMINI_THINKING_LEVEL` | （空） | 選填：Gemini 的 `thinking_level`（例如 `low`、`high`），空白表示使用模型預設 |
 | `SOP_SKILL_GEMINI_MAX_OUTPUT_TOKENS` | 0 | 選填：單回合輸出上限，0 表示使用模型預設 |
 | `CLAUDE_MODEL_NAME` | `claude-opus-5-5` | `SOP_SKILL_PROVIDER=claude` 時的 Claude 模型 ID |
@@ -347,7 +347,7 @@ python sop-video-grading/scripts/validate_grading.py grading.json --final  # 最
 成本只在設定單價後才會計算。在 `.env` 設定 `MODEL_PRICES_JSON`，單位是每 1M token 的美元價格；JSON 要用單引號包起來：
 
 ```env
-MODEL_PRICES_JSON='{"gemini-3.1-pro-preview": {"input": 2.0, "cached_input": 0.2, "output": 12.0}, "gemini-4-argon": {"input": 1.0, "output": 5.0}}'
+MODEL_PRICES_JSON='{"gemini-3.1-pro-preview": {"input": 2.0, "cached_input": 0.2, "output": 12.0}, "gemini-4-carbon": {"input": 1.0, "output": 5.0}}'
 ```
 
 上面的數字只是格式示範，請依 [Vertex AI 定價頁](https://cloud.google.com/vertex-ai/generative-ai/pricing) 填入實際單價。`cached_input`、`cache_write` 沒有填時，會沿用 `input` 的單價。沒有設定單價的模型，估計成本欄位留空，API 會列在 `unpriced_models`。單價在查詢時才套用，修改後重啟 backend，舊工作也會用新單價重新計算。Gemini 部分模型的輸入超過一定長度時會改用較高的單價，這裡沒有區分，需要精算時請以 GCP 帳單為準。
@@ -470,8 +470,8 @@ GCP_LOCATION=global
 GCS_BUCKET_NAME=YOUR_BUCKET_NAME
 GEMINI_MODEL_NAME=gemini-3.1-pro-preview
 GCP_SA_KEY_PATH=./secrets/gcp-key.json
-# 選填：SOP 步驟切分模式使用的 Gemini 模型（預設即為 gemini-4-argon）
-SOP_SKILL_GEMINI_MODEL=gemini-4-argon
+# 選填：SOP 步驟切分與評分使用的 Gemini 模型（預設即為 gemini-4-carbon）
+SOP_SKILL_GEMINI_MODEL=gemini-4-carbon
 ```
 
 可用以下指令確認目前 gcloud 登入帳號、專案與 bucket：

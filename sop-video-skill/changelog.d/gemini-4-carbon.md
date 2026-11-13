@@ -1,0 +1,1 @@
+- 後端預設的 Gemini 模型（`SOP_SKILL_GEMINI_MODEL`）從 `gemini-4-argon` 改為 `gemini-4-carbon`。skill 的規則、動作格式與 schema 都不變，版本不動；但切分標記含模型名稱（`skill<版本>_gemini-4-carbon`），之前用 argon 切分的紀錄不會沿用。要沿用舊紀錄或和舊結果比較時，在 `.env` 設 `SOP_SKILL_GEMINI_MODEL=gemini-4-argon`。隱式快取在 carbon 上尚未重測。

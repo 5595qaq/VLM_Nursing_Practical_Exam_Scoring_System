@@ -1,0 +1,2 @@
+- 評分模型預設改為 `gemini-4-carbon`（和切分共用 `SOP_SKILL_GEMINI_MODEL`），評分規則與 rubric 不變、版本不動。紀錄資料夾名稱含模型，carbon 的紀錄和 argon 的分開：`run_record.py` 查不到 argon 的紀錄算「沒評過」，和 argon 結果比較時要注意是換了模型。
+- `.env` 的 `MODEL_PRICES_JSON` 只有 `gemini-4-argon` 的單價時，carbon 的用量不會算成本（列在 `unpriced_models`），要另外加 `gemini-4-carbon` 的單價。AGENTS.md 裡每支影片的 token 參考值是 argon 量的，carbon 尚未重新量測。
