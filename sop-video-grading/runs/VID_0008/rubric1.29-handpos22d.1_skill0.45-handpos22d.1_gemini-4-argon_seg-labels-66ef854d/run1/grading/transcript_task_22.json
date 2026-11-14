@@ -1,0 +1,64 @@
+[
+ {
+  "turn": 1,
+  "seconds": 6.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 19750,
+  "cached_input_tokens": 0,
+  "output_tokens": 67,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@353-366（hands_box，n=9）#0=05:53.0、#1=05:54.6、#2=05:56.2、#3=05:57.9、#4=05:59.5、#5=06:01.1、#6=06:02.8、#7=06:04.4、#8=06:06.0"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 353.0, \"end\": 366.0, \"fps\": 2, \"reason\": \"查看步驟 22 插入 vial 與打入空氣的連續過程，確認是否有拔出重插或多次刺入的情形\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 4.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 22315,
+  "cached_input_tokens": 0,
+  "output_tokens": 94,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@353-366（hands_box，n=9）#0=05:53.0、#1=05:54.6、#2=05:56.2、#3=05:57.9、#4=05:59.5、#5=06:01.1、#6=06:02.8、#7=06:04.4、#8=06:06.0",
+   "clip@353-366（context box，有聲音；片段內 00:00 ＝ 影片 05:53.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [354.5, 358.5, 360.5, 363.0], \"region\": [0.35, 0.4, 0.65, 0.75], \"reason\": \"查看刺入vial時的手勢、插入位置，以及打入空氣時vial是否在桌面上\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 7.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 23589,
+  "cached_input_tokens": 0,
+  "output_tokens": 107,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@353-366（hands_box，n=9）#0=05:53.0、#1=05:54.6、#2=05:56.2、#3=05:57.9、#4=05:59.5、#5=06:01.1、#6=06:02.8、#7=06:04.4、#8=06:06.0",
+   "clip@353-366（context box，有聲音；片段內 00:00 ＝ 影片 05:53.0）",
+   "zoom@354.5/358.5/360.5/363 region=[0.350, 0.400, 0.650, 0.750]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [355.5, 359.5, 360.0, 361.2], \"region\": [0.35, 0.35, 0.65, 0.75], \"reason\": \"確認插針瞬間（359.5, 360.0）與 361.2 拿起 vial 時是否打氣的細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 4,
+  "seconds": 13.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 24826,
+  "cached_input_tokens": 0,
+  "output_tokens": 553,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@353-366（hands_box，n=9）#0=05:53.0、#1=05:54.6、#2=05:56.2、#3=05:57.9、#4=05:59.5、#5=06:01.1、#6=06:02.8、#7=06:04.4、#8=06:06.0",
+   "clip@353-366（context box，有聲音；片段內 00:00 ＝ 影片 05:53.0）",
+   "zoom@354.5/358.5/360.5/363 region=[0.350, 0.400, 0.650, 0.750]",
+   "zoom@355.5/359.5/360/361.2 region=[0.350, 0.350, 0.650, 0.750]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"22b\", \"verdict\": \"正確\", \"explanation\": \"05:59.5–06:00.5 針頭刺入 vial 時，右手拇指與食指、中指以持毛筆方式握住針筒外管，針筒垂直向下插入，手指未碰觸針頭、針座及活塞柄內側。\", \"times\": [[359.5, 360.5]], \"evidence\": [\"zoom@359.5\", \"zoom@360\", \"zoom@360.5\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"22c\", \"verdict\": \"正確\", \"explanation\": \"06:00.0–06:00.5 針頭垂直刺入 vial 瓶口橡皮塞中心處。\", \"times\": [[360.0, 360.5]], \"evidence\": [\"zoom@360\", \"zoom@360.5\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"22d\", \"verdict\": \"部分正確\", \"explanation\": \"考生進行了兩次動作：第一次於 06:00.0–06:00.5 vial 放在桌面上垂直刺入，但尚未打入空氣即於 06:01.0–06:01.5 將 vial 拿離桌面至胸前並推針心打入一點空氣（不符合規定）；隨後於 06:02.0 將 vial 放回桌面上，06:02.5–06:03.5 左手固定桌面上的 vial、右手將剩餘空氣推入瓶中（符合規定），打完空氣後於 06:04.0 才舉起倒置。\", \"times\": [[360.0, 363.5]], \"evidence\": [\"clip@353-366\", \"zoom@360.5\", \"zoom@361.2\", \"zoom@363\"], \"confidence\": 0.85, \"reason\": null, \"needs_review\": true, \"review_reason\": \"刺入後於 06:01 將 vial 拿離桌面打入部分空氣，隨即於 06:02 放回桌面繼續打完空氣\"}]}",
+  "errors": []
+ }
+]

@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 17.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 19718,
+  "cached_input_tokens": 0,
+  "output_tokens": 107,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@244-251（hands_box，n=9）#0=04:04.0、#1=04:04.9、#2=04:05.8、#3=04:06.6、#4=04:07.5、#5=04:08.4、#6=04:09.2、#7=04:10.1、#8=04:11.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [245.8, 246.3, 246.8, 247.5], \"region\": [0.38, 0.48, 0.58, 0.78], \"reason\": \"確認插針時持毛筆手勢（22b）、是否插入 vial 中心（22c）及 vial 是否放在桌上（22d）\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 14.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 20961,
+  "cached_input_tokens": 0,
+  "output_tokens": 246,
+  "thinking_tokens": 149,
+  "materials": [
+   "ov@244-251（hands_box，n=9）#0=04:04.0、#1=04:04.9、#2=04:05.8、#3=04:06.6、#4=04:07.5、#5=04:08.4、#6=04:09.2、#7=04:10.1、#8=04:11.0",
+   "zoom@245.8/246.3/246.8/247.5 region=[0.380, 0.480, 0.580, 0.780]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [245.6, 246.1, 248.0, 249.2], \"region\": [0.38, 0.55, 0.58, 0.9], \"reason\": \"調整位置往下看針頭刺入 vial 的位置、vial 是否放在桌面上，以及打完空氣的時間點\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 16.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 22223,
+  "cached_input_tokens": 0,
+  "output_tokens": 453,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@244-251（hands_box，n=9）#0=04:04.0、#1=04:04.9、#2=04:05.8、#3=04:06.6、#4=04:07.5、#5=04:08.4、#6=04:09.2、#7=04:10.1、#8=04:11.0",
+   "zoom@245.8/246.3/246.8/247.5 region=[0.380, 0.480, 0.580, 0.780]",
+   "zoom@245.6/246.1/248/249.2 region=[0.380, 0.550, 0.580, 0.900]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"22b\", \"verdict\": \"正確\", \"explanation\": \"04:05.6–04:06.1 插針時，右手拇指與食指、中指握住針筒外管，針筒垂直向下刺入 vial，手指未碰觸針頭、針座及活塞柄內側。\", \"times\": [[245.6, 246.1]], \"evidence\": [\"zoom@245.6\", \"zoom@245.8\", \"zoom@246.1\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"22c\", \"verdict\": \"正確\", \"explanation\": \"04:05.6–04:06.1 針頭垂直刺入 vial 瓶口橡皮塞中央。\", \"times\": [[245.6, 246.1]], \"evidence\": [\"zoom@245.6\", \"zoom@246.1\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"22d\", \"verdict\": \"正確\", \"explanation\": \"04:05.6–04:09.2 針頭刺入 vial 及推針心打入空氣的整個過程中，vial 均平放在治療車桌面上，左手扶住瓶口固定，直到 04:09.2 針心推到底打完空氣後才於 04:10.1 舉起倒置。\", \"times\": [[245.6, 249.2]], \"evidence\": [\"ov@244-251 #2\", \"ov@244-251 #7\", \"zoom@245.6\", \"zoom@246.1\", \"zoom@248\", \"zoom@249.2\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
