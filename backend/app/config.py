@@ -12,7 +12,7 @@ def _integer(name: str, default: int, minimum: int = 1) -> int:
 
 def _model_prices() -> dict:
     """MODEL_PRICES_JSON: USD per 1M tokens per model, e.g.
-    {"gemini-4-argon": {"input": 2.5, "cached_input": 0.25, "output": 15}}."""
+    {"gemini-4-carbon": {"input": 2.5, "cached_input": 0.25, "output": 15}}."""
     raw = os.getenv("MODEL_PRICES_JSON", "").strip()
     if not raw:
         return {}
@@ -23,6 +23,10 @@ def _model_prices() -> dict:
     ):
         raise ValueError("MODEL_PRICES_JSON must map model names to {price field: USD per 1M tokens}")
     return prices
+
+
+# Default model for sop-video-skill segmentation and SOP grading (both read SOP_SKILL_GEMINI_MODEL).
+DEFAULT_SOP_SKILL_GEMINI_MODEL = "gemini-4-carbon"
 
 
 class Settings:
@@ -47,7 +51,7 @@ class Settings:
     # sop-video-skill: the model that drives the skill's external-program loop.
     # "gemini" (default) uses the Vertex AI Gemini client; "claude" uses Claude on Vertex AI.
     SOP_SKILL_PROVIDER = os.getenv("SOP_SKILL_PROVIDER", "gemini").strip().lower()
-    SOP_SKILL_GEMINI_MODEL = os.getenv("SOP_SKILL_GEMINI_MODEL", "gemini-4-argon")
+    SOP_SKILL_GEMINI_MODEL = os.getenv("SOP_SKILL_GEMINI_MODEL", DEFAULT_SOP_SKILL_GEMINI_MODEL)
     # Optional; unset leaves the model defaults.
     SOP_SKILL_GEMINI_THINKING_LEVEL = os.getenv("SOP_SKILL_GEMINI_THINKING_LEVEL", "").strip().lower() or None
     SOP_SKILL_GEMINI_MAX_OUTPUT_TOKENS = _integer("SOP_SKILL_GEMINI_MAX_OUTPUT_TOKENS", 0, 0) or None

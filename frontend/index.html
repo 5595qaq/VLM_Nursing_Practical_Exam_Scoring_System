@@ -49,7 +49,7 @@
                     <label><input type="radio" name="pipeline" value="sop_grading"> SOP 步驟切分＋評分（sop-video-skill → sop-video-grading）</label>
                 </div>
                 <p class="field-hint" id="grading-hint" data-pipeline="sop_grading" hidden>先切出 30 個步驟，再由 Gemini 依 sop-video-grading 評分表逐步判定（正確／部分正確／錯誤／無法判定），每步附說明與評分項目。每支影片約 15 分鐘；評分失敗時按「從失敗處繼續」只會重跑評分。</p>
-                <p class="field-hint" id="pipeline-hint" data-pipeline="sop_skill" hidden>由 Gemini（預設 gemini-4-argon）依 sop-video-skill 切出 30 個步驟的時間區段（不評分），可下載結果 JSON、圖片與對話紀錄。每支影片需數分鐘至數十分鐘。</p>
+                <p class="field-hint" id="pipeline-hint" data-pipeline="sop_skill" hidden>由 Gemini（預設 gemini-4-carbon）依 sop-video-skill 切出 30 個步驟的時間區段（不評分），可下載結果 JSON、圖片與對話紀錄。每支影片需數分鐘至數十分鐘。</p>
             </fieldset>
 
             <fieldset class="agent-selection" id="agent-selection">

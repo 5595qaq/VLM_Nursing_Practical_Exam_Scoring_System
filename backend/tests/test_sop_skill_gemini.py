@@ -4,7 +4,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from app.config import settings
+from app.config import DEFAULT_SOP_SKILL_GEMINI_MODEL, settings
 from app.services import sop_skill_service as skill
 from app.services.model_logging import attempt_state
 
@@ -51,11 +51,12 @@ CONTENT = [
 ]
 
 
-def test_defaults_use_gemini_4_argon():
+def test_defaults_use_gemini_4_carbon():
     assert settings.SOP_SKILL_PROVIDER == "gemini"
-    assert settings.SOP_SKILL_GEMINI_MODEL == "gemini-4-argon"
+    # The literal default, so a .env override (e.g. back to gemini-4-argon) does not fail the test.
+    assert DEFAULT_SOP_SKILL_GEMINI_MODEL == "gemini-4-carbon"
     assert skill.default_model_call() is skill.gemini_call
-    assert skill.model_name() == "gemini-4-argon"
+    assert skill.model_name() == settings.SOP_SKILL_GEMINI_MODEL
 
 
 def test_claude_provider_switches_call_and_name(monkeypatch):
@@ -73,7 +74,7 @@ async def test_gemini_call_request_and_reply(monkeypatch):
     assert reply.stop_reason == "end_turn"
     assert reply.input_tokens == 1200 and reply.output_tokens == 100
     (call,) = models.calls
-    assert call["model"] == "gemini-4-argon"
+    assert call["model"] == settings.SOP_SKILL_GEMINI_MODEL
     assert call["attempt_state"] == {"attempt": 0}  # attempts are logged like the A–D agents
     config = call["config"]
     assert config.system_instruction == "SYSTEM"

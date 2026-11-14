@@ -73,8 +73,8 @@ async def test_sop_skill_attempt_logs_name_the_skill_model(sdk_client, caplog):
     with caplog.at_level("INFO", logger="app.gemini"):
         await sop_skill_service.gemini_call("SYSTEM", [{"type": "text", "text": "turn"}])
     (log,) = attempt_logs(caplog)
-    assert log["model"] == settings.SOP_SKILL_GEMINI_MODEL == "gemini-4-argon"
-    assert settings.GEMINI_MODEL_NAME != "gemini-4-argon"
+    assert log["model"] == settings.SOP_SKILL_GEMINI_MODEL
+    assert settings.GEMINI_MODEL_NAME != settings.SOP_SKILL_GEMINI_MODEL
 
 
 @pytest.mark.parametrize("status", [400, 401, 403, 404])

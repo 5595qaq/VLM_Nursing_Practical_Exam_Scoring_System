@@ -96,7 +96,7 @@
    - 影格會拍到學生的臉：抽出的圖片只能放在 repo 之外的工作資料夾（例如 `vlm_data/`）或被忽略的 `sop-video-grading/review/`，不得 commit，也不得放進 PR 或 artifact。
    - 在看評分 agent 結果之前完成參考答案，避免被模型答案影響。
    - 參考答案與標記表不一致時，記下兩者與理由，標成「待人工核對」，不要自行認定標記表錯。
-2. **執行評分**：用 `backend/app/sop_grading_cli.py` 評分，只重評受影響的步驟時用 `--steps`。評分會呼叫付費模型：使用者沒有明確指定影片、要跑的影片比使用者指定的多，或單支影片預估超過 200 萬 input tokens 時，先問使用者（參考：VID_0081 是 11 分鐘的影片，切分約 52 萬、評分約 79 萬，合計約 131 萬）。
+2. **執行評分**：用 `backend/app/sop_grading_cli.py` 評分，只重評受影響的步驟時用 `--steps`。評分會呼叫付費模型：使用者沒有明確指定影片、要跑的影片比使用者指定的多，或單支影片預估超過 200 萬 input tokens 時，先問使用者（參考：VID_0081 是 11 分鐘的影片，在 gemini-4-argon 上切分約 52 萬、評分約 79 萬，合計約 131 萬；預設改成 gemini-4-carbon 後尚未重新量測）。
    - 不得把標記表或參考答案的判定、說明放進評分 agent 的輸入；`labels_to_segmentation.py` 只能帶時間。
    - 執行時帶 `SOP_RUN_BY` 與 `GIT_COMMIT`（用 README 的寫法，有未 commit 的修改會帶 `-dirty`），跑完把 `sop-video-grading/runs/` 的新紀錄一起 commit。規則有改就先遞增 rubric 或 SKILL.md 版本並 commit 再跑（疊代中用分支版本，見「多人協作」），否則會被當成重複或 dirty 而拒絕；不要用 `--force`、`--allow-dirty` 繞過，除非是刻意重測穩定性並在紀錄中說明。
    - 共用的工作目錄常有別人未 commit 的修改，`GIT_COMMIT` 會帶 `-dirty` 而被拒絕。不要為了跑評分而 commit、stash 或還原別人的修改，也不要用 `--allow-dirty` 繞過；先告訴使用者，由使用者決定等對方 commit，或改在乾淨的 `git worktree` 跑（worktree 裡沒有被忽略的 `.env` 與 `secrets/`，要另外指定 `--env-file` 與 `GCP_SA_KEY_PATH`；紀錄會寫在 worktree 的 `sop-video-grading/runs/`，跑完複製回原工作目錄再 commit）。
