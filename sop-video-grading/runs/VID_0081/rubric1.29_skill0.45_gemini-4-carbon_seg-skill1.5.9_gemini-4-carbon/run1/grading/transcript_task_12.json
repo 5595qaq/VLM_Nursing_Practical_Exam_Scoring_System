@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 21.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 19465,
+  "cached_input_tokens": 0,
+  "output_tokens": 564,
+  "thinking_tokens": 481,
+  "materials": [
+   "ov@144.2-154.5（hands_box，n=9）#0=02:24.2、#1=02:25.5、#2=02:26.8、#3=02:28.1、#4=02:29.3、#5=02:30.6、#6=02:31.9、#7=02:33.2、#8=02:34.5"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [148.1, 149.3, 150.6, 152.5], \"region\": [0.35, 0.4, 0.75, 0.8], \"reason\": \"放大確認左手夾持稀釋液瓶的手指姿勢\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 28.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 20738,
+  "cached_input_tokens": 0,
+  "output_tokens": 1419,
+  "thinking_tokens": 1218,
+  "materials": [
+   "ov@144.2-154.5（hands_box，n=9）#0=02:24.2、#1=02:25.5、#2=02:26.8、#3=02:28.1、#4=02:29.3、#5=02:30.6、#6=02:31.9、#7=02:33.2、#8=02:34.5",
+   "zoom@148.1/149.3/150.6/152.5 region=[0.350, 0.400, 0.750, 0.800]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"12a\", \"verdict\": \"正確\", \"explanation\": \"02:28.1–02:32.5 左手以食指與中指夾住稀釋液瓶身，至右手將空針針頭插入稀釋液瓶口時仍持續以左手中指及食指穩定夾持瓶身，符合標準。\", \"times\": [[148.1, 152.5]], \"evidence\": [\"ov@144.2-154.5 #3\", \"ov@144.2-154.5 #6\", \"zoom@148.1\", \"zoom@149.3\", \"zoom@150.6\", \"zoom@152.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 8.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 19405,
+  "cached_input_tokens": 0,
+  "output_tokens": 336,
+  "thinking_tokens": 250,
+  "materials": [
+   "clip@321.2-327.6（context box，有聲音；片段內 00:00 ＝ 影片 05:21.2）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [323.2, 323.7, 324.2, 325.2], \"region\": [0.35, 0.55, 0.65, 0.85], \"reason\": \"放大確認是否持酒精棉片擦拭 vial 瓶口\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 20.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 20676,
+  "cached_input_tokens": 0,
+  "output_tokens": 1225,
+  "thinking_tokens": 1007,
+  "materials": [
+   "clip@321.2-327.6（context box，有聲音；片段內 00:00 ＝ 影片 05:21.2）",
+   "zoom@323.2/323.7/324.2/325.2 region=[0.350, 0.550, 0.650, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"6a\", \"verdict\": \"正確\", \"explanation\": \"05:23.7–05:25.2（clip@321.2-327.6 片段內 00:02.5–00:04.0）左手持 vial 藥瓶，右手拿白色方形酒精棉片在 vial 瓶口來回擦拭消毒（05:24.2 棉片貼於瓶口擦拭，05:25.2 移開棉片），符合消毒瓶口標準。\", \"times\": [[323.7, 325.2]], \"evidence\": [\"clip@321.2-327.6\", \"zoom@323.7\", \"zoom@324.2\", \"zoom@325.2\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

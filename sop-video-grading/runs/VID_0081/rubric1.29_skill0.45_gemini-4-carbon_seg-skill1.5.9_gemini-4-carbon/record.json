@@ -1,0 +1,76 @@
+{
+ "video_id": "VID_0081",
+ "versions": {
+  "rubric": "1.29",
+  "skill": "0.45",
+  "model": "gemini-4-carbon",
+  "segmentation": "skill1.5.9_gemini-4-carbon"
+ },
+ "video_sha256": "6f9235af873da512b612ede7dfc6feeb83ef8a17267ad624e6c2c613d5b2fc24",
+ "runs": [
+  {
+   "run": 1,
+   "by": "5595QAQ",
+   "date": "2026-11-14",
+   "commit": "e22ff2e1c38f6be7c50d1f4e659fa3e3c3c07ebb",
+   "video_sha256": "6f9235af873da512b612ede7dfc6feeb83ef8a17267ad624e6c2c613d5b2fc24",
+   "steps": [
+    1,
+    2,
+    3,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30
+   ],
+   "failed_tasks": [
+    {
+     "task": "4",
+     "error": "SkillRunError: task 4: no final action within 8 turns"
+    }
+   ],
+   "segmentation": "sop-video-skill 1.5.9 gemini-4-carbon",
+   "usage": {
+    "input_tokens": 2800586,
+    "cached_input_tokens": 533370,
+    "output_tokens": 187894,
+    "thinking_tokens": 170131
+   },
+   "segmentation_usage": {
+    "input_tokens": 1352457,
+    "cached_input_tokens": 581570,
+    "output_tokens": 196529,
+    "thinking_tokens": 123572
+   },
+   "timing": {
+    "started_at": "2026-11-14T09:13:51+00:00",
+    "segmentation_seconds": 2786.0,
+    "grading_seconds": 2167.8,
+    "total_seconds": 4953.9,
+    "checkpoints_found": true
+   }
+  }
+ ]
+}

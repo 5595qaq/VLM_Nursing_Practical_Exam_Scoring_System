@@ -1,0 +1,64 @@
+[
+ {
+  "turn": 1,
+  "seconds": 41.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 19528,
+  "cached_input_tokens": 0,
+  "output_tokens": 457,
+  "thinking_tokens": 389,
+  "materials": [
+   "ov@0-374.5（hands_box，n=9）#0=00:00.0、#1=00:46.8、#2=01:33.6、#3=02:20.4、#4=03:07.2、#5=03:54.1、#6=04:40.9、#7=05:27.7、#8=06:14.5"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 0.0, \"end\": 60.0, \"fps\": 2, \"reason\": \"查看 00:00–01:00 取出稀釋液瓶時是否有拿起檢查效期與有無異物的動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 20.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 30639,
+  "cached_input_tokens": 0,
+  "output_tokens": 92,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@0-374.5（hands_box，n=9）#0=00:00.0、#1=00:46.8、#2=01:33.6、#3=02:20.4、#4=03:07.2、#5=03:54.1、#6=04:40.9、#7=05:27.7、#8=06:14.5",
+   "clip@0-60（context box，有聲音；片段內 00:00 ＝ 影片 00:00.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [39.5, 40.5, 41.5], \"region\": [0.35, 0.45, 0.65, 0.85], \"reason\": \"確認 00:39.5–00:41.5 手上拿起來查看的是否為稀釋液瓶\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 17.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 31873,
+  "cached_input_tokens": 0,
+  "output_tokens": 805,
+  "thinking_tokens": 736,
+  "materials": [
+   "ov@0-374.5（hands_box，n=9）#0=00:00.0、#1=00:46.8、#2=01:33.6、#3=02:20.4、#4=03:07.2、#5=03:54.1、#6=04:40.9、#7=05:27.7、#8=06:14.5",
+   "clip@0-60（context box，有聲音；片段內 00:00 ＝ 影片 00:00.0）",
+   "zoom@39.5/40.5/41.5 region=[0.350, 0.450, 0.650, 0.850]"
+  ],
+  "reply": "{\"action\": \"overview\", \"start\": 60.0, \"end\": 115.0, \"n\": 9, \"box\": \"hands\", \"reason\": \"查看 01:00–01:55 期間考生是否拿起稀釋液瓶檢查\"}",
+  "errors": []
+ },
+ {
+  "turn": 4,
+  "seconds": 20.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 33222,
+  "cached_input_tokens": 0,
+  "output_tokens": 1164,
+  "thinking_tokens": 982,
+  "materials": [
+   "ov@0-374.5（hands_box，n=9）#0=00:00.0、#1=00:46.8、#2=01:33.6、#3=02:20.4、#4=03:07.2、#5=03:54.1、#6=04:40.9、#7=05:27.7、#8=06:14.5",
+   "clip@0-60（context box，有聲音；片段內 00:00 ＝ 影片 00:00.0）",
+   "zoom@39.5/40.5/41.5 region=[0.350, 0.450, 0.650, 0.850]",
+   "ov@60-115（hands_box，n=9）#0=01:00.0、#1=01:06.9、#2=01:13.8、#3=01:20.6、#4=01:27.5、#5=01:34.4、#6=01:41.2、#7=01:48.1、#8=01:55.0"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4d\", \"verdict\": \"正確\", \"explanation\": \"00:39.5–00:42.0 考生於抽藥前拿起細長透明塑膠稀釋液瓶，雙手持瓶橫放於胸前低頭檢視瓶身標示與瓶內液體，並以右手食指沿瓶身指讀確認後放回檯面（受影片畫質限制，無法辨識瓶身文字內容）。\", \"times\": [[39.5, 42.0]], \"evidence\": [\"clip@0-60\", \"zoom@39.5\", \"zoom@40.5\", \"zoom@41.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

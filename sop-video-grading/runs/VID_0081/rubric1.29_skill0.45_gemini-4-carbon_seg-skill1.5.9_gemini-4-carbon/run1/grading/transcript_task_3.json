@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 19.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 19431,
+  "cached_input_tokens": 0,
+  "output_tokens": 535,
+  "thinking_tokens": 455,
+  "materials": [
+   "ov@31.4-41.5（hands_box，n=9）#0=00:31.4、#1=00:32.7、#2=00:33.9、#3=00:35.2、#4=00:36.5、#5=00:37.7、#6=00:39.0、#7=00:40.2、#8=00:41.5"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [35.2, 36.5, 37.7], \"region\": [0.3, 0.35, 0.7, 0.85], \"reason\": \"放大確認學生手中拿的是 vial 並有轉動檢視標籤或粉末的動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 16.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 20655,
+  "cached_input_tokens": 0,
+  "output_tokens": 393,
+  "thinking_tokens": 203,
+  "materials": [
+   "ov@31.4-41.5（hands_box，n=9）#0=00:31.4、#1=00:32.7、#2=00:33.9、#3=00:35.2、#4=00:36.5、#5=00:37.7、#6=00:39.0、#7=00:40.2、#8=00:41.5",
+   "zoom@35.2/36.5/37.7 region=[0.300, 0.350, 0.700, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"3a\", \"verdict\": \"正確\", \"explanation\": \"00:33.9 拿起桌面上的 vial，00:35.2–00:37.7 雙手持 vial 舉在胸前低頭轉動檢視瓶身標籤與藥物，00:39.0 放回桌面。影片限制，無法得知檢查內容是否正確。\", \"times\": [[33.9, 39.0]], \"evidence\": [\"ov@31.4-41.5 #2\", \"ov@31.4-41.5 #6\", \"zoom@35.2\", \"zoom@36.5\", \"zoom@37.7\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

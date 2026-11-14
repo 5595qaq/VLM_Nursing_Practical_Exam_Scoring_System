@@ -1,0 +1,82 @@
+[
+ {
+  "turn": 1,
+  "seconds": 11.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 19221,
+  "cached_input_tokens": 0,
+  "output_tokens": 598,
+  "thinking_tokens": 507,
+  "materials": [
+   "clip@0-5（context box，有聲音；片段內 00:00 ＝ 影片 00:00.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [0.0, 2.5, 3.5, 4.5], \"region\": [0.25, 0.72, 0.75, 1.0], \"reason\": \"確認治療車檯面上的紙張是否為給藥紀錄單，以及藥瓶（vial）的位置與拿取動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 303.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 20432,
+  "cached_input_tokens": 0,
+  "output_tokens": 733,
+  "thinking_tokens": 650,
+  "materials": [
+   "clip@0-5（context box，有聲音；片段內 00:00 ＝ 影片 00:00.0）",
+   "zoom@0/2.5/3.5/4.5 region=[0.250, 0.720, 0.750, 1.000]"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 5.0, \"end\": 15.0, \"fps\": 2, \"reason\": \"查看 00:05–00:15 考生後續動作，確認給藥紀錄單位置（如抽屜或車面外）及是否有從藥盒/抽屜取出 vial 的動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 16.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 22357,
+  "cached_input_tokens": 0,
+  "output_tokens": 957,
+  "thinking_tokens": 897,
+  "materials": [
+   "clip@0-5（context box，有聲音；片段內 00:00 ＝ 影片 00:00.0）",
+   "zoom@0/2.5/3.5/4.5 region=[0.250, 0.720, 0.750, 1.000]",
+   "clip@5-15（context box，有聲音；片段內 00:00 ＝ 影片 00:05.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [0.0], \"region\": [0.78, 0.3, 1.0, 0.65], \"reason\": \"檢查右側牆面紙張是否為給藥紀錄單\"}",
+  "errors": []
+ },
+ {
+  "turn": 4,
+  "seconds": 23.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 23566,
+  "cached_input_tokens": 0,
+  "output_tokens": 1328,
+  "thinking_tokens": 1254,
+  "materials": [
+   "clip@0-5（context box，有聲音；片段內 00:00 ＝ 影片 00:00.0）",
+   "zoom@0/2.5/3.5/4.5 region=[0.250, 0.720, 0.750, 1.000]",
+   "clip@5-15（context box，有聲音；片段內 00:00 ＝ 影片 00:05.0）",
+   "zoom@0 region=[0.780, 0.300, 1.000, 0.650]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [0.0, 9.0], \"region\": [0.55, 0.32, 0.85, 0.65], \"reason\": \"確認後方牆面上張貼的表格紙張是否為給藥紀錄單或其他表單\"}",
+  "errors": []
+ },
+ {
+  "turn": 5,
+  "seconds": 177.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 24785,
+  "cached_input_tokens": 17779,
+  "output_tokens": 13152,
+  "thinking_tokens": 12447,
+  "materials": [
+   "clip@0-5（context box，有聲音；片段內 00:00 ＝ 影片 00:00.0）",
+   "zoom@0/2.5/3.5/4.5 region=[0.250, 0.720, 0.750, 1.000]",
+   "clip@5-15（context box，有聲音；片段內 00:00 ＝ 影片 00:05.0）",
+   "zoom@0 region=[0.780, 0.300, 1.000, 0.650]",
+   "zoom@0/9 region=[0.550, 0.320, 0.850, 0.650]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"2a\", \"verdict\": \"無法判定\", \"explanation\": \"經檢視 00:00–00:15 全景與局部放大畫面，治療車檯面（zoom@0、zoom@2.5）僅有藥盒、尖銳物收集筒、酒精棉片包、vial、稀釋液瓶、空針包裝與乾洗手液，右側點滴架（zoom@0）無紙張，後方牆面紙張（zoom@0、zoom@9）為「WE-770 簡易操作」說明而非給藥紀錄單；全畫面看不到給藥紀錄單，且 00:00 影片開始時 vial 已在檯面上，無法確認取出 vial 前實際查看紀錄單是否滿 10 秒。\", \"times\": [], \"evidence\": [\"clip@0-5\", \"clip@5-15\", \"zoom@0\", \"zoom@2.5\", \"zoom@9\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}, {\"criterion_id\": \"2b\", \"verdict\": \"無法判定\", \"explanation\": \"00:00–00:05（clip@0-5 片段內 00:00–00:05）治療車檯面、右側點滴架與後方牆面（zoom@0、zoom@2.5、zoom@9）均看不到給藥紀錄單，且 00:00 影片開始時 vial 已置於檯面上，00:01–00:05 雙手僅在檯面上移動稀釋液瓶與 vial，無法確認取出 vial 前是否有用手指指出給藥紀錄單。\", \"times\": [], \"evidence\": [\"clip@0-5\", \"zoom@0\", \"zoom@2.5\", \"zoom@9\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}, {\"criterion_id\": \"2d\", \"verdict\": \"無法判定\", \"explanation\": \"00:00（clip@0-5 片段內 00:00、zoom@0）影片開始時褐色瓶蓋的 vial 已立於治療車檯面中央；00:02–00:05（zoom@2.5、zoom@3.5、zoom@4.5）考生僅將檯面上原有的 vial 稍微移位並將稀釋液瓶立起，隨後於 00:06（clip@5-15 片段內 00:01）按壓乾洗手液洗手，影片未錄到從藥盒或抽屜取出 vial 的過程與時間點。\", \"times\": [], \"evidence\": [\"clip@0-5\", \"clip@5-15\", \"zoom@0\", \"zoom@2.5\", \"zoom@3.5\", \"zoom@4.5\"], \"confidence\": 0.85, \"reason\": \"資訊不足\", \"needs_review\": true, \"review_reason\": \"00:00 影片開始時 vial 已在治療車檯面上，未錄到取出藥瓶過程\"}]}",
+  "errors": []
+ }
+]
