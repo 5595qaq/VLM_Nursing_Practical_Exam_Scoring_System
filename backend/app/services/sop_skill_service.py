@@ -231,6 +231,15 @@ class ScriptRunner:
             image.label = f"ov@{start:g}-{end:g}（{which}_box，n={n}）{image.label}"
         return images
 
+    def placement_overviews(self, windows, hands_box) -> list[Image]:
+        images = []
+        for start, end in windows:
+            sheets = self._sheets(hands_box, start, end, self._next(f"placement_{start:g}-{end:g}"), n=9)
+            for sheet in sheets:
+                sheet.label = f"步驟 30 放置候選 {start:g}–{end:g}s（以影格確認，不是既有判定）{sheet.label}"
+            images.extend(sheets)
+        return images
+
     def zoom(self, times, region, context_box) -> list[Image]:
         out = self._next(f"zoom_{times[0]:g}.jpg")
         self._run("crop.py", "zoom", self.video, "--times", ",".join(map(str, times)),
@@ -394,19 +403,22 @@ def _read_transcript(path: Path) -> list[dict]:
 async def run_skill_loop(video_path: Path, video_id: str, workdir: Path, model_call: ModelCall,
                          on_progress: ProgressCallback | None = None,
                          max_turns: int | None = None,
-                         on_checkpoint: Callable[[], Awaitable[None]] | None = None) -> dict:
+                         on_checkpoint: Callable[[], Awaitable[None]] | None = None,
+                         *, placement_windows: tuple[tuple[float, float], ...] = ()) -> dict:
     """Run SKILL.md section 0 until a valid final result. Returns result + run metadata.
     Continues from workdir's checkpoint when an earlier attempt left one. A SkillRunError (refusal, too many
     invalid actions, no final) drops the checkpoint, since resuming would only repeat it; other errors,
     such as a 429 once the SDK retries are used up, keep it for the next attempt."""
     try:
-        return await _skill_turns(video_path, video_id, workdir, model_call, on_progress, max_turns, on_checkpoint)
+        return await _skill_turns(video_path, video_id, workdir, model_call, on_progress, max_turns,
+                                  on_checkpoint, placement_windows)
     except SkillRunError:
         (workdir / sop_checkpoint.CHECKPOINT).unlink(missing_ok=True)
         raise
 
 
-async def _skill_turns(video_path, video_id, workdir, model_call, on_progress, max_turns, on_checkpoint) -> dict:
+async def _skill_turns(video_path, video_id, workdir, model_call, on_progress, max_turns, on_checkpoint,
+                       placement_windows) -> dict:
     path = skill_dir()
     validate_action = load_skill_module("validate_action")
     sequence_check = load_skill_module("sequence_check")
@@ -417,8 +429,10 @@ async def _skill_turns(video_path, video_id, workdir, model_call, on_progress, m
     transcript: list[dict] = []
     max_turns = max_turns or settings.SOP_SKILL_MAX_TURNS
     checkpoint_path = workdir / sop_checkpoint.CHECKPOINT
-    mark = sop_checkpoint.fingerprint(await asyncio.to_thread(tree_digest, path), video_id,
-                                      settings.GIT_COMMIT, model_name())
+    rules_digest = await asyncio.to_thread(tree_digest, path)
+    if placement_windows:
+        rules_digest += json.dumps(placement_windows)
+    mark = sop_checkpoint.fingerprint(rules_digest, video_id, settings.GIT_COMMIT, model_name())
     saved = sop_checkpoint.load(checkpoint_path, mark)
     if saved and not sop_checkpoint.files_exist(workdir, [name for name, _ in saved["pinned"] + saved["latest"]]):
         saved = None
@@ -483,6 +497,11 @@ async def _skill_turns(video_path, video_id, workdir, model_call, on_progress, m
             action = parse_action(reply.text)
             _fill_run_facts(action, video_id, state, duration)
             errors, warnings = validate_action.validate(action, state.validator_state(), duration)
+            if not errors and action["action"] == "final":
+                missing = draft_rows.missing_confirmed_placements(state.draft, action["result"]["steps"])
+                if missing:
+                    errors = ["步驟 30 的已確認放置未逐筆保留：" + "、".join(missing)
+                              + "。每筆保留各自的起訖。若新影格排除候選，先更新草稿列。"]
             if not errors and action.get("draft") is not None and full_draft_due(state):
                 missing = draft_rows.missing_rows(state.draft, action["draft"])
                 if missing:
@@ -537,10 +556,15 @@ async def _skill_turns(video_path, video_id, workdir, model_call, on_progress, m
             state.crop_notes = action.get("notes", "")
             sheets, motion_summary, plot = await asyncio.to_thread(
                 runner.set_crop, state.box, state.hands_box)
-            pinned, latest = sheets + [plot], []
+            windows = [(max(0.0, start), min(duration, end)) for start, end in placement_windows
+                       if max(0.0, start) < min(duration, end)]
+            placements = await asyncio.to_thread(runner.placement_overviews, windows, state.hands_box) if windows else []
+            pinned, latest = sheets + [plot] + placements, []
             state.log.append(f"set_crop box={_fmt_box(state.box)} hands_box={_fmt_box(state.hands_box)}")
             feedback = ("裁切已確定。固定圖片改為全片總覽圖與動作能量曲線（之後每回合都會附上），"
                         f"開始 coarse 切分。{warn}")
+            if placements:
+                feedback += " 先逐張檢查步驟 30 的候選圖，分開記錄向針架或原包裝放入與放手，再找給藥的時點。"
             state.images_produced += len(pinned)
             _take_draft(state, action["draft"], draft_rows)
             entry["draft"] = state.draft

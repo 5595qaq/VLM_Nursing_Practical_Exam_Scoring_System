@@ -89,6 +89,8 @@ sop-video-skill 執行迴圈（`backend/tests/test_sop_skill_service.py`）用 f
 pytest backend/tests/test_sop_skill_service.py backend/tests/test_sop_skill_gemini.py backend/tests/test_sop_skill_claude.py -q
 ```
 
+步驟 30 的切分回歸測試確認第一次切分請求就包含前後兩組候選影格，並模擬模型在定稿漏掉第一筆。程式退回定稿，修正後分開保留兩筆，包含給藥前後未確認的區間。
+
 Token 用量記錄（`backend/tests/test_usage.py`）包含不需資料庫的單元測試（token 欄位換算、成本估計、單價設定檢查），以及需要 PostgreSQL 的整合測試（pipeline 每次回應寫一列、API 與 CSV）：
 
 ```bash

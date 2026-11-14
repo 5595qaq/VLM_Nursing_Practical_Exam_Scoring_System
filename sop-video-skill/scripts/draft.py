@@ -28,6 +28,9 @@ SEPARATOR = re.compile(r"^[\s|:\-]+$")
 LEAD_NUMBER = re.compile(r"(\d+)")
 STEP_PREFIX = re.compile(r"^(步驟|step)\s*(?=\d)", re.IGNORECASE)
 DASHES = re.compile(r"\s*[-–—~～]\s*")
+PLACEMENT_KEY = re.compile(r"30\.\d+")
+PLACEMENT_SPAN = re.compile(r"(\d+(?:\.\d+)?)\s*[-–—~～]\s*(\d+(?:\.\d+)?)")
+PLACEMENT_BOUNDARY_SLACK = 1.0  # The final can refine either confirmed boundary (SKILL.md 4).
 
 
 def _key(cell: str) -> str:
@@ -88,6 +91,35 @@ def missing_rows(current: str, update: str) -> list[str]:
     counts). Rows without a step number, such as the header, are not required."""
     have = _parse(_content(update))[0]
     return [key for key in sorted(_parse(current)[0], key=_order) if LEAD_NUMBER.match(key) and key not in have]
+
+
+def missing_confirmed_placements(current: str, steps: list[dict]) -> list[str]:
+    """Match each confirmed SOP 30 draft row to a distinct final interval."""
+    intervals = sorted({(step["start"], step["end"]) for step in steps
+                        if step["step_id"] == 30 and step["status"] == "detected"})
+    missing = []
+    confirmed = []
+    rows, _ = _parse(current)
+    for key, row in rows.items():
+        if not PLACEMENT_KEY.fullmatch(key) or row is None:
+            continue
+        cells = row.split(" | ")
+        if len(cells) < 4 or cells[3] != "已確認":
+            continue
+        span = PLACEMENT_SPAN.fullmatch(cells[1])
+        if not span:
+            missing.append(f"{key}（區間應為秒數，例如 83.0–84.5）")
+            continue
+        start, end = map(float, span.groups())
+        confirmed.append((start, end, f"{key}（{cells[1]}）"))
+    for start, end, label in sorted(confirmed):
+        for index, (left, right) in enumerate(intervals):
+            if max(abs(start - left), abs(end - right)) <= PLACEMENT_BOUNDARY_SLACK:
+                intervals = intervals[index + 1:]
+                break
+        else:
+            missing.append(label)
+    return missing
 
 
 def main(argv: list[str]) -> int:

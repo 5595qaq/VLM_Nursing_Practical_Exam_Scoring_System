@@ -167,6 +167,46 @@ async def test_loop_runs_real_scripts_and_returns_validated_result(video, tmp_pa
     assert (tmp_path / "motion.png").exists() and list(tmp_path.glob("*zoom_*.jpg"))
 
 
+async def test_final_keeps_both_confirmed_sop30_placements(tmp_path, monkeypatch):
+    # Reuse the same image for each action. This regression is about draft and final validation.
+    frame_path = tmp_path / "frame.jpg"
+    frame_path.write_bytes(b"test frame")
+    frame = skill.Image(frame_path, "test frame")
+
+    def prepare(runner):
+        runner.probe = {"duration": DURATION, "width": 640, "height": 360}
+        return [frame]
+
+    monkeypatch.setattr(skill.ScriptRunner, "prepare", prepare)
+    monkeypatch.setattr(skill.ScriptRunner, "set_crop", lambda *_: ([frame], {}, frame))
+    monkeypatch.setattr(skill.ScriptRunner, "overview", lambda *_: [frame])
+    monkeypatch.setattr(skill.ScriptRunner, "zoom", lambda *_: [frame])
+    def sheets(_runner, _box, start, end, _prefix, *, n):
+        assert n == 9
+        return [skill.Image(frame_path, f"sample {start:g}–{end:g}")]
+
+    monkeypatch.setattr(skill.ScriptRunner, "_sheets", sheets)
+    early = {"step_id": 30, "status": "detected", "start": 38.6, "end": 40.5,
+             "confidence": 0.9, "evidence": "放置（給藥前後未確認）：zoom@38.6、zoom@40.5"}
+    one = valid_result()
+    one["steps"][-1].update(start=54.0, end=56.0)
+    both = {**one, "steps": [*one["steps"][:-1], early, one["steps"][-1]]}
+    overview = {**HAPPY_PATH[3], "draft": "30.1 | 38.5–40.0 | zoom@38.5, zoom@40 | 已確認 | 待確認給藥"}
+    zoom = {**HAPPY_PATH[4], "draft": "30.2 | 54–56 | zoom@54, zoom@56 | 已確認 | 待確認給藥"}
+    model = ScriptedModel([HAPPY_PATH[2], overview, zoom,
+                           {"action": "final", "result": one}, {"action": "final", "result": both}])
+
+    outcome = await skill.run_skill_loop(frame_path, "VIDEO-30", tmp_path, model,
+                                         placement_windows=((37, 42), (53, 57)))
+
+    first_segmentation_request = texts(pinned_prefix(model.requests[1][1]))
+    assert "步驟 30 放置候選 37–42s" in first_segmentation_request
+    assert "步驟 30 放置候選 53–57s" in first_segmentation_request
+    assert "30.1（38.5–40.0）" in texts(model.requests[-1][1])
+    assert [(s["start"], s["end"]) for s in outcome["result"]["steps"] if s["step_id"] == 30] == [
+        (38.6, 40.5), (54.0, 56.0)]
+
+
 async def test_invalid_final_is_returned_to_model(video, tmp_path):
     bad = valid_result()
     bad["steps"] = bad["steps"][:-1]  # step 30 missing
