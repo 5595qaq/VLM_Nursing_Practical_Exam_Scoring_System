@@ -53,7 +53,7 @@ python sop-video-grading/scripts/labels_to_segmentation.py --labels 標註表.cs
 python sop-video-grading/scripts/skill_doc.py -o SKILL.full.md  # 組出評分 agent 讀到的完整 SKILL.md（SKILL.md + criteria/）
 ```
 
-`test_grading_rules.py` 也檢查步驟 30 未定位時仍交由評分 agent 看畫面，以及 30a 的時間窗延伸到影片結尾。
+`test_grading_rules.py` 也檢查步驟 30 未定位時仍交由評分 agent 看畫面，以及給藥前後兩項的時間窗延伸到影片結尾。`test_rubric.py` 檢查兩項完成、一項完成、均未完成及畫面不足的整步判定。
 
 合併 SOP 規則的 PR 前，CI 會跑版本檢查（分支版本要改成正式版本；改了規則要遞增版本、寫進 `CHANGELOG.md` 並移走 `changelog.d/` 的片段，見 AGENTS.md「多人協作」）。本機可以先跑；疊代中的分支版本（例如 `0.29-10b.1`）在這裡失敗是正常的：
 

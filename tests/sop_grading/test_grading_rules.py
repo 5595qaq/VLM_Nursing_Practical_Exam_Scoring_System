@@ -236,7 +236,9 @@ def test_disposal_checks_video_end_even_if_step_30_is_missing(segmentation):
     disposal = criterion(result, "30a")
     assert disposal["verdict"] == "待判定"
     assert disposal["window"] == [278.0, 400.0]
-    assert criterion(result, "30b")["verdict"] == "待判定"
+    after = criterion(result, "30b")
+    assert after["verdict"] == "待判定"
+    assert after["window"] == disposal["window"]
 
 
 def test_not_visible_criterion_is_fixed_and_explained(segmentation):
