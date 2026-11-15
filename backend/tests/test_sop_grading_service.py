@@ -65,6 +65,28 @@ def segmentation(*, wash_first=False):
             "steps": steps, "unassigned_spans": [], "observations": [], "zoom_log": []}
 
 
+def test_sop30_grader_receives_substitute_phase_labels_without_model_explanations():
+    seg = segmentation()
+    seg["steps"][-2]["evidence"] = "hidden step 29 evidence"
+    seg["steps"][-1].update(start=40.0, end=42.0,
+                           evidence="給藥前放置（切分錨點：替代）：hidden before evidence")
+    seg["steps"].extend([
+        {"step_id": 30, "start": 54.0, "end": 55.5,
+         "evidence": "給藥後放置（切分錨點：替代）：hidden after evidence"},
+        {"step_id": 30, "start": 57.0, "end": 58.0, "evidence": "給藥後放置：legacy evidence"},
+    ])
+    task = {"window_steps": [29, 30], "criteria": [{"step_id": 30, "searching": False}]}
+
+    lines = "\n".join(grading._segment_lines(task, seg))
+
+    assert "步驟 30（給藥前放置，依切分替代錨點）：00:40.0–00:42.0" in lines
+    assert "步驟 30（給藥後放置，依切分替代錨點）：00:54.0–00:55.5" in lines
+    assert "步驟 30：00:57.0–00:58.0" in lines
+    assert "hidden" not in lines and "legacy evidence" not in lines
+    task["criteria"][0]["step_id"] = 29
+    assert all("替代錨點" not in line for line in grading._segment_lines(task, seg))
+
+
 def final_for(content, verdict="正確"):
     text = content[0]["text"]
     ref = re.search(r"(clip@[\d.]+-[\d.]+|ov@[\d.]+-[\d.]+)", "\n".join(b.get("text", "") for b in content)).group(1)

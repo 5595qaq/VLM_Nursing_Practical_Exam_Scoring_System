@@ -1,5 +1,5 @@
 {
-  "version": "1.30-disposal.3",
+  "version": "1.30-disposal.4",
   "description": "無菌抽藥技術－vial 粉劑 30 步評分標準。category：program＝由切分結果以程式判定；visual＝評分 agent 看畫面（audio=true 時連聲音一起聽）；not_visible＝影片看不到，固定輸出「無法判定」且不影響步驟判定。visual 的 window_steps＝要看的步驟區間；task＝同名的標準共用一個評分任務（兩條都不在搜尋、且區間相距不超過 10 秒時；否則各自一個任務）；search_steps＝[第一步, 最後一步]，切分沒找到該步時，改在這兩步之間（含）所有步驟的區間內找，且該步的切分 not_performed 不直接判錯誤；after_step=true＝動作可以發生在自己的步驟之後，該步的切分 not_performed 也不直接判錯誤。key=true 的標準錯誤時整步判「錯誤」。require_key_confirmation=true 時，關鍵標準須確認達標才可判整步正確或部分正確。cumulative_seconds=true 時，用 times 加總實際動作時間。",
   "steps": [
     {"step_id": 1, "text": "洗手。", "criteria": [
@@ -112,8 +112,8 @@
       {"id": "29d", "text": "抽完藥並將空針放上針座後，再拿起 vial 與給藥紀錄單核對", "category": "visual", "key": true, "window_steps": [29, 30], "allow_partial": false}
     ]},
     {"step_id": 30, "text": "給藥前放置空針，取出給藥後再次放置。給藥前後都可放回原塑膠包裝袋或插放於針架。", "score_by_completed_criteria": true, "criteria": [
-      {"id": "30a", "text": "只評給藥前：抽藥完成後將空針插入針架或放回原塑膠包裝袋並放手。放回包裝時持針心或針柄，不能持針頭。只持針前往給藥未完成放置。", "category": "visual", "key": false, "window_steps": [28, 29, 30], "after_step": true, "through_video_end": true, "allow_partial": false},
-      {"id": "30b", "text": "只評給藥後：實際給藥完成後，將空針插回針架或放回原塑膠包裝袋並放手。放回包裝時持針心或針柄，不能持針頭。只平放在桌面不算完成。", "category": "visual", "key": false, "window_steps": [28, 29, 30], "after_step": true, "through_video_end": true, "allow_partial": false}
+      {"id": "30a", "text": "只評給藥前或切分替代錨點前的放置：將空針插入針架或放回原塑膠包裝袋並放手。放回包裝時持針心或針柄，不能持針頭。只持針離開未完成放置。", "category": "visual", "key": false, "window_steps": [28, 29, 30], "after_step": true, "through_video_end": true, "allow_partial": false},
+      {"id": "30b", "text": "只評給藥後或切分替代錨點後的放置：將空針插回針架或放回原塑膠包裝袋並放手。提供替代錨點時，實際給藥未入鏡仍評該段放置。放回包裝時持針心或針柄，不能持針頭。只平放在桌面不算完成。", "category": "visual", "key": false, "window_steps": [28, 29, 30], "after_step": true, "through_video_end": true, "allow_partial": false}
     ]}
   ]
 }
