@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 8.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 25257,
+  "cached_input_tokens": 0,
+  "output_tokens": 89,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@538-575（context box，有聲音；片段內 00:00 ＝ 影片 08:58.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [540.0, 540.5, 545.5, 558.0], \"region\": [0.22, 0.25, 0.55, 0.72], \"reason\": \"確認針頭與針筒交接處是否墊有白色酒精棉片\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 8.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 26483,
+  "cached_input_tokens": 0,
+  "output_tokens": 188,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@538-575（context box，有聲音；片段內 00:00 ＝ 影片 08:58.0）",
+   "zoom@540/540.5/545.5/558 region=[0.220, 0.250, 0.550, 0.720]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"15a\", \"verdict\": \"正確\", \"explanation\": \"於 09:00.5（zoom@540.5）清楚看到考生將白色方形酒精棉片墊在針頭與針筒接合處，並持續墊著進行排氣至 09:33.0（clip@538-575 片段內 00:02.5–00:35.0）。\", \"times\": [[540.5, 573.0]], \"evidence\": [\"clip@538-575\", \"zoom@540.5\", \"zoom@545.5\", \"zoom@558\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
