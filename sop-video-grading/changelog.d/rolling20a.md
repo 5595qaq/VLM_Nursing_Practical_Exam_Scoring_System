@@ -1,0 +1,5 @@
+- 20a「雙手旋轉 vial」改成老師確認（老師 2026-11-08 回覆 Q14，`experiments/2026-11-08-teacher-reply.md`）：**只改文字，判法不變**。
+  - `criteria/07-rolling-20a.md`：只用單手搖晃 vial 判錯誤並加上 `needs_review: true`，拿掉「暫定」「標準待老師確認」。
+  - `rubric.json` 20a 的 `note`：拿掉「暫定（標準文字未經人工核對）」，改成老師確認「雙手掌心夾住 vial 來回搓滾或旋轉、不要求多久；只用單手搖晃判錯誤並轉人工」。`text`、`key`、`category`、`window_steps`、`clip` 都不改。
+  - 判法沒變，不重跑付費評分。
+- `.github/CODEOWNERS`：`criteria/07-rolling-20a.md` 由 @od3w 負責。
