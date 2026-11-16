@@ -167,7 +167,8 @@ async def test_loop_runs_real_scripts_and_returns_validated_result(video, tmp_pa
     assert (tmp_path / "motion.png").exists() and list(tmp_path.glob("*zoom_*.jpg"))
 
 
-async def test_final_keeps_both_confirmed_sop30_placements(tmp_path, monkeypatch):
+@pytest.mark.parametrize("early_status", ["已確認", "中 | 待確認動作鏈"])
+async def test_final_keeps_both_sop30_placements(tmp_path, monkeypatch, early_status):
     # Reuse the same image for each action. This regression is about draft and final validation.
     frame_path = tmp_path / "frame.jpg"
     frame_path.write_bytes(b"test frame")
@@ -191,7 +192,7 @@ async def test_final_keeps_both_confirmed_sop30_placements(tmp_path, monkeypatch
     one = valid_result()
     one["steps"][-1].update(start=54.0, end=56.0)
     both = {**one, "steps": [*one["steps"][:-1], early, one["steps"][-1]]}
-    overview = {**HAPPY_PATH[3], "draft": "30.1 | 38.5–40.0 | zoom@38.5, zoom@40 | 已確認 | 待確認給藥"}
+    overview = {**HAPPY_PATH[3], "draft": f"30.1 | 38.5–40.0 | zoom@38.5, zoom@40 | {early_status}"}
     zoom = {**HAPPY_PATH[4], "draft": "30.2 | 54–56 | zoom@54, zoom@56 | 已確認 | 待確認給藥"}
     model = ScriptedModel([HAPPY_PATH[2], overview, zoom,
                            {"action": "final", "result": one}, {"action": "final", "result": both}])
@@ -202,7 +203,9 @@ async def test_final_keeps_both_confirmed_sop30_placements(tmp_path, monkeypatch
     first_segmentation_request = texts(pinned_prefix(model.requests[1][1]))
     assert "步驟 30 放置候選 37–42s" in first_segmentation_request
     assert "步驟 30 放置候選 53–57s" in first_segmentation_request
-    assert "30.1（38.5–40.0）" in texts(model.requests[-1][1])
+    feedback = texts(model.requests[-1][1])
+    assert "30.1（38.5–40.0）" in feedback
+    assert "給藥前後未確認" in feedback
     assert [(s["start"], s["end"]) for s in outcome["result"]["steps"] if s["step_id"] == 30] == [
         (38.6, 40.5), (54.0, 56.0)]
 

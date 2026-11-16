@@ -498,10 +498,11 @@ async def _skill_turns(video_path, video_id, workdir, model_call, on_progress, m
             _fill_run_facts(action, video_id, state, duration)
             errors, warnings = validate_action.validate(action, state.validator_state(), duration)
             if not errors and action["action"] == "final":
-                missing = draft_rows.missing_confirmed_placements(state.draft, action["result"]["steps"])
+                missing = draft_rows.missing_placements(state.draft, action["result"]["steps"])
                 if missing:
-                    errors = ["步驟 30 的已確認放置未逐筆保留：" + "、".join(missing)
-                              + "。每筆保留各自的起訖。若新影格排除候選，先更新草稿列。"]
+                    errors = ["步驟 30 的放置候選未逐筆處理：" + "、".join(missing)
+                              + "。看到放手及留置就保留各段起訖，即使給藥前後未確認。"
+                              "若看不清放置或有影格可以排除候選，先更新草稿列並寫明理由。"]
             if not errors and action.get("draft") is not None and full_draft_due(state):
                 missing = draft_rows.missing_rows(state.draft, action["draft"])
                 if missing:
