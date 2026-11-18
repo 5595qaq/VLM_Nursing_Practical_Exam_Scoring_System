@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 327.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 19750,
+  "cached_input_tokens": 0,
+  "output_tokens": 105,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@445-456（hands_box，n=9）#0=07:25.0、#1=07:26.4、#2=07:27.8、#3=07:29.1、#4=07:30.5、#5=07:31.9、#6=07:33.2、#7=07:34.6、#8=07:36.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [447.8, 449.1, 450.5, 453.2], \"region\": [0.35, 0.45, 0.65, 0.9], \"reason\": \"放大查看針頭插入 vial 中心、持毛筆手勢、針筒垂直度，以及刺入與打入空氣時 vial 是否在桌面上\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 9.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 20993,
+  "cached_input_tokens": 0,
+  "output_tokens": 101,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@445-456（hands_box，n=9）#0=07:25.0、#1=07:26.4、#2=07:27.8、#3=07:29.1、#4=07:30.5、#5=07:31.9、#6=07:33.2、#7=07:34.6、#8=07:36.0",
+   "zoom@447.8/449.1/450.5/453.2 region=[0.350, 0.450, 0.650, 0.900]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [447.8, 449.1, 450.5, 453.2], \"region\": [0.20, 0.45, 0.45, 0.90], \"reason\": \"調整 region 往左以完整拍到右手持針姿勢、針頭插入 vial 中心位置以及 vial 放在桌面上的狀態\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 28.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 22259,
+  "cached_input_tokens": 17912,
+  "output_tokens": 403,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@445-456（hands_box，n=9）#0=07:25.0、#1=07:26.4、#2=07:27.8、#3=07:29.1、#4=07:30.5、#5=07:31.9、#6=07:33.2、#7=07:34.6、#8=07:36.0",
+   "zoom@447.8/449.1/450.5/453.2 region=[0.350, 0.450, 0.650, 0.900]",
+   "zoom@447.8/449.1/450.5/453.2 region=[0.200, 0.450, 0.450, 0.900]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"22b\", \"verdict\": \"正確\", \"explanation\": \"07:27.8–07:29.1 右手以拇指、食指與中指握住針筒外管，持毛筆方式將針頭垂直向下刺入 vial，手指未碰觸針頭、針座及活塞柄內側。\", \"times\": [[447.8, 449.1]], \"evidence\": [\"zoom@447.8\", \"zoom@449.1\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"22c\", \"verdict\": \"正確\", \"explanation\": \"07:27.8–07:30.5 針頭清楚刺入 vial 瓶口橡皮塞中心位置。\", \"times\": [[447.8, 450.5]], \"evidence\": [\"zoom@447.8\", \"zoom@449.1\", \"zoom@450.5\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"22d\", \"verdict\": \"正確\", \"explanation\": \"07:27.8–07:33.2 左手將 vial 固定於桌面上，右手持針筒垂直向下刺入並推針心打入空氣，全程 vial 底部皆貼在桌面上未拿離桌面。\", \"times\": [[447.8, 453.2]], \"evidence\": [\"zoom@447.8\", \"zoom@449.1\", \"zoom@450.5\", \"zoom@453.2\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

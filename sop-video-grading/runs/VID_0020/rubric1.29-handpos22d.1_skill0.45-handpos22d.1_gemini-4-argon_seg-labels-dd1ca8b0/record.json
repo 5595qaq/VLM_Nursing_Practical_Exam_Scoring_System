@@ -33,6 +33,33 @@
     "grading_seconds": 361.6,
     "total_seconds": 766.9
    }
+  },
+  {
+   "run": 2,
+   "by": "余亮岑",
+   "date": "2026-11-18",
+   "commit": "0249f43a70242fa532d8a05b03df3044f3913ae0",
+   "video_sha256": "c5793842b4e7666ce3f1dd9cf76141b36e864eb06cf49b28e1cde922f14d9eb6",
+   "steps": [],
+   "failed_tasks": [
+    {
+     "task": "22",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    }
+   ],
+   "segmentation": "recorded segmentation.json",
+   "usage": {
+    "input_tokens": 63180,
+    "cached_input_tokens": 17912,
+    "output_tokens": 515,
+    "thinking_tokens": 240
+   },
+   "timing": {
+    "started_at": "2026-11-18T16:02:33+00:00",
+    "grading_seconds": 486.5,
+    "total_seconds": 486.5,
+    "checkpoints_found": true
+   }
   }
  ]
 }
