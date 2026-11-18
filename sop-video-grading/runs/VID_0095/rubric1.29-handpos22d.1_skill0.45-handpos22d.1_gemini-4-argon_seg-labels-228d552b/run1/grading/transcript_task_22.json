@@ -1,0 +1,64 @@
+[
+ {
+  "turn": 1,
+  "seconds": 9.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 19710,
+  "cached_input_tokens": 0,
+  "output_tokens": 263,
+  "thinking_tokens": 172,
+  "materials": [
+   "ov@295-301（hands_box，n=9）#0=04:55.0、#1=04:55.8、#2=04:56.5、#3=04:57.2、#4=04:58.0、#5=04:58.8、#6=04:59.5、#7=05:00.2、#8=05:01.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [294.2, 295.0, 295.8, 296.5], \"region\": [0.35, 0.5, 0.65, 0.95], \"reason\": \"查看刺入vial時的持針姿勢、刺入位置與vial是否在桌面上\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 21.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 20949,
+  "cached_input_tokens": 17912,
+  "output_tokens": 214,
+  "thinking_tokens": 124,
+  "materials": [
+   "ov@295-301（hands_box，n=9）#0=04:55.0、#1=04:55.8、#2=04:56.5、#3=04:57.2、#4=04:58.0、#5=04:58.8、#6=04:59.5、#7=05:00.2、#8=05:01.0",
+   "zoom@294.2/295/295.8/296.5 region=[0.350, 0.500, 0.650, 0.950]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [296.8, 297.1, 297.4, 297.8], \"region\": [0.35, 0.4, 0.65, 0.95], \"reason\": \"確認打入空氣的過程與針心是否推到底後才將 vial 拿起\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 6.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 22182,
+  "cached_input_tokens": 0,
+  "output_tokens": 98,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@295-301（hands_box，n=9）#0=04:55.0、#1=04:55.8、#2=04:56.5、#3=04:57.2、#4=04:58.0、#5=04:58.8、#6=04:59.5、#7=05:00.2、#8=05:01.0",
+   "zoom@294.2/295/295.8/296.5 region=[0.350, 0.500, 0.650, 0.950]",
+   "zoom@296.8/297.1/297.4/297.8 region=[0.350, 0.400, 0.650, 0.950]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [298.0, 298.8, 299.5, 300.2], \"region\": [0.35, 0.2, 0.65, 0.7], \"reason\": \"Check if air is injected while vial is lifted inverted at 04:58.0-05:00.2.\"}",
+  "errors": []
+ },
+ {
+  "turn": 4,
+  "seconds": 10.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 23443,
+  "cached_input_tokens": 0,
+  "output_tokens": 497,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@295-301（hands_box，n=9）#0=04:55.0、#1=04:55.8、#2=04:56.5、#3=04:57.2、#4=04:58.0、#5=04:58.8、#6=04:59.5、#7=05:00.2、#8=05:01.0",
+   "zoom@294.2/295/295.8/296.5 region=[0.350, 0.500, 0.650, 0.950]",
+   "zoom@296.8/297.1/297.4/297.8 region=[0.350, 0.400, 0.650, 0.950]",
+   "zoom@298/298.8/299.5/300.2 region=[0.350, 0.200, 0.650, 0.700]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"22b\", \"verdict\": \"正確\", \"explanation\": \"考生為左撇子（左右手對調）。04:55.0–04:56.8 左手以持毛筆方式握住針筒外管，針筒垂直向下刺入 vial，手指未碰觸針頭、針座及活塞柄內側。\", \"times\": [[295.0, 296.8]], \"evidence\": [\"zoom@295\", \"zoom@295.8\", \"zoom@296.5\", \"zoom@296.8\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"22c\", \"verdict\": \"正確\", \"explanation\": \"04:55.8–04:56.8 針頭垂直刺入 vial 橡皮塞中心。\", \"times\": [[295.8, 296.8]], \"evidence\": [\"zoom@295.8\", \"zoom@296.5\", \"zoom@296.8\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"22d\", \"verdict\": \"錯誤\", \"explanation\": \"04:55.8–04:56.8 針頭刺入置於桌面上的 vial 時活塞推桿仍外露一大段（尚未推針心打入空氣），04:57.1–04:57.4 尚未打入空氣即將 vial 連同空針拿離桌面翻轉舉起，04:58.0–04:58.8 在空中倒舉狀態下才將活塞推到底打入空氣，不符合在桌面上打入空氣的標準。\", \"times\": [[295.8, 298.8]], \"evidence\": [\"zoom@296.5\", \"zoom@296.8\", \"zoom@297.1\", \"zoom@297.4\", \"zoom@298\", \"zoom@298.8\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]
