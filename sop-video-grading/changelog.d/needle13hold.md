@@ -1,4 +1,3 @@
-- **步驟 13（issue #137，`criteria/04-needle-down-13b.md`、rubric；分支版本 SKILL 0.45-needle13hold.1／rubric 1.29-needle13hold.1）：**
-  - 移除 13c「插針前旋轉針頭與空針的交界」（原本 `not_visible`、不計分）：老師 2026-11-17 確認旋轉針頭與空針交界歸在步驟 10，不屬於步驟 13。`criteria/04-needle-down-13b.md` 刪掉 13c 段落和「之前的判法（暫停用）」；`criteria/README.md`、`README.md` 的 `not_visible` 範例、`tests/sop_grading/test_rubric.py` 同步。步驟 10（`criteria/08-hand-posture.md`）不在這個分支修改，另行通知負責人。
-  - 13b 改看**插入後維持的角度**（**暫定，待老師確認**；使用者決定 2026-11-19）：看針頭插入稀釋液瓶之後、抽取稀釋液（步驟 14）期間針筒維持的方向，`window_steps` 由 [13] 改成 [13, 14]。維持期間針頭比針筒尾端低正確；針筒水平或針頭朝上錯誤；剛插入時的短暫調整不算；插針不只一次時以最後一次插入後的維持角度為準。正面鏡頭看不出前後傾斜時，用前臂、手腕的角度和針筒在畫面上的長度判斷，仍看不出來判無法判定。之前看「插針那一刻」，改的原因是剛插入時學生常會調整，老師要看的是抽取時的角度。
-  - 既有紀錄的步驟 13 要用新版本重評才能比較（13b 的區間和判法都變了；整步也少了一條固定無法判定的 13c）。
+- **步驟 13：移除 13c（issue #137，`criteria/04-needle-down-13b.md`、rubric；分支版本 SKILL 0.45-needle13hold.1／rubric 1.29-needle13hold.1）：**
+  - 移除 13c「插針前旋轉針頭與空針的交界」（原本 `not_visible`、固定無法判定、不計分）：老師 2026-11-17 確認旋轉針頭與空針交界歸在步驟 10，不屬於步驟 13。`criteria/04-needle-down-13b.md` 刪掉 13c 段落和「之前的判法（暫停用）」；`criteria/README.md`、`README.md` 的 `not_visible` 範例、`tests/sop_grading/test_rubric.py` 同步。步驟 10（`criteria/08-hand-posture.md`）不在這個分支修改，另行通知負責人。
+  - 13b 不變（仍看插針那一刻的針筒方向）。13c 不交給評分 agent、也不影響整步判定，所以既有紀錄的判定不會變，不重評。
