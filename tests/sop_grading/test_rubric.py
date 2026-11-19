@@ -40,6 +40,11 @@ def test_rubric_classification_matches_the_plan():
     assert [c["id"] for c in step13["criteria"]] == ["13a", "13b"]
     assert aggregate(step13, {"13a": CORRECT, "13b": CORRECT}) == CORRECT
     assert aggregate(step13, {"13a": CORRECT, "13b": WRONG}) == PARTIAL
+    # a not_visible criterion (always undetermined) must not drag its step down
+    step14 = next(s for s in load_rubric()["steps"] if s["step_id"] == 14)
+    assert by_id["14b"]["category"] == "not_visible"
+    assert aggregate(step14, {"14a": CORRECT, "14b": UNDETERMINED}) == CORRECT
+    assert aggregate(step14, {"14a": WRONG, "14b": UNDETERMINED}) == WRONG
     # rolling the vial is watched on a clip, not inferred from the step being located (rubric 1.8)
     assert by_id["20a"]["category"] == "visual" and by_id["20a"]["key"] is True
     assert by_id["20a"]["window_steps"] == [20] and by_id["20a"]["clip"] is True
