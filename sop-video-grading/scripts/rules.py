@@ -23,6 +23,7 @@ from rubric import (CORRECT, NOT_APPLICABLE, PENDING, SOURCE_FOR, STEP_COUNT, UN
                     fmt_time, load_rubric, search_range)
 
 WINDOW_MARGIN = 2.0  # seconds added on both sides of a visual criterion's window
+WASH_ORDER_TOLERANCE = 1.0  # seconds allowed between independently measured step boundaries
 
 
 def grade_from_segmentation(seg: dict, rubric: dict | None = None,
@@ -46,14 +47,17 @@ def build_step(step: dict, criteria: list[dict], *, segmentation: dict | None = 
     if step.get("removed"):
         return {"step_id": step["step_id"], "verdict": NOT_APPLICABLE,
                 "explanation": "評分表已移除此步驟，不評分。", "confidence": 1.0, "criteria": []}
-    if segmentation is not None and step["step_id"] == 1:
+    if segmentation is not None and step["step_id"] == 1 and any(
+        c["id"] == "1c" and c["category"] == "program" for c in step["criteria"]
+    ):
         measured = next((c.get("span") for c in criteria if c["criterion_id"] == "1a"), None)
         if measured is not None:
             later = [e for e in segmentation["steps"] if e["step_id"] >= 2]
             criteria = [_wash_before_later_steps(measured[1], later) if c["criterion_id"] == "1c" else c
                         for c in criteria]
     texts = {c["id"]: c["text"] for c in step["criteria"]}
-    verdict = aggregate(step, {c["criterion_id"]: c["verdict"] for c in criteria})
+    verdict = aggregate(step, {c["criterion_id"]: c["verdict"] for c in criteria},
+                        reasons={c["criterion_id"]: c.get("reason") for c in criteria})
     scored = [c for c, r in zip(criteria, step["criteria"]) if r["category"] != "not_visible"]
     explanation = "；".join(
         f"{c['criterion_id']}「{texts[c['criterion_id']]}」{c['verdict']}：{c['explanation'].rstrip('。')}"
@@ -111,8 +115,10 @@ def _wash_before_later_steps(wash_end: float | None, later: list[dict]) -> dict:
     if wash_end is not None and first is not None:
         sid, start = first["step_id"], first["start"]
         evidence.append(f"seg:step {sid}")
-        verdict = WRONG if start < wash_end else CORRECT
+        verdict = WRONG if start < wash_end - WASH_ORDER_TOLERANCE else CORRECT
         detail = f"洗手於 {fmt_time(wash_end)}（{wash_end:g} 秒）結束，最早的後續步驟 {sid} 於 {fmt_time(start)}（{start:g} 秒）開始。"
+        if start < wash_end and verdict == CORRECT:
+            detail += f"邊界差 {wash_end - start:.2f} 秒，未超過 {WASH_ORDER_TOLERANCE:g} 秒容差，順序判正確。"
         reason = None
     elif wash_end is not None and {e["step_id"] for e in later if e["status"] == "not_performed"} == set(range(2, STEP_COUNT + 1)):
         verdict, detail, reason = CORRECT, f"洗手於 {fmt_time(wash_end)} 結束，未執行任何後續步驟。", None
@@ -159,6 +165,8 @@ def _grade(c: dict, sid: int, entries: dict[int, list[dict]], duration: float, m
         steps = f"{window_steps[0]}–{window_steps[-1]}" if search else "、".join(map(str, window_steps))
         return _criterion(c, UNDETERMINED, f"切分結果未定位步驟 {steps}，無法取得要看的畫面區間。",
                           source="rule", evidence=seg_ref, reason="切分未定位")
+    if c.get("rule", {}).get("type") == "wash_before_contact":
+        window[0] = 0.0
     where = f"{search_note(sid, window_steps)}；" if search else ""
     return _criterion(c, PENDING, f"等待評分 agent 看畫面判定（{where}區間 {fmt_time(window[0])}–{fmt_time(window[1])}）。",
                       window=window)

@@ -2,10 +2,12 @@
 
 import json
 
+import pytest
+
 from grading_helpers import criterion, fill_visual, flag_review, make_segmentation, result_step, seg_step
 from rules import build_step, grade_from_segmentation, main
 from rubric import aggregate, load_rubric
-from validate_grading import validate_grading
+from validate_grading import check_wash_order, validate_grading
 from validate_result import validate_result as validate_segmentation
 
 
@@ -54,28 +56,59 @@ def test_missing_motion_with_enough_time_makes_step_wrong(segmentation):
     assert build_step(load_rubric()["steps"][0], step["criteria"])["verdict"] == "錯誤"
 
 
-def test_wash_order_uses_the_actual_wash_end_and_earliest_step_two_start(segmentation):
+def test_wash_order_does_not_use_reading_start_as_object_contact(segmentation):
     second = seg_step(segmentation, 2)
-    second.update(status="detected", start=20.0, end=32.0, logical_window=None)
-    segmentation["steps"].append({**second, "start": 24.0, "end": 28.0})
+    second.update(status="detected", start=2.5, end=13.5, logical_window=None)
+    assert criterion(grade_from_segmentation(segmentation), "1c")["verdict"] == "待判定"
     result = fill_visual(grade_from_segmentation(segmentation))
-    assert criterion(result, "1c")["verdict"] == "正確"
-
     spec = load_rubric()["steps"][0]
+    criterion(result, "1a")["span"] = [0.5, 12.5]
+    criterion(result, "1c").update(times=[[13.0, 13.0]],
+                                  explanation="00:00–00:12.5 洗手，00:13 才拿起 vial。")
     step = result_step(result, 1)
-    criterion(result, "1a")["span"] = [0.0, 21.0]
-    assert build_step(spec, step["criteria"], segmentation=segmentation)["verdict"] == "錯誤"
-    criterion(result, "1a")["span"] = [0.0, 20.0]
-    assert build_step(spec, step["criteria"], segmentation=segmentation)["verdict"] == "正確"
+    rebuilt = build_step(spec, step["criteria"], segmentation=segmentation)
+    assert rebuilt["verdict"] == "正確"
+    assert rebuilt["criteria"][-1]["source"] == "vlm"
+    assert check_wash_order(rebuilt["criteria"], spec) == []
+
+
+@pytest.mark.parametrize("overlap, expected", [
+    (0.1, "正確"), (0.5, "正確"), (1.0, "正確"), (1.01, "錯誤"),
+])
+@pytest.mark.parametrize("later_step", [2, 3])
+def test_wash_order_allows_one_second_between_measured_boundaries(segmentation, overlap, expected, later_step):
+    if later_step == 3:
+        seg_step(segmentation, 2).update(status="not_performed", logical_window=None)
+    seg_step(segmentation, later_step).update(status="detected", start=20.0, end=32.0, logical_window=None)
+    seg_step(segmentation, 1).update(end=20.0 + overlap)
+    assert criterion(grade_from_segmentation(segmentation), "1c")["verdict"] == "待判定"
+    result = fill_visual(grade_from_segmentation(segmentation))
+    criterion(result, "1a")["span"] = [0.0, 20.0 + overlap]
+    criterion(result, "1c").update(verdict=expected, times=[[20.0, 20.0]])
+    step = build_step(load_rubric()["steps"][0], result_step(result, 1)["criteria"], segmentation=segmentation)
+    assert step["verdict"] == expected
+    assert check_wash_order(step["criteria"], load_rubric()["steps"][0]) == []
+    criterion({"steps": [step]}, "1c")["verdict"] = "錯誤" if expected == "正確" else "正確"
+    assert check_wash_order(step["criteria"], load_rubric()["steps"][0])
 
 
 def test_wash_order_detects_any_later_step_even_if_step_two_is_skipped(segmentation):
     seg_step(segmentation, 2).update(status="not_performed", logical_window=None)
     seg_step(segmentation, 3).update(start=15.0, end=18.0)
-    result = grade_from_segmentation(segmentation)
+    result = fill_visual(grade_from_segmentation(segmentation))
     order = criterion(result, "1c")
-    assert order["verdict"] == "錯誤" and "seg:step 3" in order["evidence"]
-    assert result_step(result, 1)["verdict"] == "錯誤"
+    order.update(verdict="錯誤", times=[[15.0, 15.0]], explanation="00:15 拿起藥瓶，00:18 才洗手結束。")
+    criterion(result, "1a")["span"] = [0.0, 18.0]
+    spec = load_rubric()["steps"][0]
+    assert build_step(spec, result_step(result, 1)["criteria"], segmentation=segmentation)["verdict"] == "錯誤"
+    assert check_wash_order(result_step(result, 1)["criteria"], spec) == []
+
+
+def test_contact_check_window_includes_actions_before_washing(segmentation):
+    seg_step(segmentation, 1).update(start=50.0, end=65.0)
+    result = grade_from_segmentation(segmentation)
+    assert criterion(result, "1a")["window"] == [48.0, 67.0]
+    assert criterion(result, "1c")["window"] == [0.0, 67.0]
 
 
 def test_flick_without_pushing_air_out_is_partial(segmentation):

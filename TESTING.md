@@ -39,7 +39,7 @@ python sop-video-skill/scripts/schema_tools.py sop-video-skill/schema.json > out
 python sop-video-skill/scripts/schema_tools.py sop-video-skill/actions.schema.json > actions.json  # 動作 schema（自動嵌入 schema.json）
 ```
 
-步驟 1 測試洗手未完成就開始步驟 2 或其他後續步驟的情形。步驟 2、4、29 的測試涵蓋各自累計、10 秒邊界、缺少指讀、片段重疊及未讀單。步驟 2 另測取出 vial 後的時間會被拒絕，以及取出前無法確認讀單滿 10 秒時整步判錯誤。
+步驟 1 測試只目視讀單的切分區間不會直接造成洗手順序錯誤，1c 從影片開頭找實際物品接觸，並驗證接觸時點相對於洗手結束的 1 秒容差、沒有接觸、缺少洗手計時及續跑沿用已保存計時的情形。步驟 2、4、29 的測試涵蓋各自累計、10 秒邊界、缺少指讀、片段重疊及未讀單。步驟 2 另測取出 vial 後的時間會被拒絕，以及紀錄單未入鏡時保留無法判定。
 
 SOP 評分（`sop-video-grading/`）的評分標準、程式判定與結果驗證也不需要資料庫，測試在 `tests/sop_grading/`。測試會先用 sop-video-skill 的 `validate_result.py` 確認輸入的切分結果合法，再檢查 `rules.py` 的判定與 `validate_grading.py` 的每條規則：
 
@@ -133,3 +133,5 @@ LOCUST_VIDEO_URI=gs://bucket/videos/<sha256>_src.mp4 locust -H http://localhost:
 ## 首次真實模型驗收
 
 自動測試通過後，可由使用者提交 10 支代表性影片，查看 `docker compose logs -f worker` 的 429 比率與耗時，再決定是否調整 5 路設定。真實模型容量、延遲及計費不由 mock 測試保證。增加 worker 不會增加全域上限，改動設定需同時重啟所有 worker。
+
+步驟 4／10 分開任務與既有模型切分匯入：`backend/tests/test_sop_segment_grading.py` 驗證區間各自對話、合併順序不影響結果、未完成區間不變成錯誤、第一次使用後的動作不能提供正確、其他 SOP 不變、任務名稱只算步驟 10、來源 ID/schema 檢查。`test_sop_grading_cli.py` 驗證匯入來源與原影片雜湊，皆使用假模型。預算與重試在 `test_credit_budget.py`、`test_adaptive_retry.py` 驗證：超額在推論前阻擋、未知費用保留、確定拒絕才釋放、同回合退避與 RetryInfo、永久錯誤不重試。這些程式測試不證明影片準確率，需另由人工比較。

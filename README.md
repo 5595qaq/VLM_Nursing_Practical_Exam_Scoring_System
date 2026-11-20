@@ -182,7 +182,11 @@ Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499、連線中斷，或 Claude 回�
 
 步驟定義沿用 `sop-video-skill/references/sop_steps.md`。
 
-步驟 1 從按壓洗手液起算，至少 10 秒並完成七個動作，且在步驟 2 及所有後續步驟開始前完成。步驟 2 在取出 vial 時結束；步驟 4 在取出後、抽藥前核對；步驟 29 沿用原有切分方式。評分時確認抽完藥並把空針放上針座後，有持瓶核對紀錄單。三步各自累計實際查看給藥紀錄單的時間，未滿 10 秒整步錯誤；時間達標且其他關鍵項目通過，但沒有指讀時判部分正確。
+步驟 4 的時間分離包含藥瓶與紀錄單核對、稀釋液檢查及空針包裝背面檢查。各段分開輸出步驟 4，evidence 註明檢查內容。只有紀錄單核對須在取出 vial 後、抽藥前，其他檢查可提前。評分的 10 秒門檻只累計實際查看紀錄單的時間。
+
+4d 評分若疑似把另一藥瓶當成稀釋液，依連續拿放與可見特徵確認物品；同次操作後續取液的容器只作輔助辨認，不計入檢查時間。沒有後續取液畫面或瓶型不同不會自動扣分。此辨識指引尚未完成真實模型回歸，不代表已消除物品誤認。
+
+步驟 1 從按壓洗手液起算，至少 10 秒並完成七個動作。1c 與 1a、1b 共用看影片的評分任務，從影片開頭確認實際接觸或操作物品的時點，再與實測洗手結束時間比較，容許 1 秒邊界誤差（含 1 秒）。目視讀單及按壓洗手液開始洗手不列入接觸；切分的讀單開始時間不再直接決定洗手順序。1c 的 times 記錄實際接觸時點，確認沒有接觸時填空陣列，畫面受遮擋時判無法判定。步驟 2 在取出 vial 時結束；步驟 4 在取出後、抽藥前核對；步驟 29 沿用原有切分方式。評分時確認抽完藥並把空針放上針座後，有持瓶核對紀錄單。三步各自累計實際查看給藥紀錄單的時間。紀錄單未入鏡或遭遮擋，無法確認查看時間時，整步判無法判定。確認查看未滿 10 秒，整步判錯誤。時間達標且其他關鍵項目通過，但沒有指讀時判部分正確。
 
 評分 agent（`backend/app/services/sop_grading_service.py`）把待判定的標準依 `window_steps` 分組（例如 15b 與 17a 共用步驟 15–17 的區間），`rubric.json` 的 `task` 同名的標準（5a／6a）也放在同一組但各自保留區間（區間相距超過 10 秒時分開）；切分未找到、要在 `search_steps` 範圍內搜尋的標準一律自己一組（任務名稱加 `-search`）。每組跑一段短對話：外部程式先附上區間的 3×3 影格，需要聲音、每 0.5 秒一格或看連續動作（`rubric.json` 標 `clip: true`，例如 20a 雙手旋轉 vial）時改附 2 fps 的帶聲音片段；任務說明列出相關步驟的切分時間（只有時間，不附切分模型的依據文字，避免評分照抄切分的描述）與程式算出的動作峰值，告訴模型短動作可能在哪裡（區間超過 180 秒時分段分析再合併，不會只看前 180 秒）；模型可再要求 `overview`／`zoom`／`burst`／`clip`（每組各 3／3／3／2 次；`clip` 可加 `region` 只裁一塊、fps 最高 10，超過 5 時 ≤ 8 秒），最後以 `final` 判定該組的每一條標準。不合格的動作（`validate_grading_action.py` 檢查不過，或腳本以 `REJECTED` 拒絕，例如要求的時間超出原檔長度）會連同錯誤訊息退回給模型，不執行也不扣預算；連續 4 次不合格，該組才算失敗。開場影格每 2–4 秒才一張，不到 1 秒的短動作（彈針、墊棉片、碰觸的瞬間）可能落在兩格之間，所以 SKILL.md 要求在峰值附近用 `burst` 確認；持續的持握姿勢（持毛筆、夾瓶、持針心尾端、單手回套）則在手穩定持握的時間點用 overview 或 zoom 看，判錯誤前要在兩個以上時間點都看到同樣的問題（依據見 `sop-video-grading/EXPERIMENTS.md`）。有幾條標準由 `validate_grading_action.py` 檢查判錯誤前用過對應的素材，否則退回：彈針（17a／27a）要先用過 `burst`。固定針頭（10b，`rubric.json` 標 `package_spans: true`）的任務說明會列出切分的 `package_spans`（每一段手拿空針包裝的時間，只列第一次使用空針（步驟 13）之前開始的），模型在這些時段（各 ±10 秒）也可以要求素材，判取出前隔著包裝與取出後有沒有固定：可判正確、錯誤或無法判定，判錯誤前要先用過 `clip`；判無法判定或錯誤時程式加上需人工複核，並在 `review_reason` 列出這些時段（另列取出後到拔針頭蓋的時間：最後一段手拿包裝時段結束，到第一次使用空針後 10 秒）。片段帶聲音只有 Gemini 支援，所以評分一律使用 Gemini（`SOP_SKILL_GEMINI_MODEL`）。
 
@@ -678,3 +682,20 @@ my-awesome-project/
 │   └── sop_grading/
 └── README.md
 ```
+
+### 步驟 4／10 分開評分（分支 #174）
+
+步驟 4 的 4a/4b、4d、4e 為三個獨立對話；步驟 10 每個既有 detected 區間一個對話，合併後仍只輸出一次 10b。每段結果另存 `grading/segment_results.json` 並納入執行紀錄；錯誤／無法判定仍照既有規則轉人工。完全取出包裝後、第一次使用前固定的標準不變，包裝時段只提供前後脈絡。
+
+官方 CLI 可沿用明確來源的模型切分：
+
+```sh
+python -m app.sop_grading_cli VIDEO --video-id VID_0001 --out WORK/VID_0001 --steps 4,10 --by NAME --segmentation-file BUNDLE.json
+# 同一版本中斷後，僅接續未完成標準及候選區間
+python -m app.sop_grading_cli VIDEO --video-id VID_0001 --out WORK/VID_0001 --steps 4,10 --by NAME --segmentation-file BUNDLE.json --resume
+```
+
+BUNDLE 必須含 `source_kind: saved_model_segmentation`、原影片 `video_sha256`、完整 `segmentation` 與可選的 `provenance`。先驗證 video_id、原影片雜湊與切分 schema，再執行評分；切分內容雜湊成為紀錄版本的一部分，各輪 `segmentation_import` 保留來源。匯入不重新切分，也不將非 CLI 歷史來源標成 CLI；不可與 `--labels` 或 `--new-segmentation` 合用。未選步驟維持待判定，不列為這次的評分失敗。
+
+選用 `SOP_CLI_CREDIT_POLICY=/path/policy.json` 啟用本機額外支出限制；檔案需含非負有限 `total_limit_usd`。同資料夾會寫 `credit_ledger.json`、`model_health.json`、`last-response.json`。每次請求先 count_tokens 並保留最大輸出成本，未知結果不釋放；餘額下降時可降低上限。此為本機估算，只保護共用此 ledger 的序列 CLI 執行，不是 Google 即時硬性支出上限；不要讓多個獨立 CLI 同時共用同一 ledger。沒有設定此變數時保留原 CLI 行為。模型、帳戶、計費方式都不由此功能更改。
+啟用信用額度 guard 時另須設定 `SOP_SKILL_GEMINI_MAX_OUTPUT_TOKENS` 為 1–32768；未設定或超過預留的最大輸出時，在推論前拒絕，避免以較小的預留估算無上限輸出。

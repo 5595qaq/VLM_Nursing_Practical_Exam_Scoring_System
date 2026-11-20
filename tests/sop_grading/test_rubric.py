@@ -206,8 +206,11 @@ def test_first_and_second_comparison_have_independent_required_thresholds():
     assert aggregate(first, {**first_pass, "2a": WRONG}) == WRONG
     assert aggregate(first, {**first_pass, "2d": WRONG}) == WRONG
     assert aggregate(first, {**first_pass, "2b": WRONG}) == PARTIAL
-    assert aggregate(first, {**first_pass, "2a": UNDETERMINED, "2b": WRONG}) == WRONG
-    assert aggregate(first, {**first_pass, "2a": UNDETERMINED, "2b": UNDETERMINED}) == WRONG
+    hidden_sheet = {"2a": "藥單看不見"}
+    assert aggregate(first, {**first_pass, "2a": UNDETERMINED, "2b": WRONG}, reasons=hidden_sheet) == UNDETERMINED
+    assert aggregate(first, {**first_pass, "2a": UNDETERMINED, "2b": UNDETERMINED}, reasons=hidden_sheet) == UNDETERMINED
+    assert aggregate(first, {**first_pass, "2a": UNDETERMINED, "2d": WRONG}, reasons=hidden_sheet) == UNDETERMINED
+    assert aggregate(first, {**first_pass, "2a": UNDETERMINED}, reasons={"2a": "切分未定位"}) == WRONG
     assert aggregate(first, {**first_pass, "2a": PENDING}) == PENDING
     assert aggregate(first, {**first_pass, "2d": UNDETERMINED}) == UNDETERMINED
     assert second["criteria"][0]["key"] and second["criteria"][0]["min_seconds"] == 10
@@ -228,6 +231,9 @@ def test_step29_needs_the_record_sheet():
     assert aggregate(step29, {**passed, "29d": WRONG}) == WRONG
     assert aggregate(step29, {**passed, "29b": WRONG}) == PARTIAL
     assert aggregate(step29, {**passed, "29a": UNDETERMINED, "29b": WRONG}) == UNDETERMINED
+    assert aggregate(step29, {**passed, "29a": UNDETERMINED, "29d": WRONG}) == WRONG
+    assert aggregate(step29, {**passed, "29a": UNDETERMINED, "29d": WRONG},
+                     reasons={"29a": "藥單看不見"}) == UNDETERMINED
 
 
 @pytest.mark.parametrize("v30a, v30b, expected", [
