@@ -41,6 +41,8 @@ python sop-video-skill/scripts/schema_tools.py sop-video-skill/actions.schema.js
 
 步驟 1 測試洗手未完成就開始步驟 2 或其他後續步驟的情形。步驟 2、4、29 的測試涵蓋各自累計、10 秒邊界、缺少指讀、片段重疊及未讀單。步驟 2 另測取出 vial 後的時間會被拒絕，以及取出前無法確認讀單滿 10 秒時整步判錯誤。
 
+步驟 4 的分段規則可用 `pytest tests/sop_skill -q` 檢查既有輸出結構、重複步驟、重疊及 observations 相容性。歷史切分摘錄見 `sop-video-grading/experiments/2026-11-21-segread4/`；它們不是這個重整分支的新模型回歸，文字測試也不能證明影片準確度。
+
 SOP 評分（`sop-video-grading/`）的評分標準、程式判定與結果驗證也不需要資料庫，測試在 `tests/sop_grading/`。測試會先用 sop-video-skill 的 `validate_result.py` 確認輸入的切分結果合法，再檢查 `rules.py` 的判定與 `validate_grading.py` 的每條規則：
 
 ```bash
