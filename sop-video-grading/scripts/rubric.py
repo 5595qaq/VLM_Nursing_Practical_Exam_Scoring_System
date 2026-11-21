@@ -38,6 +38,8 @@ def check_rubric(rubric: dict) -> list[str]:
         sid = step["step_id"]
         if "require_key_confirmation" in step and not isinstance(step["require_key_confirmation"], bool):
             errors.append(f"step {sid}: require_key_confirmation needs true/false")
+        if "score_by_completed_criteria" in step and not isinstance(step["score_by_completed_criteria"], bool):
+            errors.append(f"step {sid}: score_by_completed_criteria needs true/false")
         if step.get("removed"):
             if step["criteria"]:
                 errors.append(f"step {sid}: removed step must have no criteria")
@@ -71,6 +73,8 @@ def check_rubric(rubric: dict) -> list[str]:
                 errors.append(f"criterion {cid}: package_spans needs a visual criterion and true/false")
             if "after_step" in c and (cat != "visual" or not isinstance(c["after_step"], bool)):
                 errors.append(f"criterion {cid}: after_step needs a visual criterion and true/false")
+            if "through_video_end" in c and (cat != "visual" or not isinstance(c["through_video_end"], bool)):
+                errors.append(f"criterion {cid}: through_video_end needs a visual criterion and true/false")
             if "task" in c and (cat != "visual" or not isinstance(c["task"], str) or not c["task"]):
                 errors.append(f"criterion {cid}: task needs a visual criterion and a name")
             elif "task" in c:
@@ -119,6 +123,14 @@ def aggregate(step: dict, verdicts: dict[str, str]) -> str:
         return NOT_APPLICABLE
     scored = [(c, verdicts[c["id"]]) for c in step["criteria"] if c["category"] != "not_visible"]
     values = [v for _, v in scored]
+    if step.get("score_by_completed_criteria"):
+        if PENDING in values:
+            return PENDING
+        if all(v == CORRECT for v in values):
+            return CORRECT
+        if CORRECT in values:
+            return PARTIAL
+        return UNDETERMINED if UNDETERMINED in values else WRONG
     key_verdicts = {v for c, v in scored if c.get("key")}
     if WRONG in key_verdicts or any(v == UNDETERMINED and c.get("unconfirmed_is_wrong") for c, v in scored):
         return WRONG

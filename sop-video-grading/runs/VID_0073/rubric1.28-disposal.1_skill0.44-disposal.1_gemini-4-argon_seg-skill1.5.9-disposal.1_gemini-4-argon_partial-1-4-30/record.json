@@ -1,0 +1,40 @@
+{
+  "video_id": "VID_0073",
+  "versions": {
+    "rubric": "1.28-disposal.1",
+    "skill": "0.44-disposal.1",
+    "model": "gemini-4-argon",
+    "segmentation": "skill1.5.9-disposal.1_gemini-4-argon_partial-1-4-30"
+  },
+  "video_sha256": "6733f9f1e7f9d44d1727e1f3e31984fe3d0e29d8a7e8fcf37357a06a2ab01a1e",
+  "runs": [
+    {
+      "run": 1,
+      "by": "dakzungberrae",
+      "date": "2026-11-11",
+      "commit": "3860e32cc0ab9ffc1b647ba781c4fe5183008b4b",
+      "video_sha256": "6733f9f1e7f9d44d1727e1f3e31984fe3d0e29d8a7e8fcf37357a06a2ab01a1e",
+      "steps": [
+        30
+      ],
+      "failed_tasks": [],
+      "segmentation": "reused verified saved segmentation for VID_0073",
+      "usage": {
+        "input_tokens": 162822,
+        "cached_input_tokens": 68724,
+        "output_tokens": 854,
+        "thinking_tokens": 0
+      },
+      "timing": {
+        "started_at": "2026-11-11T22:54:48+09:00",
+        "grading_seconds": 332.3,
+        "total_seconds": 332.3
+      }
+    }
+  ],
+  "segmentation_snapshot": {
+    "record": "rubric1.28_skill0.44_gemini-4-argon_seg-skill1.5.9-disposal.1_gemini-4-argon_partial-1-4-30",
+    "commit": "12fe7da86341ecff3dbc0bee3789975272632889",
+    "segmentation": "skill1.5.9-disposal.1_gemini-4-argon_partial-1-4-30"
+  }
+}

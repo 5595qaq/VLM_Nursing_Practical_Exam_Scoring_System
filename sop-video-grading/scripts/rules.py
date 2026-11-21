@@ -159,6 +159,8 @@ def _grade(c: dict, sid: int, entries: dict[int, list[dict]], duration: float, m
         steps = f"{window_steps[0]}–{window_steps[-1]}" if search else "、".join(map(str, window_steps))
         return _criterion(c, UNDETERMINED, f"切分結果未定位步驟 {steps}，無法取得要看的畫面區間。",
                           source="rule", evidence=seg_ref, reason="切分未定位")
+    if c.get("through_video_end"):
+        window[1] = round(duration, 2)
     where = f"{search_note(sid, window_steps)}；" if search else ""
     return _criterion(c, PENDING, f"等待評分 agent 看畫面判定（{where}區間 {fmt_time(window[0])}–{fmt_time(window[1])}）。",
                       window=window)
