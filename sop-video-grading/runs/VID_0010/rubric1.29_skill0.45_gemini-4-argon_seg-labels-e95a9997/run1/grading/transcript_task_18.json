@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 4.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 19593,
+  "cached_input_tokens": 0,
+  "output_tokens": 99,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@392-420（hands_box，n=9）#0=06:32.0、#1=06:35.5、#2=06:39.0、#3=06:42.5、#4=06:46.0、#5=06:49.5、#6=06:53.0、#7=06:56.5、#8=07:00.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [394.5, 395.5, 396.5, 398.0], \"region\": [0.4, 0.4, 0.7, 0.8], \"reason\": \"Check the exact moment of needle insertion into the vial on the table to verify pen-hold grip, vertical insertion, center insertion, and vial on table.\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 6.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 20816,
+  "cached_input_tokens": 0,
+  "output_tokens": 93,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@392-420（hands_box，n=9）#0=06:32.0、#1=06:35.5、#2=06:39.0、#3=06:42.5、#4=06:46.0、#5=06:49.5、#6=06:53.0、#7=06:56.5、#8=07:00.0",
+   "zoom@394.5/395.5/396.5/398 region=[0.400, 0.400, 0.700, 0.800]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [395.0, 395.5, 396.0, 397.0], \"region\": [0.45, 0.55, 0.72, 0.92], \"reason\": \"調整放大區域往下以完整納入桌上的 vial、針頭刺入位置與雙手姿勢\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 12.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 22083,
+  "cached_input_tokens": 0,
+  "output_tokens": 378,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@392-420（hands_box，n=9）#0=06:32.0、#1=06:35.5、#2=06:39.0、#3=06:42.5、#4=06:46.0、#5=06:49.5、#6=06:53.0、#7=06:56.5、#8=07:00.0",
+   "zoom@394.5/395.5/396.5/398 region=[0.400, 0.400, 0.700, 0.800]",
+   "zoom@395/395.5/396/397 region=[0.450, 0.550, 0.720, 0.920]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"18b\", \"verdict\": \"正確\", \"explanation\": \"06:35.0–06:37.0 右手以持毛筆方式握住針筒外管，針筒垂直向下刺入 vial，手指未碰觸針頭、針座及活塞柄內側。\", \"times\": [[395.0, 397.0]], \"evidence\": [\"zoom@395\", \"zoom@395.5\", \"zoom@396\", \"zoom@397\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"18c\", \"verdict\": \"正確\", \"explanation\": \"06:35.5–06:37.0 針頭垂直刺入 vial 瓶口橡皮塞中心。\", \"times\": [[395.5, 397.0]], \"evidence\": [\"zoom@395.5\", \"zoom@396\", \"zoom@397\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"18d\", \"verdict\": \"正確\", \"explanation\": \"06:35.0–06:37.0 vial 平放在治療車桌面上，左手扶住固定 vial，右手持針筒垂直刺入。\", \"times\": [[395.0, 397.0]], \"evidence\": [\"zoom@395\", \"zoom@395.5\", \"zoom@396\", \"zoom@397\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
