@@ -93,6 +93,39 @@ def test_delete_with_a_remark_and_keys_written_other_ways():
     assert draft.merge(FULL, "15 - 17 | Delete") .count("15-17") == 0
 
 
+def test_sop30_draft_cannot_drop_an_active_placement_without_visual_evidence():
+    active = "30.1 | 423.8–426.6 | 圖 P10：空針插入針架後放手 | 中 | 待確認動作鏈"
+    assert draft.merge(active, "30.1 | 刪除") == active
+    assert draft.missing_placements(active, []) == ["30.1（423.8–426.6）"]
+
+    no_reason = "30.1 | 423.8–426.6 | | 排除"
+    assert draft.missing_placements(draft.merge(active, no_reason), []) == ["30.1（排除須附影格及理由）"]
+    ruled_out = "30.1 | 423.8–426.6 | zoom #3–#6 全程持針 | 排除"
+    assert draft.missing_placements(draft.merge(active, ruled_out), []) == []
+
+
+def test_sop30_unclear_placement_requires_a_matching_search_window():
+    obscured = "30.1 | 423.8–426.6 | 圖 P10：手擋住針架，無法確認放手 | 放置不清"
+    confirmed = "30.2 | 523.9–526.5 | 圖 P13：放手後空針留在針架 | 已確認"
+    current = draft.merge(obscured, confirmed)
+    placement = {"step_id": 30, "status": "detected", "start": 523.9, "end": 526.5}
+    unknown = {"step_id": 30, "status": "not_visually_determinable", "logical_window": [423.8, 426.6]}
+
+    assert draft.missing_placements(current, [placement]) == ["30.1（423.8–426.6）"]
+    assert draft.missing_placements(current, [placement, unknown]) == []
+    assert draft.missing_placements(current, [placement, {**unknown, "logical_window": [410, 415]}]) == [
+        "30.1（423.8–426.6）"]
+    wrongly_classified = {"step_id": 30, "status": "detected", "start": 423.8, "end": 426.6}
+    assert draft.missing_placements(current, [placement, wrongly_classified]) == ["30.1（423.8–426.6）"]
+
+
+def test_sop30_matching_requires_both_boundaries_within_tolerance():
+    current = "30.1 | 10-20 | ov#1 | 已確認"
+    final = {"step_id": 30, "status": "detected", "start": 9, "end": 21}
+    assert draft.missing_placements(current, [final]) == []
+    assert draft.missing_placements(current, [{**final, "end": 21.1}]) == ["30.1（10-20）"]
+
+
 def test_skill_md_states_the_same_rewrite_interval():
     skill = (Path(draft.__file__).resolve().parents[1] / "SKILL.md").read_text(encoding="utf-8")
     assert f"每 {draft.FULL_EVERY} 個動作" in skill
