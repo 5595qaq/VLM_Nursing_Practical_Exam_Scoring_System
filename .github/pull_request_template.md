@@ -20,4 +20,5 @@
   - [ ] `changelog.d/` 裡的片段（包括別人留下的）已移進 `CHANGELOG.md` 的新版本標題下，片段檔已刪除
   - [ ] 已用正式版本重跑這個 PR 負責的步驟，紀錄在 `sop-video-grading/runs/`
   - [ ] 這輪的實驗紀錄寫在 `sop-video-grading/experiments/`
+  - [ ] 依老師、組長或使用者的決定改規則時，已在 `sop-video-grading/DECISIONS.md` 新增或更新那一筆（狀態、落實版本）；不是依決定改的，寫明原因
   - [ ] 只改了自己負責的 `criteria/` 檔；動到共用部分（評分 `SKILL.md`、`sop-video-skill/`）時，已在 PR 標出並通知其他標準組的負責人

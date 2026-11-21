@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 7.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 26017,
+  "cached_input_tokens": 0,
+  "output_tokens": 90,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@349-390（context box，有聲音；片段內 00:00 ＝ 影片 05:49.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [352.5, 355.0, 370.0, 384.0], \"region\": [0.45, 0.25, 0.72, 0.55], \"reason\": \"確認針頭與針筒交接處是否墊有白色方形酒精棉片\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 9.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 27258,
+  "cached_input_tokens": 0,
+  "output_tokens": 197,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@349-390（context box，有聲音；片段內 00:00 ＝ 影片 05:49.0）",
+   "zoom@352.5/355/370/384 region=[0.450, 0.250, 0.720, 0.550]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"15a\", \"verdict\": \"正確\", \"explanation\": \"於 05:52.5 拿起白色方形酒精棉片，05:53.0–06:24.5（clip@349-390 片段內 00:04.0–00:35.5）清楚看到將白色方形酒精棉片墊在針頭與針筒交接處，進行回抽與排氣。\", \"times\": [[353.0, 384.5]], \"evidence\": [\"clip@349-390\", \"zoom@352.5\", \"zoom@355\", \"zoom@370\", \"zoom@384\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
