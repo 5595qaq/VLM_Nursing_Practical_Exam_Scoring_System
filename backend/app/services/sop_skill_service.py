@@ -743,11 +743,11 @@ def run_facts() -> dict:
 
 
 def tree_digest(root: Path, skip: tuple[str, ...] = ("runs", "review", "experiments", "changelog.d", "__pycache__",
-                                                    "CHANGELOG.md", "EXPERIMENTS.md")) -> str:
+                                                    "CHANGELOG.md", "EXPERIMENTS.md", "DECISIONS.md")) -> str:
     """SHA-256 over the files under root (relative path and content). GIT_COMMIT is fixed when the
     worker starts, but the skill folders are mounted live: this shows which rules and scripts a run
     really read, and whether they changed during it. runs/, review/, experiments/, changelog.d/ and the
-    CHANGELOG / EXPERIMENTS notes are records, not rules, and are skipped; hidden files and editor backups (~) are not rules either. Line endings are compared as
+    CHANGELOG / EXPERIMENTS / DECISIONS notes are records, not rules (the grading agent never reads them), and are skipped; hidden files and editor backups (~) are not rules either. Line endings are compared as
     LF, so a Windows (autocrlf) and a Linux checkout of one commit give the same digest.
     Returns "" when a file vanished mid-walk (an editor's atomic save): unknown, not a failed run."""
     digest = hashlib.sha256()

@@ -310,7 +310,7 @@ def test_tree_digest_follows_rule_files_but_not_records(tmp_path):
     for notes in ("experiments", "changelog.d"):
         (tmp_path / notes).mkdir()
         (tmp_path / notes / "10b.md").write_text("notes", encoding="utf-8")
-    for notes in ("CHANGELOG.md", "EXPERIMENTS.md"):
+    for notes in ("CHANGELOG.md", "EXPERIMENTS.md", "DECISIONS.md"):
         (tmp_path / notes).write_text("notes", encoding="utf-8")
     assert skill.tree_digest(tmp_path) == before  # neither are experiment notes or changelog entries
     (tmp_path / ".DS_Store").write_bytes(b"x")
