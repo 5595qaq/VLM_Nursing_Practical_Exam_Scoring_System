@@ -680,3 +680,5 @@ my-awesome-project/
 │   └── sop_grading/
 └── README.md
 ```
+
+SOP 4／30 的合併切分疊代保留三類檢查與每次空針放置，沿用已核准的操作鏈替代錨點；七支匿名既有輸出及限制見 [`2026-11-22-seg430`](sop-video-grading/experiments/2026-11-22-seg430.md)。本次不修改評分標準。

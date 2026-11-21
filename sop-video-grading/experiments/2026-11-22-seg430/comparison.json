@@ -1,0 +1,171 @@
+{
+  "kind": "retrospective_existing_outputs",
+  "reference_observed_at": "2026-11-21 12:52:23 UTC",
+  "eval_grading_sha256": "d8806c695a8679a2808370c8bdde166ac042434f30f85e228217f043d53cb0a8",
+  "summary": {
+    "4": {
+      "compared": 7,
+      "agreement": 5,
+      "strict_agreement": 5,
+      "time_mismatch": [],
+      "error_recall": "5/6",
+      "false_alarms": "1/1",
+      "confusion": {
+        "正確→部分正確": 1,
+        "部分正確→正確": 1
+      },
+      "needs_review": []
+    },
+    "30": {
+      "compared": 7,
+      "agreement": 7,
+      "strict_agreement": 7,
+      "time_mismatch": [],
+      "error_recall": "0/0",
+      "false_alarms": "0/7",
+      "confusion": {},
+      "needs_review": []
+    },
+    "all": {
+      "compared": 14,
+      "agreement": 12,
+      "strict_agreement": 12,
+      "time_mismatch": [],
+      "error_recall": "5/6",
+      "false_alarms": "1/8",
+      "confusion": {
+        "正確→部分正確": 1,
+        "部分正確→正確": 1
+      },
+      "needs_review": []
+    }
+  },
+  "rows": [
+    {
+      "vid": "VID_0001",
+      "step_id": 4,
+      "model": "部分正確",
+      "match": true,
+      "time_match": true,
+      "strict_match": true,
+      "review": false
+    },
+    {
+      "vid": "VID_0001",
+      "step_id": 30,
+      "model": "正確",
+      "match": true,
+      "time_match": true,
+      "strict_match": true,
+      "review": false
+    },
+    {
+      "vid": "VID_0008",
+      "step_id": 4,
+      "model": "部分正確",
+      "match": true,
+      "time_match": true,
+      "strict_match": true,
+      "review": false
+    },
+    {
+      "vid": "VID_0008",
+      "step_id": 30,
+      "model": "正確",
+      "match": true,
+      "time_match": true,
+      "strict_match": true,
+      "review": false
+    },
+    {
+      "vid": "VID_0010",
+      "step_id": 4,
+      "model": "部分正確",
+      "match": false,
+      "time_match": true,
+      "strict_match": false,
+      "review": false
+    },
+    {
+      "vid": "VID_0010",
+      "step_id": 30,
+      "model": "正確",
+      "match": true,
+      "time_match": true,
+      "strict_match": true,
+      "review": false
+    },
+    {
+      "vid": "VID_0011",
+      "step_id": 4,
+      "model": "正確",
+      "match": false,
+      "time_match": true,
+      "strict_match": false,
+      "review": false
+    },
+    {
+      "vid": "VID_0011",
+      "step_id": 30,
+      "model": "正確",
+      "match": true,
+      "time_match": true,
+      "strict_match": true,
+      "review": false
+    },
+    {
+      "vid": "VID_0014",
+      "step_id": 4,
+      "model": "部分正確",
+      "match": true,
+      "time_match": true,
+      "strict_match": true,
+      "review": false
+    },
+    {
+      "vid": "VID_0014",
+      "step_id": 30,
+      "model": "正確",
+      "match": true,
+      "time_match": true,
+      "strict_match": true,
+      "review": false
+    },
+    {
+      "vid": "VID_0018",
+      "step_id": 4,
+      "model": "部分正確",
+      "match": true,
+      "time_match": true,
+      "strict_match": true,
+      "review": false
+    },
+    {
+      "vid": "VID_0018",
+      "step_id": 30,
+      "model": "正確",
+      "match": true,
+      "time_match": true,
+      "strict_match": true,
+      "review": false
+    },
+    {
+      "vid": "VID_0030",
+      "step_id": 4,
+      "model": "部分正確",
+      "match": true,
+      "time_match": true,
+      "strict_match": true,
+      "review": false
+    },
+    {
+      "vid": "VID_0030",
+      "step_id": 30,
+      "model": "正確",
+      "match": true,
+      "time_match": true,
+      "strict_match": true,
+      "review": false
+    }
+  ]
+}
