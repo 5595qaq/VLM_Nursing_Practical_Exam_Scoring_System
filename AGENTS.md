@@ -43,7 +43,8 @@
 ### 不會衝突的紀錄方式
 
 - **CHANGELOG**：疊代期間不改 `CHANGELOG.md`，改在 `sop-video-grading/changelog.d/` 或 `sop-video-skill/changelog.d/` 新增自己分支的檔案（見其中的 `README.md`）。不改版本的修改也寫片段，下一個正式版本合併時一併移入。
-- **實驗紀錄**：每輪寫成 `sop-video-grading/experiments/YYYY-MM-DD-<主題>.md`，不再往 `EXPERIMENTS.md` 後面加。需要老師決定的事項仍寫在 `EXPERIMENTS.md` 的「待老師確認」（唯一的清單）。
+- **實驗紀錄**：每輪寫成 `sop-video-grading/experiments/YYYY-MM-DD-<主題>.md`，不再往 `EXPERIMENTS.md` 後面加。需要老師決定的事項寫在 `sop-video-grading/DECISIONS.md`，狀態「待決定」（唯一的清單）。
+- **標準決策**：老師、組長或使用者的決定寫成 `DECISIONS.md` 的一筆（原本、改成、理由、落實），編號依 criteria 組分開（`D-08-03`），只改自己那組的章節。依決定改 `criteria/`、`rubric.json` 或共用 `SKILL.md` 時，同一個 PR 把那一筆改成已落實並寫上版本；最新標準仍以 `criteria/` 與 `rubric.json` 為準。
 - **評分紀錄**：資料夾依影片與版本分開，不會衝突。commit 時只加 `sop-video-grading/runs/<影片ID>/`。
 
 ### 合併之後
@@ -128,7 +129,7 @@
 
 `--items` 的 JSON 放在被忽略的 `sop-video-grading/review/`，不寫學生姓名。使用者匯出的結果 CSV（決定為同意建議／同意標記表／改判／待老師確認）是下一輪的依據：讀完後依決定修改規則或列入待老師確認，不要自己推翻使用者的決定。
 
-使用者確認的標準寫進 `rubric.json` 與 `changelog.d/` 片段；需要老師決定的寫進 `EXPERIMENTS.md` 的「待老師確認」，並在下次 SOP 評分工作開始時提醒使用者。未經人工核對的參考答案與標準，在文件中都要標明是暫定。
+使用者確認的標準寫進 `rubric.json` 與 `changelog.d/` 片段；需要老師決定的寫進 `DECISIONS.md`（狀態「待決定」），並在下次 SOP 評分工作開始時提醒使用者。未經人工核對的參考答案與標準，在文件中都要標明是暫定。
 
 ### 步驟 10（10b 固定針頭與針心）的判定與核對
 
