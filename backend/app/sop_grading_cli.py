@@ -196,6 +196,7 @@ class Recorder:
         files = {f"grading/transcript_task_{key}.json": out / "grading" / f"transcript_task_{key}.json"
                  for key in outcome["tasks"]}
         files["grading/probe.json"] = out / "grading" / "probe.json"
+        files["grading/segment_results.json"] = out / "grading" / "segment_results.json"  # step 10 per candidate
         seg_files = {f"seg/{name}": out / "seg" / name for name in SEG_FILES}
         self.record = self.rr.add_run(
             self.record, self.video_id, self.versions, self.video_sha256, steps=steps,

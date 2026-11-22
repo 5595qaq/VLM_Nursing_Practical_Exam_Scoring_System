@@ -175,6 +175,14 @@ def _check_final(action: dict, task: dict, used: dict, rubric: dict, duration: f
         if cid in POINT_AT_PACKAGE and c["verdict"] == "錯誤" and not _clipped_before_tear(task, cid):
             errors.append(f"criterion {cid}: before marking 錯誤, use clip on the few seconds before the package "
                           "is torn open: pointing lasts two or three seconds and the opening frames can miss it")
+        if cid in WRAPPER and task.get("segment") and c["verdict"] == "正確":
+            spec_task = next(x for x in task["criteria"] if x["criterion_id"] == cid)
+            cutoff = spec_task.get("first_use")
+            a, b = task["window"]
+            if any(start < a - WINDOW_SLACK or end > b + WINDOW_SLACK
+                   or (cutoff is not None and end > cutoff) for start, end in c.get("times", [])):
+                errors.append(f"criterion {cid}: 正確 must cite this candidate window before the syringe's first use; "
+                              "other wrapper spans are context only")
         if cid in WRAPPER and c["verdict"] == "部分正確":
             errors.append(f"criterion {cid}: 正確, 錯誤 or 無法判定 only (fixing is seen or it is not)")
         if cid in WRAPPER and c["verdict"] == "錯誤" and not _clipped_wrapper(task, cid):

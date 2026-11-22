@@ -28,6 +28,7 @@ from typing import Awaitable, Callable
 
 from app.config import settings
 from app.services import gcs_service, sop_checkpoint, sop_skill_service
+from app.services.sop_segment_grading import merge_outcomes, split_tasks
 from app.services.sop_skill_service import (USAGE_KEYS, Image, ModelCall, ScriptRunner, SkillRunError,
                                             _fmt_box, _fmt_t, _image_block, _strip_frontmatter, add_usage,
                                             gemini_call, parse_action, refusal_error, skill_dir)
@@ -129,7 +130,7 @@ def build_tasks(result: dict, rubric: dict, steps: set[int] | None, segmentation
             tasks.append({"key": name, "window_steps": window_steps, "criteria": cluster,
                           "window": [min(c["window"][0] for c in cluster), max(c["window"][1] for c in cluster)],
                           "needs_clip": any(c["audio"] or c["dense"] or c["clip"] for c in cluster)})
-    return tasks
+    return split_tasks(tasks, segmentation)  # 10b: one task per step-10 candidate (sop_segment_grading)
 
 
 def _near_clusters(crits: list[dict]) -> list[list[dict]]:
@@ -289,6 +290,9 @@ def build_task_content(task: dict, video_id: str, duration: float, state: TaskSt
         "【任務】",
         f"video_id：{video_id}；影片長度 {duration:.1f} s；任務區間 {task['window'][0]:g}–{task['window'][1]:g} s"
         f"（{_fmt_t(task['window'][0])}–{_fmt_t(task['window'][1])}）",
+        *([f"本任務只判步驟 10 的這個候選區間：{task['segment']} 秒。其他區間由獨立任務判定；包裝時段只作定位離開包裝的前後脈絡，"
+            "不可把其他區間當成本任務已完成固定的證據。仍須確認空針已完全離開包裝，第一次使用前固定才算。"]
+          if task.get("segment") else []),
         "要判定的標準（final 必須剛好包含這幾條）：",
         *(f"  {c['criterion_id']}（步驟 {c['step_id']}）：{c['text']}；window={c['window']}"
           + ("；要聽聲音" if c["audio"] else "") + ("；要每 0.5 秒一格" if c["dense"] else "")
@@ -638,12 +642,25 @@ async def run_grading(video_path: Path, segmentation: dict, workdir: Path, model
         await asyncio.gather(*pending, return_exceptions=True)
     outcomes = [item.result() if not item.cancelled() else (task, [], None, asyncio.CancelledError())
                 for item, task in zip(pending, tasks)]
+    # A step-10 candidate that finished keeps its checkpoint while another candidate failed, so the retry
+    # (same --steps) returns it without paying again; once every candidate finished they are removed.
+    segments_failed = any(exc is not None and "segment" in task for task, _, _, exc in outcomes)
     for task, _, state, exc in outcomes:
+        if "segment" in task and exc is None and segments_failed:
+            if usage_reported:
+                sop_checkpoint.mark_reported(_task_checkpoint(workdir, task))
+            continue
         if exc is None or isinstance(exc, SkillRunError):  # its grades are in the result; or resuming would repeat it
             _task_checkpoint(workdir, task).unlink(missing_ok=True)
         elif state is not None and usage_reported:  # kept for the next attempt; the caller records this run's usage
             sop_checkpoint.mark_reported(_task_checkpoint(workdir, task))
-    graded = {c["criterion_id"]: c for _, criteria, _, _ in outcomes for c in criteria}
+    graded = merge_outcomes(outcomes)
+    segment_results = [{"task": t["key"], "segment": t["segment"], "criteria": criteria,
+                        "error": str(exc) if exc else None}
+                       for t, criteria, _, exc in outcomes if "segment" in t]
+    if segment_results:
+        sop_checkpoint.save(workdir / "segment_results.json",
+                            {"video_id": segmentation["video_id"], "step_id": 10, "segments": segment_results})
     _sheet_unseen_point(graded, old)
     specs = {s["step_id"]: s for s in rubric["steps"]}
     for i, step in enumerate(result["steps"]):

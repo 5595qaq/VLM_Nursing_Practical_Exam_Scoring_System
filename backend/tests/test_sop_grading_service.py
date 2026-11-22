@@ -193,6 +193,40 @@ async def test_extra_material_actions_run(video, tmp_path):
     assert [b["fps"] for b in last if b["type"] == "video"] == [3]
 
 
+async def test_segment_retry_keeps_the_completed_candidate_without_repaying(video, tmp_path):
+    seg = segmentation()
+    seg['steps'][9].update(start=16.0, end=17.0)
+    seg['steps'].append({**seg['steps'][9], 'start':20.0, 'end':21.0})
+    seen = []
+    async def interrupted(system, content):
+        text = content[0]['text']
+        seen.append(text)
+        if '[20.0, 21.0]' in text:
+            raise ConnectionError('lost connection before reply')
+        return ModelReply(json.dumps(final_for(content)), 'end_turn', 100, 10)
+    first = await grading.run_grading(video, seg, tmp_path, interrupted, steps={10})
+    assert [x['task'] for x in first['failed_tasks']] == ['10-seg2']
+    assert first['result']['steps'][9]['verdict'] == '待判定'
+    assert (tmp_path/'checkpoint_task_10-seg1.json').exists()
+    second_model = FakeModel()
+    second = await grading.run_grading(video, seg, tmp_path, second_model, steps={10},
+                                       previous=first['result'])
+    assert len(second_model.requests) == 1
+    assert '[20.0, 21.0]' in second_model.requests[0][0]['text']
+    assert second['failed_tasks'] == []
+    assert second['result']['steps'][9]['verdict'] == '正確'
+    assert len(json.loads((tmp_path/'segment_results.json').read_text(encoding='utf-8'))['segments']) == 2
+
+
+async def test_segment_checkpoints_are_removed_once_every_candidate_finished(video, tmp_path):
+    seg = segmentation()
+    seg['steps'][9].update(start=16.0, end=17.0)
+    seg['steps'].append({**seg['steps'][9], 'start': 20.0, 'end': 21.0})
+    outcome = await grading.run_grading(video, seg, tmp_path, FakeModel(), steps={10})
+    assert outcome['failed_tasks'] == [] and outcome['tasks'] == ['10-seg1', '10-seg2']
+    assert not list(tmp_path.glob('checkpoint_task_10-seg*.json'))
+
+
 @pytest.mark.parametrize("package_spans, reason", [
     ([{"start": 12.0, "end": 17.5, "evidence": "ov"}, {"start": 40.0, "end": 41.0, "evidence": "ov"}],
      "（切分標出的手拿空針包裝時段，第一次使用空針 00:23.4 之前）：00:12.0–00:17.5；取出後到拔針頭蓋：00:17.5–00:33.4"),
