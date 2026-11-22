@@ -1,0 +1,35 @@
+{
+ "video_id": "VID_0008",
+ "versions": {
+  "rubric": "1.29-needle13hold.2",
+  "skill": "0.45-needle13hold.2",
+  "model": "gemini-4-argon",
+  "segmentation": "labels-6fdf22fc"
+ },
+ "video_sha256": "69e00eb3982dc4bc84750065a84b2ccae9904aaf21cfe2ceea288a21be444f0a",
+ "runs": [
+  {
+   "run": 1,
+   "by": "od3w",
+   "date": "2026-11-21",
+   "commit": "a862f676b040291399e8415978be0610456a9f38",
+   "video_sha256": "69e00eb3982dc4bc84750065a84b2ccae9904aaf21cfe2ceea288a21be444f0a",
+   "steps": [
+    13
+   ],
+   "failed_tasks": [],
+   "segmentation": "label times",
+   "usage": {
+    "input_tokens": 146126,
+    "cached_input_tokens": 70124,
+    "output_tokens": 1990,
+    "thinking_tokens": 1038
+   },
+   "timing": {
+    "started_at": "2026-11-21T14:27:05+00:00",
+    "grading_seconds": 67.8,
+    "total_seconds": 174.4
+   }
+  }
+ ]
+}
