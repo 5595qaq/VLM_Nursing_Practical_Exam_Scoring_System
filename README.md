@@ -233,7 +233,7 @@ VID_0083/rubric<版本>_skill<版本>_<模型>_seg-skill<切分版本>_<切分�
   grading.json         評分結果（video_id 改成 VID_xxxx）
   run1/criterion_texts.json   當時的評分標準文字
   run1/seg/            切分的對話紀錄、motion.json、影格、rules_SKILL.md、sequence_check.json
-  run1/grading/        各組評分對話紀錄、probe.json、影格、rules_rubric.json、rules_SKILL.md
+  run1/grading/        各組評分對話紀錄、probe.json、segment_results.json（10b 每段候選的結果）、影格、rules_rubric.json、rules_SKILL.md
 ```
 
 - `video_id` 由前端從原始檔名取出 `VID_xxxx`（只送這個 ID，不送檔名），並顯示在下載按鈕上，下載前請確認。前後接著英數字（`VID_00831`、`XVID_0083`）或重拍編號（`VID_0083-2`、`VID_0083_2`）時不採用；這時資料夾改用 `job<工作編號>_<序號>`，`record.json` 的 `video_id` 為空。
@@ -279,7 +279,7 @@ PowerShell 的寫法相同：`-e GIT_COMMIT=$(python sop-video-grading/scripts/g
 
 - `record.json`：版本、原始影片的 SHA-256，以及每次執行的執行者、日期、commit、該次影片的 SHA-256、評過的步驟（失敗任務的步驟不算）、`failed_tasks`、切分來源與 token 用量。切分是從其他紀錄沿用的，另有 `segmentation_from`（見下方「沿用切分」）。
 - `segmentation.json`：這份紀錄固定使用的切分（第一次執行決定）；`grading.json`：最新的評分結果，之後的 `--steps` 都以它為基底。
-- `run1/`、`run2/`…：該次寫出的評分對話（`grading/transcript_task_*.json`、`probe.json`，只收這次執行寫出的檔案）；該次有跑切分時另含 `seg/transcript.json`、`motion.json`、`probe.json`。
+- `run1/`、`run2/`…：該次寫出的評分對話（`grading/transcript_task_*.json`、`probe.json`、有評 10b 時的 `segment_results.json`，只收這次執行寫出的檔案）；該次有跑切分時另含 `seg/transcript.json`、`motion.json`、`probe.json`。
 - 不存圖片與影片片段：對話紀錄列出每張 overview／zoom／burst／clip 的時間、張數與區域，`segmentation.json` 有裁切框，用原始影片（以 SHA-256 確認）在紀錄的 commit 上可以重新產生。
 - 在 Linux 上，容器以 root 寫入的紀錄會改成 `runs/` 資料夾擁有者的檔案，不需要 sudo 就能 commit。
 
