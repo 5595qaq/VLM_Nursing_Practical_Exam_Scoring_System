@@ -1,0 +1,27 @@
+{
+  "scope": "target_rule_text_only",
+  "model_calls": 0,
+  "source": "source-rules.json",
+  "checks": [
+    {
+      "step_id": 4,
+      "source_profile": "readsheet",
+      "path": "sop-video-skill/SKILL.md",
+      "normalization": "CRLF to LF only; preserve all section whitespace",
+      "source_section_sha256": "a28485a2cea4b105c2d3d9b329570596100408bcaa3d2048f1aa3d4bbd241478",
+      "pr_section_sha256": "a28485a2cea4b105c2d3d9b329570596100408bcaa3d2048f1aa3d4bbd241478",
+      "equal": true
+    },
+    {
+      "step_id": 4,
+      "source_profile": "readsheet",
+      "path": "sop-video-skill/references/sop_steps.md",
+      "normalization": "single complete definition line without line terminator",
+      "source_section_sha256": "0dbac8a262d3e4cd5426d8d257472f9e73dd81c0d444c4813502c679c5c024bc",
+      "pr_section_sha256": "0dbac8a262d3e4cd5426d8d257472f9e73dd81c0d444c4813502c679c5c024bc",
+      "equal": true
+    }
+  ],
+  "all_equal": true,
+  "does_not_prove_full_prompt_or_main_grading_equivalence": true
+}

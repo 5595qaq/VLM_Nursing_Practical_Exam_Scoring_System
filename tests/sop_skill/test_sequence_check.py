@@ -36,6 +36,32 @@ def test_vial_inspection_and_comparison_must_follow_vial_removal():
     assert [2, 3] in findings and [2, 4] in findings
 
 
+def _step_four_entries(result, *spans):
+    """Replace step 4 with one detected entry per check (segmentation 1.5.11)."""
+    template = step(result, 4)
+    result["steps"] = [s for s in result["steps"] if s["step_id"] != 4]
+    for start, end in spans:
+        result["steps"].append({**template, "status": "detected", "start": start, "end": end, "logical_window": None})
+
+
+def test_early_diluent_and_package_checks_are_not_reported():
+    # SKILL.md 4: the diluent and package checks may come before the vial is taken out; the
+    # record-sheet check (40-48 s) still follows step 2 and step 3. Three entries are not a repetition.
+    result = make_valid_result()
+    step(result, 2).update(status="detected", start=20.0, end=28.0, logical_window=None)
+    _step_four_entries(result, (21.0, 23.0), (24.0, 26.0), (40.0, 48.0))
+    assert sequence_check.check(result) == []
+
+
+def test_step_four_entirely_before_vial_removal_is_still_reported():
+    result = make_valid_result()
+    step(result, 2).update(status="detected", start=20.0, end=45.0, logical_window=None)
+    _step_four_entries(result, (21.0, 23.0), (24.0, 26.0))
+    findings = [f["steps"] for f in sequence_check.check(result)]
+    assert [2, 4] in findings
+    assert not any(f["type"] == "repeated" for f in sequence_check.check(result))
+
+
 def test_reading_the_record_sheet_apart_from_checking_the_vial_is_reported():
     # no overlap: reading (4) finished long before the vial was checked (3) is a real deviation
     result = make_valid_result()

@@ -11,6 +11,9 @@ Pairs that SOP allows to overlap (outer/inner steps, see sop_steps.md) are ignor
   ignored only when their spans do overlap.
   Preparations before the second read are allowed.
   Every later step must wait for the first washing to end, even if washing started first.
+Step 4 has one entry per check (record sheet, diluent, syringe package; SKILL.md 4, segmentation 1.5.11), and
+the diluent and package checks may come early. So step 4 is never "repeated", and its order against steps 2
+and 3 uses its latest entry: it is reported only when every step-4 entry starts before step 2 ends (or before 3).
 """
 import argparse
 import json
@@ -18,6 +21,7 @@ import json
 ALLOWED = {frozenset(p) for p in [(15, 16), (15, 17), (16, 17), (23, 24), (25, 26), (25, 27), (26, 27)]}
 ALLOWED.update(frozenset((4, sid)) for sid in range(5, 24))
 ALLOWED_IF_OVERLAPPING = {frozenset(p) for p in [(3, 4)]}
+MULTI_ENTRY = {4}  # one entry per check by design, not a repetition
 
 
 def first_starts(steps):
@@ -47,12 +51,16 @@ def check(res):
                               "description": f"步驟 {sid} 於 {st[sid]:g}s 開始，早於洗手結束（{wash_end:g}s）",
                               "evidence": "sequence_check.py 比對後續步驟起點與洗手終點",
                               "confidence": 0.5, "auto": True})
+    # Step 4 against 2 and 3: its latest entry, since the diluent and package checks may come early.
+    near = dict(st)
+    if 4 in reps:
+        near[4] = max(start for start, _ in reps[4])
     if 2 in st:
         vial_time = max(end for _, end in reps[2])
         for sid in (3, 4):
-            if sid in st and st[sid] < vial_time:
-                found.append({"type": "out_of_order", "start": st[sid], "end": vial_time, "steps": [2, sid],
-                              "description": f"步驟 {sid} 於 {st[sid]:g}s 開始，早於步驟 2 結束（{vial_time:g}s）",
+            if sid in near and near[sid] < vial_time:
+                found.append({"type": "out_of_order", "start": near[sid], "end": vial_time, "steps": [2, sid],
+                              "description": f"步驟 {sid} 於 {near[sid]:g}s 開始，早於步驟 2 結束（{vial_time:g}s）",
                               "evidence": "sequence_check.py 比對步驟 2 終點與後續核對起點",
                               "confidence": 0.5, "auto": True})
     for i in ids:
@@ -62,12 +70,13 @@ def check(res):
             pair = frozenset((i, j))
             if pair in ALLOWED_IF_OVERLAPPING and overlaps(reps[i], reps[j]):
                 continue
-            if i < j and st[j] < st[i] and pair not in ALLOWED:
-                found.append({"type": "out_of_order", "start": st[j], "end": st[i], "steps": [i, j],
-                              "description": f"步驟 {j} 於 {st[j]:.0f}s 開始，早於步驟 {i}（{st[i]:.0f}s）；SOP 順序為 {i}→{j}",
+            start_i, start_j = (near[i], near[j]) if pair == frozenset((3, 4)) else (st[i], st[j])
+            if i < j and start_j < start_i and pair not in ALLOWED:
+                found.append({"type": "out_of_order", "start": start_j, "end": start_i, "steps": [i, j],
+                              "description": f"步驟 {j} 於 {start_j:.0f}s 開始，早於步驟 {i}（{start_i:.0f}s）；SOP 順序為 {i}→{j}",
                               "evidence": "sequence_check.py 依 steps 開始時間比對", "confidence": 0.5, "auto": True})
     for sid, segs in reps.items():
-        if len(segs) > 1:
+        if len(segs) > 1 and sid not in MULTI_ENTRY:
             segs = sorted(segs)
             found.append({"type": "repeated", "start": segs[1][0], "end": segs[-1][1], "steps": [sid],
                           "description": f"步驟 {sid} 出現 {len(segs)} 次：" + "、".join(f"{a:.0f}–{b:.0f}s" for a, b in segs),
