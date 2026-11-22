@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 4.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 19710,
+  "cached_input_tokens": 0,
+  "output_tokens": 131,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@282-290（hands_box，n=9）#0=04:42.0、#1=04:43.0、#2=04:44.0、#3=04:45.0、#4=04:46.0、#5=04:47.0、#6=04:48.0、#7=04:49.0、#8=04:50.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [284.0, 285.0, 286.0, 287.0], \"region\": [0.45, 0.45, 0.72, 0.85], \"reason\": \"放大查看 04:44–04:47 針頭插入 vial 那一刻的持針姿勢（22b）、插入位置是否為中心（22c），以及刺入與打入空氣時 vial 是否放在桌面上（22d）。\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 6.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 20937,
+  "cached_input_tokens": 17912,
+  "output_tokens": 244,
+  "thinking_tokens": 146,
+  "materials": [
+   "ov@282-290（hands_box，n=9）#0=04:42.0、#1=04:43.0、#2=04:44.0、#3=04:45.0、#4=04:46.0、#5=04:47.0、#6=04:48.0、#7=04:49.0、#8=04:50.0",
+   "zoom@284/285/286/287 region=[0.450, 0.450, 0.720, 0.850]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [284.3, 284.7, 287.5, 288.0], \"region\": [0.45, 0.45, 0.72, 0.85], \"reason\": \"確認針頭刺入 vial 的確切瞬間手勢與角度，以及打完空氣至拿起 vial 的時間點\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 9.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 22190,
+  "cached_input_tokens": 0,
+  "output_tokens": 414,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@282-290（hands_box，n=9）#0=04:42.0、#1=04:43.0、#2=04:44.0、#3=04:45.0、#4=04:46.0、#5=04:47.0、#6=04:48.0、#7=04:49.0、#8=04:50.0",
+   "zoom@284/285/286/287 region=[0.450, 0.450, 0.720, 0.850]",
+   "zoom@284.3/284.7/287.5/288 region=[0.450, 0.450, 0.720, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"22b\", \"verdict\": \"正確\", \"explanation\": \"04:44.7–04:45.0 針頭刺入 vial 時，右手以拇指、食指與中指持毛筆方式握住針筒外管，針筒垂直向下插入，手指未碰觸針頭、針座及活塞柄內側。\", \"times\": [[284.7, 285.0]], \"evidence\": [\"zoom@284.7\", \"zoom@285\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"22c\", \"verdict\": \"正確\", \"explanation\": \"04:44.7–04:45.0 針頭垂直刺入 vial 瓶口橡皮塞中央。\", \"times\": [[284.7, 285.0]], \"evidence\": [\"zoom@284.7\", \"zoom@285\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"22d\", \"verdict\": \"正確\", \"explanation\": \"04:44.7–04:47.5 左手固定放在治療車桌面上的 vial，右手持針筒垂直刺入並將針心推到底打入空氣，全程 vial 底部皆貼在桌面上，打完空氣後於 04:48.0 才開始舉起 vial。\", \"times\": [[284.7, 287.5]], \"evidence\": [\"zoom@284.7\", \"zoom@285\", \"zoom@286\", \"zoom@287\", \"zoom@287.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

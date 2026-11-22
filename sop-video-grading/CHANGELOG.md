@@ -2,6 +2,17 @@
 
 未發布的修改先寫在 `changelog.d/`（一個分支一個檔，見 `changelog.d/README.md`），合併前改成正式版本時才移到這裡；規則見 `AGENTS.md`「多人協作」。
 
+## 0.46（rubric 1.30）
+
+- **22d 打空氣時 vial 也要放在桌上（issue #168，`criteria/08-hand-posture.md`、rubric 22d；分支版本 SKILL 0.45-handpos22d.1／rubric 1.29-handpos22d.1，`experiments/2026-11-16-handpos22d.md`）：**
+  - 老師 2026-11-14（使用者轉述）：步驟 22 要放在桌上打空氣。刺入時 vial 在桌上、推針心打空氣時把 vial 拿起來，也算錯誤（調整組人工重標：VID_0014、0072 步驟 22）。
+  - rubric 22d 文字改成「垂直刺入並打入空氣；刺入或打入空氣時 vial 拿離桌面不正確（打完空氣後舉起倒置屬步驟 23）」；criteria 改成步驟 22 看刺入到空氣打完的整段，空氣打完、針心推到底之後舉起倒置是步驟 23，不算 22d 錯誤。
+  - 18d（打入稀釋液）不變，仍只看刺入那一刻。
+  - 調整組 30 支 `--steps 22`（用 `--labels`）：和人工重標一致 29/30，原本 25 支 24/25（上一版 17/25）、新增 5 支 5/5。唯一不一致 VID_0008 是重做以最後一次為準的問題（D-00-01），不改 22d。人工標記還沒經組長或老師核對，**暫定**。
+- 新增 `DECISIONS.md`：老師、組長、使用者對標準的決定一筆一個編號（`D-<criteria 組>-<流水號>`），寫原本、改成、理由、例子與落實到哪個版本；還沒決定的事以「待決定」寫在同一份。先補 2026-11-08 老師回覆那一批與之後各 PR 的待確認事項。`EXPERIMENTS.md`「待老師確認」移過去（舊項目對應的編號列在那一節），`AGENTS.md`、`README.md`、`experiments/README.md` 改指向新檔；PR 範本加上「依決定改規則時要更新 `DECISIONS.md`」。不改 SKILL／rubric 版本（評分 agent 不讀這份）。
+- `rules_digest` 不計入 `DECISIONS.md`（和 `CHANGELOG.md`、`EXPERIMENTS.md` 一樣是紀錄，不是規則）。worker 沒有用新程式重建時，改 `DECISIONS.md` 仍會讓執行中的評分記成 `rules_changed_during_run`；跨過這次部署接續的評分會記成 `mixed_rules`。
+- 補的過程中發現規則和老師決定不一致、還沒處理的地方，記在各筆的「待辦」：1b 少做動作整步錯誤（使用者 2026-11-09）和老師「洗手時間夠、動作不全 → 部分正確」的例子不同，列為待決定（D-01-02、D-01-03）；30a「丟棄為錯誤」vs 給藥後丟收集盒可以（D-09-01）；4d、4e 還不是關鍵（D-02-03、D-02-04）；1a 中斷可相加（D-01-01）；共用 `SKILL.md` 重做以最後一次為準、部分正確的例子仍寫先彈後墊（D-00-01、D-00-03）。
+
 ## 0.45（rubric 1.29）
 
 - **手部姿勢照老師 2026-11-08 回覆修改（issue #140，`criteria/08-hand-posture.md`、rubric；分支版本 SKILL 0.44-handpos.1／rubric 1.28-handpos.1，評分紀錄用 0.41-handpos.1／1.25-handpos.1 跑，`experiments/2026-11-09-handpos.md`；紀錄 `experiments/2026-11-08-teacher-reply.md`）：**
