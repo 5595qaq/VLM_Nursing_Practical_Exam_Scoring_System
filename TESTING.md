@@ -133,3 +133,15 @@ LOCUST_VIDEO_URI=gs://bucket/videos/<sha256>_src.mp4 locust -H http://localhost:
 ## 首次真實模型驗收
 
 自動測試通過後，可由使用者提交 10 支代表性影片，查看 `docker compose logs -f worker` 的 429 比率與耗時，再決定是否調整 5 路設定。真實模型容量、延遲及計費不由 mock 測試保證。增加 worker 不會增加全域上限，改動設定需同時重啟所有 worker。
+
+### grading30pdf185 的離線驗證
+
+`tests/sop_grading` 涵蓋實際接觸與洗手 1 秒容差、藥單看不見的整步彙總、30a／30b 完成數彙總及時間窗。`backend/tests/test_sop_segment_grading.py` 驗證多區間獨立判定與合併；`test_sop_grading_service.py` 用合成影片與假模型驗證任務／檢查點；`test_sop_grading_cli.py` 驗證保存切分匯入與紀錄。`test_adaptive_retry.py`、`test_credit_budget.py`、`test_sop_cli_guard.py` 用假回覆與假等待驗證重試、估算與保留額，無付費模型呼叫。
+
+既有 30 支資料的來源雜湊、180 筆 PDF 對應結果、28 筆差異原始檔、30 筆原生 CLI 紀錄及彙總邏輯相容性可離線檢查：
+
+```bash
+python sop-video-grading/experiments/2026-11-23-grading30pdf185/verify_bundle.py
+```
+
+離線資料相容性與自動測試不等於新版本的影片回歸。合併前仍需依 AGENTS.md 完成正式版影片確認與人工核對；本輪沒有重新呼叫模型，也沒有建立輸出前的獨立盲參考答案。

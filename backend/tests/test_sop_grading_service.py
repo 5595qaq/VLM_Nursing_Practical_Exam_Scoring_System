@@ -77,6 +77,8 @@ def final_for(content, verdict="正確"):
         if c["criterion_id"] == "1a":
             c["span"] = [0.0, 16.0] if verdict == "正確" else [0.0, 10.0]
             del c["times"]
+        elif c["criterion_id"] == "1c":
+            c["times"] = [] if verdict == "正確" else [[0.0, 0.0]]
         elif c["criterion_id"] in {"2a", "4a", "29a"}:
             start = c["times"][0][0]
             c["times"] = [[start, start + 10.0]] if verdict == "正確" else []
@@ -122,10 +124,25 @@ async def test_grading_grades_every_visual_criterion(video, tmp_path):
     assert (tmp_path / "grading.json").exists() and (tmp_path / "transcript_task_15-16-17.json").exists()
 
 
+async def test_wash_contact_stays_in_the_washing_task_and_ignores_reading_overlap(video, tmp_path):
+    seg = segmentation(wash_first=True)
+    seg["steps"][1].update(start=2.5, end=13.5)
+    model = FakeModel()
+    outcome = await grading.run_grading(video, seg, tmp_path, model, steps={1})
+    assert outcome["failed_tasks"] == []
+    assert outcome["tasks"] == ["1"]
+    wash = outcome["result"]["steps"][0]
+    assert wash["verdict"] == "正確"
+    assert {c["criterion_id"] for c in wash["criteria"]} == {"1a", "1b", "1c"}
+    contact = next(c for c in wash["criteria"] if c["criterion_id"] == "1c")
+    assert contact["source"] == "vlm" and contact["times"] == []
+    assert all({*CRITERION.findall(r[0]["text"])} == {"1a", "1b", "1c"} for r in model.requests)
+
+
 async def test_washing_task_asks_for_a_timed_span(video, tmp_path):
     no_span = {"action": "final", "criteria": [
         {"criterion_id": cid, "verdict": "正確", "times": [[5.0, 5.0]], "confidence": 0.7, "reason": None, "evidence": ["clip@0-18"],
-         "explanation": "00:01–00:16 看到雙手互搓。"} for cid in ("1a", "1b")]}
+         "explanation": "00:01–00:16 看到雙手互搓。"} for cid in ("1a", "1b", "1c")]}
     model = FakeModel({"1a": [no_span]})
     outcome = await grading.run_grading(video, segmentation(), tmp_path, model, steps={1})
     first, retry = requests_for(model, "1a")
@@ -191,6 +208,31 @@ async def test_extra_material_actions_run(video, tmp_path):
     last = requests_for(model, "12a")[-1]
     assert "zoom@21.8/22.5" in last[0]["text"] and "clip@20-25" in last[0]["text"]
     assert [b["fps"] for b in last if b["type"] == "video"] == [3]
+
+
+async def test_segment_retry_keeps_the_completed_candidate_without_repaying(video, tmp_path):
+    seg = segmentation()
+    seg['steps'][9].update(start=16.0, end=17.0)
+    seg['steps'].append({**seg['steps'][9], 'start':20.0, 'end':21.0})
+    seen = []
+    async def interrupted(system, content):
+        text = content[0]['text']
+        seen.append(text)
+        if '[20.0, 21.0]' in text:
+            raise ConnectionError('lost connection before reply')
+        return ModelReply(json.dumps(final_for(content)), 'end_turn', 100, 10)
+    first = await grading.run_grading(video, seg, tmp_path, interrupted, steps={10})
+    assert [x['task'] for x in first['failed_tasks']] == ['10-seg2']
+    assert first['result']['steps'][9]['verdict'] == '待判定'
+    assert (tmp_path/'checkpoint_task_10-seg1.json').exists()
+    second_model = FakeModel()
+    second = await grading.run_grading(video, seg, tmp_path, second_model, steps={10},
+                                       previous=first['result'], resume=True)
+    assert len(second_model.requests) == 1
+    assert '[20.0, 21.0]' in second_model.requests[0][0]['text']
+    assert second['failed_tasks'] == []
+    assert second['result']['steps'][9]['verdict'] == '正確'
+    assert len(json.loads((tmp_path/'segment_results.json').read_text(encoding='utf-8'))['segments']) == 2
 
 
 @pytest.mark.parametrize("package_spans, reason", [
@@ -868,3 +910,25 @@ async def test_usage_counts_cached_and_thinking_tokens(video, tmp_path):
     turn = json.loads((tmp_path / "transcript_task_15-16-17.json").read_text(encoding="utf-8"))[0]
     assert {k: turn[k] for k in ("input_tokens", "cached_input_tokens", "output_tokens", "thinking_tokens")} == {
         "input_tokens": 100, "cached_input_tokens": 40, "output_tokens": 10, "thinking_tokens": 3}
+
+
+def test_sop30_grader_receives_substitute_phase_labels_without_model_explanations():
+    seg = segmentation()
+    seg["steps"][-2]["evidence"] = "hidden step 29 evidence"
+    seg["steps"][-1].update(start=40.0, end=42.0,
+                           evidence="給藥前放置（切分錨點：替代）：hidden before evidence")
+    seg["steps"].extend([
+        {"step_id": 30, "start": 54.0, "end": 55.5,
+         "evidence": "給藥後放置（切分錨點：替代）：hidden after evidence"},
+        {"step_id": 30, "start": 57.0, "end": 58.0, "evidence": "給藥後放置：legacy evidence"},
+    ])
+    task = {"window_steps": [29, 30], "criteria": [{"step_id": 30, "searching": False}]}
+
+    lines = "\n".join(grading._segment_lines(task, seg))
+
+    assert "步驟 30（給藥前放置，依切分替代錨點）：00:40.0–00:42.0" in lines
+    assert "步驟 30（給藥後放置，依切分替代錨點）：00:54.0–00:55.5" in lines
+    assert "步驟 30：00:57.0–00:58.0" in lines
+    assert "hidden" not in lines and "legacy evidence" not in lines
+    task["criteria"][0]["step_id"] = 29
+    assert all("替代錨點" not in line for line in grading._segment_lines(task, seg))

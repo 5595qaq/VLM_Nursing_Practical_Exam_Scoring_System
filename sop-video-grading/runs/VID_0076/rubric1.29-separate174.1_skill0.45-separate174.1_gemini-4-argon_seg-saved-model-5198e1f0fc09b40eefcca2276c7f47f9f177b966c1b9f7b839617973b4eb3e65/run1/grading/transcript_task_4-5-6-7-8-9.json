@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 205.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 20431,
+  "cached_input_tokens": 0,
+  "output_tokens": 334,
+  "thinking_tokens": 260,
+  "materials": [
+   "ov@23-270（hands_box，n=9）#0=00:23.0、#1=00:53.9、#2=01:24.8、#3=01:55.6、#4=02:26.5、#5=02:57.4、#6=03:28.2、#7=03:59.1、#8=04:30.0"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 23.0, \"end\": 80.0, \"fps\": 2, \"reason\": \"查看撕開空針包裝前（00:23.0–01:20.0）是否有拿起空針包裝並用手指指出核對\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 76.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 31006,
+  "cached_input_tokens": 18624,
+  "output_tokens": 112,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@23-270（hands_box，n=9）#0=00:23.0、#1=00:53.9、#2=01:24.8、#3=01:55.6、#4=02:26.5、#5=02:57.4、#6=03:28.2、#7=03:59.1、#8=04:30.0",
+   "clip@23-80（context box，有聲音；片段內 00:00 ＝ 影片 00:23.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [31.5, 33.0, 34.5, 65.5], \"region\": [0.3, 0.25, 0.65, 0.65], \"reason\": \"確認考生拿起空針包裝檢視時（00:31.5-00:34.5 及 01:05.5），是否有用手指指出包裝進行核對。\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 132.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 32248,
+  "cached_input_tokens": 18624,
+  "output_tokens": 197,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@23-270（hands_box，n=9）#0=00:23.0、#1=00:53.9、#2=01:24.8、#3=01:55.6、#4=02:26.5、#5=02:57.4、#6=03:28.2、#7=03:59.1、#8=04:30.0",
+   "clip@23-80（context box，有聲音；片段內 00:00 ＝ 影片 00:23.0）",
+   "zoom@31.5/33/34.5/65.5 region=[0.300, 0.250, 0.650, 0.650]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4e\", \"verdict\": \"正確\", \"explanation\": \"於 00:31.0–00:35.5 拿起空針包裝檢視時，雙手僅持握包裝邊緣目視，未用手指指出；但於 01:04.5–01:06.5 撕開空針包裝前，左手持空針包裝背面朝向鏡頭，右手食指明確指出包裝背面的標示進行核對（見 zoom@65.5），隨後於 01:07.0 開始撕開包裝。\", \"times\": [[64.5, 66.5]], \"evidence\": [\"clip@23-80\", \"zoom@65.5\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

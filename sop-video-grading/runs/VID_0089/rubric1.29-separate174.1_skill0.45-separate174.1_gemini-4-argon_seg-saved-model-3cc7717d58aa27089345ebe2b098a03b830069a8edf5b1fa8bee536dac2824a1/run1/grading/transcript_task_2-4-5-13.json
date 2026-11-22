@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 61.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 20374,
+  "cached_input_tokens": 0,
+  "output_tokens": 173,
+  "thinking_tokens": 102,
+  "materials": [
+   "ov@22.4-128.4（hands_box，n=9）#0=00:22.4、#1=00:35.6、#2=00:48.9、#3=01:02.1、#4=01:15.4、#5=01:28.7、#6=01:41.9、#7=01:55.2、#8=02:08.4"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 24.0, \"end\": 46.0, \"fps\": 2, \"reason\": \"查看 00:24–00:46 期間拿起稀釋液檢查效期與有無異物的具體起訖時間與動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 94.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 24541,
+  "cached_input_tokens": 18624,
+  "output_tokens": 169,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@22.4-128.4（hands_box，n=9）#0=00:22.4、#1=00:35.6、#2=00:48.9、#3=01:02.1、#4=01:15.4、#5=01:28.7、#6=01:41.9、#7=01:55.2、#8=02:08.4",
+   "clip@24-46（context box，有聲音；片段內 00:00 ＝ 影片 00:24.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4d\", \"verdict\": \"正確\", \"explanation\": \"於 00:31.0–00:38.0（clip@24-46 片段內 00:07.0–00:14.0）右手拿起細長透明的稀釋液瓶，轉動瓶身並低頭檢視標示及液體，同時與給藥紀錄單核對。\", \"times\": [[31.0, 38.0]], \"evidence\": [\"ov@22.4-128.4 #1\", \"clip@24-46\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

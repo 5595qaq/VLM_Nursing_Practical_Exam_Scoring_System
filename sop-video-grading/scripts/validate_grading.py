@@ -91,12 +91,35 @@ def _check_step(where: str, step: dict, spec: dict, final: bool) -> list[str]:
         errors.extend(check_criterion(f"{where} criterion {c['criterion_id']}", c, rule, final))
 
     errors.extend(check_vial_cutoff(step["criteria"]))
-    expected = aggregate(spec, {c["criterion_id"]: c["verdict"] for c in step["criteria"]})
+    errors.extend(check_wash_order(step["criteria"], spec))
+    expected = aggregate(spec, {c["criterion_id"]: c["verdict"] for c in step["criteria"]},
+                         reasons={c["criterion_id"]: c.get("reason") for c in step["criteria"]})
     if step["verdict"] != expected:
         errors.append(f"{where}: verdict {step['verdict']} does not match its criteria (expected {expected})")
     if step.get("needs_review", False) != any(c.get("needs_review") for c in step["criteria"]):
         errors.append(f"{where}: needs_review must be true exactly when a criterion needs review")
     return errors
+
+
+def check_wash_order(criteria: list[dict], spec: dict, *, wash_span: list[float] | None = None) -> list[str]:
+    """Compare observed object contacts with the measured wash end, never with a reading window."""
+    grades = {c["criterion_id"]: c for c in criteria}
+    order = grades.get("1c")
+    rule = next((c.get("rule", {}) for c in spec["criteria"] if c["id"] == "1c"), {})
+    if not order or rule.get("type") != "wash_before_contact" or order.get("source", "vlm") != "vlm":
+        return []
+    if order["verdict"] not in (CORRECT, WRONG):
+        return []
+    if "times" not in order or any(start != end for start, end in order["times"]):
+        return ["criterion 1c: use times [[t, t], ...] for actual object contacts, or [] when none were seen"]
+    wash_span = grades.get("1a", {}).get("span") or wash_span
+    if wash_span is None:
+        return ["criterion 1c: cannot confirm contact order without the measured wash end; use 無法判定"]
+    threshold = Decimal(str(wash_span[1])) - Decimal(str(rule["tolerance_seconds"]))
+    expected = WRONG if any(Decimal(str(start)) < threshold for start, _ in order["times"]) else CORRECT
+    if order["verdict"] != expected:
+        return [f"criterion 1c: actual contact times with {rule['tolerance_seconds']:g} s tolerance require {expected}"]
+    return []
 
 
 def check_vial_cutoff(criteria: list[dict]) -> list[str]:

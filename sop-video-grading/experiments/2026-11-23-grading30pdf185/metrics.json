@@ -1,0 +1,159 @@
+{
+  "kind": "既有私人參考表之回溯一致程度；非獨立盲測準確率",
+  "source_comparison_sha256": "25eb963489288b1d834f16c8031b0bad538831c09047a96b209536eeb5d5e4fa",
+  "reference_observed_at": "2026-11-21 12:52:23 UTC",
+  "summary": {
+    "compared": 180,
+    "agreement": 152,
+    "strict_agreement": 152,
+    "time_mismatch": [],
+    "error_recall": "34/42",
+    "false_alarms": "5/70",
+    "confusion": {
+      "正確→部分正確": 3,
+      "部分正確→正確": 7,
+      "無法判定→錯誤": 13,
+      "正確→錯誤": 2,
+      "錯誤→正確": 1,
+      "無法判定→部分正確": 1,
+      "部分正確→錯誤": 1
+    },
+    "needs_review": [],
+    "error_tp": 34,
+    "error_total": 42,
+    "false_positive": 5,
+    "correct_total": 70,
+    "unknown_tp": 54,
+    "unknown_human": 68,
+    "time_agree": 131,
+    "time_total": 131
+  },
+  "by_step": {
+    "1": {
+      "compared": 30,
+      "agreement": 28,
+      "strict_agreement": 28,
+      "time_mismatch": [],
+      "error_recall": "6/6",
+      "false_alarms": "2/24",
+      "confusion": {
+        "正確→錯誤": 2
+      },
+      "needs_review": [],
+      "error_tp": 6,
+      "error_total": 6,
+      "false_positive": 2,
+      "correct_total": 24,
+      "unknown_tp": 0,
+      "unknown_human": 0,
+      "time_agree": 30,
+      "time_total": 30
+    },
+    "2": {
+      "compared": 30,
+      "agreement": 27,
+      "strict_agreement": 27,
+      "time_mismatch": [],
+      "error_recall": "5/5",
+      "false_alarms": "0/3",
+      "confusion": {
+        "無法判定→錯誤": 3
+      },
+      "needs_review": [],
+      "error_tp": 5,
+      "error_total": 5,
+      "false_positive": 0,
+      "correct_total": 3,
+      "unknown_tp": 19,
+      "unknown_human": 22,
+      "time_agree": 26,
+      "time_total": 26
+    },
+    "3": {
+      "compared": 30,
+      "agreement": 30,
+      "strict_agreement": 30,
+      "time_mismatch": [],
+      "error_recall": "2/2",
+      "false_alarms": "0/28",
+      "confusion": {},
+      "needs_review": [],
+      "error_tp": 2,
+      "error_total": 2,
+      "false_positive": 0,
+      "correct_total": 28,
+      "unknown_tp": 0,
+      "unknown_human": 0,
+      "time_agree": 28,
+      "time_total": 28
+    },
+    "4": {
+      "compared": 30,
+      "agreement": 26,
+      "strict_agreement": 26,
+      "time_mismatch": [],
+      "error_recall": "5/6",
+      "false_alarms": "1/1",
+      "confusion": {
+        "正確→部分正確": 1,
+        "部分正確→正確": 1,
+        "無法判定→錯誤": 1,
+        "無法判定→部分正確": 1
+      },
+      "needs_review": [],
+      "error_tp": 5,
+      "error_total": 6,
+      "false_positive": 1,
+      "correct_total": 1,
+      "unknown_tp": 21,
+      "unknown_human": 23,
+      "time_agree": 11,
+      "time_total": 11
+    },
+    "29": {
+      "compared": 30,
+      "agreement": 21,
+      "strict_agreement": 21,
+      "time_mismatch": [],
+      "error_recall": "5/5",
+      "false_alarms": "0/2",
+      "confusion": {
+        "無法判定→錯誤": 9
+      },
+      "needs_review": [],
+      "error_tp": 5,
+      "error_total": 5,
+      "false_positive": 0,
+      "correct_total": 2,
+      "unknown_tp": 14,
+      "unknown_human": 23,
+      "time_agree": 6,
+      "time_total": 6
+    },
+    "30": {
+      "compared": 30,
+      "agreement": 20,
+      "strict_agreement": 20,
+      "time_mismatch": [],
+      "error_recall": "11/18",
+      "false_alarms": "2/12",
+      "confusion": {
+        "部分正確→正確": 6,
+        "錯誤→正確": 1,
+        "正確→部分正確": 2,
+        "部分正確→錯誤": 1
+      },
+      "needs_review": [],
+      "error_tp": 11,
+      "error_total": 18,
+      "false_positive": 2,
+      "correct_total": 12,
+      "unknown_tp": 0,
+      "unknown_human": 0,
+      "time_agree": 30,
+      "time_total": 30
+    }
+  },
+  "model_calls_in_publication": 0,
+  "timing_warning": "131/131 只代表原 evaluator 的任一區間重疊／起點三秒容差，不代表每段或前後事件皆正確"
+}

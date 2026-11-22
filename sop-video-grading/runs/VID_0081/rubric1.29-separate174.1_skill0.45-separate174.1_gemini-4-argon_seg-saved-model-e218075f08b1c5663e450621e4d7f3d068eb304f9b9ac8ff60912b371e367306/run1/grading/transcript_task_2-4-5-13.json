@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 27.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 20363,
+  "cached_input_tokens": 0,
+  "output_tokens": 68,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@0-157（hands_box，n=9）#0=00:00.0、#1=00:19.6、#2=00:39.2、#3=00:58.9、#4=01:18.5、#5=01:38.1、#6=01:57.8、#7=02:17.4、#8=02:37.0"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 0.0, \"end\": 60.0, \"fps\": 2, \"reason\": \"查看 00:00–01:00 期間考生何時拿起稀釋液並檢查效期與有無異物\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 146.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 31474,
+  "cached_input_tokens": 18624,
+  "output_tokens": 151,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@0-157（hands_box，n=9）#0=00:00.0、#1=00:19.6、#2=00:39.2、#3=00:58.9、#4=01:18.5、#5=01:38.1、#6=01:57.8、#7=02:17.4、#8=02:37.0",
+   "clip@0-60（context box，有聲音；片段內 00:00 ＝ 影片 00:00.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4d\", \"verdict\": \"正確\", \"explanation\": \"於 00:39.5–00:42.5（clip@0-60 片段內 00:39.5–00:42.5）抽藥前拿起稀釋液瓶，低頭查看瓶身標示與液體後放回桌面。\", \"times\": [[39.5, 42.5]], \"evidence\": [\"clip@0-60\", \"ov@0-157 #2\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

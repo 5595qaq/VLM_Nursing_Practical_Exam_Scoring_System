@@ -1,0 +1,217 @@
+# CHANGELOG
+
+未發布的修改先寫在 `changelog.d/`（一個分支一個檔，見 `changelog.d/README.md`），合併前改成正式版本時才移到這裡；規則見 `AGENTS.md`「多人協作」。
+
+## 1.5.10
+
+步驟 30 分開標出給藥前與給藥後的放置（issue #141；分支版本 `1.5.9-disposal.1`）。
+
+- 步驟 30 分開標出給藥前放回原包裝或針架與給藥後放進針筒收集盒的可見區間；兩次都看到時各標一筆，第二次加 `repeated`（SKILL.md、`references/sop_steps.md`）。
+
+## 1.5.9
+
+調整洗手與讀單規則（issue #160）。
+
+- 步驟 1 從按壓洗手液到完成洗手，核對所有後續步驟的開始時間。
+- 步驟 2 在取出 vial 時結束。步驟 3 從開始檢視藥瓶到停止檢視。步驟 4 標取藥後至抽藥前的核對。
+- 步驟 29 沿用原有切分方式。第二次核對的分界是取出 vial 與開始抽藥，允許在核對前準備空針、檢查稀釋液。
+
+## 1.5.8
+
+在 1.5.7（draftpatch）之上；schema 不變，評分端不動。分支版本 `1.5.6-finalfix.1`，實驗紀錄見 `sop-video-grading/experiments/2026-11-09-finalfix.md`。
+
+- 減少 `final` 被退回後整份重寫，降低切分的 output 成本（issue #153）。0.39 版以後的 61 次切分中，有 35 次的 `final` 被退回一次，每次重寫約 1.2 萬 output token。SKILL.md 本文與動作格式不變，模型讀到的規則不變。
+  - 外部程式把超過影片結尾不到 0.5 秒的結束時間改成影片結尾（`steps` 的 `end`、`logical_window` 的結尾，以及 `observations`、`unassigned_spans`、`package_spans` 的 `end`）。原因是回報給模型的影片長度只取到 0.1 秒，模型照著寫（552.285 秒的影片寫成 552.3）就被判超出影片。0.5 秒與 `validate_action.py` 對 overview 結尾和 `meta.duration` 的容許範圍相同。開始就在影片之後的時段整筆不改，和超過更多的一樣會被退回。
+  - `validate_result.py`：`unassigned_spans` 對應的 observation 也接受 `other`，但 `other` 合計要涵蓋那一段的一半以上，避免一段長時間只靠一則不相關的短備註過關。模型常把同一段寫成 `other` 而被退回；下游沒有程式讀這個類型。SKILL.md 第 6 節仍要求寫 `extra_action` 或 `left_work_area`。
+
+## 1.5.7
+
+動作的 `draft` 改成只送變動的列、每 3 個動作重寫一次完整草稿（issue #150），切分 output 約少 57%、切分費用約少 42%。分支版本 `1.5.6-draftpatch.2`（只送變動）與 `.3`（折衷版）的紀錄見 `sop-video-grading/experiments/2026-11-09-draftpatch.md`。schema 不變，動作格式只改 `draft` 的寫法。
+
+- 動作的 `draft` 改成只寫這回合新增或改變的列（沒有變動寫 `無變動`），外部程式依第一欄（步驟編號）合併成完整草稿，每回合附回（`scripts/draft.py`、SKILL.md 第 0 節與 2.3、`actions.schema.json` 的說明）。同一步驟的新列取代舊列，`步驟 | 刪除` 刪掉一列，沒有 `|` 的備註接在之前的備註後面；`transcript.json` 每個執行的回合另存合併後的 `draft`。原本每回合重寫 30 步的完整草稿，約佔切分 output 的 65%（issue #150）。
+- 每 3 個動作重寫一次完整草稿（外部程式在那一回合提醒；少寫任何一列會被退回）。只送變動的列時，6 支影片切分和標記表吻合的步驟 121 → 109，主要是邊界停在早期粗估（2026-11-09，`draft.FULL_EVERY`）。
+- 完整重寫時備註也整段重寫（舊備註可以刪掉）；開頭的「無變動」行不保留；`刪除` 後面可以接說明；`步驟 5`、`15–17`、`15 - 17` 視為同一列。該重寫的回合被截斷或退回時，回饋要求寫出全部的列。這些是 code review 的修正，6 支影片的驗證用的是修正前的 `.3`。
+
+## 1.5.6
+
+1.5.5 的 code review 修正，和 1.5.5 同一個 PR 合併（1.5.5 的評分紀錄用修正前的規則）。schema 與動作格式不變。
+
+- 拿著藥物對著紀錄單比對的時間算進讀單區間，翻找、拿取不算。1.5.5 寫「不要把前後拿藥、看藥瓶的時間算進去」，和評分 `criteria/02-drug-sheet.md` 及使用者核對相反（VID_0014 01:08–01:39 算注視）。
+- 步驟 29 的讀單只算抽完藥（24）之後到丟入收集筒之前，其他時段讀的寫 `other`。1.5.5 沒有下限，開瓶後看一眼紀錄單就會把 29 的區間拉到好幾分鐘。
+- `sop_steps.md` 步驟 2 的線索和 SKILL.md 一致：站直低頭、分不出在看什麼的不算。步驟 3 不再寫「和 2、4 連續」。
+- `sequence_check.py`：2↔3、3↔4 只有區間真的重疊才放行，不重疊的順序顛倒仍回報 `out_of_order`。
+
+## 1.5.5
+
+讀紀錄單的步驟 2、4、29 改成標出讀單動作的時間（issue #117）。schema 與動作格式不變；評分端不動（評分 0.36、rubric 1.21）。
+
+- 紀錄單位置改成先在畫面中找，不預設位置（同評分 `criteria/02-drug-sheet.md`）。原本寫貼在背後的牆或點滴架上、頭轉向它，新考場的紀錄單平放在治療車最前緣，學生低頭讀，切分因此寫「紀錄單在畫面外」（VID_0001、VID_0014）。
+- 看到讀單動作（手指指著或按在紀錄單上、拿藥對著紀錄單比對、zoom 上看得出視線朝向紀錄單）就標 `detected`，不論多短；秒數由評分判。原本要注視 ≥ 10 s 才標，且不需要額外的 overview/zoom，區間只能靠 `logical_window` 碰運氣。讀單另外花的預算上限 4 次 overview、1 次 zoom。
+- 2、4 用「vial、稀釋液、空針、棉片全部拿到檯面上」區分（暫定，待老師確認，同評分 0.36）；開瓶蓋之後讀的不算 2 或 4。
+- 不用步驟編號推讀單的時間：學生可能在洗手之前就讀（VID_0001 00:02–00:39）。沒看到讀單時，`logical_window` 涵蓋整段可能的時間（2＝影片開始 → 東西全部拿出來），不再從洗手之後算。
+- `sequence_check.py` 放行 2↔3、3↔4：這幾步 `detected` 後常互相重疊，不是順序偏離。2 早於 1 仍會報 `out_of_order`。
+
+疊代過程見 `sop-video-grading/experiments/2026-11-02-segread.md`（分支版本 `1.5.4-segread.1`）。
+
+## 1.5.4
+
+只改第 5 節 `package_spans` 的一句說明，動作格式、schema 與判定規則不變（issue #97）。
+
+- 原本寫「評分不判『取出前有沒有隔著包裝固定針頭』，而是把這些時段交給人工看」，是評分 0.29 的作法。評分 0.32（PR #98）起，評分 agent 會拿到這些時段，自己判取出前的固定，判錯誤或無法判定時再交給人工，這句已不正確。改成不描述評分怎麼判的說法：評分靠這些時段找隔著包裝的固定，漏掉一段就沒有人會看。「寧可多列、不可漏」與下面三條規則不變。
+- 使用者決定（2026-10-31）：10b 判錯誤、無法判定時，人工要確認這些時段有沒有漏掉拿起空針包裝的片段（`AGENTS.md`「步驟 10（10b 固定針頭與針心）的判定與核對」，PR #98），所以這裡要求找齊。
+
+## 1.5.3
+
+只改第 5 節一句說明，動作格式、schema 與判定規則不變（issue #93）。
+
+- 原本寫「評分程式對 5、6、7、8、15、25 等直接用 `status` 給分（`not_performed`＝錯誤）」。評分 0.30（PR #91）起這幾步改由評分 agent 看畫面確認，切分沒找到時在前後步驟之間搜尋，這句已不正確。改成不描述評分怎麼實作的說法：status 與區間是評分找畫面的依據，標錯會讓評分找錯地方。下面「`detected` 要看到定義動作本身」「`not_performed` 前要密集確認」兩條不變。
+- 不寫評分的細節，評分端以後再改時，切分的 SKILL 不必跟著改版。
+
+## 1.5.2
+
+規則文字前後一致（1.5.1 的 code review）。動作格式與 schema 不變。
+
+- 步驟 8 的開始統一為「開始扭轉（或折）瓶頂」，手握住瓶頂擦拭的時間屬於 7（1.5.1 同時寫了「開始＝手握住稀釋液瓶頂」與「從開始扭轉算」）。
+- 步驟 7 拿掉「常很短（1–3 s），並直接接 8」與「可合併為 7–8 段」，SKILL.md 合併規則的例子刪掉 7–8：合併規則會給 7、8 同一個區間，把 7 對齊到扭開（VID_0100 步驟 7、VID_0095 步驟 8 的時間跳動）。定 7 的起點時，密集 overview 從拿起稀釋液瓶開始取（VID_0100 的 overview 從 01:18 才開始，漏掉 01:13–01:17 的擦拭）。
+- 棉片包住稀釋液瓶頂直接扭開、沒有另外擦，也算 7（1.5.1 第 5 節只寫「要看到棉片在瓶口擦拭」）。
+- 步驟 5：手或棉片擋住推蓋動作時，看到瓶頂從有色圓蓋變成銀色鋁圈也算看到動作（1.5.1 第 5 節與步驟 5 的寫法不一致）。
+
+## 1.5.1
+
+切分端修正：「有沒有做」的步驟要看到動作本身、步驟 6／7 的時段、步驟 30 只看給藥前那次（issue #87）。依 2026-10-27 組員核對 0.22 的 11 支影片，切分是最大的錯誤來源；疊代過程（分支版本 segfix.1–.6）見 `sop-video-grading/experiments/2026-10-29-segfix.md`。動作格式與 schema 不變。
+
+- `SKILL.md` 第 5 節：評分程式對 5、6、7、8、15、25 直接用切分的 `status` 給分，所以 `detected` 要看到動作本身（推開瓶蓋、扭開或折斷瓶頂、棉片在瓶口擦拭、棉片墊在接頭）；`not_performed` 前要對邏輯區間做 ≤ 1.5 s／格的 overview 並 zoom 相關器材，否則標 `not_visually_determinable`（VID_0083 步驟 5、7 原本用 4 s／格判沒做）。
+- `references/sop_steps.md`：
+  - 器材慣例與步驟 5：vial 翻蓋可能是深紅或褐色，不要看成橡皮塞；手擋住時看瓶頂從有色圓蓋變成銀色鋁圈的時間。
+  - 步驟 6：開始＝棉片碰到瓶口（撕棉片包裝不算）；只把棉片蓋在瓶口不是消毒，之後任何一次擦 vial 瓶口都輸出步驟 6、不寫 `extra_action`（VID_0091、0100）。
+  - 步驟 7／8：7 從棉片第一次碰到稀釋液瓶頂開始，8 從開始扭轉開始；隔著棉片扭開時兩者重疊，但 7 常比 8 早幾秒，不要把 7 對齊到扭開（VID_0091／0095／0098／0099）。8＝看到扭開或折斷瓶頂的動作，空手或隔著棉片都算；只有棉片在瓶口擦、手沒有捏住瓶頂扭轉是 7。
+  - 步驟 15／25：要在 zoom 看到棉片墊在針頭與針筒接頭處，不因 16／26 有做而推定；清楚看到沒有才標 `not_performed`（VID_0096 步驟 25）。
+  - 步驟 30：只標抽藥流程結束、拿去給藥之前的那次放下（**暫定，待老師確認**，見 `EXPERIMENTS.md`「待老師確認」）；24 之前或之後又拿起來做 25–28 的放置不是 30；給藥後的處置寫 `other`；沒放下就拿去給藥 → `not_visually_determinable` 並給 `logical_window`（VID_0074 原本標出沒發生的「放入針架」）。
+- 不處理考前已打開的瓶子（使用者決定，2026-10-29：之後的影片不會再出現）；segfix.1–.4 曾為它加規則，結果在對錯之間來回，已全部拿掉。
+- 評分紀錄的 seg 版本變了，評分會重新切分，不沿用 1.5.0 的切分。
+- 不影響切分結果的修改（原「未發布」）：
+  - 後端（`sop_skill_service.py`）：每回合的對話紀錄與 `run_skill_loop` 回傳的 `usage` 多記 `cached_input_tokens` 與 `thinking_tokens`（`input_tokens` 仍含快取，`output_tokens` 仍含 thinking）。`sop_grading_cli` 把這次的切分用量寫進評分紀錄的 `segmentation_usage`。切分邏輯不變。
+  - `sequence_check.py`：`--write` 判斷模型有沒有提過重複時，時間涵蓋重複那幾筆的 `interrupted` 也算涵蓋 `repeated`（沒涵蓋到的仍視為真的重做）。1.4.6 起被打斷的步驟 10 要輸出兩筆並寫 `interrupted`，原本會再自動補一筆 `repeated`（「步驟 10 出現 2 次」）。後端只把 `check()` 的結果另存成 `sequence_check.json`，不寫進切分結果。
+
+## 1.5.0
+
+- **新增 `package_spans`（使用者決定，2026-10-24）：** 每一段手上拿著空針包裝的時間（拿起 → 放下包裝或空針完全離開包裝；拿起、放下、再拿起就分多段，依時間排序、不重疊；不限步驟 9、10 的時間），每段附 `evidence`。評分（rubric 1.16）不再判「取出前有沒有隔著包裝固定針頭」，10b 沒看到取出後固定時，把這些時段交給人工看，所以 SKILL.md 要求寧可多列、不可漏。
+  - `schema.json`：新增選填欄位 `package_spans`（舊切分與 `labels_to_segmentation.py` 的結果沒有）；`validate_action.py`：模型的 `final` 必須有這個欄位（沒拿過包裝就給 `[]`）；`validate_result.py`：每段開始早於結束、在影片長度內、依時間排序不重疊。
+  - 切分結果多了欄位，所以版本進到 1.5.0，評分會重新切分，不沿用 1.4.7 的切分。
+
+## 1.4.7
+
+- `references/sop_steps.md` 步驟 9／10：包裝打開後、取出前，雙手隔著包裝轉針筒（左手隔著包裝捏針頭套靠針座處、右手握外筒並頂住針心尾端）是步驟 10 的固定針頭，不算步驟 9；步驟 10 寫明這個常見做法，並說明取出後抽推針心、測試鬆脫、重新套回針頭蓋不是固定。VID_0098 用 1.4.6 切分時把 01:07–01:12 隔著包裝固定算進步驟 9，步驟 10 從 01:14 才開始（使用者核對，2026-10-23）。動作格式與 schema 不變。
+
+## 1.4.6
+
+- `references/sop_steps.md` 步驟 10：開始改為「空針離開包裝或開始固定針頭（取較早者）」，結束改為「固定完成、空針拿在手上或放到車上」，不在空針離開包裝時就結束。「緊接在 9 之後」改成「常緊接在 9 之後，但不要假設順序」；固定針頭和取出中間隔了其他步驟時輸出兩筆步驟 10，並寫 `interrupted`。配合評分 rubric 1.9 的 10b（固定針頭不限取出那一刻）。動作格式與 schema 不變。
+
+## 1.4.5
+
+規則、動作格式與 schema 都不變。
+
+- `motion.py`：明確指定縮圖高度給 ffmpeg（`scale=w:h`）。原本用 `scale=w:-2`，ffmpeg 遇到 .5 會進位，Python 的 `round()` 卻取偶數，兩邊可能差 2 px，之後每一格都切錯位置，能量曲線與 candidates 會變成雜訊而且不會報錯。ffmpeg 失敗或讀不到影格時改為直接報錯。
+- `validate_action.py`：有傳入影片長度時，`final` 的 `meta.duration` 必須和影片相差 0.5 秒以內，避免模型寫大的長度讓超出影片的區間通過驗證。
+- 後端在驗證 `final` 前，以實際影片長度與 `set_crop` 確定的框覆寫 `meta.duration` 與 `meta.crop.box`／`hands_box`。
+
+## 1.4.4
+
+- `sequence_check.py`：允許步驟 15 與 17 重疊（17 的區間是 15/16 外框整段，見 SKILL.md 4.7，通常比 15 早開始）。原本幾乎每支影片都會多一筆假的 `out_of_order [15,17]`；25/27 早已允許。
+- `SKILL.md` frontmatter 的 version 由 1.3 更新為 1.4.4，與本檔一致（1.4～1.4.3 漏改）。規則、動作格式與 schema 都不變。
+
+## 1.4.3
+
+動作被 `validate_action.py` 退回時，外部程式除了 `errors`，也會附上被退回的動作原文；SKILL.md 第 0 節要求模型只修改錯誤指出的地方再重送。原本模型只拿到錯誤訊息和舊的 draft，重送的 `final` 等於重新產生一份，連沒被指出的步驟與 observations 也會改變。動作格式與 schema 不變。
+
+## 1.4.2
+
+後端預設改由 Vertex AI 上的 Gemini（`gemini-4-argon`）執行本 skill；設定 `SOP_SKILL_PROVIDER=claude` 可改回 Claude。skill 的規則、動作格式與 schema 都不變。
+
+- `SKILL.md` 的 description 由「Claude 不吃影片」改為「模型不直接讀影片」，不再綁定特定模型。
+
+## 1.4.1
+
+修正 #51 審查找到的問題（腳本行為修正，schema 與 SKILL.md 規則不變）。
+
+- **影片結尾抓不到畫面（`_video.grab`）：** 容器長度常比最後一格畫面長（音軌、每格的時長），zoom／sheets 的時間點落在最後一格之後時，ffmpeg 沒有輸出畫面，原本會直接當掉。現在會往前退（最多 2 秒）改抓最接近的前一格；完全抓不到才丟 `RuntimeError`。
+- **`sequence_check.py --write`：** 寫回結果時不再帶 `"auto": true`（schema.json 沒有這個欄位，寫回後驗證不過）。來源仍可從 `evidence` 看出；`check()` 的回傳值保留 `auto`。
+- **`eval.py`：** 標準答案只有開始或只有結束時間的列，視為「無法判定」並印出警告，不再當掉。
+- **長度為 0 的時段（`validate_result.py`）：** `unassigned_spans` 與 observation 若有一方長度為 0，碰到邊界也算重疊；兩段都有長度時，只碰到邊界仍不算。
+- **檔案編碼：** `probe.json`、`state.json` 與 proxy 的 sidecar JSON 一律以 UTF-8 讀寫，Windows 上路徑含中文時不會失敗。
+
+## 1.4
+
+`schema.json` 補齊限制，讓 jsonschema 能完整驗證最終結果（`scripts/validate_result.py`）。
+
+### 結果 schema（schema.json）
+- **所有物件加上 `additionalProperties: false`：** 多出或拼錯的欄位會被退回，不再默默通過。
+- **補上缺的 `required`：**
+  - 最外層加入 `unassigned_spans`、`zoom_log`（沒有就輸出空陣列）；
+  - `meta.crop` 加入 `hands_box`；
+  - `unassigned_spans[]` 要求 `start`、`end`、`note`；
+  - `zoom_log[]` 要求 `times`、`region`、`for_steps`、`finding`。
+- **數值範圍：**
+  - `duration`、`rounds`、`budget.*` ≥ 0；
+  - `merged_with`、`for_steps` 的步驟編號限 1–30；
+  - `zoom_log.times` 1–4 個時間點；
+  - `zoom_log.region` 固定 4 個 0–1 的數。
+- **`logical_window`：** 由 `type: [array, null]` 改成 `anyOf`，null 時不再套用陣列的長度限制。
+
+### 動作 schema（actions.schema.json）
+- **`final.result` 改成 `{"$ref": "schema.json"}`：** 原本只寫 `{"type": "object"}`，任何物件都能通過，壞掉的最終結果要到動作驗證之後才會被發現；也因為不是封閉物件，無法用於 Structured Outputs。現在 `validate_action.py` 收到 `final` 時就用 schema.json 驗證 `result`，不合格會退回（不扣預算）。
+
+### 外部程式（scripts/）
+- `validate_result.py`、`schema_tools.py` 從 repo 根目錄移入 skill，打包後不再缺檔。
+- `validate_action.py` 收到 `final` 時，schema 通過後接著跑 `validate_result.py` 的規則檢查（30 步齊全、步驟 11 等），一次驗完。
+- `schema_tools.py`：轉換前把引用的檔案（`schema.json`）嵌入 `$defs`，供 Structured Outputs 使用。
+
+### 流程與文件（SKILL.md）
+- 第 7 節輸出規定同步：`unassigned_spans`、`zoom_log` 必填；只能使用 `schema.json` 定義的欄位。
+
+## 1.3
+
+依 v1.2 測試（20250522 影片）回顧修改。
+
+### 流程與文件（SKILL.md / references/sop_steps.md）
+- **motion 改在裁切確定後計算。** v1.2 表格把 motion 放在開場，但能量要在裁切框內算。開場只產生 proxy＋格線圖；新增 `set_crop` 動作，確定 context box / hands_box 後才產生全片總覽圖與動作能量。v1.2 本來就沒有定義「確定裁切」的動作。
+- **zoom region 有數字上限：** 面積 ≤ context box 的 50%，寬、高各 ≤ 0.75。並規定 region 要涵蓋所有時間點的手部位置聯集，附常用高度表；手的高度不同時拆成兩次 zoom。
+- **重抽規則（第 6 節）：** 發現重複區塊後，必須對前一區塊結束到重複開始的空檔做密集 overview，確認是從 21 還是 22 開始；看不到的步驟只寫進 `repeated` 的 description，不補 `detected`。sop_steps.md 的重抽說明與步驟 21 同步修改，短步驟清單加入 21。
+- **left_spans：** 2.2 節加入 `left_spans` 的用法，並說明它只是提示，要用 context overview 確認。
+- **draft 規定不一致：** 2.3 節原本寫「草稿在推理中、不輸出」，與第 0 節「每個動作要附 draft」矛盾，改成 draft 欄位，並要求依據寫成影格引用。
+- **proxy 規格：** 第 0 節寫明 proxy 規格與檔案分工（proxy：grid／preview／sheets／motion；原檔：zoom）。
+
+### 外部程式（scripts/）
+- `prepare.py`（新增）：開場一次產生 `proxy.mp4`、`probe.json`、`grid.jpg`。
+- `_video.make_proxy`：
+  - 依 CPU 核心數切段平行轉檔後 concat；
+  - ultrafast、fast_bilinear；
+  - 可選 `--hwaccel`；
+  - 用 sidecar `proxy.mp4.json` 記錄來源大小／mtime／參數，來源沒變就沿用（v1.2 只看檔案存不存在）。
+  - 輸出規格不變：960 寬、10 fps、每 1 s 一個 keyframe。
+  - 實測：90 s HEVC 1080p 片段在 2 核機器上 23 s → 20 s；瓶頸是 HEVC 解碼，核心數越多加速越明顯。
+- `motion.py`：
+  - 新增 `--box2 CONTEXT_BOX`，計算 context box 中 hands_box 以外的能量（`energy2`）。
+  - 外／內能量比持續偏高 → `left_spans`，與它重疊的 `still_spans` 會移除。
+  - 不直接用 context box 整體能量：身體一直在 hands_box 裡，整體能量只會跟著 hands_box 走，測試時 `left_spans` 是空的。
+  - 在測試影片上，`left_spans` 涵蓋 05:50–06:48 的點滴架操作；04:56 彎腰重插針時有一次誤報。
+- `crop.py zoom`：
+  - 搭配 `--rel-to-crop` 時檢查 region 上限，超過就 exit 2、不產生圖片；
+  - 每格右下角附定位縮圖（整個 context box＋紅框 region）。
+- `validate_action.py`、`actions.schema.json`（新增）：在執行前驗證動作 JSON，涵蓋 schema、框的順序、hands_box 是否在 context box 內、zoom 上限、overview 區間長度、影片長度、是否已裁切、`set_crop` 只能一次、剩餘預算。退回的動作不執行、不扣預算。
+
+### 外部程式迴圈（部署參考）
+```
+prepare.py VIDEO --out run/                 # 第 1 回合：送 grid.jpg
+loop:
+  action = model()
+  r = validate_action.py action --state run/state.json --probe run/probe.json
+  if not r.ok: 把 r.errors 回傳給模型，continue（不扣預算）
+  crop_preview -> crop.py preview run/proxy.mp4 --box BOX --n 9
+  set_crop     -> sheets.py run/proxy.mp4 --box HANDS --start 0 --end DUR --step 8
+                  motion.py run/proxy.mp4 --box HANDS --box2 CONTEXT --plot ...
+  overview     -> sheets.py run/proxy.mp4 --box (HANDS|CONTEXT) --start S --end E --n N
+  zoom         -> crop.py zoom ORIGINAL --box REGION --rel-to-crop CONTEXT --times ...
+  final        -> 依 schema.json 驗證，sequence_check.py result.json --write
+  更新 state.json 的 used / box / hands_box；每回合附上剩餘預算
+```

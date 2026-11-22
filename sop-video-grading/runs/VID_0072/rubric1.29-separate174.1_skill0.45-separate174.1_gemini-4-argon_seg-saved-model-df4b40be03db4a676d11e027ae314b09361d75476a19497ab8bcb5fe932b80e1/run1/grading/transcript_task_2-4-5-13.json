@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 29.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 20376,
+  "cached_input_tokens": 0,
+  "output_tokens": 67,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@16-116.5（hands_box，n=9）#0=00:16.0、#1=00:28.6、#2=00:41.1、#3=00:53.7、#4=01:06.2、#5=01:18.8、#6=01:31.4、#7=01:43.9、#8=01:56.5"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 16.0, \"end\": 54.0, \"fps\": 2, \"reason\": \"檢查 00:16-00:54 期間考生是否有拿起稀釋液檢查效期與有無異物\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 139.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 27443,
+  "cached_input_tokens": 0,
+  "output_tokens": 560,
+  "thinking_tokens": 365,
+  "materials": [
+   "ov@16-116.5（hands_box，n=9）#0=00:16.0、#1=00:28.6、#2=00:41.1、#3=00:53.7、#4=01:06.2、#5=01:18.8、#6=01:31.4、#7=01:43.9、#8=01:56.5",
+   "clip@16-54（context box，有聲音；片段內 00:00 ＝ 影片 00:16.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4d\", \"verdict\": \"正確\", \"explanation\": \"於 00:21.0–00:24.0（clip@16-54 片段內 00:05.0–00:08.0）及 00:44.5–00:48.0（片段內 00:28.5–00:32.0）拿起細長透明稀釋液瓶於胸前檢視瓶身標示與液體，並以手指指讀確認。\", \"times\": [[21.0, 24.0], [44.5, 48.0]], \"evidence\": [\"clip@16-54\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

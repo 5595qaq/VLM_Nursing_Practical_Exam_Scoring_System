@@ -42,6 +42,22 @@ def test_valid_final_passes():
     assert validate(final(), TASK, FRESH, DURATION) == []
 
 
+def test_resumed_contact_task_uses_the_saved_wash_span_and_requires_a_clip():
+    task = {"window": [0.0, 15.0], "criteria": [{"criterion_id": "1c", "window": [0.0, 15.0]}],
+            "wash_span": [0.5, 12.5], "opening_clip": True}
+    order = {"criterion_id": "1c", "verdict": "正確", "times": [[13.0, 13.0]], "confidence": 0.9,
+             "reason": None, "explanation": "00:00–00:12.5 洗手，00:13 才拿起 vial。", "evidence": ["clip@0-15"]}
+    action = {"action": "final", "criteria": [order]}
+    assert validate(action, task, FRESH, DURATION) == []
+    order.update(times=[], explanation="00:00–00:12.5 只搓手，未接觸物品。")
+    assert validate(action, task, FRESH, DURATION) == []
+    order["times"] = [[2.5, 2.5]]
+    assert any("actual contact times" in e for e in validate(action, task, FRESH, DURATION))
+    order["times"] = []
+    assert any("watch a clip" in e for e in validate(action, {**task, "opening_clip": False}, FRESH, DURATION))
+    assert any("without the measured wash end" in e for e in validate(action, {**task, "wash_span": None}, FRESH, DURATION))
+
+
 def test_unknown_action():
     assert_rejected({"action": "set_crop"}, "unknown action")
 

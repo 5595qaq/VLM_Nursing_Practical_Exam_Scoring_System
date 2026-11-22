@@ -195,6 +195,7 @@ class Recorder:
         files = {f"grading/transcript_task_{key}.json": out / "grading" / f"transcript_task_{key}.json"
                  for key in outcome["tasks"]}
         files["grading/probe.json"] = out / "grading" / "probe.json"
+        files["grading/segment_results.json"] = out / "grading" / "segment_results.json"
         seg_files = {f"seg/{name}": out / "seg" / name for name in SEG_FILES}
         self.record = self.rr.add_run(
             self.record, self.video_id, self.versions, self.video_sha256, steps=steps,
@@ -202,6 +203,8 @@ class Recorder:
             commit=self.commit, segmentation=segmentation, usage=outcome["usage"],
             segmentation_from=self.segmentation_from, segmentation_usage=segmentation_usage,
             timing=outcome.get("timing"))
+        if getattr(self, "imported_segmentation", None):
+            self.record["runs"][-1]["segmentation_import"] = self.imported_segmentation
         seg = json.loads((out / "segmentation.json").read_text(encoding="utf-8"))
         files = {k: v for k, v in files.items() if fresh(v)}
         # a kept local segmentation was paid for by an earlier, unrecorded run: keep its transcript too
@@ -231,12 +234,21 @@ def reuse_notice(source: dict) -> str:
 
 async def run(video: Path, video_id: str, out: Path, steps: set[int] | None,
               labels: Path | None = None, recorder: Recorder | None = None, seg_tag: str | None = None,
-              new_segmentation: bool = False, force: bool = False) -> dict:
+              new_segmentation: bool = False, force: bool = False, imported: dict | None = None, resume: bool = False) -> dict:
     out.mkdir(parents=True, exist_ok=True)
     started = time.time() - 1  # files written from now on belong to this run (mtime resolution margin)
     clock = time.monotonic()
     timing = {"started_at": datetime.datetime.now().astimezone().isoformat(timespec="seconds")}
+    if imported is not None:
+        if not recorder or recorder.video_sha256 != imported["video_sha256"]:
+            raise SystemExit("saved segmentation video hash does not match the input video")
+        if recorder.record is None:
+            (out / "segmentation.json").write_text(json.dumps(imported["segmentation"],ensure_ascii=False,indent=1),encoding="utf-8")
+            (out / SOURCE_MARK).write_text(seg_tag,encoding="utf-8")
     recorded_seg = recorder.prepare(out, labels, new_segmentation) if recorder else None
+    if imported is not None:
+        recorded_seg = "saved model segmentation; sha256-tag " + seg_tag
+        recorder.imported_segmentation = {"kind": "saved_model_segmentation", "sha256": seg_tag.removeprefix("saved-model-"), "provenance": imported.get("provenance", {}), "source_was_cli": False}
     if not recorder and new_segmentation and (out / "segmentation.json").exists():
         _set_aside(out / "segmentation.json")
     source = out / "source.mp4"
@@ -290,7 +302,12 @@ async def run(video: Path, video_id: str, out: Path, steps: set[int] | None,
     print("grading", video_id, "steps", sorted(steps) if steps else "all", flush=True)
     resumed = resumed or any(sop_checkpoint.is_checkpoint(f.name) for f in work.iterdir())
     grading_clock = time.monotonic()
-    outcome = await sop_grading_service.run_grading(source, segmentation, work, probe_dir=seg_dir,
+    from app.sop_cli_guard import guarded_call
+    guard = guarded_call()
+    guard_options = {"model_call": guard} if guard is not None else {}
+    if resume:
+        guard_options["resume"] = True
+    outcome = await sop_grading_service.run_grading(source, segmentation, work, **guard_options, probe_dir=seg_dir,
                                                     steps=steps, previous=previous)
     timing["grading_seconds"] = round(time.monotonic() - grading_clock, 1)
     timing["total_seconds"] = round(time.monotonic() - clock, 1)
@@ -303,7 +320,7 @@ async def run(video: Path, video_id: str, out: Path, steps: set[int] | None,
         print("recorded", recorder.save(out, outcome, steps, seg_source, started, seg_usage), flush=True)
         if seg_tag:  # in a record now: a later version reuses it as that record's, with segmentation_from
             (out / SOURCE_MARK).write_text(f"{seg_tag}\n{RECORDED}", encoding="utf-8")
-        if recorder.segmentation_from:  # again at the end, where it is not lost among the grading logs
+        if recorder.segmentation_from and imported is None:  # regular repository-record reuse banner
             print(reuse_notice(recorder.segmentation_from), flush=True)
     return outcome
 
@@ -315,9 +332,11 @@ def main() -> None:
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--labels", type=Path, help="label sheet CSV: use its times instead of sop-video-skill")
     ap.add_argument("--steps", help="comma-separated step ids to regrade")
+    ap.add_argument("--segmentation-file", type=Path, help="validated saved model segmentation bundle; never runs new segmentation")
     ap.add_argument("--by", default=os.getenv("SOP_RUN_BY", ""), help="who runs it (default $SOP_RUN_BY)")
     ap.add_argument("--commit", default=os.getenv("GIT_COMMIT", "") or _git_commit(),
                     help="code version (default $GIT_COMMIT, else git rev-parse HEAD with -dirty)")
+    ap.add_argument("--resume", action="store_true", help="keep completed criteria and continue only unfinished tasks in this version")
     ap.add_argument("--force", action="store_true",
                     help="run even if this version already graded these steps or the video file differs")
     ap.add_argument("--allow-dirty", action="store_true", help="record a run of uncommitted code")
@@ -328,7 +347,14 @@ def main() -> None:
     steps = {int(s) for s in a.steps.split(",")} if a.steps else None
     # The checkpoints' fingerprint reads settings.GIT_COMMIT; without GIT_COMMIT set, --commit fell back to git.
     settings.GIT_COMMIT = a.commit.strip()
-    seg_tag = segmentation_tag(a.video_id, a.labels)
+    imported = None
+    if a.segmentation_file:
+        if a.labels or a.new_segmentation:
+            ap.error("--segmentation-file cannot be combined with --labels or --new-segmentation")
+        from app.services.sop_segmentation_import import load_bundle
+        imported, seg_tag = load_bundle(a.segmentation_file, a.video_id, sop_skill_service.load_skill_module("validate_result").validate_result)
+    else:
+        seg_tag = segmentation_tag(a.video_id, a.labels)
     recorder = None
     if _rr().VIDEO_ID_RE.fullmatch(a.video_id):
         recorder = Recorder(a.video, a.video_id, a.runs_dir or sop_grading_service.grading_dir() / "runs",
@@ -337,7 +363,7 @@ def main() -> None:
     else:
         print(f"{a.video_id} 不是標記表的影片ID（VID_xxxx），不寫評分紀錄", flush=True)
     outcome = asyncio.run(run(a.video, a.video_id, a.out, steps, a.labels, recorder, seg_tag, a.new_segmentation,
-                              a.force))
+                              a.force, imported, a.resume))
     print(json.dumps({k: outcome[k] for k in ("tasks", "failed_tasks", "validation_errors", "usage", "timing")},
                      ensure_ascii=False, indent=1))
 

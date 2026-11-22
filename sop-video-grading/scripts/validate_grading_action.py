@@ -28,7 +28,7 @@ from pathlib import Path
 from jsonschema import Draft202012Validator
 
 from rubric import criteria_by_id, load_rubric
-from validate_grading import WRAPPER, check_criterion, check_vial_cutoff
+from validate_grading import WRAPPER, check_criterion, check_vial_cutoff, check_wash_order
 
 SCHEMA_PATH = Path(__file__).resolve().parent.parent / "actions.schema.json"
 
@@ -140,7 +140,8 @@ def _check_times(cid: str, c: dict, spec: dict, ranges: list[tuple[float, float]
     times = c.get("times") or []
     if spec.get("min_seconds") and not spec.get("cumulative_seconds"):
         return [f"criterion {cid}: use span, not times, for a timed criterion"] if times else []
-    if not times and not spec.get("cumulative_seconds") and c["verdict"] != "無法判定":
+    if (not times and not spec.get("cumulative_seconds") and c["verdict"] != "無法判定"
+            and spec.get("rule", {}).get("type") != "wash_before_contact"):
         return [f"criterion {cid}: {c['verdict']} needs times [[start, end], ...]: the video seconds the verdict "
                 "rests on (the part you watched when the action did not happen)"]
     errors = []
@@ -175,13 +176,22 @@ def _check_final(action: dict, task: dict, used: dict, rubric: dict, duration: f
         if cid in POINT_AT_PACKAGE and c["verdict"] == "錯誤" and not _clipped_before_tear(task, cid):
             errors.append(f"criterion {cid}: before marking 錯誤, use clip on the few seconds before the package "
                           "is torn open: pointing lasts two or three seconds and the opening frames can miss it")
+        if cid in WRAPPER and task.get("segment") and c["verdict"] == "正確":
+            spec_task = next(x for x in task["criteria"] if x["criterion_id"] == cid)
+            cutoff = spec_task.get("first_use")
+            a, b = task["window"]
+            if any(start < a - WINDOW_SLACK or end > b + WINDOW_SLACK
+                   or (cutoff is not None and end > cutoff) for start, end in c.get("times", [])):
+                errors.append(f"criterion {cid}: 正確 must cite this candidate window before the syringe's first use; other wrapper spans are context only")
         if cid in WRAPPER and c["verdict"] == "部分正確":
             errors.append(f"criterion {cid}: 正確, 錯誤 or 無法判定 only (fixing is seen or it is not)")
         if cid in WRAPPER and c["verdict"] == "錯誤" and not _clipped_wrapper(task, cid):
             errors.append(f"criterion {cid}: before marking 錯誤, use clip with a region on both hands and the "
                           "syringe (fps up to 10, ≤ 8 s) on a listed wrapper span (where it comes out) and after it: "
                           "a twist lasts a second or two and frames 2–4 s apart miss it")
-    return errors + check_vial_cutoff(action["criteria"])
+    wash_spec = next(s for s in rubric["steps"] if s["step_id"] == 1)
+    return errors + check_vial_cutoff(action["criteria"]) + check_wash_order(
+        action["criteria"], wash_spec, wash_span=task.get("wash_span"))
 
 
 def _check_flick(cid: str, c: dict, audio: dict | None, used: dict) -> list[str]:

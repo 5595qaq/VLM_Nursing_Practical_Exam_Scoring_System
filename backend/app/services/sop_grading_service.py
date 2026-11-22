@@ -27,6 +27,7 @@ from pathlib import Path
 from typing import Awaitable, Callable
 
 from app.config import settings
+from app.services.sop_segment_grading import split_tasks, merge_outcomes
 from app.services import gcs_service, sop_checkpoint, sop_skill_service
 from app.services.sop_skill_service import (USAGE_KEYS, Image, ModelCall, ScriptRunner, SkillRunError,
                                             _fmt_box, _fmt_t, _image_block, _strip_frontmatter, add_usage,
@@ -129,7 +130,10 @@ def build_tasks(result: dict, rubric: dict, steps: set[int] | None, segmentation
             tasks.append({"key": name, "window_steps": window_steps, "criteria": cluster,
                           "window": [min(c["window"][0] for c in cluster), max(c["window"][1] for c in cluster)],
                           "needs_clip": any(c["audio"] or c["dense"] or c["clip"] for c in cluster)})
-    return tasks
+            if any(c["criterion_id"] == "1c" for c in cluster):
+                tasks[-1]["wash_span"] = next(
+                    (c.get("span") for s in result["steps"] for c in s["criteria"] if c["criterion_id"] == "1a"), None)
+    return split_tasks(tasks, segmentation)
 
 
 def _near_clusters(crits: list[dict]) -> list[list[dict]]:
@@ -240,18 +244,28 @@ def _searching(c: dict, segmentation: dict) -> bool:
 
 
 def _segment_lines(task: dict, segmentation: dict) -> list[str]:
-    """Only the segmentation's times. Its status and evidence are another model's description of the
+    """Segmentation times and, for SOP 30, phase labels derived from the agreed substitute anchor.
+
+    The segmentation's status and full evidence are another model's description of the
     same frames, often already stating the answer ("單手持空針將針頭套回", "由針心處放回"); the
     grading agent echoed it instead of judging the frames (10b on VID_0098), and the two models
     stop being independent checks of each other. A searched criterion also lists every step of its
     search range, so the agent knows what happens where."""
     search_range = load_grading_module("rubric").search_range
     searched = {s for c in task["criteria"] if c["searching"] for s in search_range(c)}
+    grades_placement = any(c["step_id"] == 30 for c in task["criteria"])
     lines = []
     for sid in sorted({*task["window_steps"], *(c["step_id"] for c in task["criteria"]), *searched}):
         for e in (e for e in segmentation["steps"] if e["step_id"] == sid):
             if e["start"] is not None:
-                lines.append(f"  步驟 {sid}：{_fmt_t(e['start'])}–{_fmt_t(e['end'])}")
+                phase_label = ""
+                if sid == 30 and grades_placement:
+                    evidence = e.get("evidence", "").lstrip()
+                    for phase in ("給藥前放置", "給藥後放置"):
+                        if evidence.startswith(phase) and "切分錨點：替代" in evidence:
+                            phase_label = f"（{phase}，依切分替代錨點）"
+                            break
+                lines.append(f"  步驟 {sid}{phase_label}：{_fmt_t(e['start'])}–{_fmt_t(e['end'])}")
             elif e.get("logical_window"):
                 lo, hi = e["logical_window"]
                 lines.append(f"  步驟 {sid}：沒有確切時間，大約在 {_fmt_t(lo)}–{_fmt_t(hi)} 之間")
@@ -289,6 +303,7 @@ def build_task_content(task: dict, video_id: str, duration: float, state: TaskSt
         "【任務】",
         f"video_id：{video_id}；影片長度 {duration:.1f} s；任務區間 {task['window'][0]:g}–{task['window'][1]:g} s"
         f"（{_fmt_t(task['window'][0])}–{_fmt_t(task['window'][1])}）",
+        *([f"本任務只判步驟 10 的這個候選區間：{task['segment']} 秒。其他區間由獨立任務判定；包裝時段只作定位離開包裝的前後脈絡，不可把其他區間當成本任務已完成固定的證據。仍須確認空針已完全離開包裝，第一次使用前固定才算。"] if task.get("segment") else []),
         "要判定的標準（final 必須剛好包含這幾條）：",
         *(f"  {c['criterion_id']}（步驟 {c['step_id']}）：{c['text']}；window={c['window']}"
           + ("；要聽聲音" if c["audio"] else "") + ("；要每 0.5 秒一格" if c["dense"] else "")
@@ -301,12 +316,14 @@ def build_task_content(task: dict, video_id: str, duration: float, state: TaskSt
              if c.get("min_seconds") else "")
           + _package_note(c)
           for c in task["criteria"]),
-        "切分結果（相關步驟的時間；只有時間，做了什麼要自己從畫面判斷）：",
+        "切分結果（相關步驟的時間；步驟 30 可附替代錨點的前後標籤。各項放置仍需看畫面確認）：",
         *_segment_lines(task, segmentation),
         "動作峰值（程式依 hands_box 內的畫面變化算出，只表示這些時間手有明顯動作，不代表是哪個動作；"
         "短動作請用 burst 或相鄰時間點的 zoom 在峰值附近確認）："
         + ("、".join(f"{_fmt_t(p['t'])}" for p in task.get("peaks", [])) or "（無）"),
         *_audio_line(task),
+        *([f"已完成的洗手計時 1a：span={task['wash_span']}（影片秒數），1c 依此結束時間比較實際接觸。"]
+          if task.get("wash_span") else []),
         f"剩餘預算：{budget}",
         "已執行動作：" + ("；".join(state.log) if state.log else "（無）"),
         "",
@@ -639,11 +656,20 @@ async def run_grading(video_path: Path, segmentation: dict, workdir: Path, model
     outcomes = [item.result() if not item.cancelled() else (task, [], None, asyncio.CancelledError())
                 for item, task in zip(pending, tasks)]
     for task, _, state, exc in outcomes:
+        if task['key'].startswith('10-seg') and exc is None:
+            if usage_reported:
+                sop_checkpoint.mark_reported(_task_checkpoint(workdir, task))
+            continue
         if exc is None or isinstance(exc, SkillRunError):  # its grades are in the result; or resuming would repeat it
             _task_checkpoint(workdir, task).unlink(missing_ok=True)
         elif state is not None and usage_reported:  # kept for the next attempt; the caller records this run's usage
             sop_checkpoint.mark_reported(_task_checkpoint(workdir, task))
-    graded = {c["criterion_id"]: c for _, criteria, _, _ in outcomes for c in criteria}
+    graded = merge_outcomes(outcomes)
+    segment_results = [{"task": t["key"], "segment": t["segment"], "criteria": criteria,
+                        "error": str(exc) if exc else None}
+                       for t, criteria, _, exc in outcomes if "segment" in t]
+    if segment_results:
+        sop_checkpoint.save(workdir / "segment_results.json", {"video_id": segmentation["video_id"], "step_id": 10, "segments": segment_results})
     _sheet_unseen_point(graded, old)
     specs = {s["step_id"]: s for s in rubric["steps"]}
     for i, step in enumerate(result["steps"]):

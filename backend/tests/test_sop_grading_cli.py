@@ -93,6 +93,40 @@ def load_record(rec):
     return json.loads((rec.folder / "record.json").read_text(encoding="utf-8"))
 
 
+def test_saved_model_import_keeps_honest_provenance(tmp_path, video, fake):
+    from app.services.sop_segmentation_import import load_bundle
+    bundle = {'source_kind': 'saved_model_segmentation',
+              'video_sha256': cli._rr().file_sha256(video),
+              'segmentation': {'video_id': VID, 'from': 'old-model'},
+              'provenance': {'source_had_uncommitted_changes': True}}
+    path = tmp_path / 'bundle.json'
+    path.write_text(json.dumps(bundle), encoding='utf-8')
+    imported, tag = load_bundle(path, VID, lambda result: [])
+    rec = recorder(video, tmp_path / 'runs', tag=tag)
+    rec.check({4, 10}, force=False)
+    asyncio.run(cli.run(video, VID, tmp_path / 'out', {4, 10}, recorder=rec,
+                        seg_tag=tag, imported=imported))
+    assert 'segmented' not in fake
+    assert fake['calls'][0]['segmentation'] == bundle['segmentation']
+    record = load_record(rec)
+    origin = record['runs'][0]['segmentation_import']
+    assert origin['source_was_cli'] is False
+    assert origin['provenance']['source_had_uncommitted_changes'] is True
+    assert record['versions']['segmentation'] == tag
+    with pytest.raises(SystemExit, match='相同版本'):
+        recorder(video, tmp_path / 'runs', tag=tag).check({4}, force=False)
+
+
+def test_saved_model_import_rejects_hash_before_inference(tmp_path, video, fake):
+    rec = recorder(video, tmp_path / 'runs', tag='saved-model-' + 'a' * 64)
+    rec.check({4}, force=False)
+    bundle = {'video_sha256': '0' * 64, 'segmentation': {'video_id': VID}}
+    with pytest.raises(SystemExit, match='hash does not match'):
+        asyncio.run(cli.run(video, VID, tmp_path / 'out', {4}, recorder=rec,
+                            seg_tag=rec.versions['segmentation'], imported=bundle))
+    assert fake['calls'] == [] and 'segmented' not in fake
+
+
 def test_run_is_recorded_and_a_rerun_is_refused(tmp_path, video, fake):
     runs = tmp_path / "runs"
     rec = recorder(video, runs)

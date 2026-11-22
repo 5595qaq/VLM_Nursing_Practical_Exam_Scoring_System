@@ -1,0 +1,209 @@
+"""Grade the program criteria of rubric.json from a sop-video-skill segmentation result.
+
+No model call. For every step it:
+  - program criteria: decides 正確／錯誤／無法判定 from the step's segmentation status and span;
+  - visual criteria: computes the window the grading agent must look at and leaves them 待判定
+    (or decides them directly when segmentation says the step was not performed / has no span);
+    in a step with a `search_steps` criterion the agent checks whether the step was done, so
+    not_performed decides none of its visual criteria, and a criterion whose step segmentation did
+    not find is searched for over every step from the first to the last of `search_steps`;
+    an `after_step` criterion (4e) may happen after its own step, so not_performed does not decide it;
+  - not_visible criteria: fixed 無法判定 with the rubric's reason;
+then aggregates the step verdict (rubric.aggregate) and joins the explanations.
+
+usage: python rules.py segmentation.json [-o grading.json]
+"""
+
+import argparse
+import json
+import sys
+from pathlib import Path
+
+from rubric import (CORRECT, NOT_APPLICABLE, PENDING, SOURCE_FOR, STEP_COUNT, UNDETERMINED, WRONG, aggregate,
+                    fmt_time, load_rubric, search_range)
+
+WINDOW_MARGIN = 2.0  # seconds added on both sides of a visual criterion's window
+WASH_ORDER_TOLERANCE = 1.0  # seconds allowed between independently measured step boundaries
+
+
+def grade_from_segmentation(seg: dict, rubric: dict | None = None,
+                            margin: float = WINDOW_MARGIN) -> dict:
+    rubric = rubric or load_rubric()
+    duration = seg["meta"]["duration"]
+    entries: dict[int, list[dict]] = {}
+    for entry in seg["steps"]:
+        entries.setdefault(entry["step_id"], []).append(entry)
+
+    steps = []
+    for step in rubric["steps"]:
+        search_step = any(c.get("search_steps") for c in step["criteria"])
+        criteria = [_grade(c, step["step_id"], entries, duration, margin, search_step) for c in step["criteria"]]
+        steps.append(build_step(step, criteria))
+    return {"video_id": seg["video_id"], "rubric_version": rubric["version"], "steps": steps}
+
+
+def build_step(step: dict, criteria: list[dict], *, segmentation: dict | None = None) -> dict:
+    """Step entry from graded criteria; also used after the grading agent fills visual criteria."""
+    if step.get("removed"):
+        return {"step_id": step["step_id"], "verdict": NOT_APPLICABLE,
+                "explanation": "評分表已移除此步驟，不評分。", "confidence": 1.0, "criteria": []}
+    if segmentation is not None and step["step_id"] == 1 and any(
+        c["id"] == "1c" and c["category"] == "program" for c in step["criteria"]
+    ):
+        measured = next((c.get("span") for c in criteria if c["criterion_id"] == "1a"), None)
+        if measured is not None:
+            later = [e for e in segmentation["steps"] if e["step_id"] >= 2]
+            criteria = [_wash_before_later_steps(measured[1], later) if c["criterion_id"] == "1c" else c
+                        for c in criteria]
+    texts = {c["id"]: c["text"] for c in step["criteria"]}
+    verdict = aggregate(step, {c["criterion_id"]: c["verdict"] for c in criteria},
+                        reasons={c["criterion_id"]: c.get("reason") for c in criteria})
+    scored = [c for c, r in zip(criteria, step["criteria"]) if r["category"] != "not_visible"]
+    explanation = "；".join(
+        f"{c['criterion_id']}「{texts[c['criterion_id']]}」{c['verdict']}：{c['explanation'].rstrip('。')}"
+        + (f"（需人工複核：{c['review_reason'].rstrip('。')}）" if c.get("needs_review") else "")
+        for c in criteria) + "。"
+    out = {"step_id": step["step_id"], "verdict": verdict, "explanation": explanation,
+           "confidence": min(c["confidence"] for c in scored), "criteria": criteria}
+    if any(c.get("needs_review") for c in criteria):
+        out["needs_review"] = True
+    return out
+
+
+def _status(entries: list[dict]) -> str:
+    statuses = {e["status"] for e in entries}
+    for status in ("detected", "not_performed"):
+        if status in statuses:
+            return status
+    return "not_visually_determinable"
+
+
+def _detected(entries: list[dict]) -> list[dict]:
+    return sorted((e for e in entries if e["status"] == "detected"), key=lambda e: e["start"])
+
+
+def _spans_text(entries: list[dict]) -> str:
+    return "、".join(f"{fmt_time(e['start'])}–{fmt_time(e['end'])}" for e in entries)
+
+
+def _seg_evidence(entries: list[dict]) -> str:
+    return "；".join(e["evidence"] for e in entries if e["evidence"]) or "無"
+
+
+def _criterion(c: dict, verdict: str, explanation: str, *, source: str | None = None,
+               evidence: list[str] | None = None, confidence: float = 0.0,
+               reason: str | None = None, window: list[float] | None = None) -> dict:
+    return {"criterion_id": c["id"], "verdict": verdict, "source": source or SOURCE_FOR[c["category"]],
+            "explanation": explanation, "evidence": evidence or [], "confidence": confidence,
+            "reason": reason, "window": window}
+
+
+def searched(c: dict, entries: list[dict]) -> bool:
+    """The criterion is looked for over its search range: it has search_steps and segmentation did not find
+    its step (`entries` are that step's segmentation entries). The grading service uses this too."""
+    return bool(c.get("search_steps")) and _status(entries) != "detected"
+
+
+def search_note(sid: int, steps: list[int]) -> str:
+    """How the window was chosen; criteria/10-presence.md keys off 「切分未找到步驟 N」."""
+    return f"切分未找到步驟 {sid}，要在整個區間（步驟 {steps[0]}–{steps[-1]} 之間）內找"
+
+
+def _wash_before_later_steps(wash_end: float | None, later: list[dict]) -> dict:
+    evidence = ["seg:step 1"]
+    first = min(_detected(later), key=lambda e: (e["start"], e["step_id"]), default=None)
+    if wash_end is not None and first is not None:
+        sid, start = first["step_id"], first["start"]
+        evidence.append(f"seg:step {sid}")
+        verdict = WRONG if start < wash_end - WASH_ORDER_TOLERANCE else CORRECT
+        detail = f"洗手於 {fmt_time(wash_end)}（{wash_end:g} 秒）結束，最早的後續步驟 {sid} 於 {fmt_time(start)}（{start:g} 秒）開始。"
+        if start < wash_end and verdict == CORRECT:
+            detail += f"邊界差 {wash_end - start:.2f} 秒，未超過 {WASH_ORDER_TOLERANCE:g} 秒容差，順序判正確。"
+        reason = None
+    elif wash_end is not None and {e["step_id"] for e in later if e["status"] == "not_performed"} == set(range(2, STEP_COUNT + 1)):
+        verdict, detail, reason = CORRECT, f"洗手於 {fmt_time(wash_end)} 結束，未執行任何後續步驟。", None
+    else:
+        verdict, detail, reason = UNDETERMINED, "無法定位洗手結束或後續步驟開始。", "切分未定位"
+    return _criterion({"id": "1c", "category": "program"}, verdict, detail, evidence=evidence,
+                      reason=reason, confidence=0.0 if reason else (first["confidence"] if first else 1.0))
+
+
+def _grade(c: dict, sid: int, entries: dict[int, list[dict]], duration: float, margin: float,
+           search_step: bool = False) -> dict:
+    own = entries.get(sid, [])
+    status = _status(own)
+    seg_ref = [f"seg:step {sid}"]
+
+    if c["category"] == "not_visible":
+        return _criterion(c, UNDETERMINED, f"{c['note']}，無法判定。", confidence=1.0,
+                          reason=c["reason"])
+
+    if c.get("rule", {}).get("type") == "wash_before_later_steps" and status != "not_performed":
+        wash = _detected(own)
+        later = [e for step_id, items in entries.items() if step_id >= 2 for e in items]
+        return _wash_before_later_steps(wash[0]["end"] if wash else None, later)
+
+    if status == "not_performed" and not ((search_step or c.get("after_step")) and c["category"] == "visual"):
+        conf = max(e["confidence"] for e in own)
+        return _criterion(c, WRONG, f"切分結果：步驟 {sid} 未執行（{_seg_evidence(own)}）。",
+                          source="rule", evidence=seg_ref, confidence=conf)
+
+    if c["category"] == "program":
+        if status != "detected":
+            return _criterion(c, UNDETERMINED,
+                              f"切分結果：步驟 {sid} 無法定位（{_seg_evidence(own) if own else '無此步驟'}）。",
+                              evidence=seg_ref, reason="切分未定位")
+        found = _detected(own)
+        conf = max(e["confidence"] for e in found)
+        return _criterion(c, CORRECT, f"切分結果：步驟 {sid} 於 {_spans_text(found)}（{_seg_evidence(found)}）。",
+                          evidence=seg_ref, confidence=conf)
+
+    search = searched(c, own)
+    window_steps = search_range(c) if search else c["window_steps"]
+    window = _window(window_steps, entries, duration, margin)
+    if window is None:
+        steps = f"{window_steps[0]}–{window_steps[-1]}" if search else "、".join(map(str, window_steps))
+        return _criterion(c, UNDETERMINED, f"切分結果未定位步驟 {steps}，無法取得要看的畫面區間。",
+                          source="rule", evidence=seg_ref, reason="切分未定位")
+    if c.get("rule", {}).get("type") == "wash_before_contact":
+        window[0] = 0.0
+    where = f"{search_note(sid, window_steps)}；" if search else ""
+    return _criterion(c, PENDING, f"等待評分 agent 看畫面判定（{where}區間 {fmt_time(window[0])}–{fmt_time(window[1])}）。",
+                      window=window)
+
+
+def _window(step_ids: list[int], entries: dict[int, list[dict]], duration: float,
+            margin: float) -> list[float] | None:
+    """From the earliest start to the latest end of the detected spans and logical windows of `step_ids`,
+    padded by `margin`; a step split in two also covers whatever happened between its entries."""
+    bounds = []
+    for sid in step_ids:
+        for e in entries.get(sid, []):
+            if e["status"] == "detected":
+                bounds.append((e["start"], e["end"]))
+            elif e.get("logical_window"):
+                bounds.append(tuple(e["logical_window"]))
+    if not bounds:
+        return None
+    start = max(0.0, min(b[0] for b in bounds) - margin)
+    end = min(duration, max(b[1] for b in bounds) + margin)
+    return [round(start, 2), round(end, 2)]
+
+
+def main(argv: list[str]) -> int:
+    ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    ap.add_argument("segmentation")
+    ap.add_argument("-o", "--out", help="write here instead of stdout")
+    a = ap.parse_args(argv[1:])
+    seg = json.loads(Path(a.segmentation).read_text(encoding="utf-8"))
+    text = json.dumps(grade_from_segmentation(seg), ensure_ascii=False, indent=1)
+    if a.out:
+        Path(a.out).write_text(text + "\n", encoding="utf-8")
+    else:
+        sys.stdout.reconfigure(encoding="utf-8")
+        print(text)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv))

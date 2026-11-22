@@ -38,6 +38,8 @@ def check_rubric(rubric: dict) -> list[str]:
         sid = step["step_id"]
         if "require_key_confirmation" in step and not isinstance(step["require_key_confirmation"], bool):
             errors.append(f"step {sid}: require_key_confirmation needs true/false")
+        if "score_by_completed_criteria" in step and not isinstance(step["score_by_completed_criteria"], bool):
+            errors.append(f"step {sid}: score_by_completed_criteria needs true/false")
         if step.get("removed"):
             if step["criteria"]:
                 errors.append(f"step {sid}: removed step must have no criteria")
@@ -55,6 +57,11 @@ def check_rubric(rubric: dict) -> list[str]:
                 errors.append(f"criterion {cid}: unknown category {cat!r}")
             if cat == "program" and c.get("rule", {}).get("type") not in RULE_TYPES:
                 errors.append(f"criterion {cid}: program criterion needs rule.type in {sorted(RULE_TYPES)}")
+            if c.get("rule", {}).get("type") == "wash_before_contact":
+                tolerance = c["rule"].get("tolerance_seconds")
+                if (cid != "1c" or cat != "visual" or not c.get("clip")
+                        or not isinstance(tolerance, (int, float)) or isinstance(tolerance, bool) or tolerance < 0):
+                    errors.append(f"criterion {cid}: wash_before_contact needs visual 1c, clip and a nonnegative tolerance")
             if "min_seconds" in c and (cat != "visual" or not isinstance(c["min_seconds"], (int, float))):
                 errors.append(f"criterion {cid}: min_seconds needs a visual criterion and a number")
             if "cumulative_seconds" in c and (not isinstance(c["cumulative_seconds"], bool)
@@ -63,6 +70,10 @@ def check_rubric(rubric: dict) -> list[str]:
             if "unconfirmed_is_wrong" in c and (cat != "visual" or not c.get("key")
                                                 or not isinstance(c["unconfirmed_is_wrong"], bool)):
                 errors.append(f"criterion {cid}: unconfirmed_is_wrong needs a key visual criterion and true/false")
+            if "unconfirmed_step_reason" in c:
+                reason = c["unconfirmed_step_reason"]
+                if cat != "visual" or not c.get("key") or not isinstance(reason, str) or not reason.strip():
+                    errors.append(f"criterion {cid}: unconfirmed_step_reason needs a key visual criterion and a reason")
             if "allow_partial" in c and (cat != "visual" or not isinstance(c["allow_partial"], bool)):
                 errors.append(f"criterion {cid}: allow_partial needs a visual criterion and true/false")
             if "clip" in c and (cat != "visual" or not isinstance(c["clip"], bool)):
@@ -71,6 +82,8 @@ def check_rubric(rubric: dict) -> list[str]:
                 errors.append(f"criterion {cid}: package_spans needs a visual criterion and true/false")
             if "after_step" in c and (cat != "visual" or not isinstance(c["after_step"], bool)):
                 errors.append(f"criterion {cid}: after_step needs a visual criterion and true/false")
+            if "through_video_end" in c and (cat != "visual" or not isinstance(c["through_video_end"], bool)):
+                errors.append(f"criterion {cid}: through_video_end needs a visual criterion and true/false")
             if "task" in c and (cat != "visual" or not isinstance(c["task"], str) or not c["task"]):
                 errors.append(f"criterion {cid}: task needs a visual criterion and a name")
             elif "task" in c:
@@ -105,10 +118,11 @@ def criteria_by_id(rubric: dict) -> dict[str, dict]:
     return {c["id"]: {**c, "step_id": s["step_id"]} for s in rubric["steps"] for c in s["criteria"]}
 
 
-def aggregate(step: dict, verdicts: dict[str, str]) -> str:
-    """Step verdict from its criteria (`verdicts` maps criterion id -> verdict).
+def aggregate(step: dict, verdicts: dict[str, str], *, reasons: dict[str, str | None] | None = None) -> str:
+    """Step verdict from its criteria, with optional uncertainty reasons keyed by criterion id.
 
     not_visible criteria never count. Order of the checks matters:
+      an unconfirmed criterion with its configured unconfirmed_step_reason -> 無法判定;
       a key criterion 錯誤 or an unconfirmed required visual criterion with unconfirmed_is_wrong -> 錯誤;
       for steps requiring key confirmation, wait for pending key criteria or return 無法判定 for unseen ones;
       any criterion 部分正確 -> 部分正確;
@@ -119,7 +133,19 @@ def aggregate(step: dict, verdicts: dict[str, str]) -> str:
         return NOT_APPLICABLE
     scored = [(c, verdicts[c["id"]]) for c in step["criteria"] if c["category"] != "not_visible"]
     values = [v for _, v in scored]
+    if step.get("score_by_completed_criteria"):
+        if PENDING in values:
+            return PENDING
+        if all(v == CORRECT for v in values):
+            return CORRECT
+        if CORRECT in values:
+            return PARTIAL
+        return UNDETERMINED if UNDETERMINED in values else WRONG
     key_verdicts = {v for c, v in scored if c.get("key")}
+    reasons = reasons or {}
+    if any(v == UNDETERMINED and c.get("unconfirmed_step_reason")
+           and c["unconfirmed_step_reason"] == reasons.get(c["id"]) for c, v in scored):
+        return UNDETERMINED
     if WRONG in key_verdicts or any(v == UNDETERMINED and c.get("unconfirmed_is_wrong") for c, v in scored):
         return WRONG
     if step.get("require_key_confirmation"):

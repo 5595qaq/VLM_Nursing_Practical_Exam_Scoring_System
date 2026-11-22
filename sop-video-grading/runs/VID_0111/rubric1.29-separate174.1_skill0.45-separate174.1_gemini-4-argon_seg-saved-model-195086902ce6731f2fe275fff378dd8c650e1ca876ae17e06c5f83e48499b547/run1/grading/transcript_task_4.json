@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 16.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 26400,
+  "cached_input_tokens": 0,
+  "output_tokens": 345,
+  "thinking_tokens": 280,
+  "materials": [
+   "clip@12-51（context box，有聲音；片段內 00:00 ＝ 影片 00:12.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [12.5, 43.0], \"region\": [0.0, 0.65, 0.55, 1.0], \"reason\": \"確認治療車檯面上是否有給藥紀錄單\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 153.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 27585,
+  "cached_input_tokens": 0,
+  "output_tokens": 419,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@12-51（context box，有聲音；片段內 00:00 ＝ 影片 00:12.0）",
+   "zoom@12.5/43 region=[0.000, 0.650, 0.550, 1.000]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4a\", \"verdict\": \"無法判定\", \"explanation\": \"已搜尋治療車桌面、前緣、床頭櫃、點滴架及牆面（見 clip@12-51 及 zoom@12.5、zoom@43），畫面內僅見藥瓶、稀釋液、酒精棉片與空針包裝，給藥紀錄單未入鏡，無法確認查看給藥紀錄單的時間。期間 00:13.5–00:18.5 拿取並檢視藥瓶、00:20.0–00:35.0 檢視並拆開空針包裝、00:36.5–00:40.0 檢視稀釋液、00:41.5–00:48.0 再次拿取藥瓶指讀瓶身並推開瓶蓋。\", \"times\": [], \"evidence\": [\"clip@12-51\", \"zoom@12.5\", \"zoom@43\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}, {\"criterion_id\": \"4b\", \"verdict\": \"無法判定\", \"explanation\": \"已搜尋治療車桌面、前緣、床頭櫃、點滴架及牆面（見 clip@12-51 及 zoom@12.5、zoom@43），給藥紀錄單未入鏡；00:42.5–00:45.5 學生雖以右手食指指向左手的藥瓶瓶身，但無法確認是否有指出給藥紀錄單。\", \"times\": [], \"evidence\": [\"clip@12-51\", \"zoom@12.5\", \"zoom@43\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}]}",
+  "errors": []
+ }
+]

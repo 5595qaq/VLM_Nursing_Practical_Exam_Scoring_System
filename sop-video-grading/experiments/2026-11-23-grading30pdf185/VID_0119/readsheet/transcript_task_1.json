@@ -1,0 +1,16 @@
+[
+ {
+  "turn": 1,
+  "seconds": 91.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 21918,
+  "cached_input_tokens": 0,
+  "output_tokens": 479,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@0-15.6（context box，有聲音；片段內 00:00 ＝ 影片 00:00.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"1a\", \"verdict\": \"正確\", \"explanation\": \"影片開始時（00:00.0）考生已在搓手洗手（按壓洗手液在影片開始前），持續洗手至 00:13.5 雙手分開結束洗手，共計 13.5 秒，滿 10 秒。\", \"evidence\": [\"clip@0-15.6\"], \"confidence\": 0.9, \"reason\": null, \"span\": [0.0, 13.5]}, {\"criterion_id\": \"1b\", \"verdict\": \"正確\", \"explanation\": \"七個洗手動作皆有做到：00:00.0–00:01.0 內（掌心對掌心）、00:01.5–00:02.5 外（手心搓手背）、00:03.0–00:04.0 夾（十指交叉搓指縫）、00:04.5–00:06.0 弓（彎曲手指搓指背）、00:06.5–00:07.5 大（握住大拇指旋轉）、00:08.0–00:09.5 立（指尖立在掌心搓）、00:10.0–00:12.0 腕（搓手腕）。\", \"evidence\": [\"clip@0-15.6\"], \"confidence\": 0.9, \"reason\": null, \"times\": [[0.0, 13.5]]}, {\"criterion_id\": \"1c\", \"verdict\": \"正確\", \"explanation\": \"已檢查 00:00.0–00:13.5 洗手期間全程未接觸其他物品，於 00:13.5 洗手結束雙手分開後才彎腰往治療車下層拿取物品。\", \"evidence\": [\"clip@0-15.6\"], \"confidence\": 0.9, \"reason\": null, \"times\": []}]}",
+  "errors": []
+ }
+]

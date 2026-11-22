@@ -1,0 +1,64 @@
+[
+ {
+  "turn": 1,
+  "seconds": 233.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 20303,
+  "cached_input_tokens": 0,
+  "output_tokens": 519,
+  "thinking_tokens": 445,
+  "materials": [
+   "ov@33-332（hands_box，n=9）#0=00:33.0、#1=01:10.4、#2=01:47.8、#3=02:25.1、#4=03:02.5、#5=03:39.9、#6=04:17.2、#7=04:54.6、#8=05:32.0"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 300.0, \"end\": 332.0, \"fps\": 2, \"reason\": \"查看步驟 9 撕開空針包裝前（05:00–05:32）是否有用手指指出空針包裝核對\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 936.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 26338,
+  "cached_input_tokens": 0,
+  "output_tokens": 74,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@33-332（hands_box，n=9）#0=00:33.0、#1=01:10.4、#2=01:47.8、#3=02:25.1、#4=03:02.5、#5=03:39.9、#6=04:17.2、#7=04:54.6、#8=05:32.0",
+   "clip@300-332（context box，有聲音；片段內 00:00 ＝ 影片 05:00.0）"
+  ],
+  "reply": "{\"action\": \"overview\", \"start\": 240.0, \"end\": 295.0, \"n\": 9, \"box\": \"hands\", \"reason\": \"Check if student checked syringe package earlier around 04:00-04:55 when syringe package was placed on tray.\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 14.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 27712,
+  "cached_input_tokens": 0,
+  "output_tokens": 100,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@33-332（hands_box，n=9）#0=00:33.0、#1=01:10.4、#2=01:47.8、#3=02:25.1、#4=03:02.5、#5=03:39.9、#6=04:17.2、#7=04:54.6、#8=05:32.0",
+   "clip@300-332（context box，有聲音；片段內 00:00 ＝ 影片 05:00.0）",
+   "ov@240-295（hands_box，n=9）#0=04:00.0、#1=04:06.9、#2=04:13.8、#3=04:20.6、#4=04:27.5、#5=04:34.4、#6=04:41.2、#7=04:48.1、#8=04:55.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [315.0, 315.5, 316.0, 316.5], \"region\": [0.3, 0.3, 0.7, 0.7], \"reason\": \"確認撕開空針包裝前（05:15.0–05:16.5）是否用手指指出包裝核對\"}",
+  "errors": []
+ },
+ {
+  "turn": 4,
+  "seconds": 27.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 28962,
+  "cached_input_tokens": 0,
+  "output_tokens": 402,
+  "thinking_tokens": 218,
+  "materials": [
+   "ov@33-332（hands_box，n=9）#0=00:33.0、#1=01:10.4、#2=01:47.8、#3=02:25.1、#4=03:02.5、#5=03:39.9、#6=04:17.2、#7=04:54.6、#8=05:32.0",
+   "clip@300-332（context box，有聲音；片段內 00:00 ＝ 影片 05:00.0）",
+   "ov@240-295（hands_box，n=9）#0=04:00.0、#1=04:06.9、#2=04:13.8、#3=04:20.6、#4=04:27.5、#5=04:34.4、#6=04:41.2、#7=04:48.1、#8=04:55.0",
+   "zoom@315/315.5/316/316.5 region=[0.300, 0.300, 0.700, 0.700]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4e\", \"verdict\": \"正確\", \"explanation\": \"05:14.5–05:16.5（clip@300-332 片段內 00:14.5–00:16.5）撕開空針包裝前，考生拿起空針包裝翻至背面，並以右手食指指出包裝標示進行核對。\", \"times\": [[314.5, 316.5]], \"evidence\": [\"clip@300-332\", \"zoom@315\", \"zoom@315.5\", \"zoom@316\", \"zoom@316.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

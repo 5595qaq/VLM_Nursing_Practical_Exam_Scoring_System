@@ -1,0 +1,48 @@
+[
+ {
+  "turn": 1,
+  "seconds": 84.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 20660,
+  "cached_input_tokens": 0,
+  "output_tokens": 131,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@103-109.5（hands_box，n=9）#0=01:43.0、#1=01:43.8、#2=01:44.6、#3=01:45.4、#4=01:46.2、#5=01:47.1、#6=01:47.9、#7=01:48.7、#8=01:49.5"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 104.5, \"end\": 109.5, \"fps\": 10, \"region\": [0.25, 0.35, 0.85, 0.85], \"reason\": \"查看空針完全離開包裝（約01:45.4–01:46.2）到拔開針頭蓋（約01:48.7–01:49.5）之間的雙手連續動作，確認是否有固定針頭與針心\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 62.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 24745,
+  "cached_input_tokens": 18624,
+  "output_tokens": 183,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@103-109.5（hands_box，n=9）#0=01:43.0、#1=01:43.8、#2=01:44.6、#3=01:45.4、#4=01:46.2、#5=01:47.1、#6=01:47.9、#7=01:48.7、#8=01:49.5",
+   "clip@104.5-109.5（region=[0.250, 0.350, 0.850, 0.850]，原始解析度裁切，有聲音；片段內 00:00 ＝ 影片 01:44.5）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"10b\", \"verdict\": \"正確\", \"explanation\": \"01:46.1 空針完全離開包裝；01:47.1–01:48.5 右手握住針筒與針心，左手捏住針頭蓋與針座接合處進行旋緊固定，隨後於 01:49.2 拔除針頭蓋。\", \"times\": [[107.1, 108.5]], \"evidence\": [\"ov@103-109.5 #5\", \"ov@103-109.5 #6\", \"clip@104.5-109.5\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": [
+   "criterion 10b: 正確 must cite this candidate window before the syringe's first use; other wrapper spans are context only"
+  ]
+ },
+ {
+  "turn": 3,
+  "seconds": 105.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 24969,
+  "cached_input_tokens": 18624,
+  "output_tokens": 440,
+  "thinking_tokens": 289,
+  "materials": [
+   "ov@103-109.5（hands_box，n=9）#0=01:43.0、#1=01:43.8、#2=01:44.6、#3=01:45.4、#4=01:46.2、#5=01:47.1、#6=01:47.9、#7=01:48.7、#8=01:49.5",
+   "clip@104.5-109.5（region=[0.250, 0.350, 0.850, 0.850]，原始解析度裁切，有聲音；片段內 00:00 ＝ 影片 01:44.5）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"10b\", \"verdict\": \"正確\", \"explanation\": \"01:46.1 空針完全離開包裝；01:46.9–01:47.5 右手握住針筒與針心，左手捏住針頭蓋與針座接合處進行旋緊固定。\", \"times\": [[106.9, 107.5]], \"evidence\": [\"ov@103-109.5 #5\", \"clip@104.5-109.5\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

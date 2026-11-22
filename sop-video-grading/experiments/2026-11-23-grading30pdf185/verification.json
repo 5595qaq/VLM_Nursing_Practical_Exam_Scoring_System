@@ -1,0 +1,42 @@
+{
+  "base_commit": "7afe024860647104bd661f9df8ae3b75ee7b0351",
+  "branch": "grading/grading30pdf185",
+  "grading_version": "0.46-grading30pdf185.1",
+  "rubric_version": "1.30-grading30pdf185.1",
+  "automated_tests": {
+    "tests": 420,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "test_seconds": 611.565,
+  "test_scope": [
+    "tests/sop_grading",
+    "backend/tests/test_sop_grading_service.py",
+    "backend/tests/test_sop_grading_cli.py",
+    "backend/tests/test_sop_segment_grading.py",
+    "backend/tests/test_sop_cli_guard.py",
+    "backend/tests/test_adaptive_retry.py",
+    "backend/tests/test_credit_budget.py"
+  ],
+  "model": "fake test replies; synthetic video only; no paid calls",
+  "offline_bundle": {
+    "videos": 30,
+    "steps_with_separate10": 210,
+    "pdf_steps": 180,
+    "difference_source_hashes": 28,
+    "source_files": 243,
+    "archived_files": 1094,
+    "aggregate_combinations": 16920,
+    "native_cli_records": 30,
+    "historical_selected_final_validations": 30,
+    "model_calls": 0
+  },
+  "privacy": "staged payload checked: no raw video, images, private table/link, student names, credentials or local absolute paths; generic unchanged source-code examples preserved",
+  "whitespace": "active changes pass diff --check; original source snapshots retain existing whitespace byte for byte for SHA-256 reproducibility",
+  "version_gate": "not passed: iteration branch versions are intentionally not formal releases; formal migration and video confirmation remain merge prerequisites",
+  "new_merged_branch_video_regression": false,
+  "new_independent_blind_reference": false,
+  "all_proposed_future_improvements_implemented": false,
+  "model_calls_in_publication": 0
+}
