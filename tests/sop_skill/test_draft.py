@@ -129,3 +129,13 @@ def test_sop30_matching_requires_both_boundaries_within_tolerance():
 def test_skill_md_states_the_same_rewrite_interval():
     skill = (Path(draft.__file__).resolve().parents[1] / "SKILL.md").read_text(encoding="utf-8")
     assert f"每 {draft.FULL_EVERY} 個動作" in skill
+
+def test_substitute_labels_do_not_claim_clinical_administration():
+    def event(label, marker="切分錨點：替代"):
+        return {"step_id": 30, "start": 10, "end": 12, "evidence": label+"（"+marker+"）：ov#1"}
+    for label in ["第一次放置", "第二次放置", "第三次放置", "放置（給藥前後未確認）"]:
+        assert draft.placement_label_errors([event(label)]) == []
+    for label in ["給藥前放置", "給藥後放置"]:
+        assert draft.placement_label_errors([event(label)])
+        assert draft.placement_label_errors([event(label, "實際給藥影格可見")]) == []
+    assert draft.placement_label_errors([{**event("給藥前放置"), "step_id":29}]) == []

@@ -133,6 +133,14 @@ def missing_placements(current: str, steps: list[dict]) -> list[str]:
     return missing
 
 
+def placement_label_errors(steps: list[dict]) -> list[str]:
+    """A substitute operation is not evidence that clinical administration occurred."""
+    return [f"步驟 30：替代操作錨點須用中性放置次序標籤，不可寫給藥前／後（{e.get('start')}–{e.get('end')}）"
+            for e in steps if e.get("step_id") == 30
+            and "切分錨點：替代" in e.get("evidence", "")
+            and e.get("evidence", "").lstrip().startswith(("給藥前放置", "給藥後放置"))]
+
+
 def main(argv: list[str]) -> int:
     if len(argv) != 2:
         print(__doc__, file=sys.stderr)

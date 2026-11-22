@@ -182,11 +182,6 @@ async def test_final_keeps_both_sop30_placements(tmp_path, monkeypatch, early_st
     monkeypatch.setattr(skill.ScriptRunner, "set_crop", lambda *_: ([frame], {}, frame))
     monkeypatch.setattr(skill.ScriptRunner, "overview", lambda *_: [frame])
     monkeypatch.setattr(skill.ScriptRunner, "zoom", lambda *_: [frame])
-    def sheets(_runner, _box, start, end, _prefix, *, n):
-        assert n == 9
-        return [skill.Image(frame_path, f"sample {start:g}–{end:g}")]
-
-    monkeypatch.setattr(skill.ScriptRunner, "_sheets", sheets)
     early = {"step_id": 30, "status": "detected", "start": 38.6, "end": 40.5,
              "confidence": 0.9, "evidence": "放置（給藥前後未確認）：zoom@38.6、zoom@40.5"}
     one = valid_result()
@@ -197,12 +192,10 @@ async def test_final_keeps_both_sop30_placements(tmp_path, monkeypatch, early_st
     model = ScriptedModel([HAPPY_PATH[2], overview, zoom,
                            {"action": "final", "result": one}, {"action": "final", "result": both}])
 
-    outcome = await skill.run_skill_loop(frame_path, "VIDEO-30", tmp_path, model,
-                                         placement_windows=((37, 42), (53, 57)))
+    outcome = await skill.run_skill_loop(frame_path, "VIDEO-30", tmp_path, model)
 
     first_segmentation_request = texts(pinned_prefix(model.requests[1][1]))
-    assert "步驟 30 放置候選 37–42s" in first_segmentation_request
-    assert "步驟 30 放置候選 53–57s" in first_segmentation_request
+    assert "步驟 30 放置候選" not in first_segmentation_request
     feedback = texts(model.requests[-1][1])
     assert "30.1（38.5–40.0）" in feedback
     assert "給藥前後未確認" in feedback
@@ -429,15 +422,14 @@ class Quota(Exception):
     """Stands for the 429 left when the SDK retries are used up."""
 
 
-@pytest.mark.parametrize("placement_windows", [(), ((37, 42),)])
-async def test_loop_continues_from_the_checkpoint_after_a_quota_error(video, tmp_path, placement_windows):
+async def test_loop_continues_from_the_checkpoint_after_a_quota_error(video, tmp_path):
     first = ScriptedModel([*HAPPY_PATH[:3], Quota("429")])
     with pytest.raises(Quota):
-        await skill.run_skill_loop(video, "V", tmp_path, first, placement_windows=placement_windows)
+        await skill.run_skill_loop(video, "V", tmp_path, first)
     assert (tmp_path / "checkpoint.json").exists()
 
     second = ScriptedModel(HAPPY_PATH[3:])
-    outcome = await skill.run_skill_loop(video, "V", tmp_path, second, placement_windows=placement_windows)
+    outcome = await skill.run_skill_loop(video, "V", tmp_path, second)
     assert len(second.requests) == 3  # the three finished turns are not paid for again
     assert outcome["turns"] == 6
     assert outcome["usage"]["input_tokens"] == 600  # both attempts, each reply once
@@ -629,3 +621,15 @@ def test_parse_action(text, expected):
 def test_parse_action_without_object():
     with pytest.raises(ValueError):
         skill.parse_action("no action here [1]")
+
+async def test_final_rejects_substitute_clinical_labels_but_keeps_the_same_times(video, tmp_path):
+    bad=valid_result()
+    bad["steps"][-1]["evidence"]="給藥前放置（切分錨點：替代）：ov#1"
+    fixed=json.loads(json.dumps(bad))
+    fixed["steps"][-1]["evidence"]="第一次放置（切分錨點：替代）：ov#1"
+    model=ScriptedModel(HAPPY_PATH[:5]+[{"action":"final","result":bad},{"action":"final","result":fixed}])
+    outcome=await skill.run_skill_loop(video,"V",tmp_path,model)
+    assert outcome["result"]["steps"][-1]["start"]==bad["steps"][-1]["start"]
+    assert outcome["result"]["steps"][-1]["evidence"].startswith("第一次放置")
+    transcript=json.loads((tmp_path/"transcript.json").read_text(encoding="utf-8"))
+    assert any("中性" in e for e in transcript[-2]["errors"])
