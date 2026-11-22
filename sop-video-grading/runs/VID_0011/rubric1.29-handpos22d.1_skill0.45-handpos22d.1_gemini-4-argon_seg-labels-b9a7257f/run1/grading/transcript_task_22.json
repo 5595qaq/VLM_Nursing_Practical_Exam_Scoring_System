@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 15.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 19726,
+  "cached_input_tokens": 0,
+  "output_tokens": 106,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@430-440（hands_box，n=9）#0=07:10.0、#1=07:11.2、#2=07:12.5、#3=07:13.8、#4=07:15.0、#5=07:16.2、#6=07:17.5、#7=07:18.8、#8=07:20.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [431.2, 432.5, 433.8, 436.2], \"region\": [0.35, 0.45, 0.7, 0.9], \"reason\": \"放大確認插針時持毛筆姿勢、針筒是否垂直、是否刺入 vial 中心，以及刺入與打入空氣時 vial 是否放在桌面上\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 13.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 20981,
+  "cached_input_tokens": 0,
+  "output_tokens": 408,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@430-440（hands_box，n=9）#0=07:10.0、#1=07:11.2、#2=07:12.5、#3=07:13.8、#4=07:15.0、#5=07:16.2、#6=07:17.5、#7=07:18.8、#8=07:20.0",
+   "zoom@431.2/432.5/433.8/436.2 region=[0.350, 0.450, 0.700, 0.900]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"22b\", \"verdict\": \"正確\", \"explanation\": \"07:12.5–07:13.8 右手拇指、食指與中指以持毛筆方式握住針筒外管，針筒垂直向下刺入 vial，手指未碰觸針頭、針座及活塞柄內側。\", \"times\": [[432.5, 433.8]], \"evidence\": [\"zoom@432.5\", \"zoom@433.8\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"22c\", \"verdict\": \"正確\", \"explanation\": \"07:12.5–07:13.8 針頭垂直刺入 vial 橡皮塞中心。\", \"times\": [[432.5, 433.8]], \"evidence\": [\"zoom@432.5\", \"zoom@433.8\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"22d\", \"verdict\": \"正確\", \"explanation\": \"07:12.5–07:17.5 vial 底部全程放在治療車桌面上，左手扶住 vial 固定，右手持針筒垂直刺入並推針心將空氣打入，打完空氣後於 07:18.8 才舉起倒置。\", \"times\": [[432.5, 437.5]], \"evidence\": [\"zoom@432.5\", \"zoom@433.8\", \"zoom@436.2\", \"ov@430-440 #6\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
