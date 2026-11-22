@@ -172,6 +172,7 @@ Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499、連線中斷，或 Claude 回�
 | `scripts/eval_grading.py` | 與人工標註表比對：每步的人工／模型判定與說明、一致率、錯誤召回、誤報（另外列出有看畫面標準的步驟）。時間也比：評分 agent 的 `times`，舊紀錄或空的 `times` 改看該步說明裡引用的 mm:ss（計時標準用它的 `span`；「片段內」的 clip 相對時間不算；沒有引用時改用紀錄裡切分的區間，再沒有時用 `logical_window`，表格標「（agent）」的是前者）和標註時間沒有重疊、起點也差超過 3 秒，或標註有時間但模型沒有，判定一致也算錯（一致率以這個為準，括號內是只比判定的結果）；找不到同一支影片的 `segmentation.json` 或標註沒有時間時只比判定。預設排除沒有說明或標「AI判定」的影片（`--exclude`），影片檔有問題而不使用的影片（`UNUSABLE_VIDEOS`，見 `AGENTS.md`「已知有問題的影片」）一律略過，`compare_arms.py`、`review_page.py` 也一樣 |
 | `scripts/compare_arms.py` | 在同一批影片上比較多份評分紀錄（不同規則、模型或做法）：一致率、成對差異（McNemar）、重跑翻轉、token 與時間，列出各組判定不同的步驟；可排除步驟（`--exclude-steps`）或讓指定步驟的錯誤＝部分正確（`--merge-faults-steps`），不呼叫模型 |
 | `scripts/labels_to_segmentation.py` | 用人工標註表的開始／結束秒數組出切分結果，調整評分 agent 時可跳過切分 skill |
+| `scripts/make_segmentation_bundle.py` | 從既有紀錄的切分做出 `--segmentation-file` 用的 bundle（可把某一步換成另一份切分的片段），記下來源 |
 | `scripts/check_versions.py` | 合併前的版本檢查（CI 對每個 PR 執行）：版本必須是正式版本（不能是分支版本 `0.29-10b.1`）；PR 改了規則（評分 SKILL.md 以加上 `criteria/` 的全文比對）時版本要比目標分支大，`CHANGELOG.md` 要有新版本的標題，`changelog.d/` 的片段要全部移走 |
 | `CHANGELOG.md` | 各版本的修改紀錄 |
 | `changelog.d/` | 還沒進正式版本的修改，一個分支一個檔，合併前移進 `CHANGELOG.md` |
@@ -315,6 +316,21 @@ python sop-video-grading/scripts/review_page.py sop-video-grading/runs/VID_0083/
 - `--out` 裡原有的 `segmentation.json` 會改名為 `segmentation.prev.json`（已存在時依序用 `prev2`、`prev3`…，不覆蓋），改用沿用的切分（紀錄裡的來源可追溯）。例外：這個 CLI 在同一個 `--out` 用同一切分版本切出、還沒寫進任何紀錄的切分（例如 `--new-segmentation` 跑到一半中斷）會保留使用，連同它的 `seg/` 對話紀錄記進新紀錄。寫進紀錄後 `segmentation.source` 第二行會標 `recorded`，之後的新版本就當成沿用那份紀錄。標了 `recorded` 卻找不到可沿用的來源紀錄（紀錄被刪、影片檔不同，或來源是 `-dirty`）時會停止，避免記成自己切分的；加 `--new-segmentation` 或換 `--out`。
 - 切分標記加上切分模型之前的工作資料夾，`segmentation.source` 是舊格式（例如 `skill1.4.5`），沒有紀錄可沿用時會停止並提示：確認是用同一個模型切分的，可以把它改成新格式（例如 `skill1.4.5_gemini-4-argon`）。在此之前解壓的前端紀錄 ZIP 也是舊名稱，重複檢查與沿用切分都看不到，要用的話重新下載。
 - 前端的「切分＋評分」流程不沿用，每個工作仍會重新切分。
+
+**指定沿用別的切分版本（`--segmentation-file`）**：切分版本變了（例如 1.5.9 → 1.5.11），但不想重新切分時，指定一份已存的切分：
+
+```bash
+# 從既有紀錄取完整切分；--replace-step 可把某一步換成另一份切分的片段（例如新規則切的步驟 4）
+python sop-video-grading/scripts/make_segmentation_bundle.py sop-video-grading/runs/VID_0081/<版本資料夾> -o bundle.json \
+  [--replace-step 4 --from segmentation-4.json --note "1.5.9-readsheet.1 的步驟 4"]
+docker compose run --rm ... worker python -m app.sop_grading_cli /data/影片.mp4 --video-id VID_0081 --out /work/VID_0081 \
+  --segmentation-file /work/bundle.json --steps 4
+```
+
+- bundle 是 JSON：`source_kind: "saved_model_segmentation"`、`video_id`、原影片的 `video_sha256`、完整的 `segmentation`、`provenance`（來源紀錄、它的切分版本與 commit，換過哪一步、片段檔的 SHA-256 與說明）。
+- 執行前會檢查影片檔的 SHA-256 與 bundle 相同、切分通過 `validate_result.py`，不符就停止，不呼叫模型；不能和 `--labels`、`--new-segmentation` 一起用。
+- 紀錄的切分標記是 `saved-model-<切分內容 SHA-256 前 16 碼>`，所以不同的切分不會共用紀錄資料夾；`record.json` 那次 run 的 `segmentation_import` 記完整 SHA-256 和 `provenance`。
+- 這份切分不是用目前的 sop-video-skill 切的：比較結果時要看 `provenance`。
 
 用 `--labels` 時只取標註表的時間，不複製判定與說明（評分 agent 會看到切分依據，不能讓它看到答案）；沒有時間的步驟給前後步驟之間的區間，由評分 agent 自己判斷有沒有做。裁切框不在標註表裡，預設為整個畫面。此時「有沒有做」這類程式判定的標準等於照抄標註時間，所以評估評分 agent 時要看 `eval_grading.py` 的「看畫面的步驟（V）」那一行。
 

@@ -9,6 +9,7 @@ import json
 import os
 import shutil
 import time
+from pathlib import Path
 
 import pytest
 
@@ -91,6 +92,52 @@ def grade(rec, out, steps, video, labels_path=None, new_segmentation=False):
 
 def load_record(rec):
     return json.loads((rec.folder / "record.json").read_text(encoding="utf-8"))
+
+
+def test_saved_segmentation_is_graded_without_segmenting_and_keeps_its_source(tmp_path, video, fake):
+    from app.services.sop_segmentation_import import load_bundle
+    bundle = {"source_kind": "saved_model_segmentation", "video_sha256": cli._rr().file_sha256(video),
+              "segmentation": {"video_id": VID, "from": "old-model"},
+              "provenance": {"base": {"record": "rubric1.30_skill0.46_x_seg-skill1.5.9_x"}}}
+    path = tmp_path / "bundle.json"
+    path.write_text(json.dumps(bundle), encoding="utf-8")
+    imported, tag = load_bundle(path, VID, lambda result: [])
+    assert tag.startswith("saved-model-") and len(tag) == len("saved-model-") + 16
+    rec = recorder(video, tmp_path / "runs", tag=tag)
+    rec.check({4}, force=False)
+    asyncio.run(cli.run(video, VID, tmp_path / "out", {4}, recorder=rec, seg_tag=tag, imported=imported))
+
+    assert "segmented" not in fake
+    assert fake["calls"][0]["segmentation"] == bundle["segmentation"]
+    record = load_record(rec)
+    origin = record["runs"][0]["segmentation_import"]
+    assert origin["provenance"] == bundle["provenance"] and len(origin["sha256"]) == 64
+    assert record["versions"]["segmentation"] == tag
+    with pytest.raises(SystemExit, match="相同版本"):
+        recorder(video, tmp_path / "runs", tag=tag).check({4}, force=False)
+
+
+def test_saved_segmentation_of_another_video_file_is_refused_before_any_call(tmp_path, video, fake):
+    rec = recorder(video, tmp_path / "runs", tag="saved-model-" + "a" * 16)
+    rec.check({4}, force=False)
+    bundle = {"video_sha256": "0" * 64, "segmentation": {"video_id": VID}, "segmentation_sha256": "a" * 64}
+    with pytest.raises(SystemExit, match="hash does not match"):
+        asyncio.run(cli.run(video, VID, tmp_path / "out", {4}, recorder=rec,
+                            seg_tag=rec.versions["segmentation"], imported=bundle))
+    assert fake["calls"] == [] and "segmented" not in fake
+
+
+def test_saved_segmentation_bundle_is_validated():
+    from app.services.sop_segmentation_import import load_bundle
+    import tempfile
+    with tempfile.TemporaryDirectory() as d:
+        path = Path(d) / "b.json"
+        path.write_text(json.dumps({"source_kind": "saved_model_segmentation", "video_sha256": "a" * 64,
+                                    "segmentation": {"video_id": VID}}), encoding="utf-8")
+        with pytest.raises(ValueError, match="Invalid saved segmentation"):
+            load_bundle(path, VID, lambda result: ["steps missing"])
+        with pytest.raises(ValueError, match="does not match"):
+            load_bundle(path, "VID_0002", lambda result: [])
 
 
 def test_run_is_recorded_and_a_rerun_is_refused(tmp_path, video, fake):

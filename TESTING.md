@@ -50,6 +50,7 @@ python sop-video-grading/scripts/rules.py segmentation.json -o grading.json   # 
 python sop-video-grading/scripts/validate_grading.py grading.json --final     # 驗證最終評分結果
 python sop-video-grading/scripts/eval_grading.py --labels 標註表.csv grading.json  # 與人工標註比對
 python sop-video-grading/scripts/labels_to_segmentation.py --labels 標註表.csv --video-id VID_0083 --duration 424 -o seg.json  # 用標註時間組出切分結果
+python sop-video-grading/scripts/make_segmentation_bundle.py sop-video-grading/runs/VID_0083/<版本資料夾> -o bundle.json  # 既有切分做成 --segmentation-file 的 bundle
 python sop-video-grading/scripts/skill_doc.py -o SKILL.full.md  # 組出評分 agent 讀到的完整 SKILL.md（SKILL.md + criteria/）
 ```
 
