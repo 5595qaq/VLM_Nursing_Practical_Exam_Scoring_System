@@ -31,6 +31,8 @@ def test_rubric_classification_matches_the_plan():
         assert by_id[cid]["category"] == "not_visible"
     # needle direction stands in for the bevel, which the camera cannot resolve (rubric 1.4)
     assert by_id["13b"]["category"] == "visual" and by_id["13b"]["key"] is False and by_id["13b"]["window_steps"] == [13, 14]
+    # 13b looks at every second of the drawing, so it needs a clip, not a few frames (user 2026-11-22)
+    assert by_id["13b"]["clip"] is True and "不看瓶子" in by_id["13b"]["text"]
     # the teacher dropped pulling the plunger back (16a, 26a) and drawing air after uncapping (21a) (rubric 1.25)
     assert not {"16a", "21a", "26a"} & by_id.keys()
     assert by_id["26b"]["window_steps"] == [26] and by_id["26b"]["key"] is False
