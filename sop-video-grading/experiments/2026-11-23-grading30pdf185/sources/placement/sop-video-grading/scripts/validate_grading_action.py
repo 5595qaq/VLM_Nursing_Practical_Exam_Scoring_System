@@ -1,0 +1,195 @@
+"""Validate one grading-agent action BEFORE executing it (no model call).
+
+A task is one group of 待判定 criteria graded in one conversation (built by the backend from rules.py
+output): {"criteria": [{"criterion_id": "17a", "window": [148.0, 180.0]}, ...], "window": [a, b]}.
+Each criterion keeps its own window; the task window covers them all (criteria sharing a rubric
+`task`, such as 5a and 6a, can have different windows).
+
+Checks actions.schema.json plus rules the schema cannot express: times near the task window,
+span limits, remaining budget, and for final: exactly the task's criteria, each passing the same
+per-criterion rules as validate_grading.py (reason for 無法判定, mm:ss in the explanation,
+frame/clip evidence), and times in video seconds within the same ranges. For the flick (17a/27a): 錯誤 only after at least one burst in this task, and
+無法判定（無音軌） when the task's audio_peaks result says there is no usable audio (task["audio"]).
+A criterion with "clip": true in the rubric (20a,
+rolling the vial: overview frames 2–4 s apart cannot show the hands moving) is graded only after a clip
+of this task was seen, either the opening clip (task["opening_clip"]) or a clip action. Fixing the
+needle (10b, rubric package_spans): actions may also look at the spans the hands held the syringe wrapper
+(the task lists them, each ±WINDOW_SLACK); 正確, 錯誤 or 無法判定, never 部分正確, and 錯誤 only after a
+clip action overlapping a listed span (any clip when none is listed; a twist lasts a second or two). The backend sends a 無法判定 or 錯誤 to a person with those spans.
+Pointing at the syringe package (4e): 錯誤 only after a clip action; the gesture lasts two or three seconds
+in a window of a minute or more.
+A clip above 5 fps may last at most 8 s.
+
+A rejected action is NOT executed and does NOT consume budget.
+"""
+import json
+from pathlib import Path
+
+from jsonschema import Draft202012Validator
+
+from rubric import criteria_by_id, load_rubric
+from validate_grading import WRAPPER, check_criterion, check_vial_cutoff
+
+SCHEMA_PATH = Path(__file__).resolve().parent.parent / "actions.schema.json"
+
+BUDGET = {"overview": 3, "zoom": 3, "burst": 3, "clip": 2}
+WINDOW_SLACK = 10.0  # seconds the agent may look outside the task window
+OVERVIEW_SPAN = (2.0, 60.0)
+CLIP_SPAN = (1.0, 60.0)
+ZOOM_MAX_AREA, ZOOM_MAX_SIDE = 0.50, 0.75
+BURST_SPAN = (0.3, 3.0)
+FLICK = {"17a", "27a"}  # need sound and the fingers seen together
+POINT_AT_PACKAGE = {"4e"}  # a gesture of a few seconds that opening frames ~9 s apart can miss
+TEAR_MARGIN = 5.0  # s around the segmentation's tearing start: a 4e 錯誤 needs a clip there (the start may be a few s off)
+FAST_CLIP_FPS = 5
+HIGH_FPS_MAX_SPAN = 8.0  # clips above FAST_CLIP_FPS stay short to bound the video tokens
+
+
+def validate(action, task: dict, used: dict, duration: float,
+             rubric: dict | None = None) -> list[str]:
+    schema = json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
+    if not isinstance(action, dict):
+        return ["action must be a JSON object"]
+    name = action.get("action")
+    branch = next((s for s in schema["oneOf"] if s["properties"]["action"]["const"] == name), None)
+    if branch is None:
+        return [f"unknown action {name!r}; use overview, zoom, burst, clip or final"]
+    errors = [f"schema: {'/'.join(map(str, e.path)) or '(root)'}: {e.message}"
+              for e in Draft202012Validator(branch).iter_errors(action)]
+    if errors:
+        return errors
+
+    if name == "final":
+        return _check_final(action, task, used, rubric or load_rubric(), duration)
+
+    if used.get(name, 0) >= BUDGET[name]:
+        errors.append(f"budget for {name} exhausted ({BUDGET[name]}); send final with what you have")
+    ranges = allowed_ranges(task, duration)
+    where = _ranges_text(ranges)
+    inside = lambda a, b: _inside(ranges, a, b)  # noqa: E731
+    if name in ("overview", "clip", "burst"):
+        start, end = action["start"], action["end"]
+        low, high = {"overview": OVERVIEW_SPAN, "clip": CLIP_SPAN, "burst": BURST_SPAN}[name]
+        if end <= start:
+            errors.append(f"{name} end must be > start")
+        elif not low <= end - start <= high:
+            errors.append(f"{name} span {end - start:.1f}s outside {low:g}-{high:g}s")
+        if not inside(start, end):
+            errors.append(f"{name} [{start:g}, {end:g}] must stay within {where} "
+                          f"(task window or a listed wrapper span, ±{WINDOW_SLACK:g}s)")
+    if name == "clip" and action.get("fps", 0) > FAST_CLIP_FPS and action["end"] - action["start"] > HIGH_FPS_MAX_SPAN:
+        errors.append(f"clip above fps {FAST_CLIP_FPS} may last at most {HIGH_FPS_MAX_SPAN:g}s")
+    if name == "zoom":
+        if any(not inside(t, t) for t in action["times"]):
+            errors.append(f"zoom times must stay within {where} (task window or a listed wrapper span, "
+                          f"±{WINDOW_SLACK:g}s)")
+        if len(set(action["times"])) != len(action["times"]):
+            errors.append("zoom times must be distinct")
+    if name in ("zoom", "burst") or (name == "clip" and "region" in action):
+        x0, y0, x1, y1 = action["region"]
+        if not (x0 < x1 and y0 < y1):
+            errors.append(f"{name} region needs x0<x1 and y0<y1")
+        elif (x1 - x0) * (y1 - y0) > ZOOM_MAX_AREA or max(x1 - x0, y1 - y0) > ZOOM_MAX_SIDE:
+            errors.append(f"{name} region too large (area <= {ZOOM_MAX_AREA}, each side <= {ZOOM_MAX_SIDE} "
+                          "of the context box)")
+    return errors
+
+
+def _inside(ranges: list[tuple[float, float]], start: float, end: float) -> bool:
+    return any(lo <= start and end <= hi for lo, hi in ranges)
+
+
+def _ranges_text(ranges: list[tuple[float, float]]) -> str:
+    return "、".join(f"{lo:g}-{hi:g}s" for lo, hi in ranges)
+
+
+def allowed_ranges(task: dict, duration: float) -> list[tuple[float, float]]:
+    """The task window and each wrapper span listed for a criterion (10b), all ±WINDOW_SLACK; overlapping
+    ranges are merged, so a clip across the syringe coming out may start in a span and end in the window."""
+    spans = [task["window"]] + [s for c in task["criteria"] for s in c.get("package_spans") or []]
+    ranges = sorted((max(0.0, a - WINDOW_SLACK), min(duration, b + WINDOW_SLACK)) for a, b in spans)
+    merged = [ranges[0]]
+    for lo, hi in ranges[1:]:
+        if lo <= merged[-1][1]:
+            merged[-1] = (merged[-1][0], max(merged[-1][1], hi))
+        else:
+            merged.append((lo, hi))
+    return merged
+
+
+def _clipped_wrapper(task: dict, cid: str) -> bool:
+    """A clip of this task (task["clips"], kept by the backend) overlapped a wrapper span listed for cid;
+    with no spans listed, any clip."""
+    spans = next((c.get("package_spans") for c in task["criteria"] if c["criterion_id"] == cid), None)
+    clips = task.get("clips") or []
+    return any(a < e and s < b for a, b in clips for s, e in spans) if spans else bool(clips)
+
+
+def _clipped_before_tear(task: dict, cid: str) -> bool:
+    """A clip of this task overlapped the segmentation's tearing start ±TEAR_MARGIN; with no start, any clip."""
+    start = next((c.get("tear_start") for c in task["criteria"] if c["criterion_id"] == cid), None)
+    clips = task.get("clips") or []
+    if start is None:
+        return bool(clips)
+    return any(a < start + TEAR_MARGIN and start - TEAR_MARGIN < b for a, b in clips)
+
+
+def _check_times(cid: str, c: dict, spec: dict, ranges: list[tuple[float, float]]) -> list[str]:
+    """times: the video seconds the verdict rests on, so nobody has to read them out of the explanation. A clip's
+    own 00:00-based times fall outside the allowed ranges unless the clip starts near the beginning of the video."""
+    times = c.get("times") or []
+    if spec.get("min_seconds") and not spec.get("cumulative_seconds"):
+        return [f"criterion {cid}: use span, not times, for a timed criterion"] if times else []
+    if not times and not spec.get("cumulative_seconds") and c["verdict"] != "無法判定":
+        return [f"criterion {cid}: {c['verdict']} needs times [[start, end], ...]: the video seconds the verdict "
+                "rests on (the part you watched when the action did not happen)"]
+    errors = []
+    for start, end in times:
+        if end < start:
+            errors.append(f"criterion {cid}: times {start:g}-{end:g} must end at or after the start")
+        elif not _inside(ranges, start, end):
+            errors.append(f"criterion {cid}: times {start:g}-{end:g} must stay within {_ranges_text(ranges)}; "
+                          "times are video "
+                          "seconds, so add the clip's start to a time read inside a clip")
+    return errors
+
+
+def _check_final(action: dict, task: dict, used: dict, rubric: dict, duration: float) -> list[str]:
+    errors = []
+    ranges = allowed_ranges(task, duration)
+    windows = {c["criterion_id"]: c["window"] for c in task["criteria"]}
+    got = [c["criterion_id"] for c in action["criteria"]]
+    if sorted(got) != sorted(windows):
+        return [f"final must grade exactly {sorted(windows)} once each, got {got}"]
+    specs = criteria_by_id(rubric)
+    for c in action["criteria"]:
+        cid = c["criterion_id"]
+        full = {**c, "source": "vlm", "window": windows[cid]}
+        errors += check_criterion(f"criterion {cid}", full, specs[cid], final=True)
+        errors += _check_times(cid, c, specs[cid], ranges)
+        if cid in FLICK:
+            errors += _check_flick(cid, c, task.get("audio"), used)
+        if specs[cid].get("clip") and not task.get("opening_clip") and used.get("clip", 0) == 0:
+            errors.append(f"criterion {cid}: watch a clip of the window before grading {cid}; overview "
+                          "frames 2–4 s apart cannot show whether the hands keep moving")
+        if cid in POINT_AT_PACKAGE and c["verdict"] == "錯誤" and not _clipped_before_tear(task, cid):
+            errors.append(f"criterion {cid}: before marking 錯誤, use clip on the few seconds before the package "
+                          "is torn open: pointing lasts two or three seconds and the opening frames can miss it")
+        if cid in WRAPPER and c["verdict"] == "部分正確":
+            errors.append(f"criterion {cid}: 正確, 錯誤 or 無法判定 only (fixing is seen or it is not)")
+        if cid in WRAPPER and c["verdict"] == "錯誤" and not _clipped_wrapper(task, cid):
+            errors.append(f"criterion {cid}: before marking 錯誤, use clip with a region on both hands and the "
+                          "syringe (fps up to 10, ≤ 8 s) on a listed wrapper span (where it comes out) and after it: "
+                          "a twist lasts a second or two and frames 2–4 s apart miss it")
+    return errors + check_vial_cutoff(action["criteria"])
+
+
+def _check_flick(cid: str, c: dict, audio: dict | None, used: dict) -> list[str]:
+    no_sound = audio is not None and (not audio["has_audio"] or audio["silent"])
+    if no_sound and (c["verdict"] != "無法判定" or c["reason"] != "無音軌"):
+        return [f"criterion {cid}: the video has no usable audio, so {cid} must be 無法判定 with reason 無音軌; "
+                "say in the explanation whether the fingers were seen flicking"]
+    if c["verdict"] == "錯誤" and used.get("burst", 0) == 0:
+        return [f"criterion {cid}: before marking 錯誤, use burst near the sound runs / motion peaks to check "
+                "whether the fingers flick (a 2 fps clip can miss a flick)"]
+    return []

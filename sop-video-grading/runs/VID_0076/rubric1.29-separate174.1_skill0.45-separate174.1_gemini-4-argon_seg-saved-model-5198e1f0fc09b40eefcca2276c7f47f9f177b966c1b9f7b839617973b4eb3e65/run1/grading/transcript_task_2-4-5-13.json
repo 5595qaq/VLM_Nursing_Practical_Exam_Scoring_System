@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 29.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 20370,
+  "cached_input_tokens": 0,
+  "output_tokens": 71,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@22-172（hands_box，n=9）#0=00:22.0、#1=00:40.8、#2=00:59.5、#3=01:18.2、#4=01:37.0、#5=01:55.8、#6=02:14.5、#7=02:33.2、#8=02:52.0"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 20.0, \"end\": 75.0, \"fps\": 2, \"reason\": \"查看 00:20.0–01:15.0 期間拿起稀釋液檢查效期與有無異物的連續動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 217.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 30577,
+  "cached_input_tokens": 0,
+  "output_tokens": 456,
+  "thinking_tokens": 245,
+  "materials": [
+   "ov@22-172（hands_box，n=9）#0=00:22.0、#1=00:40.8、#2=00:59.5、#3=01:18.2、#4=01:37.0、#5=01:55.8、#6=02:14.5、#7=02:33.2、#8=02:52.0",
+   "clip@20-75（context box，有聲音；片段內 00:00 ＝ 影片 00:20.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4d\", \"verdict\": \"正確\", \"explanation\": \"於 00:20–00:22（clip@20-75 片段內 00:00–00:02）及 00:38–00:40.5（片段內 00:18–00:20.5）皆清楚看到學生拿起細長透明塑膠稀釋液瓶至胸前，雙手持瓶轉動並目視檢視瓶身標示與液體，完成抽藥前稀釋液檢查。\", \"times\": [[20.0, 22.5], [38.0, 40.5]], \"evidence\": [\"ov@22-172 #0\", \"clip@20-75\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

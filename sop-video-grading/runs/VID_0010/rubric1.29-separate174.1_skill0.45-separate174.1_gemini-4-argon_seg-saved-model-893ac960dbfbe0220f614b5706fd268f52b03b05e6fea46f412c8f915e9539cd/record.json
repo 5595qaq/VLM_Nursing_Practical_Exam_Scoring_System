@@ -1,0 +1,56 @@
+{
+ "video_id": "VID_0010",
+ "versions": {
+  "rubric": "1.29-separate174.1",
+  "skill": "0.45-separate174.1",
+  "model": "gemini-4-argon",
+  "segmentation": "saved-model-893ac960dbfbe0220f614b5706fd268f52b03b05e6fea46f412c8f915e9539cd"
+ },
+ "video_sha256": "0be26eebfc3e539151b38b4dd7a033dda59bc839e33f98df37bb257c9ffe9027",
+ "runs": [
+  {
+   "run": 1,
+   "by": "dakzungberrae",
+   "date": "2026-11-21",
+   "commit": "8b19fceceb76f7b0ff12d817880cf7f1cd32531b",
+   "video_sha256": "0be26eebfc3e539151b38b4dd7a033dda59bc839e33f98df37bb257c9ffe9027",
+   "steps": [
+    4,
+    10
+   ],
+   "failed_tasks": [],
+   "segmentation": "saved model segmentation; sha256-tag saved-model-893ac960dbfbe0220f614b5706fd268f52b03b05e6fea46f412c8f915e9539cd",
+   "usage": {
+    "input_tokens": 270765,
+    "cached_input_tokens": 37248,
+    "output_tokens": 2931,
+    "thinking_tokens": 1283
+   },
+   "timing": {
+    "started_at": "2026-11-21T04:16:08+09:00",
+    "grading_seconds": 606.8,
+    "total_seconds": 606.9
+   },
+   "segmentation_import": {
+    "kind": "saved_model_segmentation",
+    "sha256": "893ac960dbfbe0220f614b5706fd268f52b03b05e6fea46f412c8f915e9539cd",
+    "provenance": {
+     "source_batch": "minimal-validation-20261120",
+     "source_code_heads": {
+      "readsheet": "4ba93298a43a6da5e32238a6dee7afd1e3be6846",
+      "placement": "eb43f65ca18b460fead36f138f3423511acf989d"
+     },
+     "source_snapshots": {
+      "readsheet": "64944fa6b0e0a2fb972910db6d91fddc1a27f06e932573e35afc4221c299758d",
+      "placement": "c7d92ce9ae73f9fc9824e58566e80f62c89627f11b7440857b8cfa7d301e3e95"
+     },
+     "source_had_uncommitted_changes": {
+      "readsheet": true,
+      "placement": false
+     }
+    },
+    "source_was_cli": false
+   }
+  }
+ ]
+}

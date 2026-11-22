@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 23.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 23431,
+  "cached_input_tokens": 18624,
+  "output_tokens": 67,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@18.5-43.4（context box，有聲音；片段內 00:00 ＝ 影片 00:18.5）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [19.5, 34.0], \"region\": [0.5, 0.7, 0.9, 1.0], \"reason\": \"確認治療車右下方白色紙張是否為給藥紀錄單\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 92.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 24646,
+  "cached_input_tokens": 0,
+  "output_tokens": 1063,
+  "thinking_tokens": 701,
+  "materials": [
+   "clip@18.5-43.4（context box，有聲音；片段內 00:00 ＝ 影片 00:18.5）",
+   "zoom@19.5/34 region=[0.500, 0.700, 0.900, 1.000]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4a\", \"verdict\": \"正確\", \"explanation\": \"於 00:20.5–00:32.0（clip@18.5-43.4 片段內 00:02.0–00:13.5）雙手持 vial 藥瓶並低頭查看治療車檯面前緣的給藥紀錄單進行核對，累計查看時間為 11.5 秒，已達 10 秒以上。\", \"times\": [[20.5, 32.0]], \"evidence\": [\"clip@18.5-43.4\", \"zoom@19.5\", \"zoom@34\"], \"confidence\": 0.85, \"reason\": null}, {\"criterion_id\": \"4b\", \"verdict\": \"錯誤\", \"explanation\": \"於 00:20.5–00:32.0（clip@18.5-43.4 片段內 00:02.0–00:13.5）持藥瓶查看給藥紀錄單核對期間，雙手皆持握藥瓶於胸前（00:31.5 左手僅指向手中藥瓶），全程未用手指指出檯面上的給藥紀錄單。\", \"times\": [[20.5, 32.0]], \"evidence\": [\"clip@18.5-43.4\", \"zoom@19.5\", \"zoom@34\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

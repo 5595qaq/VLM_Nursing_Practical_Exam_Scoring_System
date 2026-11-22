@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 47.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 20382,
+  "cached_input_tokens": 0,
+  "output_tokens": 207,
+  "thinking_tokens": 136,
+  "materials": [
+   "ov@27.5-120.5（hands_box，n=9）#0=00:27.5、#1=00:39.1、#2=00:50.8、#3=01:02.4、#4=01:14.0、#5=01:25.6、#6=01:37.2、#7=01:48.9、#8=02:00.5"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 40.0, \"end\": 70.0, \"fps\": 2, \"reason\": \"查看 00:40–01:10 期間拿起稀釋液檢查效期與有無異物的完整動作與起訖時間\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 161.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 25977,
+  "cached_input_tokens": 18624,
+  "output_tokens": 161,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@27.5-120.5（hands_box，n=9）#0=00:27.5、#1=00:39.1、#2=00:50.8、#3=01:02.4、#4=01:14.0、#5=01:25.6、#6=01:37.2、#7=01:48.9、#8=02:00.5",
+   "clip@40-70（context box，有聲音；片段內 00:00 ＝ 影片 00:40.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4d\", \"verdict\": \"正確\", \"explanation\": \"於 00:48.5–00:53.0（clip@40-70 片段內 00:08.5–00:13.0）拿起稀釋液瓶至胸前轉動檢視瓶身標示與液體，完成檢查後放回桌面。\", \"times\": [[48.5, 53.0]], \"evidence\": [\"ov@27.5-120.5 #2\", \"clip@40-70\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

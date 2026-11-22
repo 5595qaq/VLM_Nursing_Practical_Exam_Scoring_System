@@ -1,0 +1,994 @@
+{
+  "readsheet": {
+    "original_head": "4ba93298a43a6da5e32238a6dee7afd1e3be6846",
+    "source_had_uncommitted_changes": true,
+    "original_snapshot_sha256": "64944fa6b0e0a2fb972910db6d91fddc1a27f06e932573e35afc4221c299758d",
+    "files": {
+      "backend/app/bootstrap.py": {
+        "sha256": "6bd724098fedf10718e362ea213e28c018b43a18b9892d28c7402502893c360d",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/backend/app/bootstrap.py"
+      },
+      "backend/app/config.py": {
+        "sha256": "e41620722864e21f54071cda7a800f0d678b627afda8427b01860ff41938d5c7",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/backend/app/config.py"
+      },
+      "backend/app/db.py": {
+        "sha256": "c1f91127d075e18e2392df6ef72617f4f0870ec0fe59166e7fa1cfe510efbd76",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/backend/app/db.py"
+      },
+      "backend/app/gazelle_worker.py": {
+        "sha256": "4fc6da4af9826d327da0f751193ad32cc0d51ad8ea5cd2368fe3874983b02faa",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/backend/app/gazelle_worker.py"
+      },
+      "backend/app/main.py": {
+        "sha256": "e5686c880b36487655076e01fe665ab82df0e410ad57a9e052ac6938bb3f7cb9",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/backend/app/main.py"
+      },
+      "backend/app/sop_grading_cli.py": {
+        "sha256": "eab9d7243938ac96df5ce0735aa54ee339e8da1c7ffc81c70f51b7799e8762e3",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/backend/app/sop_grading_cli.py"
+      },
+      "backend/app/worker.py": {
+        "sha256": "cae20db684ef09374bbbfb59618f098452dee0007e38e81edd29586fd8b2b5a0",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/backend/app/worker.py"
+      },
+      "backend/app/ws_manager.py": {
+        "sha256": "5fa2069b30e19c412ca21729fbb90fc02f28586cd9614e2f71f873ff436362af",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/backend/app/ws_manager.py"
+      },
+      "backend/app/api/endpoints/evaluations.py": {
+        "sha256": "af029dc08b36e3ed13d2914b05b60a6596dd0501238988dd191a76fc6b909cdd",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/backend/app/api/endpoints/evaluations.py"
+      },
+      "backend/app/api/endpoints/uploads.py": {
+        "sha256": "259a433587732ecff67182cad60406472d9dd46bd540898a0771d22a67bc23e5",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/backend/app/api/endpoints/uploads.py"
+      },
+      "backend/app/models/evaluation.py": {
+        "sha256": "a6287417a51ebe247947dc0b56b1282033bd21c0fd744f29668b6fd0c910f90f",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/backend/app/models/evaluation.py"
+      },
+      "backend/app/prompts/Agent_A.txt": {
+        "sha256": "1d5bc16c165836cf1f33b5028b263467c15bba5d9cea8753c05f85579782f349",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/backend/app/prompts/Agent_A.txt"
+      },
+      "backend/app/prompts/Agent_B.txt": {
+        "sha256": "f4070b60c6c1effa5102b368d10d55a71452edee1ae276a10e8349602cd71cd2",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/backend/app/prompts/Agent_B.txt"
+      },
+      "backend/app/prompts/Agent_C.txt": {
+        "sha256": "f8a33aaf4de4fa2389a7127b8db256615d6afa1062cf9a010e7e0a327d76d92d",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/backend/app/prompts/Agent_C.txt"
+      },
+      "backend/app/prompts/Agent_D.txt": {
+        "sha256": "be5bfbbb9deb01ada090fc62c72facafcdd873f7530949639ed719fe18694153",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/backend/app/prompts/Agent_D.txt"
+      },
+      "backend/app/prompts/Time_cuting.txt": {
+        "sha256": "34d070306bf3a7ca076d0f25faba0883a1dd01d060961210f0b435289dfe2437",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/backend/app/prompts/Time_cuting.txt"
+      },
+      "backend/app/schemas/evaluation.py": {
+        "sha256": "c7f79049ec4415181637d26b79faad0df3f39a9dc40c566992180499c756e781",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/backend/app/schemas/evaluation.py"
+      },
+      "backend/app/services/agents.py": {
+        "sha256": "800e910c56d92b8c6294ddeaf9b5183a7107a0a30382295042641da1b3212e28",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/backend/app/services/agents.py"
+      },
+      "backend/app/services/evaluation_queue.py": {
+        "sha256": "2355a4f9986c38fb9b14ea8f587d7c3ee7ad5e389fb69a5313414011e4697a10",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/backend/app/services/evaluation_queue.py"
+      },
+      "backend/app/services/gazelle_service.py": {
+        "sha256": "d66ff213cb5a49bbcfeee27f7adb09f6544657bf7bc4d36e682fb0d44d2917ae",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/backend/app/services/gazelle_service.py"
+      },
+      "backend/app/services/gcs_service.py": {
+        "sha256": "7d0290cb4a02b552a31ae2cca70d58c1486de8e903dc1183186e9932d67a4797",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/backend/app/services/gcs_service.py"
+      },
+      "backend/app/services/gemini_service.py": {
+        "sha256": "47df8639741b380be0bde3b67ff2f36ad10ea662867692bc94f273963457aaa2",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/backend/app/services/gemini_service.py"
+      },
+      "backend/app/services/model_logging.py": {
+        "sha256": "654a769c80aae7008ffe4be61e8486cc379e24c1fd044549c295596ee3ce5698",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/backend/app/services/model_logging.py"
+      },
+      "backend/app/services/sop_checkpoint.py": {
+        "sha256": "0e83c80cb00d865d5fe382b09c73a809c9368e405ba36bcd2493ca3bd69025e2",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/backend/app/services/sop_checkpoint.py"
+      },
+      "backend/app/services/sop_grading_service.py": {
+        "sha256": "ca9c67e4abf0401c035e1b80cf92cf91e3aa72201f05d66546b71b895c058770",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/backend/app/services/sop_grading_service.py"
+      },
+      "backend/app/services/sop_run_bundle.py": {
+        "sha256": "706138d99e3586d1e80a54dd9f9c004692d9ab51834c0b884d31c24c9a12b0aa",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/backend/app/services/sop_run_bundle.py"
+      },
+      "backend/app/services/sop_skill_service.py": {
+        "sha256": "8d074325155fbfc45413b9edf675dc267af25a2f90988cc37d0dcde772486bff",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/backend/app/services/sop_skill_service.py"
+      },
+      "backend/app/services/usage.py": {
+        "sha256": "0d8562178da266e64a90f5711a3f6ab03ce404bb04b6c7000cf0128e1e367509",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/backend/app/services/usage.py"
+      },
+      "backend/app/services/video_service.py": {
+        "sha256": "c911fe28dbac015b526e99b646e69806d8a428b7a347864d902e21df8f3ca855",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/backend/app/services/video_service.py"
+      },
+      "sop-video-grading/actions.schema.json": {
+        "sha256": "40d863f167ea79d722be93be911f4f9932c08f79146ef4f0c893eef8cd6fa9e2",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-grading/actions.schema.json"
+      },
+      "sop-video-grading/CHANGELOG.md": {
+        "sha256": "bb0f5672cc463b2e47c69382a81ea1625c75783a092281192460c4867c0c37d2",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-grading/CHANGELOG.md"
+      },
+      "sop-video-grading/EXPERIMENTS.md": {
+        "sha256": "0360a875a011ed5a2c4308d94a0a3ab5699d7f72fa769acd6e5ff888adfa8720",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-grading/EXPERIMENTS.md"
+      },
+      "sop-video-grading/rubric.json": {
+        "sha256": "566706690efff78e7e4c8de44f8f8351d308e56b72b8fcee55b2b287e85e3f97",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-grading/rubric.json"
+      },
+      "sop-video-grading/schema.json": {
+        "sha256": "bc512a47334e868a81e548fae2f235df8e203bcdb174c7d7c065090ef151142f",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-grading/schema.json"
+      },
+      "sop-video-grading/SKILL.md": {
+        "sha256": "ad2ce106121a9a02c9f6d71e42d32443499a249efc6ba0d133601aae7f5f5317",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-grading/SKILL.md"
+      },
+      "sop-video-grading/criteria/01-hand-washing.md": {
+        "sha256": "0075e8b7aa375201ddace9d0606e0355165d819113173d03a1e0e0c87b4f4060",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-grading/criteria/01-hand-washing.md"
+      },
+      "sop-video-grading/criteria/02-drug-sheet.md": {
+        "sha256": "2c92feffd2077c1424cd77eb742e45407320c9192700540fe480244c32c7cdb8",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-grading/criteria/02-drug-sheet.md"
+      },
+      "sop-video-grading/criteria/03-drug-check.md": {
+        "sha256": "95be064116089cff6d27a140803d29a50bd271ce9f06c1e25527dcf2804bbe19",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-grading/criteria/03-drug-check.md"
+      },
+      "sop-video-grading/criteria/04-needle-down-13b.md": {
+        "sha256": "ba69b8cf09edff29306fdbdefbfdfeb980bf0b791fc8eac47e2ebee3827bbb76",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-grading/criteria/04-needle-down-13b.md"
+      },
+      "sop-video-grading/criteria/05-flick.md": {
+        "sha256": "145a251a9a96fe97866e8c3acb42a89f604b8a2f5cc57ee2c837b22c702ed89f",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-grading/criteria/05-flick.md"
+      },
+      "sop-video-grading/criteria/06-plunger.md": {
+        "sha256": "6b428fbf0dd47e6d0f1f13e5312652ca3fbc50622f2b335d4c6253a79c7fc12d",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-grading/criteria/06-plunger.md"
+      },
+      "sop-video-grading/criteria/07-rolling-20a.md": {
+        "sha256": "0f9894c268c837c0c605b14b4d5a7fcdc70e84ae0b2d07b1bac5a5bdb72208dc",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-grading/criteria/07-rolling-20a.md"
+      },
+      "sop-video-grading/criteria/08-hand-posture.md": {
+        "sha256": "77be1f1d3b21a52d4b5e77856bfa357bee24ebdddc4e686b73f5c4817ec2c7ac",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-grading/criteria/08-hand-posture.md"
+      },
+      "sop-video-grading/criteria/09-disposal.md": {
+        "sha256": "03822c2a3f002174cf1dd8d1675f35e7a61f5e10d1470c162ec6dc784dfda034",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-grading/criteria/09-disposal.md"
+      },
+      "sop-video-grading/criteria/10-presence.md": {
+        "sha256": "872a5ea8b2da4944001bb1faafe6cb0de54790c90e5f52c72e58e56cff4ddd34",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-grading/criteria/10-presence.md"
+      },
+      "sop-video-grading/criteria/README.md": {
+        "sha256": "883b0e962bb764bf9e36df6da07a4c1fbf3e89ac231f1519a3130ccf38b69f6c",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-grading/criteria/README.md"
+      },
+      "sop-video-grading/scripts/audio_peaks.py": {
+        "sha256": "f8200ca2c23da17e7f68215301bba4bab087f503276689efa5b1e1db05ef63aa",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-grading/scripts/audio_peaks.py"
+      },
+      "sop-video-grading/scripts/burst.py": {
+        "sha256": "947bf968100f8b72315ab0392d1aa0fa03948dcac84882c25f21ad669cc75947",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-grading/scripts/burst.py"
+      },
+      "sop-video-grading/scripts/check_versions.py": {
+        "sha256": "bc30aa756a00c27b009cca6a66b226578a9a7a89f4fbd321b8826721cb217c11",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-grading/scripts/check_versions.py"
+      },
+      "sop-video-grading/scripts/clip.py": {
+        "sha256": "b7b210717afe1f52812ee22dc0181ef9f00760113e8f5fd00c291d4c3a786fa6",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-grading/scripts/clip.py"
+      },
+      "sop-video-grading/scripts/compare_arms.py": {
+        "sha256": "d5622ec0ba83e1d2ac328fbb0f3437784aa3368068b31c1c3d508f99cfdad9d6",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-grading/scripts/compare_arms.py"
+      },
+      "sop-video-grading/scripts/eval_grading.py": {
+        "sha256": "d8806c695a8679a2808370c8bdde166ac042434f30f85e228217f043d53cb0a8",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-grading/scripts/eval_grading.py"
+      },
+      "sop-video-grading/scripts/git_commit.py": {
+        "sha256": "c74dc3e5669f2f9e4fb189766bba89f0ee1e58aca6d63c970481c9214e5cf62d",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-grading/scripts/git_commit.py"
+      },
+      "sop-video-grading/scripts/labels_to_segmentation.py": {
+        "sha256": "e5b7c59741bd154a2d81578057f77210bc7e1b24b7c767e48866a64610b7f998",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-grading/scripts/labels_to_segmentation.py"
+      },
+      "sop-video-grading/scripts/motion_peaks.py": {
+        "sha256": "cac63430ff52644282273d2651b3773dccb4f16c1e5ff7b99a9422bc8a34ccf4",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-grading/scripts/motion_peaks.py"
+      },
+      "sop-video-grading/scripts/review_page.py": {
+        "sha256": "0740998e134cf9d181b34f4f2d2e9d461cea3a8e19138ec7d7fb93357d4a6061",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-grading/scripts/review_page.py"
+      },
+      "sop-video-grading/scripts/rubric.py": {
+        "sha256": "60e82b201fbfe34a032afa6cfd8fe176053475c2193018dc39d8470be6cde50c",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-grading/scripts/rubric.py"
+      },
+      "sop-video-grading/scripts/rules.py": {
+        "sha256": "9f55cd2f1e7a5d0a877cd70cc1d4eee8fd3d62fe2793683b57cfcd3d044bb48f",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-grading/scripts/rules.py"
+      },
+      "sop-video-grading/scripts/run_record.py": {
+        "sha256": "607a5c23875002b92705d7001e860d01f83a91a907f619793f8872f44376ccae",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-grading/scripts/run_record.py"
+      },
+      "sop-video-grading/scripts/skill_doc.py": {
+        "sha256": "6bc9fb42f81e48a64189aa21485c9a9cfefe2f3b7ef4643ed05ab5bb700c6736",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-grading/scripts/skill_doc.py"
+      },
+      "sop-video-grading/scripts/validate_grading.py": {
+        "sha256": "684e93ff6b9ac99be1c04a820aef898b80d361727c280c60790dd4c3d52eab68",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-grading/scripts/validate_grading.py"
+      },
+      "sop-video-grading/scripts/validate_grading_action.py": {
+        "sha256": "b3a01c6bd747da3476beca92d0246b34d04d40981121ece18512873a816073e4",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-grading/scripts/validate_grading_action.py"
+      },
+      "sop-video-skill/actions.schema.json": {
+        "sha256": "a8218dcb33c8cb0183d4788aae0ad8fd38063199f49ce7307ac2e1560309dc54",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-skill/actions.schema.json"
+      },
+      "sop-video-skill/CHANGELOG.md": {
+        "sha256": "29a29728f62d3f444c7a050f7076751bb221389a2de59dee8fe8b2f513421491",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-skill/CHANGELOG.md"
+      },
+      "sop-video-skill/schema.json": {
+        "sha256": "7f06c2e9f4d9793c80ddb7b50ece93b11e2fa579bd27909dbafeaefd53aabf05",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-skill/schema.json"
+      },
+      "sop-video-skill/SKILL.md": {
+        "sha256": "90119b1145e7431e1e986fdb5182edc4005b05ae512ca8091b98afea1aa703f7",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-skill/SKILL.md"
+      },
+      "sop-video-skill/references/sop_steps.md": {
+        "sha256": "1f8149038c3e209a9f521428516de49ab562f8bc053bf50de49c444c39ad1b44",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-skill/references/sop_steps.md"
+      },
+      "sop-video-skill/scripts/crop.py": {
+        "sha256": "6c843d13d7f2784067df1a36a1b3f7f5bbc5891e76402e2d1463b59991cfa9d7",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-skill/scripts/crop.py"
+      },
+      "sop-video-skill/scripts/draft.py": {
+        "sha256": "81197fe348b0bda8a66e4f63562ad4f7b97ca4ffec4d2f43a90e77669d34f128",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-skill/scripts/draft.py"
+      },
+      "sop-video-skill/scripts/eval.py": {
+        "sha256": "2c0e03fcf73dabbe620eb5ce31134c8ce147a1fb13c8b0d5b4eb1213ddef1f53",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-skill/scripts/eval.py"
+      },
+      "sop-video-skill/scripts/grid_overlay.py": {
+        "sha256": "69036129c2807803676bb4baecb15083488532d5ff31b4c478eab10abbcfc6a8",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-skill/scripts/grid_overlay.py"
+      },
+      "sop-video-skill/scripts/motion.py": {
+        "sha256": "f06623d63861c1f7b91d538cb81f861502740c9658fdf64baaf7a76a0998668a",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-skill/scripts/motion.py"
+      },
+      "sop-video-skill/scripts/prepare.py": {
+        "sha256": "abb3574aa5f995d63d9eeee13505af91d669820841fbc73d50c6c5a8310d8131",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-skill/scripts/prepare.py"
+      },
+      "sop-video-skill/scripts/schema_tools.py": {
+        "sha256": "f9a86e251bbeea82f9a066d8a180fa70fc3d8b9b560a7294a37e857fb14724d9",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-skill/scripts/schema_tools.py"
+      },
+      "sop-video-skill/scripts/sequence_check.py": {
+        "sha256": "b098fd5374e4f621e10b7aa323ab6c41265de34aa259323b15c643308d351507",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-skill/scripts/sequence_check.py"
+      },
+      "sop-video-skill/scripts/sheets.py": {
+        "sha256": "e8d68f044eb0da68c8e6e4105a6a653a70685708acb54697fe47c41ea3ce5025",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-skill/scripts/sheets.py"
+      },
+      "sop-video-skill/scripts/validate_action.py": {
+        "sha256": "b0bdc2f8c12e4f20d952574a7ba3ef31c9fa8326c6c413759d350c412dddeb75",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-skill/scripts/validate_action.py"
+      },
+      "sop-video-skill/scripts/validate_result.py": {
+        "sha256": "85a503f484624f707291eccf54a982a15fa51ba1ac154318147e3f69a05475b0",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-skill/scripts/validate_result.py"
+      },
+      "sop-video-skill/scripts/_video.py": {
+        "sha256": "0c64ef7cabae2b62e7a8d55b76f05fb99dcb589e70158ad79e39e65a7c749109",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/readsheet/sop-video-skill/scripts/_video.py"
+      }
+    }
+  },
+  "placement": {
+    "original_head": "eb43f65ca18b460fead36f138f3423511acf989d",
+    "source_had_uncommitted_changes": false,
+    "original_snapshot_sha256": "c7d92ce9ae73f9fc9824e58566e80f62c89627f11b7440857b8cfa7d301e3e95",
+    "files": {
+      "backend/app/bootstrap.py": {
+        "sha256": "6bd724098fedf10718e362ea213e28c018b43a18b9892d28c7402502893c360d",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/backend/app/bootstrap.py"
+      },
+      "backend/app/config.py": {
+        "sha256": "e41620722864e21f54071cda7a800f0d678b627afda8427b01860ff41938d5c7",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/backend/app/config.py"
+      },
+      "backend/app/db.py": {
+        "sha256": "c1f91127d075e18e2392df6ef72617f4f0870ec0fe59166e7fa1cfe510efbd76",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/backend/app/db.py"
+      },
+      "backend/app/gazelle_worker.py": {
+        "sha256": "4fc6da4af9826d327da0f751193ad32cc0d51ad8ea5cd2368fe3874983b02faa",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/backend/app/gazelle_worker.py"
+      },
+      "backend/app/main.py": {
+        "sha256": "e5686c880b36487655076e01fe665ab82df0e410ad57a9e052ac6938bb3f7cb9",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/backend/app/main.py"
+      },
+      "backend/app/sop_grading_cli.py": {
+        "sha256": "eab9d7243938ac96df5ce0735aa54ee339e8da1c7ffc81c70f51b7799e8762e3",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/backend/app/sop_grading_cli.py"
+      },
+      "backend/app/worker.py": {
+        "sha256": "cae20db684ef09374bbbfb59618f098452dee0007e38e81edd29586fd8b2b5a0",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/backend/app/worker.py"
+      },
+      "backend/app/ws_manager.py": {
+        "sha256": "5fa2069b30e19c412ca21729fbb90fc02f28586cd9614e2f71f873ff436362af",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/backend/app/ws_manager.py"
+      },
+      "backend/app/api/endpoints/evaluations.py": {
+        "sha256": "af029dc08b36e3ed13d2914b05b60a6596dd0501238988dd191a76fc6b909cdd",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/backend/app/api/endpoints/evaluations.py"
+      },
+      "backend/app/api/endpoints/uploads.py": {
+        "sha256": "259a433587732ecff67182cad60406472d9dd46bd540898a0771d22a67bc23e5",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/backend/app/api/endpoints/uploads.py"
+      },
+      "backend/app/models/evaluation.py": {
+        "sha256": "a6287417a51ebe247947dc0b56b1282033bd21c0fd744f29668b6fd0c910f90f",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/backend/app/models/evaluation.py"
+      },
+      "backend/app/prompts/Agent_A.txt": {
+        "sha256": "1d5bc16c165836cf1f33b5028b263467c15bba5d9cea8753c05f85579782f349",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/backend/app/prompts/Agent_A.txt"
+      },
+      "backend/app/prompts/Agent_B.txt": {
+        "sha256": "f4070b60c6c1effa5102b368d10d55a71452edee1ae276a10e8349602cd71cd2",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/backend/app/prompts/Agent_B.txt"
+      },
+      "backend/app/prompts/Agent_C.txt": {
+        "sha256": "f8a33aaf4de4fa2389a7127b8db256615d6afa1062cf9a010e7e0a327d76d92d",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/backend/app/prompts/Agent_C.txt"
+      },
+      "backend/app/prompts/Agent_D.txt": {
+        "sha256": "be5bfbbb9deb01ada090fc62c72facafcdd873f7530949639ed719fe18694153",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/backend/app/prompts/Agent_D.txt"
+      },
+      "backend/app/prompts/Time_cuting.txt": {
+        "sha256": "34d070306bf3a7ca076d0f25faba0883a1dd01d060961210f0b435289dfe2437",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/backend/app/prompts/Time_cuting.txt"
+      },
+      "backend/app/schemas/evaluation.py": {
+        "sha256": "c7f79049ec4415181637d26b79faad0df3f39a9dc40c566992180499c756e781",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/backend/app/schemas/evaluation.py"
+      },
+      "backend/app/services/agents.py": {
+        "sha256": "800e910c56d92b8c6294ddeaf9b5183a7107a0a30382295042641da1b3212e28",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/backend/app/services/agents.py"
+      },
+      "backend/app/services/evaluation_queue.py": {
+        "sha256": "2355a4f9986c38fb9b14ea8f587d7c3ee7ad5e389fb69a5313414011e4697a10",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/backend/app/services/evaluation_queue.py"
+      },
+      "backend/app/services/gazelle_service.py": {
+        "sha256": "d66ff213cb5a49bbcfeee27f7adb09f6544657bf7bc4d36e682fb0d44d2917ae",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/backend/app/services/gazelle_service.py"
+      },
+      "backend/app/services/gcs_service.py": {
+        "sha256": "7d0290cb4a02b552a31ae2cca70d58c1486de8e903dc1183186e9932d67a4797",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/backend/app/services/gcs_service.py"
+      },
+      "backend/app/services/gemini_service.py": {
+        "sha256": "47df8639741b380be0bde3b67ff2f36ad10ea662867692bc94f273963457aaa2",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/backend/app/services/gemini_service.py"
+      },
+      "backend/app/services/model_logging.py": {
+        "sha256": "654a769c80aae7008ffe4be61e8486cc379e24c1fd044549c295596ee3ce5698",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/backend/app/services/model_logging.py"
+      },
+      "backend/app/services/sop_checkpoint.py": {
+        "sha256": "0e83c80cb00d865d5fe382b09c73a809c9368e405ba36bcd2493ca3bd69025e2",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/backend/app/services/sop_checkpoint.py"
+      },
+      "backend/app/services/sop_grading_service.py": {
+        "sha256": "d08e54117fe1817415ba84a29a3ec0d1fb70f6c75505f87f6da2e817786f09ac",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/backend/app/services/sop_grading_service.py"
+      },
+      "backend/app/services/sop_run_bundle.py": {
+        "sha256": "706138d99e3586d1e80a54dd9f9c004692d9ab51834c0b884d31c24c9a12b0aa",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/backend/app/services/sop_run_bundle.py"
+      },
+      "backend/app/services/sop_skill_service.py": {
+        "sha256": "764eedad2998f88cf90205a923de2cae303a9e09352a216deae3698170cf7ac7",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/backend/app/services/sop_skill_service.py"
+      },
+      "backend/app/services/usage.py": {
+        "sha256": "0d8562178da266e64a90f5711a3f6ab03ce404bb04b6c7000cf0128e1e367509",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/backend/app/services/usage.py"
+      },
+      "backend/app/services/video_service.py": {
+        "sha256": "c911fe28dbac015b526e99b646e69806d8a428b7a347864d902e21df8f3ca855",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/backend/app/services/video_service.py"
+      },
+      "sop-video-grading/actions.schema.json": {
+        "sha256": "40d863f167ea79d722be93be911f4f9932c08f79146ef4f0c893eef8cd6fa9e2",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-grading/actions.schema.json"
+      },
+      "sop-video-grading/CHANGELOG.md": {
+        "sha256": "fb4542af258d8d9e8f14ae7c97d01874219ab431622ebef59d5e70cec7b9f54e",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-grading/CHANGELOG.md"
+      },
+      "sop-video-grading/EXPERIMENTS.md": {
+        "sha256": "0360a875a011ed5a2c4308d94a0a3ab5699d7f72fa769acd6e5ff888adfa8720",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-grading/EXPERIMENTS.md"
+      },
+      "sop-video-grading/rubric.json": {
+        "sha256": "bbbde2d21d8b6629f46cc1190acb65d451f88b73b5d4be4c9f4a95e0c4b5b1fb",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-grading/rubric.json"
+      },
+      "sop-video-grading/schema.json": {
+        "sha256": "bc512a47334e868a81e548fae2f235df8e203bcdb174c7d7c065090ef151142f",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-grading/schema.json"
+      },
+      "sop-video-grading/SKILL.md": {
+        "sha256": "d49cf13a679102fa00ee4e19b1fa2b0b23a4f33ca8b560f4c760648201202f47",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-grading/SKILL.md"
+      },
+      "sop-video-grading/criteria/01-hand-washing.md": {
+        "sha256": "1d480e09001d4d46b442db893eb56b638b0c159847ac67d02b84a6122a7bad6a",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-grading/criteria/01-hand-washing.md"
+      },
+      "sop-video-grading/criteria/02-drug-sheet.md": {
+        "sha256": "c4e4b8233e6340ff7625483e656e8903acb3f65acf4b3b35583208d23925deff",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-grading/criteria/02-drug-sheet.md"
+      },
+      "sop-video-grading/criteria/03-drug-check.md": {
+        "sha256": "95be064116089cff6d27a140803d29a50bd271ce9f06c1e25527dcf2804bbe19",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-grading/criteria/03-drug-check.md"
+      },
+      "sop-video-grading/criteria/04-needle-down-13b.md": {
+        "sha256": "ba69b8cf09edff29306fdbdefbfdfeb980bf0b791fc8eac47e2ebee3827bbb76",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-grading/criteria/04-needle-down-13b.md"
+      },
+      "sop-video-grading/criteria/05-flick.md": {
+        "sha256": "145a251a9a96fe97866e8c3acb42a89f604b8a2f5cc57ee2c837b22c702ed89f",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-grading/criteria/05-flick.md"
+      },
+      "sop-video-grading/criteria/06-plunger.md": {
+        "sha256": "6b428fbf0dd47e6d0f1f13e5312652ca3fbc50622f2b335d4c6253a79c7fc12d",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-grading/criteria/06-plunger.md"
+      },
+      "sop-video-grading/criteria/07-rolling-20a.md": {
+        "sha256": "0f9894c268c837c0c605b14b4d5a7fcdc70e84ae0b2d07b1bac5a5bdb72208dc",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-grading/criteria/07-rolling-20a.md"
+      },
+      "sop-video-grading/criteria/08-hand-posture.md": {
+        "sha256": "77be1f1d3b21a52d4b5e77856bfa357bee24ebdddc4e686b73f5c4817ec2c7ac",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-grading/criteria/08-hand-posture.md"
+      },
+      "sop-video-grading/criteria/09-disposal.md": {
+        "sha256": "a53c8775869248a5f17a704bc44be9fe04f4ad217204a40d019e163a226452e7",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-grading/criteria/09-disposal.md"
+      },
+      "sop-video-grading/criteria/10-presence.md": {
+        "sha256": "872a5ea8b2da4944001bb1faafe6cb0de54790c90e5f52c72e58e56cff4ddd34",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-grading/criteria/10-presence.md"
+      },
+      "sop-video-grading/criteria/README.md": {
+        "sha256": "883b0e962bb764bf9e36df6da07a4c1fbf3e89ac231f1519a3130ccf38b69f6c",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-grading/criteria/README.md"
+      },
+      "sop-video-grading/scripts/audio_peaks.py": {
+        "sha256": "f8200ca2c23da17e7f68215301bba4bab087f503276689efa5b1e1db05ef63aa",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-grading/scripts/audio_peaks.py"
+      },
+      "sop-video-grading/scripts/burst.py": {
+        "sha256": "947bf968100f8b72315ab0392d1aa0fa03948dcac84882c25f21ad669cc75947",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-grading/scripts/burst.py"
+      },
+      "sop-video-grading/scripts/check_versions.py": {
+        "sha256": "bc30aa756a00c27b009cca6a66b226578a9a7a89f4fbd321b8826721cb217c11",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-grading/scripts/check_versions.py"
+      },
+      "sop-video-grading/scripts/clip.py": {
+        "sha256": "b7b210717afe1f52812ee22dc0181ef9f00760113e8f5fd00c291d4c3a786fa6",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-grading/scripts/clip.py"
+      },
+      "sop-video-grading/scripts/compare_arms.py": {
+        "sha256": "d5622ec0ba83e1d2ac328fbb0f3437784aa3368068b31c1c3d508f99cfdad9d6",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-grading/scripts/compare_arms.py"
+      },
+      "sop-video-grading/scripts/eval_grading.py": {
+        "sha256": "d8806c695a8679a2808370c8bdde166ac042434f30f85e228217f043d53cb0a8",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-grading/scripts/eval_grading.py"
+      },
+      "sop-video-grading/scripts/git_commit.py": {
+        "sha256": "c74dc3e5669f2f9e4fb189766bba89f0ee1e58aca6d63c970481c9214e5cf62d",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-grading/scripts/git_commit.py"
+      },
+      "sop-video-grading/scripts/labels_to_segmentation.py": {
+        "sha256": "e5b7c59741bd154a2d81578057f77210bc7e1b24b7c767e48866a64610b7f998",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-grading/scripts/labels_to_segmentation.py"
+      },
+      "sop-video-grading/scripts/motion_peaks.py": {
+        "sha256": "cac63430ff52644282273d2651b3773dccb4f16c1e5ff7b99a9422bc8a34ccf4",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-grading/scripts/motion_peaks.py"
+      },
+      "sop-video-grading/scripts/review_page.py": {
+        "sha256": "0740998e134cf9d181b34f4f2d2e9d461cea3a8e19138ec7d7fb93357d4a6061",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-grading/scripts/review_page.py"
+      },
+      "sop-video-grading/scripts/rubric.py": {
+        "sha256": "bfc7deb9414556070fc3973192d19cc168e12de2b4e7d2255355efcc88fe71c8",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-grading/scripts/rubric.py"
+      },
+      "sop-video-grading/scripts/rules.py": {
+        "sha256": "93d2e94f08adf782226169df71836f3e525586c71ba13fefcd07ad858d4f4732",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-grading/scripts/rules.py"
+      },
+      "sop-video-grading/scripts/run_record.py": {
+        "sha256": "607a5c23875002b92705d7001e860d01f83a91a907f619793f8872f44376ccae",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-grading/scripts/run_record.py"
+      },
+      "sop-video-grading/scripts/skill_doc.py": {
+        "sha256": "6bc9fb42f81e48a64189aa21485c9a9cfefe2f3b7ef4643ed05ab5bb700c6736",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-grading/scripts/skill_doc.py"
+      },
+      "sop-video-grading/scripts/validate_grading.py": {
+        "sha256": "f5cdeaf2aa53ee996cc84a76bc9fb9406a66410723eaf2411eab6f000773e013",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-grading/scripts/validate_grading.py"
+      },
+      "sop-video-grading/scripts/validate_grading_action.py": {
+        "sha256": "395b5089dc2d23882d72561dcd121aff17ebb4715f1b586479821dbced53f962",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-grading/scripts/validate_grading_action.py"
+      },
+      "sop-video-skill/actions.schema.json": {
+        "sha256": "a8218dcb33c8cb0183d4788aae0ad8fd38063199f49ce7307ac2e1560309dc54",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-skill/actions.schema.json"
+      },
+      "sop-video-skill/CHANGELOG.md": {
+        "sha256": "7a10c0c856e4e8c3af192fa625e29cf404fb4a2e9549fb70cca665acf8a66d7f",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-skill/CHANGELOG.md"
+      },
+      "sop-video-skill/schema.json": {
+        "sha256": "7f06c2e9f4d9793c80ddb7b50ece93b11e2fa579bd27909dbafeaefd53aabf05",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-skill/schema.json"
+      },
+      "sop-video-skill/SKILL.md": {
+        "sha256": "d77ad9808101cc63a38be0f2930917865e68c5ccf7af4a0c1fe21b006e0f359d",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-skill/SKILL.md"
+      },
+      "sop-video-skill/references/sop_steps.md": {
+        "sha256": "6f36361e759a1e99aeac160c85e6768cdded76b3e04ba964af7fd0f713756f60",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-skill/references/sop_steps.md"
+      },
+      "sop-video-skill/scripts/crop.py": {
+        "sha256": "6c843d13d7f2784067df1a36a1b3f7f5bbc5891e76402e2d1463b59991cfa9d7",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-skill/scripts/crop.py"
+      },
+      "sop-video-skill/scripts/draft.py": {
+        "sha256": "a203aa776435502430a648b779c1fc6e6db9466e5d3944b94cf856aeb8da54cd",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-skill/scripts/draft.py"
+      },
+      "sop-video-skill/scripts/eval.py": {
+        "sha256": "2c0e03fcf73dabbe620eb5ce31134c8ce147a1fb13c8b0d5b4eb1213ddef1f53",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-skill/scripts/eval.py"
+      },
+      "sop-video-skill/scripts/grid_overlay.py": {
+        "sha256": "69036129c2807803676bb4baecb15083488532d5ff31b4c478eab10abbcfc6a8",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-skill/scripts/grid_overlay.py"
+      },
+      "sop-video-skill/scripts/motion.py": {
+        "sha256": "f06623d63861c1f7b91d538cb81f861502740c9658fdf64baaf7a76a0998668a",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-skill/scripts/motion.py"
+      },
+      "sop-video-skill/scripts/prepare.py": {
+        "sha256": "abb3574aa5f995d63d9eeee13505af91d669820841fbc73d50c6c5a8310d8131",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-skill/scripts/prepare.py"
+      },
+      "sop-video-skill/scripts/schema_tools.py": {
+        "sha256": "f9a86e251bbeea82f9a066d8a180fa70fc3d8b9b560a7294a37e857fb14724d9",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-skill/scripts/schema_tools.py"
+      },
+      "sop-video-skill/scripts/sequence_check.py": {
+        "sha256": "b098fd5374e4f621e10b7aa323ab6c41265de34aa259323b15c643308d351507",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-skill/scripts/sequence_check.py"
+      },
+      "sop-video-skill/scripts/sheets.py": {
+        "sha256": "e8d68f044eb0da68c8e6e4105a6a653a70685708acb54697fe47c41ea3ce5025",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-skill/scripts/sheets.py"
+      },
+      "sop-video-skill/scripts/validate_action.py": {
+        "sha256": "b0bdc2f8c12e4f20d952574a7ba3ef31c9fa8326c6c413759d350c412dddeb75",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-skill/scripts/validate_action.py"
+      },
+      "sop-video-skill/scripts/validate_result.py": {
+        "sha256": "85a503f484624f707291eccf54a982a15fa51ba1ac154318147e3f69a05475b0",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-skill/scripts/validate_result.py"
+      },
+      "sop-video-skill/scripts/_video.py": {
+        "sha256": "0c64ef7cabae2b62e7a8d55b76f05fb99dcb589e70158ad79e39e65a7c749109",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/placement/sop-video-skill/scripts/_video.py"
+      }
+    }
+  },
+  "separate174": {
+    "original_head": "8b19fceceb76f7b0ff12d817880cf7f1cd32531b",
+    "source_had_uncommitted_changes": false,
+    "files": {
+      "backend/app/adaptive_retry.py": {
+        "sha256": "3474c15733accda4f210b6f773ca06b7f3dbd7c8d859975a6262bdabf1e3a40b",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/backend/app/adaptive_retry.py"
+      },
+      "backend/app/api/endpoints/evaluations.py": {
+        "sha256": "9bf59f9dafd85911258634e388a886d5bcd9e1ab07a46b9df9cde22116d842bb",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/backend/app/api/endpoints/evaluations.py"
+      },
+      "backend/app/api/endpoints/uploads.py": {
+        "sha256": "68aa2f64661b5ab84d922245d83f510f41d7efb45e3f56358bc48ec45bba1253",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/backend/app/api/endpoints/uploads.py"
+      },
+      "backend/app/bootstrap.py": {
+        "sha256": "4be28b7b264de5c0893718db883a06de6d97ccb69aee9750cef212a6220495c7",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/backend/app/bootstrap.py"
+      },
+      "backend/app/config.py": {
+        "sha256": "7eae3f11fa12d95a26667cdf09400e273418c4b00da93247fddf971c1a733c42",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/backend/app/config.py"
+      },
+      "backend/app/credit_budget.py": {
+        "sha256": "40d5e6702177dbc09daeace58248bf10008d4393bf507f68afd14f44045bc5ae",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/backend/app/credit_budget.py"
+      },
+      "backend/app/db.py": {
+        "sha256": "0090fe410731b7a3457ff89a932b666a4b3f60b48f03858ad0a9cf7dacef052d",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/backend/app/db.py"
+      },
+      "backend/app/gazelle_worker.py": {
+        "sha256": "65351c846ac53d99a6739f6d1351fb5d68818ad659ed8f985d214f68573b4091",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/backend/app/gazelle_worker.py"
+      },
+      "backend/app/local_state.py": {
+        "sha256": "07ce3a10eb20eec8b26429bd5ee1559f9ad125b54acf0bf6023aadbfa03833cf",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/backend/app/local_state.py"
+      },
+      "backend/app/main.py": {
+        "sha256": "b0bc92df13856afee1609b814ebf861f5679443deb827ed5e0b311b45e204266",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/backend/app/main.py"
+      },
+      "backend/app/models/evaluation.py": {
+        "sha256": "884c9596c0f0ba25e6a755189e55d85c51c1e62a0efee21910fba81a510c9073",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/backend/app/models/evaluation.py"
+      },
+      "backend/app/prompts/Agent_A.txt": {
+        "sha256": "1234f87f083499fe2fb969ab498ab3a6ce3f6eb03bcf00c62cdafa00574651d0",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/backend/app/prompts/Agent_A.txt"
+      },
+      "backend/app/prompts/Agent_B.txt": {
+        "sha256": "e432e933f59f0d964ba0c604bc01773e545df7411430f333b25b619fedd5988d",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/backend/app/prompts/Agent_B.txt"
+      },
+      "backend/app/prompts/Agent_C.txt": {
+        "sha256": "ca0b2819b69da8a477848406e9e9e021fbbb79890325a29e5285cefdb82426a1",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/backend/app/prompts/Agent_C.txt"
+      },
+      "backend/app/prompts/Agent_D.txt": {
+        "sha256": "89d09dca3d764fe6378bcbf4a179e7bb1f7cfd2edf468cae68a6fbb2e554cdcd",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/backend/app/prompts/Agent_D.txt"
+      },
+      "backend/app/prompts/Time_cuting.txt": {
+        "sha256": "878f569fcaf69cb4d670306c27865f5f687e864447d96d9f274e689661c8a2f3",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/backend/app/prompts/Time_cuting.txt"
+      },
+      "backend/app/schemas/evaluation.py": {
+        "sha256": "cc92b2fd8cb0db29d5c43b72c456d4ee1fadc25ed4fa3bb6aaa026e66a32871d",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/backend/app/schemas/evaluation.py"
+      },
+      "backend/app/services/agents.py": {
+        "sha256": "9f5578620c59ca9d81416b602aac92b8cda0c06ae7790a1b6d2be49f121a3857",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/backend/app/services/agents.py"
+      },
+      "backend/app/services/evaluation_queue.py": {
+        "sha256": "98b68d7dc625c52045f9d0794ecefd4b2bab108455f607ff0fadff88573c6f25",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/backend/app/services/evaluation_queue.py"
+      },
+      "backend/app/services/gazelle_service.py": {
+        "sha256": "2eb868f6e5cc646e0ecc7845aa0e72d959b96bee0ac45f7bd6eab58fb5e4b55b",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/backend/app/services/gazelle_service.py"
+      },
+      "backend/app/services/gcs_service.py": {
+        "sha256": "430f2d4c4f712de7127b1deb321664a7016bbce4cb89de4e5e8099fa3b2ef4d2",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/backend/app/services/gcs_service.py"
+      },
+      "backend/app/services/gemini_service.py": {
+        "sha256": "1d5317a70ee8ff1fbca5d989ef4647903231e9dce0e7bfdd11268a1b6c1cf981",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/backend/app/services/gemini_service.py"
+      },
+      "backend/app/services/model_logging.py": {
+        "sha256": "9ba1f5cb07637f0bd9252f7e52fdfd8ce3f549865bbcdedc0c9aaa48a7c012d1",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/backend/app/services/model_logging.py"
+      },
+      "backend/app/services/sop_checkpoint.py": {
+        "sha256": "c92405069eb4366ee5a7c622c53b0504e7488c46c653fed7d60698dd5f994950",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/backend/app/services/sop_checkpoint.py"
+      },
+      "backend/app/services/sop_grading_service.py": {
+        "sha256": "ba67514e2a63fadbec660b47bd6c4decb41cf1d07935a2ea823a997a7d108bd9",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/backend/app/services/sop_grading_service.py"
+      },
+      "backend/app/services/sop_run_bundle.py": {
+        "sha256": "43d67620693b35af1e31a47bdfedc6be08467d6849907f708e98f6ccf00baff8",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/backend/app/services/sop_run_bundle.py"
+      },
+      "backend/app/services/sop_segment_grading.py": {
+        "sha256": "44faa396d63d9ad6323a6a659c6e21c6ba6f35c6e5134e0e7bbdb2fa19cec13c",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/backend/app/services/sop_segment_grading.py"
+      },
+      "backend/app/services/sop_segmentation_import.py": {
+        "sha256": "5ae9be59deb9cc7422c7c097879f162e74d2233c75004f3bb4f416ab952816b5",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/backend/app/services/sop_segmentation_import.py"
+      },
+      "backend/app/services/sop_skill_service.py": {
+        "sha256": "c5486906cc1a02290be60f63c12ac2e269cdf5219b6cfadfe9ee6da82c8fe1cf",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/backend/app/services/sop_skill_service.py"
+      },
+      "backend/app/services/usage.py": {
+        "sha256": "2003683d2c4556c9d138761ff84fcb251bc08507dacc7bbea87f6e6680f9ab2a",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/backend/app/services/usage.py"
+      },
+      "backend/app/services/video_service.py": {
+        "sha256": "85858fba024e3b5f301412f37acf66500418fda499a5629c8c4aceb9c36119c7",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/backend/app/services/video_service.py"
+      },
+      "backend/app/sop_cli_guard.py": {
+        "sha256": "be01ed6f820613ab9e4ba6d1dd87c6bea68f631a5dc63f0f18517e8ad7433517",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/backend/app/sop_cli_guard.py"
+      },
+      "backend/app/sop_grading_cli.py": {
+        "sha256": "30b29fa9967032f0310bf001c334818d322a1387ada4649a158a9436f5471618",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/backend/app/sop_grading_cli.py"
+      },
+      "backend/app/worker.py": {
+        "sha256": "c8f1207f678936c7b22642a0832f202e5c9301e2f928cc7a49a71c2ed0df52b2",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/backend/app/worker.py"
+      },
+      "backend/app/ws_manager.py": {
+        "sha256": "3e6acbd654915cab64588f15c1ca3fd70248f42a32c28f17f5fb2d6b3bd6e953",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/backend/app/ws_manager.py"
+      },
+      "sop-video-grading/CHANGELOG.md": {
+        "sha256": "b770f9a6a4aab8f71c7df8abbd617b51f989afb16b3180b6393b4352e321d6b7",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-grading/CHANGELOG.md"
+      },
+      "sop-video-grading/EXPERIMENTS.md": {
+        "sha256": "7d14a02232433f97476bbc871bad5348822cc063bad4f8a35d5a51c131ec48d1",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-grading/EXPERIMENTS.md"
+      },
+      "sop-video-grading/SKILL.md": {
+        "sha256": "4520e92a77a015acda7749edc0611700c7eeafbd1fd1c45414db69dc7d2b62e3",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-grading/SKILL.md"
+      },
+      "sop-video-grading/actions.schema.json": {
+        "sha256": "cbe98086f597ae59085c6a6d93563da2f78c567b9a6468191564f238e2788f31",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-grading/actions.schema.json"
+      },
+      "sop-video-grading/criteria/01-hand-washing.md": {
+        "sha256": "2d96086db21b0b4cc041a5205612853660c50ad2d3e9710ddf35ac9b5c079657",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-grading/criteria/01-hand-washing.md"
+      },
+      "sop-video-grading/criteria/02-drug-sheet.md": {
+        "sha256": "68ae2417175b802979b1120fe82d4113f7d7ba25bbdbdfe510d6f234fce3bca1",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-grading/criteria/02-drug-sheet.md"
+      },
+      "sop-video-grading/criteria/03-drug-check.md": {
+        "sha256": "2c519e635f7b4b0cd6f5e6b30bb13330c939e3dee6fa83e4d7a127a228d70603",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-grading/criteria/03-drug-check.md"
+      },
+      "sop-video-grading/criteria/04-needle-down-13b.md": {
+        "sha256": "f96c309239e5b37223361c2a46118fbb524d5133358aafdfdced049cc0b82f03",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-grading/criteria/04-needle-down-13b.md"
+      },
+      "sop-video-grading/criteria/05-flick.md": {
+        "sha256": "55e0eff24b5e4ae724de263f2a7a883badd0820f639c7c3a817c915d25469db9",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-grading/criteria/05-flick.md"
+      },
+      "sop-video-grading/criteria/06-plunger.md": {
+        "sha256": "f54936bf6bf99995ec3ec8f93d2b956705c91789e7f1afca6b9d3f7581f42532",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-grading/criteria/06-plunger.md"
+      },
+      "sop-video-grading/criteria/07-rolling-20a.md": {
+        "sha256": "a1e4cb96d5908a775fc48d06e71ad07a4ebe6431822e0b79e72488742aed9297",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-grading/criteria/07-rolling-20a.md"
+      },
+      "sop-video-grading/criteria/08-hand-posture.md": {
+        "sha256": "cee75a5bcd65f00c0f498bc8e8db04f1a1f2a87280ea8be0ee46b24e37d77101",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-grading/criteria/08-hand-posture.md"
+      },
+      "sop-video-grading/criteria/09-disposal.md": {
+        "sha256": "77a369e3dc8e032a5bbcfb6c73df78ccf0617add0c2a4e4f5c3542f434649452",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-grading/criteria/09-disposal.md"
+      },
+      "sop-video-grading/criteria/10-presence.md": {
+        "sha256": "c7c0989be461cfa68023a02fe1019172738c7ebcd92e407b7094450357b99103",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-grading/criteria/10-presence.md"
+      },
+      "sop-video-grading/criteria/README.md": {
+        "sha256": "2b1ee8a7908d9710253d1e788520d2201a36eaedf74d2b961555969b9cfb9c42",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-grading/criteria/README.md"
+      },
+      "sop-video-grading/rubric.json": {
+        "sha256": "797e84ce4d73945289f9084c24550f05d9fde0ad57cc395d530d27fda6c3a33c",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-grading/rubric.json"
+      },
+      "sop-video-grading/schema.json": {
+        "sha256": "5ba52c6f65c6e25c36d41d350a1e1fecfcb1a368fbf5622e181f576d5b4ecb71",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-grading/schema.json"
+      },
+      "sop-video-grading/scripts/audio_peaks.py": {
+        "sha256": "c2b0d56822e301d907423f3531d5e7c0510f7de8ad8861ee5200ff4813c2bfb7",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-grading/scripts/audio_peaks.py"
+      },
+      "sop-video-grading/scripts/burst.py": {
+        "sha256": "99f3273601d8fb6e6f8ecbd9c83ff5a3726e53c318c7e28354fb5ad3c26b8aec",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-grading/scripts/burst.py"
+      },
+      "sop-video-grading/scripts/check_versions.py": {
+        "sha256": "822dd2eb823e4eb18278273c0663525ba1335885ccccddfb5472ba614f2485fc",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-grading/scripts/check_versions.py"
+      },
+      "sop-video-grading/scripts/clip.py": {
+        "sha256": "30f3cc833e20436a24aea016b0d07a80017b7f4f366a562e9b430424eed92954",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-grading/scripts/clip.py"
+      },
+      "sop-video-grading/scripts/compare_arms.py": {
+        "sha256": "411ad5e261ce10cb83cac716a39e01db344c3680fad893f2af07473414ad316f",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-grading/scripts/compare_arms.py"
+      },
+      "sop-video-grading/scripts/eval_grading.py": {
+        "sha256": "10f4171abb600ef4c870eb9e6afe5bd4e36ac2dc41691c4d601231e2d41ea89f",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-grading/scripts/eval_grading.py"
+      },
+      "sop-video-grading/scripts/git_commit.py": {
+        "sha256": "903ad8ca4c652d3d436fef2df2371a6381a05d575361f7adcf6018bd7118c10c",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-grading/scripts/git_commit.py"
+      },
+      "sop-video-grading/scripts/labels_to_segmentation.py": {
+        "sha256": "2b7e595be87a96b464b654d98d468279a48b65886441c1edef05e73c8ee73e76",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-grading/scripts/labels_to_segmentation.py"
+      },
+      "sop-video-grading/scripts/motion_peaks.py": {
+        "sha256": "a36788d34233e6776fd2a312de076bb797508bae7c79547b1b20b4e46b80bed6",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-grading/scripts/motion_peaks.py"
+      },
+      "sop-video-grading/scripts/review_page.py": {
+        "sha256": "daf68d0d559ad85155fddd026bb69bc69b29386ffcb52d0817868f99965004c1",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-grading/scripts/review_page.py"
+      },
+      "sop-video-grading/scripts/rubric.py": {
+        "sha256": "5de68856d5f3e0db7655ffa412b5176f4102fda4bbec01444b5f7c7288243814",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-grading/scripts/rubric.py"
+      },
+      "sop-video-grading/scripts/rules.py": {
+        "sha256": "1fa135e87f86a4f594aa7081634f383f3c0a5212b1347ad27c7869262572ac9f",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-grading/scripts/rules.py"
+      },
+      "sop-video-grading/scripts/run_record.py": {
+        "sha256": "5e7d1aec444536dc27a1b686aec9a90e3ae8fe5a9948e242f6f9f777b3aa89b2",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-grading/scripts/run_record.py"
+      },
+      "sop-video-grading/scripts/skill_doc.py": {
+        "sha256": "4b18f4bf633270c2ce48e6ba8cb2d4a34b9708f6904f67f2bb96f6235ab74d72",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-grading/scripts/skill_doc.py"
+      },
+      "sop-video-grading/scripts/validate_grading.py": {
+        "sha256": "533ceaef549ae242cd09695b2e7e935222088cbd4d97ab3bff2b9db5105698f5",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-grading/scripts/validate_grading.py"
+      },
+      "sop-video-grading/scripts/validate_grading_action.py": {
+        "sha256": "5560740a265e3891b691a1afbe766e4707797b4b7fba96706e9c13e27119dd90",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-grading/scripts/validate_grading_action.py"
+      },
+      "sop-video-skill/CHANGELOG.md": {
+        "sha256": "0a35010bb58c4989ed6b0412ad9228a90b4d27b5043e02a69da6f48268ddbe31",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-skill/CHANGELOG.md"
+      },
+      "sop-video-skill/SKILL.md": {
+        "sha256": "07d939a1bd67668443706446c16ea3f6ab66ff9f31e7d1843fb3f9b867cfcfb4",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-skill/SKILL.md"
+      },
+      "sop-video-skill/actions.schema.json": {
+        "sha256": "2c0b8de538eff656c8841eea1222d2ff1970bc564d74e79020e619592fb23286",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-skill/actions.schema.json"
+      },
+      "sop-video-skill/references/sop_steps.md": {
+        "sha256": "fd13e3d352ef62e4ba3f53c7e6bf613a66349afeda0e84a3bdf9c7768873a613",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-skill/references/sop_steps.md"
+      },
+      "sop-video-skill/schema.json": {
+        "sha256": "5fca2c8171d18a7898257a264537ffe569dfc2143a97abaa1fda22fd66efcb0b",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-skill/schema.json"
+      },
+      "sop-video-skill/scripts/_video.py": {
+        "sha256": "5085a546759a00b8c79a93d03b8997afe58d1f0a289951133cae99616f3f8d68",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-skill/scripts/_video.py"
+      },
+      "sop-video-skill/scripts/crop.py": {
+        "sha256": "dbb07126e0acb77ee780fc0599ef736246d354e330293d5faee64c62a1a0b08c",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-skill/scripts/crop.py"
+      },
+      "sop-video-skill/scripts/draft.py": {
+        "sha256": "d07c048ece10df52dcbee888c8edcf9cd2072c2b5c0e7154b6a7787f6228eacf",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-skill/scripts/draft.py"
+      },
+      "sop-video-skill/scripts/eval.py": {
+        "sha256": "b5c4747aa8c8be021ab5e524f7180333f592ad4cc8b6144961e4db2c1615a971",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-skill/scripts/eval.py"
+      },
+      "sop-video-skill/scripts/grid_overlay.py": {
+        "sha256": "f81c1dedbbcfc95d83dba51f77980d564383b16fb561daffe271d8d7809b5ae1",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-skill/scripts/grid_overlay.py"
+      },
+      "sop-video-skill/scripts/motion.py": {
+        "sha256": "040c95d6a7275bea72dcd083e50b655c0988d2f7a9e844574287aeddc8fdfa58",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-skill/scripts/motion.py"
+      },
+      "sop-video-skill/scripts/prepare.py": {
+        "sha256": "0ffdb78ab1478a9beb13f6b97ca77813433c38ffcbf02e4b08a3e552d728c342",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-skill/scripts/prepare.py"
+      },
+      "sop-video-skill/scripts/schema_tools.py": {
+        "sha256": "fb9c1f323aaa8a29e72627c4cba22c2b47025aace028d4c369e329fd4b6b1c29",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-skill/scripts/schema_tools.py"
+      },
+      "sop-video-skill/scripts/sequence_check.py": {
+        "sha256": "c90325376980e1f6ea38583b559cfbbd5dae0627b2efc5ac99fc2a1abca3c75e",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-skill/scripts/sequence_check.py"
+      },
+      "sop-video-skill/scripts/sheets.py": {
+        "sha256": "cb445cd8f406a0ee87924a220cf7e3286721f2ccebc04a0425e8a3537cb500d1",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-skill/scripts/sheets.py"
+      },
+      "sop-video-skill/scripts/validate_action.py": {
+        "sha256": "60f7f844d7c1ad9317b2ad0577d49db3610da7d5021a96467da21138c7368652",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-skill/scripts/validate_action.py"
+      },
+      "sop-video-skill/scripts/validate_result.py": {
+        "sha256": "dc351a43fd7cd19c534a21457dcbe75460bef9d04e59e18b38ecf9f03866629f",
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/sources/separate174/sop-video-skill/scripts/validate_result.py"
+      }
+    }
+  }
+}

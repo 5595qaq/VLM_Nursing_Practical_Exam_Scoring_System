@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 7.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 20298,
+  "cached_input_tokens": 0,
+  "output_tokens": 58,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@99.4-162（hands_box，n=9）#0=01:39.4、#1=01:47.2、#2=01:55.0、#3=02:02.9、#4=02:10.7、#5=02:18.5、#6=02:26.3、#7=02:34.2、#8=02:42.0"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 100.0, \"end\": 160.0, \"fps\": 2, \"reason\": \"確認持藥瓶查看給藥紀錄單與指讀的實際起訖時間\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 631.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 31512,
+  "cached_input_tokens": 0,
+  "output_tokens": 82,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@99.4-162（hands_box，n=9）#0=01:39.4、#1=01:47.2、#2=01:55.0、#3=02:02.9、#4=02:10.7、#5=02:18.5、#6=02:26.3、#7=02:34.2、#8=02:42.0",
+   "clip@100-160（context box，有聲音；片段內 00:00 ＝ 影片 01:40.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [105.0, 118.0, 155.0], \"region\": [0.25, 0.55, 0.75, 0.9], \"reason\": \"確認給藥紀錄單的位置及考生右手食指指讀紀錄單的細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 139.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 32744,
+  "cached_input_tokens": 0,
+  "output_tokens": 463,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@99.4-162（hands_box，n=9）#0=01:39.4、#1=01:47.2、#2=01:55.0、#3=02:02.9、#4=02:10.7、#5=02:18.5、#6=02:26.3、#7=02:34.2、#8=02:42.0",
+   "clip@100-160（context box，有聲音；片段內 00:00 ＝ 影片 01:40.0）",
+   "zoom@105/118/155 region=[0.250, 0.550, 0.750, 0.900]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4a\", \"verdict\": \"正確\", \"explanation\": \"考生於 01:42.5–02:04.5（clip@100-160 片段內 00:02.5–00:24.5，共 22 秒）左手持 vial 藥瓶，低頭查看桌面上的給藥紀錄單並以右手手指指讀核對；另於 02:34.0–02:39.5（片段內 00:54.0–00:59.5，共 5.5 秒）再次持藥瓶低頭查看並指讀紀錄單。累計查看時間超過 10 秒。\", \"times\": [[102.5, 124.5], [154.0, 159.5]], \"evidence\": [\"clip@100-160\", \"zoom@105\", \"zoom@118\", \"zoom@155\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"4b\", \"verdict\": \"正確\", \"explanation\": \"於 01:42.5–02:04.5 及 02:34.0–02:39.5 查看給藥紀錄單時，經 zoom@105（01:45.0）、zoom@118（01:58.0）及 zoom@155（02:35.0）確認，考生明顯以右手食指在給藥紀錄單上指讀核對。\", \"times\": [[102.5, 124.5], [154.0, 159.5]], \"evidence\": [\"clip@100-160\", \"zoom@105\", \"zoom@118\", \"zoom@155\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

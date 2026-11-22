@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 74.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 27498,
+  "cached_input_tokens": 0,
+  "output_tokens": 85,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@139-185（context box，有聲音；片段內 00:00 ＝ 影片 02:19.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [147.5, 156.5, 178.0, 181.5], \"region\": [0.4, 0.65, 0.85, 0.98], \"reason\": \"確認給藥紀錄單位置與右手食指指讀動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 77.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 28730,
+  "cached_input_tokens": 0,
+  "output_tokens": 883,
+  "thinking_tokens": 389,
+  "materials": [
+   "clip@139-185（context box，有聲音；片段內 00:00 ＝ 影片 02:19.0）",
+   "zoom@147.5/156.5/178/181.5 region=[0.400, 0.650, 0.850, 0.980]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4a\", \"verdict\": \"正確\", \"explanation\": \"考生於 02:20.5–02:37.0（clip@139-185 片段內 00:01.5–00:18.0，共 16.5 秒）及 02:54.0–03:02.0（片段內 00:35.0–00:43.0，共 8.0 秒）左手持藥瓶（vial）低頭查看治療車前緣的給藥紀錄單並以右手指讀核對，累計實際查看給藥紀錄單共 24.5 秒，已達 10 秒以上。\", \"times\": [[140.5, 157.0], [174.0, 182.0]], \"evidence\": [\"clip@139-185\", \"zoom@147.5\", \"zoom@156.5\", \"zoom@178\", \"zoom@181.5\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"4b\", \"verdict\": \"正確\", \"explanation\": \"考生於 02:20.5–02:37.0 及 02:54.0–03:02.0 持藥瓶核對給藥紀錄單時，皆明顯以右手食指指出給藥紀錄單上的文字內容（zoom@147.5、zoom@156.5、zoom@178、zoom@181.5 清楚可見指尖指在紀錄單表格上）。\", \"times\": [[140.5, 157.0], [174.0, 182.0]], \"evidence\": [\"clip@139-185\", \"zoom@147.5\", \"zoom@156.5\", \"zoom@178\", \"zoom@181.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

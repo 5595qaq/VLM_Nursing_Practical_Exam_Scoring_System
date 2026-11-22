@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 64.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 20584,
+  "cached_input_tokens": 0,
+  "output_tokens": 101,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@58-77.6（hands_box，n=9）#0=00:58.0、#1=01:00.5、#2=01:02.9、#3=01:05.3、#4=01:07.8、#5=01:10.2、#6=01:12.7、#7=01:15.2、#8=01:17.6"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 62.0, \"end\": 70.0, \"fps\": 10, \"region\": [0.25, 0.25, 0.75, 0.65], \"reason\": \"查看空針完全離開包裝（約01:02）後至01:10之間，雙手是否有旋緊針頭與針心的動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 121.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 26961,
+  "cached_input_tokens": 0,
+  "output_tokens": 184,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@58-77.6（hands_box，n=9）#0=00:58.0、#1=01:00.5、#2=01:02.9、#3=01:05.3、#4=01:07.8、#5=01:10.2、#6=01:12.7、#7=01:15.2、#8=01:17.6",
+   "clip@62-70（region=[0.250, 0.250, 0.750, 0.650]，原始解析度裁切，有聲音；片段內 00:00 ＝ 影片 01:02.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"10b\", \"verdict\": \"正確\", \"explanation\": \"01:02.0 空針已完全離開包裝，01:03.7–01:06.8（clip@62-70 片段內 00:01.7–00:04.8）清楚看到右手握住針筒、左手捏住針頭蓋與針座交界處來回旋轉固定針頭。\", \"times\": [[63.7, 66.8]], \"evidence\": [\"ov@58-77.6 #1\", \"ov@58-77.6 #3\", \"clip@62-70\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

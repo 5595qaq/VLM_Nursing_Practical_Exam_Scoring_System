@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 65.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 20380,
+  "cached_input_tokens": 0,
+  "output_tokens": 267,
+  "thinking_tokens": 196,
+  "materials": [
+   "ov@0-220（hands_box，n=9）#0=00:00.0、#1=00:27.5、#2=00:55.0、#3=01:22.5、#4=01:50.0、#5=02:17.5、#6=02:45.0、#7=03:12.5、#8=03:40.0"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 15.0, \"end\": 75.0, \"fps\": 2, \"reason\": \"查看洗手後至開瓶前（00:15–01:15）是否有拿起稀釋液檢查效期與有無異物\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 201.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 31615,
+  "cached_input_tokens": 0,
+  "output_tokens": 70,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@0-220（hands_box，n=9）#0=00:00.0、#1=00:27.5、#2=00:55.0、#3=01:22.5、#4=01:50.0、#5=02:17.5、#6=02:45.0、#7=03:12.5、#8=03:40.0",
+   "clip@15-75（context box，有聲音；片段內 00:00 ＝ 影片 00:15.0）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 72.0, \"end\": 130.0, \"fps\": 2, \"reason\": \"檢查 01:12 至 02:10 之間拿起稀釋液後是否有檢查效期與有無異物的動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 75.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 42492,
+  "cached_input_tokens": 0,
+  "output_tokens": 693,
+  "thinking_tokens": 464,
+  "materials": [
+   "ov@0-220（hands_box，n=9）#0=00:00.0、#1=00:27.5、#2=00:55.0、#3=01:22.5、#4=01:50.0、#5=02:17.5、#6=02:45.0、#7=03:12.5、#8=03:40.0",
+   "clip@15-75（context box，有聲音；片段內 00:00 ＝ 影片 00:15.0）",
+   "clip@72-130（context box，有聲音；片段內 00:00 ＝ 影片 01:12.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4d\", \"verdict\": \"錯誤\", \"explanation\": \"00:00–01:12 稀釋液瓶一直放在治療車檯面上未動；01:12.0（clip@72-130 片段內 00:00.0）考生第一次拿起稀釋液瓶後，直接用酒精棉片消毒瓶口並扭開瓶頂（01:12.5–01:23.0），接著於 01:32.5 拿起稀釋液瓶抽取稀釋液，抽藥前並未檢視稀釋液瓶身效期標示或檢查有無異物。\", \"times\": [[72.0, 93.0]], \"evidence\": [\"ov@0-220 #0\", \"clip@15-75\", \"clip@72-130\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

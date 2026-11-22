@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 16.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 23470,
+  "cached_input_tokens": 0,
+  "output_tokens": 603,
+  "thinking_tokens": 532,
+  "materials": [
+   "clip@24-47（context box，有聲音；片段內 00:00 ＝ 影片 00:24.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [28.0, 29.0], \"region\": [0.25, 0.7, 0.75, 1.0], \"reason\": \"確認治療車前緣及畫面下緣是否有給藥紀錄單入鏡\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 86.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 24677,
+  "cached_input_tokens": 18624,
+  "output_tokens": 316,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@24-47（context box，有聲音；片段內 00:00 ＝ 影片 00:24.0）",
+   "zoom@28/29 region=[0.250, 0.700, 0.750, 1.000]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4a\", \"verdict\": \"無法判定\", \"explanation\": \"已搜尋治療車檯面、抽屜區、點滴架及牆面（clip@24-47 及 zoom@28/29），檯面前方僅有空針包裝與酒精棉片，給藥紀錄單未入鏡（可能在畫面左側視野外，00:25.0–00:27.0 考生轉頭看向畫面左側），無法確認查看紀錄單的時間。\", \"times\": [], \"evidence\": [\"clip@24-47\", \"zoom@28\", \"zoom@29\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}, {\"criterion_id\": \"4b\", \"verdict\": \"無法判定\", \"explanation\": \"給藥紀錄單未入鏡，且 00:25.0–00:27.0 考生看向畫面左側時並未伸手指出紀錄單，00:27.5–00:29.5 右手僅碰觸檯面上的酒精棉片與空針包裝，因藥單不在畫面內，無法判定。\", \"times\": [], \"evidence\": [\"clip@24-47\", \"zoom@28\", \"zoom@29\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}]}",
+  "errors": []
+ }
+]

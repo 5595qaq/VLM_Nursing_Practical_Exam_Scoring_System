@@ -1,0 +1,81 @@
+[
+ {
+  "turn": 1,
+  "seconds": 12.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 19859,
+  "cached_input_tokens": 0,
+  "output_tokens": 395,
+  "thinking_tokens": 319,
+  "materials": [
+   "ov@229.9-430.67（hands_box，n=9）#0=03:49.9、#1=04:15.0、#2=04:40.1、#3=05:05.2、#4=05:30.3、#5=05:55.4、#6=06:20.5、#7=06:45.6、#8=07:10.7"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 317.0, \"end\": 377.0, \"fps\": 2, \"reason\": \"查看 05:17–06:17 給藥前空針放置（放回原包裝或針架）及取出給藥的過程\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 562.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 31102,
+  "cached_input_tokens": 0,
+  "output_tokens": 63,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@229.9-430.67（hands_box，n=9）#0=03:49.9、#1=04:15.0、#2=04:40.1、#3=05:05.2、#4=05:30.3、#5=05:55.4、#6=06:20.5、#7=06:45.6、#8=07:10.7",
+   "clip@317-377（context box，有聲音；片段內 00:00 ＝ 影片 05:17.0）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 377.0, \"end\": 430.67, \"fps\": 2, \"reason\": \"查看給藥完成後（06:17之後）空針的放置過程與最終位置\"}",
+  "errors": [
+   "clip [377, 430.67] must stay within 219.9-430.667s (task window or a listed wrapper span, ±10s)"
+  ]
+ },
+ {
+  "turn": 3,
+  "seconds": 111.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 31229,
+  "cached_input_tokens": 17892,
+  "output_tokens": 62,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@229.9-430.67（hands_box，n=9）#0=03:49.9、#1=04:15.0、#2=04:40.1、#3=05:05.2、#4=05:30.3、#5=05:55.4、#6=06:20.5、#7=06:45.6、#8=07:10.7",
+   "clip@317-377（context box，有聲音；片段內 00:00 ＝ 影片 05:17.0）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 377.0, \"end\": 430.6, \"fps\": 2, \"reason\": \"查看給藥完成後（06:17之後）空針的放置過程與最終位置\"}",
+  "errors": []
+ },
+ {
+  "turn": 4,
+  "seconds": 12.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 41158,
+  "cached_input_tokens": 0,
+  "output_tokens": 94,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@229.9-430.67（hands_box，n=9）#0=03:49.9、#1=04:15.0、#2=04:40.1、#3=05:05.2、#4=05:30.3、#5=05:55.4、#6=06:20.5、#7=06:45.6、#8=07:10.7",
+   "clip@317-377（context box，有聲音；片段內 00:00 ＝ 影片 05:17.0）",
+   "clip@377-430.6（context box，有聲音；片段內 00:00 ＝ 影片 06:17.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [322.0, 323.5, 395.5, 427.0], \"region\": [0.25, 0.45, 0.75, 0.85], \"reason\": \"確認給藥前後將空針放回原塑膠包裝袋時的持握部位與放手狀態\"}",
+  "errors": []
+ },
+ {
+  "turn": 5,
+  "seconds": 33.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 42399,
+  "cached_input_tokens": 0,
+  "output_tokens": 365,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@229.9-430.67（hands_box，n=9）#0=03:49.9、#1=04:15.0、#2=04:40.1、#3=05:05.2、#4=05:30.3、#5=05:55.4、#6=06:20.5、#7=06:45.6、#8=07:10.7",
+   "clip@317-377（context box，有聲音；片段內 00:00 ＝ 影片 05:17.0）",
+   "clip@377-430.6（context box，有聲音；片段內 00:00 ＝ 影片 06:17.0）",
+   "zoom@322/323.5/395.5/427 region=[0.250, 0.450, 0.750, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"30a\", \"verdict\": \"正確\", \"explanation\": \"於實際給藥前（05:21.0–05:24.0），05:22.0 考生右手持空針外筒（針柄）、左手拿原塑膠包裝袋，將空針推入原塑膠包裝袋中（未碰觸針頭部位），並於 05:23.5–05:24.0 將裝有空針的包裝袋放置於治療車檯面上並完全放手。\", \"times\": [[321.0, 324.0]], \"evidence\": [\"clip@317-377\", \"zoom@322\", \"zoom@323.5\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"30b\", \"verdict\": \"錯誤\", \"explanation\": \"考生於點滴架完成給藥後，在 06:48.5（clip@377-430.6 片段內 00:31.5）直接將空針平放在治療車桌面上並放手，直至 07:07.0 仍僅平放於桌面，並未將空針插回針架或放回原塑膠包裝袋中。\", \"times\": [[408.5, 427.0]], \"evidence\": [\"clip@377-430.6\", \"zoom@427\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

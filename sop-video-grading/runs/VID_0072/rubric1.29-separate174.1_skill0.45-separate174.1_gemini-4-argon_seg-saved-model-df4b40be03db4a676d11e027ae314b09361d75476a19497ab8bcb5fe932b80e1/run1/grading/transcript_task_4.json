@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 7.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 26092,
+  "cached_input_tokens": 18624,
+  "output_tokens": 80,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@18-55.5（context box，有聲音；片段內 00:00 ＝ 影片 00:18.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [19.5, 25.0, 41.0, 50.5], \"region\": [0.2, 0.55, 0.75, 1.0], \"reason\": \"放大查看桌面及治療車前緣是否有給藥紀錄單\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 66.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 27313,
+  "cached_input_tokens": 18624,
+  "output_tokens": 660,
+  "thinking_tokens": 343,
+  "materials": [
+   "clip@18-55.5（context box，有聲音；片段內 00:00 ＝ 影片 00:18.0）",
+   "zoom@19.5/25/41/50.5 region=[0.200, 0.550, 0.750, 1.000]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4a\", \"verdict\": \"無法判定\", \"explanation\": \"已檢查治療車檯面、畫面下緣及背景牆面（00:18.0–00:55.5），給藥紀錄單未入鏡（檯面上僅有尖銳物收集筒、針架、酒精棉片、稀釋液、vial、空針與乾洗手液），無法確認實際查看給藥紀錄單的時間。\", \"times\": [], \"evidence\": [\"clip@18-55.5\", \"zoom@19.5\", \"zoom@25\", \"zoom@41\", \"zoom@50.5\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}, {\"criterion_id\": \"4b\", \"verdict\": \"無法判定\", \"explanation\": \"00:18.0–00:55.5 給藥紀錄單未入鏡，且考生雙手全程在檯面上方操作藥瓶、稀釋液與空針包裝，無法確認是否有用手指指出給藥紀錄單。\", \"times\": [], \"evidence\": [\"clip@18-55.5\", \"zoom@19.5\", \"zoom@25\", \"zoom@41\", \"zoom@50.5\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}]}",
+  "errors": []
+ }
+]

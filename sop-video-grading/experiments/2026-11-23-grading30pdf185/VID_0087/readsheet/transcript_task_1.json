@@ -1,0 +1,16 @@
+[
+ {
+  "turn": 1,
+  "seconds": 21.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 22036,
+  "cached_input_tokens": 18457,
+  "output_tokens": 1167,
+  "thinking_tokens": 669,
+  "materials": [
+   "clip@0-16.2（context box，有聲音；片段內 00:00 ＝ 影片 00:00.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"1a\", \"verdict\": \"正確\", \"explanation\": \"於 00:01.5 按壓乾洗手液開始洗手，持續搓洗至 00:14.5 雙手分開結束洗手，共計 13.0 秒，滿 10 秒。\", \"evidence\": [\"clip@0-16.2\"], \"confidence\": 0.95, \"reason\": null, \"span\": [1.5, 14.5]}, {\"criterion_id\": \"1b\", \"verdict\": \"正確\", \"explanation\": \"洗手過程中七個動作皆有完成：內（00:02.0–00:02.5 掌心對掌心）、外（00:03.0–00:04.5 手心搓手背）、夾（00:05.0–00:05.5 十指交叉搓指縫）、弓（00:06.0–00:07.5 指背在掌心搓揉）、立（00:08.0–00:09.5 指尖立於掌心旋轉搓揉）、大（00:10.0–00:11.0 虎口握大拇指旋轉搓揉）、腕（00:11.5–00:14.0 搓洗手腕）。\", \"times\": [[2.0, 14.0]], \"evidence\": [\"clip@0-16.2\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"1c\", \"verdict\": \"正確\", \"explanation\": \"檢查 00:00.0–00:14.5 洗手結束前未接觸任何其他物品，於 00:14.5 完成洗手雙手分開後，右手才於 00:15.0 接觸並拿起治療車上的空針包裝。\", \"times\": [[15.0, 15.0]], \"evidence\": [\"clip@0-16.2\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

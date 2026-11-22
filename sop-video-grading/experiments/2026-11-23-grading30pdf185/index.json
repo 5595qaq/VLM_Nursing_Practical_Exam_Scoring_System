@@ -1,0 +1,2215 @@
+[
+  {
+    "video_id": "VID_0001",
+    "video_sha256": "7893e4266b9987dadff50e02e192a3d1c09120164320c3dc2e298720d7687d18",
+    "results": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0001/results.json",
+    "cli_record": "sop-video-grading/runs/VID_0001/rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-a498ce2a8e6f0afb42091fa94b13f9334a4c2f88f33f5999c605528028820730/record.json",
+    "source_by_step": {
+      "3": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0001/original/grading.json",
+        "original_sha256": "708cbc12676bc6c95e4e8cbcdbd999922bf6279fbfd45bed8af8b7a3310a7308",
+        "kind": "既有評分沿用",
+        "rule_profile": "original",
+        "rubric_version": "1.28"
+      },
+      "2": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0001/recalculate/selected.json",
+        "original_sha256": "234728e00035150cff798078a3618036829adf227755e243ce41d5e0389a9ae8",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "29": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0001/recalculate/selected.json",
+        "original_sha256": "234728e00035150cff798078a3618036829adf227755e243ce41d5e0389a9ae8",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "1": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0001/readsheet/selected.json",
+        "original_sha256": "0fc5782ec7755671386115311947d186b11ee65ec17b1fd8bcefd0508b501097",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "30": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0001/placement/selected.json",
+        "original_sha256": "666b54d9a201f5f9eb311581f01c005ae7495c4e36ef17024dd6022024b7bac1",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "placement",
+        "rubric_version": "1.30-disposal.4"
+      },
+      "4": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0001/separate174/grading.json",
+        "original_sha256": "2874a9bdc038453112ea97c320a5a30e047eea5aad9d9114486da70a72921430",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      },
+      "10": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0001/separate174/grading.json",
+        "original_sha256": "2874a9bdc038453112ea97c320a5a30e047eea5aad9d9114486da70a72921430",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      }
+    },
+    "cli_runs": 1,
+    "cli_usage": [
+      {
+        "input_tokens": 360908,
+        "cached_input_tokens": 111744,
+        "output_tokens": 2209,
+        "thinking_tokens": 328
+      }
+    ],
+    "cli_timing": [
+      {
+        "started_at": "2026-11-21T03:55:48+09:00",
+        "grading_seconds": 611.0,
+        "total_seconds": 611.1
+      }
+    ]
+  },
+  {
+    "video_id": "VID_0008",
+    "video_sha256": "69e00eb3982dc4bc84750065a84b2ccae9904aaf21cfe2ceea288a21be444f0a",
+    "results": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0008/results.json",
+    "cli_record": "sop-video-grading/runs/VID_0008/rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-0e2cb0da97182d709142a0609c318cfdf8e68849c51851e7cd2d1107c883af91/record.json",
+    "source_by_step": {
+      "3": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0008/original/grading.json",
+        "original_sha256": "ef4b1fdb9636111e6456948ebf45aaa844bf3c6a87c29383cabf3191bb0b2f9f",
+        "kind": "既有評分沿用",
+        "rule_profile": "original",
+        "rubric_version": "1.28"
+      },
+      "2": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0008/recalculate/selected.json",
+        "original_sha256": "30c6e8ecf781bd389bc566f72576ab6ee32a324a320dc0f166763e1da56a5473",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "29": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0008/recalculate/selected.json",
+        "original_sha256": "30c6e8ecf781bd389bc566f72576ab6ee32a324a320dc0f166763e1da56a5473",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "1": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0008/readsheet/selected.json",
+        "original_sha256": "8b2067c4a31b5e0ce8d7a52e3024d56fb434c7e2a3292676c97338d9f624ff03",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "30": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0008/placement/selected.json",
+        "original_sha256": "bd1cfd0ad51078421cd1b08cb4c0c4b2bc486381c5ff093396ea1a578e5a28a0",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "placement",
+        "rubric_version": "1.30-disposal.4"
+      },
+      "4": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0008/separate174/grading.json",
+        "original_sha256": "43b699a02a885630cf09fa27aa6517cb46a92519e1acba2270fbc232eba38cf1",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      },
+      "10": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0008/separate174/grading.json",
+        "original_sha256": "43b699a02a885630cf09fa27aa6517cb46a92519e1acba2270fbc232eba38cf1",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      }
+    },
+    "cli_runs": 1,
+    "cli_usage": [
+      {
+        "input_tokens": 400318,
+        "cached_input_tokens": 18624,
+        "output_tokens": 4300,
+        "thinking_tokens": 1866
+      }
+    ],
+    "cli_timing": [
+      {
+        "started_at": "2026-11-21T04:06:06+09:00",
+        "grading_seconds": 595.7,
+        "total_seconds": 595.7
+      }
+    ]
+  },
+  {
+    "video_id": "VID_0010",
+    "video_sha256": "0be26eebfc3e539151b38b4dd7a033dda59bc839e33f98df37bb257c9ffe9027",
+    "results": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0010/results.json",
+    "cli_record": "sop-video-grading/runs/VID_0010/rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-893ac960dbfbe0220f614b5706fd268f52b03b05e6fea46f412c8f915e9539cd/record.json",
+    "source_by_step": {
+      "3": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0010/original/grading.json",
+        "original_sha256": "3c220ca9dcdea36d59b23cb880242cae7c69f22cc3d9fc53c712037942577aa9",
+        "kind": "既有評分沿用",
+        "rule_profile": "original",
+        "rubric_version": "1.28-disposal.1"
+      },
+      "2": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0010/recalculate/selected.json",
+        "original_sha256": "514b4895760c34140c59be64665a280da546b38171514bc83faf3c75462e43d7",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "29": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0010/recalculate/selected.json",
+        "original_sha256": "514b4895760c34140c59be64665a280da546b38171514bc83faf3c75462e43d7",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "1": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0010/readsheet/selected.json",
+        "original_sha256": "de404f4e4c56144085c0d79834c1e985ba7f169ad7d12f32ef0fd67b5d3c0c8a",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "30": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0010/placement/selected.json",
+        "original_sha256": "02e5a217d3abaf8c1818bef167d4be005fe99afb6c7aacc69a7e0b9255c82a10",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "placement",
+        "rubric_version": "1.30-disposal.4"
+      },
+      "4": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0010/separate174/grading.json",
+        "original_sha256": "b617b95916e40e30f2d866a626758424f37f7bee5f71b0d83893d907178bef6e",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      },
+      "10": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0010/separate174/grading.json",
+        "original_sha256": "b617b95916e40e30f2d866a626758424f37f7bee5f71b0d83893d907178bef6e",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      }
+    },
+    "cli_runs": 1,
+    "cli_usage": [
+      {
+        "input_tokens": 270765,
+        "cached_input_tokens": 37248,
+        "output_tokens": 2931,
+        "thinking_tokens": 1283
+      }
+    ],
+    "cli_timing": [
+      {
+        "started_at": "2026-11-21T04:16:08+09:00",
+        "grading_seconds": 606.8,
+        "total_seconds": 606.9
+      }
+    ]
+  },
+  {
+    "video_id": "VID_0011",
+    "video_sha256": "426a49f625173b078ec643b6b1761f2e67d67feacf1e7fbf0096ca41e768272d",
+    "results": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0011/results.json",
+    "cli_record": "sop-video-grading/runs/VID_0011/rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-753f56d99d183a3cfa231b6db9e2bde5dee3eee5bc383b1e934f703183d3767f/record.json",
+    "source_by_step": {
+      "3": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0011/original/grading.json",
+        "original_sha256": "ad761a007cc76f16fa0f7ecec4aad99761a6ed7e6292a15baf1056a93108d020",
+        "kind": "既有評分沿用",
+        "rule_profile": "original",
+        "rubric_version": "1.28-disposal.1"
+      },
+      "2": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0011/recalculate/selected.json",
+        "original_sha256": "59f83f4cd5ee15c6bf8043fbd39ff79ce1d1f6e30be83acf25dff19d100b19a0",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "29": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0011/recalculate/selected.json",
+        "original_sha256": "59f83f4cd5ee15c6bf8043fbd39ff79ce1d1f6e30be83acf25dff19d100b19a0",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "1": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0011/readsheet/selected.json",
+        "original_sha256": "1bf1f0eee6171723daf29981ce4b48a8c9c7f8b09ea26260113096fee4acaafc",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "30": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0011/placement/selected.json",
+        "original_sha256": "3fe117693bad6383e56b678596bc3f40e10d10cb84cfcdbaf28f1eedd4a382ed",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "placement",
+        "rubric_version": "1.30-disposal.4"
+      },
+      "4": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0011/separate174/grading.json",
+        "original_sha256": "0719ae82e7628973ef4004854e4137369a1b8ba6f73bc5034712339c95ef0d3c",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      },
+      "10": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0011/separate174/grading.json",
+        "original_sha256": "0719ae82e7628973ef4004854e4137369a1b8ba6f73bc5034712339c95ef0d3c",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      }
+    },
+    "cli_runs": 2,
+    "cli_usage": [
+      {
+        "input_tokens": 502384,
+        "cached_input_tokens": 158278,
+        "output_tokens": 5483,
+        "thinking_tokens": 3404
+      },
+      {
+        "input_tokens": 141468,
+        "cached_input_tokens": 18624,
+        "output_tokens": 1846,
+        "thinking_tokens": 1290
+      }
+    ],
+    "cli_timing": [
+      {
+        "started_at": "2026-11-21T04:26:19+09:00",
+        "grading_seconds": 682.1,
+        "total_seconds": 682.1
+      },
+      {
+        "started_at": "2026-11-21T04:52:18+09:00",
+        "grading_seconds": 175.9,
+        "total_seconds": 175.9
+      }
+    ]
+  },
+  {
+    "video_id": "VID_0014",
+    "video_sha256": "a0b4e06f2741029494c628e2feed4860eb66d611bdd87fdf82ac9d6e2f245f05",
+    "results": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0014/results.json",
+    "cli_record": "sop-video-grading/runs/VID_0014/rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38/record.json",
+    "source_by_step": {
+      "3": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0014/original/grading.json",
+        "original_sha256": "613a5c9e5aeaaf2f6cae60511a10f95559d6f1fd540c43e8c99e20d66cbec914",
+        "kind": "既有評分沿用",
+        "rule_profile": "original",
+        "rubric_version": "1.28"
+      },
+      "2": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0014/recalculate/selected.json",
+        "original_sha256": "52dc5f86a2ec37e6af1e307ac87de3df03c809c422456b974b885942f9540436",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "29": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0014/recalculate/selected.json",
+        "original_sha256": "52dc5f86a2ec37e6af1e307ac87de3df03c809c422456b974b885942f9540436",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "1": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0014/readsheet/selected.json",
+        "original_sha256": "61f87eb5ed09287ade33b287a28d5222ea2377e9ed2213b4d1d953ddecde0685",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "30": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0014/placement/selected.json",
+        "original_sha256": "85c1efa34799a250811b83411c7159ea2a0ac45835bad21d9715ae4b2d048c16",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "placement",
+        "rubric_version": "1.30-disposal.4"
+      },
+      "4": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0014/separate174/grading.json",
+        "original_sha256": "a0aa703d83003114b1cf330e402425d4526521af74435f136efc4fc6c2f17d55",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      },
+      "10": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0014/separate174/grading.json",
+        "original_sha256": "a0aa703d83003114b1cf330e402425d4526521af74435f136efc4fc6c2f17d55",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      }
+    },
+    "cli_runs": 1,
+    "cli_usage": [
+      {
+        "input_tokens": 489746,
+        "cached_input_tokens": 74496,
+        "output_tokens": 7662,
+        "thinking_tokens": 4987
+      }
+    ],
+    "cli_timing": [
+      {
+        "started_at": "2026-11-21T04:55:21+09:00",
+        "grading_seconds": 671.6,
+        "total_seconds": 671.6
+      }
+    ]
+  },
+  {
+    "video_id": "VID_0018",
+    "video_sha256": "97693de749dce10939690ff3df6d34c06763b719c00f60477f166d26cb71d41b",
+    "results": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0018/results.json",
+    "cli_record": "sop-video-grading/runs/VID_0018/rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-5008f396f04775d0c88df9f53a56f1df5a9b70b8d6003ac8fa868ca5cd85ba37/record.json",
+    "source_by_step": {
+      "3": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0018/original/grading.json",
+        "original_sha256": "ab06882303d6256408104a20755cd397f7b694fd2185e40cdd8e9a5c2ea6428f",
+        "kind": "既有評分沿用",
+        "rule_profile": "original",
+        "rubric_version": "1.28-disposal.1"
+      },
+      "2": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0018/recalculate/selected.json",
+        "original_sha256": "0c800a477a238d561fedfd1d4a485c6344659071c23ddfde2b36f5b133010205",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "29": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0018/recalculate/selected.json",
+        "original_sha256": "0c800a477a238d561fedfd1d4a485c6344659071c23ddfde2b36f5b133010205",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "1": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0018/readsheet/selected.json",
+        "original_sha256": "73875079364ad74fa672b5f107dfb854d8c0f8825365d7fb351a9d1d1f00e5f9",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "30": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0018/placement/selected.json",
+        "original_sha256": "891c733424c6034771d76545d9418ad2b2fadeba7370b0a4cbf587cf43957daa",
+        "kind": "既有已完成 Gemini 紀錄沿用",
+        "rule_profile": "placement",
+        "rubric_version": "1.30-disposal.4"
+      },
+      "4": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0018/separate174/grading.json",
+        "original_sha256": "4b52fb6926557179c1c6ed497e05b1dcb1051172d2f55ceaa0f98be7134cd017",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      },
+      "10": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0018/separate174/grading.json",
+        "original_sha256": "4b52fb6926557179c1c6ed497e05b1dcb1051172d2f55ceaa0f98be7134cd017",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      }
+    },
+    "cli_runs": 1,
+    "cli_usage": [
+      {
+        "input_tokens": 375891,
+        "cached_input_tokens": 55872,
+        "output_tokens": 3964,
+        "thinking_tokens": 1828
+      }
+    ],
+    "cli_timing": [
+      {
+        "started_at": "2026-11-21T05:06:37+09:00",
+        "grading_seconds": 512.2,
+        "total_seconds": 512.3
+      }
+    ]
+  },
+  {
+    "video_id": "VID_0020",
+    "video_sha256": "c5793842b4e7666ce3f1dd9cf76141b36e864eb06cf49b28e1cde922f14d9eb6",
+    "results": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0020/results.json",
+    "cli_record": "sop-video-grading/runs/VID_0020/rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-8721e912b8045cc697c83f798008b365cb926ca778e782b0f51e5c2ed17e820e/record.json",
+    "source_by_step": {
+      "3": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0020/original/grading.json",
+        "original_sha256": "dcd990f552001ef890354f5e0498a34592a029b013e58a88b41d11cdb2de4531",
+        "kind": "既有評分沿用",
+        "rule_profile": "original",
+        "rubric_version": "1.28-disposal.1"
+      },
+      "2": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0020/recalculate/selected.json",
+        "original_sha256": "14795fbbd6663341dce9067e10300e1e44fe485197fe9bf68ab2b892cf4fa913",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "29": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0020/recalculate/selected.json",
+        "original_sha256": "14795fbbd6663341dce9067e10300e1e44fe485197fe9bf68ab2b892cf4fa913",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "1": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0020/readsheet/selected.json",
+        "original_sha256": "9aa4de57ba843da5f10823bbf8cebf0945ee8739c7031342944534d8c5d07d97",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "30": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0020/placement/selected.json",
+        "original_sha256": "811728b0901dfe413b442dc83131c83e53c0dbdf9ba357a064001f174f7695bf",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "placement",
+        "rubric_version": "1.30-disposal.4"
+      },
+      "4": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0020/separate174/grading.json",
+        "original_sha256": "3decf674bf1a4fdbedeb82f709159bd89e5c4ed1dd94ec381efaf5c39a8c3884",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      },
+      "10": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0020/separate174/grading.json",
+        "original_sha256": "3decf674bf1a4fdbedeb82f709159bd89e5c4ed1dd94ec381efaf5c39a8c3884",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      }
+    },
+    "cli_runs": 1,
+    "cli_usage": [
+      {
+        "input_tokens": 634424,
+        "cached_input_tokens": 55872,
+        "output_tokens": 5796,
+        "thinking_tokens": 2263
+      }
+    ],
+    "cli_timing": [
+      {
+        "started_at": "2026-11-21T05:15:14+09:00",
+        "grading_seconds": 929.4,
+        "total_seconds": 929.4
+      }
+    ]
+  },
+  {
+    "video_id": "VID_0030",
+    "video_sha256": "4a59ef2ec020b95fa62743ce1fbb07e3a174a86d03d8d7111adc8c9a85afdd41",
+    "results": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0030/results.json",
+    "cli_record": "sop-video-grading/runs/VID_0030/rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-f95684245304c495a86cd303d1b033d0b3d23ff2236e545ad177439be666916c/record.json",
+    "source_by_step": {
+      "3": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0030/original/grading.json",
+        "original_sha256": "e98b818e9ccdff831d74f614cac994c3b5507f364dfab050a6b0a92f4bd680a9",
+        "kind": "既有評分沿用",
+        "rule_profile": "original",
+        "rubric_version": "1.28-disposal.1"
+      },
+      "2": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0030/recalculate/selected.json",
+        "original_sha256": "f166721b4067748f32d7ca18058ac76f815643a0bbc27393894184737c5745ff",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "29": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0030/recalculate/selected.json",
+        "original_sha256": "f166721b4067748f32d7ca18058ac76f815643a0bbc27393894184737c5745ff",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "1": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0030/readsheet/selected.json",
+        "original_sha256": "1618a48eea5db9a088177420e1b22108519eb9ae5c33a79cfdd1be23ee94a805",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "30": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0030/placement/selected.json",
+        "original_sha256": "8acbdc7be6b06a2c1035555a3d08cd473664bc31be25709a67b801d2fcd5e3ad",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "placement",
+        "rubric_version": "1.30-disposal.4"
+      },
+      "4": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0030/separate174/grading.json",
+        "original_sha256": "1a121d3cc6e2e25fb90e423246869e64a2d2f62a850efcf0c6ccee0da73ba779",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      },
+      "10": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0030/separate174/grading.json",
+        "original_sha256": "1a121d3cc6e2e25fb90e423246869e64a2d2f62a850efcf0c6ccee0da73ba779",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      }
+    },
+    "cli_runs": 1,
+    "cli_usage": [
+      {
+        "input_tokens": 336687,
+        "cached_input_tokens": 148992,
+        "output_tokens": 4157,
+        "thinking_tokens": 2126
+      }
+    ],
+    "cli_timing": [
+      {
+        "started_at": "2026-11-21T05:30:51+09:00",
+        "grading_seconds": 481.2,
+        "total_seconds": 481.2
+      }
+    ]
+  },
+  {
+    "video_id": "VID_0072",
+    "video_sha256": "2c31f6e6b5e5b96cbdd0210912287feda3af97f1a5b6159cb428b12f0ce0db83",
+    "results": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0072/results.json",
+    "cli_record": "sop-video-grading/runs/VID_0072/rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-df4b40be03db4a676d11e027ae314b09361d75476a19497ab8bcb5fe932b80e1/record.json",
+    "source_by_step": {
+      "3": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0072/original/grading.json",
+        "original_sha256": "7e031b2e39082968465fad36af8ef33eddec30712b35f0b662b02f5e5e0f21ea",
+        "kind": "既有評分沿用",
+        "rule_profile": "original",
+        "rubric_version": "1.28"
+      },
+      "2": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0072/recalculate/selected.json",
+        "original_sha256": "6b01e9246d5b6bb1c1d8f935cd397ffde6dfbe30cfe24913d55643a03870b8cb",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "29": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0072/recalculate/selected.json",
+        "original_sha256": "6b01e9246d5b6bb1c1d8f935cd397ffde6dfbe30cfe24913d55643a03870b8cb",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "1": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0072/readsheet/selected.json",
+        "original_sha256": "d0bc18cfcc9ea93a8c18d1273d2faa73547c1c355bd86e9cb68b5c064d8efe51",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "30": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0072/placement/selected.json",
+        "original_sha256": "305490644eca5e1eece136faa3b0f3a264af80fce0a9059a98960327abbe8978",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "placement",
+        "rubric_version": "1.30-disposal.4"
+      },
+      "4": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0072/separate174/grading.json",
+        "original_sha256": "a551ef779e5c7b304a64d2561f508b2488f3e3dc83a38bcc49dae6f9b4116ff0",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      },
+      "10": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0072/separate174/grading.json",
+        "original_sha256": "a551ef779e5c7b304a64d2561f508b2488f3e3dc83a38bcc49dae6f9b4116ff0",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      }
+    },
+    "cli_runs": 1,
+    "cli_usage": [
+      {
+        "input_tokens": 233583,
+        "cached_input_tokens": 55872,
+        "output_tokens": 2139,
+        "thinking_tokens": 708
+      }
+    ],
+    "cli_timing": [
+      {
+        "started_at": "2026-11-21T05:38:58+09:00",
+        "grading_seconds": 658.3,
+        "total_seconds": 658.3
+      }
+    ]
+  },
+  {
+    "video_id": "VID_0073",
+    "video_sha256": "6733f9f1e7f9d44d1727e1f3e31984fe3d0e29d8a7e8fcf37357a06a2ab01a1e",
+    "results": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0073/results.json",
+    "cli_record": "sop-video-grading/runs/VID_0073/rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-f7664b972561aa1b82abbb6c4518ab989462990c668ce3cd79ef9949067a897f/record.json",
+    "source_by_step": {
+      "3": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0073/original/grading.json",
+        "original_sha256": "139bd4ae073ff1af2bdeaa933911d0553bae3b4b6814cd5a6bd51ec68b199f5e",
+        "kind": "既有評分沿用",
+        "rule_profile": "original",
+        "rubric_version": "1.28"
+      },
+      "2": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0073/recalculate/selected.json",
+        "original_sha256": "59389092e650dad3a3cbb3879d1d70e19c2ef9b1b03a8af55a22c97e4692d744",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "29": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0073/recalculate/selected.json",
+        "original_sha256": "59389092e650dad3a3cbb3879d1d70e19c2ef9b1b03a8af55a22c97e4692d744",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "1": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0073/readsheet/selected.json",
+        "original_sha256": "10249130784f4d26a4dec5a479579b72e1a9becd9e676c3f6067f73aee7062b1",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "30": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0073/placement/selected.json",
+        "original_sha256": "56051daf7007eb48872908b63d476bb9a90321d8c951695243a45548cb65de8c",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "placement",
+        "rubric_version": "1.30-disposal.4"
+      },
+      "4": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0073/separate174/grading.json",
+        "original_sha256": "a804e18410b9267699c4b4156db4e2117e6e1865d15e7625c67292bf16b894e2",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      },
+      "10": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0073/separate174/grading.json",
+        "original_sha256": "a804e18410b9267699c4b4156db4e2117e6e1865d15e7625c67292bf16b894e2",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      }
+    },
+    "cli_runs": 1,
+    "cli_usage": [
+      {
+        "input_tokens": 341921,
+        "cached_input_tokens": 74496,
+        "output_tokens": 2243,
+        "thinking_tokens": 584
+      }
+    ],
+    "cli_timing": [
+      {
+        "started_at": "2026-11-21T05:50:02+09:00",
+        "grading_seconds": 966.0,
+        "total_seconds": 966.0
+      }
+    ]
+  },
+  {
+    "video_id": "VID_0074",
+    "video_sha256": "44f35e938c70e7eb7692e42871587e82dea2f153e86cd4f349f2a7fe7b8b21d6",
+    "results": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0074/results.json",
+    "cli_record": "sop-video-grading/runs/VID_0074/rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-dcaf23945a8bb1ec9a2382e3340deb4505180a457f630d325bc9844b8db42945/record.json",
+    "source_by_step": {
+      "3": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0074/original/grading.json",
+        "original_sha256": "310c9e4c2e21b340d081bd48ba9721964ac886ee0233a7e0e09895ebaee28c9a",
+        "kind": "既有評分沿用",
+        "rule_profile": "original",
+        "rubric_version": "1.28"
+      },
+      "2": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0074/recalculate/selected.json",
+        "original_sha256": "2efbf9cbe10d4f8c34b6789d0cde42bc62a90c7e7a2374ced9a07311abd772cf",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "29": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0074/recalculate/selected.json",
+        "original_sha256": "2efbf9cbe10d4f8c34b6789d0cde42bc62a90c7e7a2374ced9a07311abd772cf",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "1": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0074/readsheet/selected.json",
+        "original_sha256": "7e2ccadcd57b392f3a84819c67bbc154104bf679340447c9cd6bbdfad6766758",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "30": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0074/placement/selected.json",
+        "original_sha256": "2691e25c53ffc285c7e4fb5b2b45348a23cdce71aac47c326208912392009d1a",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "placement",
+        "rubric_version": "1.30-disposal.4"
+      },
+      "4": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0074/separate174/grading.json",
+        "original_sha256": "8402b8cedc54d2c5566c1dd4131e4432a17051010c97299a9ed815e94a5680bf",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      },
+      "10": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0074/separate174/grading.json",
+        "original_sha256": "8402b8cedc54d2c5566c1dd4131e4432a17051010c97299a9ed815e94a5680bf",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      }
+    },
+    "cli_runs": 1,
+    "cli_usage": [
+      {
+        "input_tokens": 314990,
+        "cached_input_tokens": 37248,
+        "output_tokens": 3043,
+        "thinking_tokens": 1537
+      }
+    ],
+    "cli_timing": [
+      {
+        "started_at": "2026-11-21T06:06:13+09:00",
+        "grading_seconds": 670.3,
+        "total_seconds": 670.3
+      }
+    ]
+  },
+  {
+    "video_id": "VID_0076",
+    "video_sha256": "5e056a691870cc4957f00604e1bbabd539d22e0d24f0c32ad5446aee3155de2c",
+    "results": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0076/results.json",
+    "cli_record": "sop-video-grading/runs/VID_0076/rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-5198e1f0fc09b40eefcca2276c7f47f9f177b966c1b9f7b839617973b4eb3e65/record.json",
+    "source_by_step": {
+      "3": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0076/original/grading.json",
+        "original_sha256": "d2e09199307443f7d44bfdd64c252cf59d3b0a4a4e72a36b8b4bb9f3bf003807",
+        "kind": "既有評分沿用",
+        "rule_profile": "original",
+        "rubric_version": "1.28-disposal.1"
+      },
+      "2": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0076/recalculate/selected.json",
+        "original_sha256": "df3d75a5eae593211022b71c9b61b900345d27c667830049e424abd4a2c0477f",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "29": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0076/recalculate/selected.json",
+        "original_sha256": "df3d75a5eae593211022b71c9b61b900345d27c667830049e424abd4a2c0477f",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "1": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0076/readsheet/selected.json",
+        "original_sha256": "0495c6b8f9096dba4fde5a755db6acd1841255672bbdb4b344f79d4fb4537219",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "30": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0076/placement/selected.json",
+        "original_sha256": "2e14894d984b5f1f46ca5410eccfb4b85f5f9dc2455a23a9be6c30d2bb171bdc",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "placement",
+        "rubric_version": "1.30-disposal.4"
+      },
+      "4": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0076/separate174/grading.json",
+        "original_sha256": "ddd29bddab778ea558216b6ce3455160ef5b0e3f980370fcc4a6654379831338",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      },
+      "10": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0076/separate174/grading.json",
+        "original_sha256": "ddd29bddab778ea558216b6ce3455160ef5b0e3f980370fcc4a6654379831338",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      }
+    },
+    "cli_runs": 1,
+    "cli_usage": [
+      {
+        "input_tokens": 276854,
+        "cached_input_tokens": 37248,
+        "output_tokens": 2072,
+        "thinking_tokens": 594
+      }
+    ],
+    "cli_timing": [
+      {
+        "started_at": "2026-11-21T06:17:30+09:00",
+        "grading_seconds": 487.5,
+        "total_seconds": 487.5
+      }
+    ]
+  },
+  {
+    "video_id": "VID_0081",
+    "video_sha256": "6f9235af873da512b612ede7dfc6feeb83ef8a17267ad624e6c2c613d5b2fc24",
+    "results": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0081/results.json",
+    "cli_record": "sop-video-grading/runs/VID_0081/rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-e218075f08b1c5663e450621e4d7f3d068eb304f9b9ac8ff60912b371e367306/record.json",
+    "source_by_step": {
+      "3": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0081/original/grading.json",
+        "original_sha256": "6362654eec1bf3abe708ea65b8e6a3029f2e4c7bfd26f88a6858b6d41077eae0",
+        "kind": "既有評分沿用",
+        "rule_profile": "original",
+        "rubric_version": "1.28-disposal.1"
+      },
+      "2": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0081/recalculate/selected.json",
+        "original_sha256": "ce3690637bf3a7effbbe739cf58d5acb4ba53932f341918ffadd4ba2d5939b0f",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "29": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0081/recalculate/selected.json",
+        "original_sha256": "ce3690637bf3a7effbbe739cf58d5acb4ba53932f341918ffadd4ba2d5939b0f",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "1": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0081/readsheet/selected.json",
+        "original_sha256": "908bb19dc852e7cf9cd4931e1d21852faa66216a6c530b7ec7925f1076cd8163",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "30": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0081/placement/selected.json",
+        "original_sha256": "f6c31bd300e767054a959e05104d62d47016f9211b82a6872e7cf64005682529",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "placement",
+        "rubric_version": "1.30-disposal.4"
+      },
+      "4": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0081/separate174/grading.json",
+        "original_sha256": "1c06ad61ee6035408d3e5da04bd6960eec23453f882cf8a58c08da07cb948f19",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      },
+      "10": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0081/separate174/grading.json",
+        "original_sha256": "1c06ad61ee6035408d3e5da04bd6960eec23453f882cf8a58c08da07cb948f19",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      }
+    },
+    "cli_runs": 1,
+    "cli_usage": [
+      {
+        "input_tokens": 314011,
+        "cached_input_tokens": 167514,
+        "output_tokens": 2053,
+        "thinking_tokens": 316
+      }
+    ],
+    "cli_timing": [
+      {
+        "started_at": "2026-11-21T06:25:43+09:00",
+        "grading_seconds": 454.3,
+        "total_seconds": 454.4
+      }
+    ]
+  },
+  {
+    "video_id": "VID_0083",
+    "video_sha256": "59344f57fd50fda04dccbcb64c7c685bc79937bf7c33dc933174d670e80954e5",
+    "results": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0083/results.json",
+    "cli_record": "sop-video-grading/runs/VID_0083/rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-ae9680b35e3a2da471604e47fed44031da38d6dcaf6fe0f6c5db96f5b1f1f81c/record.json",
+    "source_by_step": {
+      "3": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0083/original/grading.json",
+        "original_sha256": "ff9b7fedcd436c73b0045b72c8ca5b11888ba8a69cd590868ebe080c0d30dbc3",
+        "kind": "既有評分沿用",
+        "rule_profile": "original",
+        "rubric_version": "1.28-disposal.1"
+      },
+      "2": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0083/recalculate/selected.json",
+        "original_sha256": "ddf4e6595854a0d2f6d2d0a1ddaa3990d3db862a3c1f3903cc11026c616dc7ae",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "29": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0083/recalculate/selected.json",
+        "original_sha256": "ddf4e6595854a0d2f6d2d0a1ddaa3990d3db862a3c1f3903cc11026c616dc7ae",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "1": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0083/readsheet/selected.json",
+        "original_sha256": "c14ca9a27beafdbfbcd723ed6478e8241ef916e7945505a5abdbbf7c5e06e319",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "30": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0083/placement/selected.json",
+        "original_sha256": "7960634a1a7f05f3d50e4a486309a082a89a1dfe6613e90579b449bfb6a0fe9c",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "placement",
+        "rubric_version": "1.30-disposal.4"
+      },
+      "4": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0083/separate174/grading.json",
+        "original_sha256": "b07db7fdc1204418bee624591f31c1b19aef6c603c69a761603f458e7e0ef304",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      },
+      "10": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0083/separate174/grading.json",
+        "original_sha256": "b07db7fdc1204418bee624591f31c1b19aef6c603c69a761603f458e7e0ef304",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      }
+    },
+    "cli_runs": 1,
+    "cli_usage": [
+      {
+        "input_tokens": 384883,
+        "cached_input_tokens": 111744,
+        "output_tokens": 4315,
+        "thinking_tokens": 2490
+      }
+    ],
+    "cli_timing": [
+      {
+        "started_at": "2026-11-21T06:33:24+09:00",
+        "grading_seconds": 1005.4,
+        "total_seconds": 1005.4
+      }
+    ]
+  },
+  {
+    "video_id": "VID_0087",
+    "video_sha256": "7d1e6c9980a20abe9c6d8ad4fe25f737b71db42504a78ed64160640f4d100913",
+    "results": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0087/results.json",
+    "cli_record": "sop-video-grading/runs/VID_0087/rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-db7d47be49f3f198a02159fb7b1d67fceec883c56cab35da412fa00891f80fd7/record.json",
+    "source_by_step": {
+      "3": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0087/original/grading.json",
+        "original_sha256": "a796b91a6c81b5eb15ee516e5c01e0533f9d32bea85b28ef99fd596b56a612cf",
+        "kind": "既有評分沿用",
+        "rule_profile": "original",
+        "rubric_version": "1.28-disposal.1"
+      },
+      "2": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0087/recalculate/selected.json",
+        "original_sha256": "0edf86205e2f33089371b780f85dce84340fa1107e22edd24ba710978dc83c44",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "29": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0087/recalculate/selected.json",
+        "original_sha256": "0edf86205e2f33089371b780f85dce84340fa1107e22edd24ba710978dc83c44",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "1": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0087/readsheet/selected.json",
+        "original_sha256": "05cd346f3b913783ae7fae64f6fd540a3a9043979a504013bf37c5efd288d357",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "30": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0087/placement/selected.json",
+        "original_sha256": "446f6f2935ea7b9af39fce988583381f3c9e781c8662ad23897000f4e4e8be97",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "placement",
+        "rubric_version": "1.30-disposal.4"
+      },
+      "4": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0087/separate174/grading.json",
+        "original_sha256": "e5641035a4a22554066082e790aa229564a6593a8b050ef3e0e66b173b79bdec",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      },
+      "10": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0087/separate174/grading.json",
+        "original_sha256": "e5641035a4a22554066082e790aa229564a6593a8b050ef3e0e66b173b79bdec",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      }
+    },
+    "cli_runs": 1,
+    "cli_usage": [
+      {
+        "input_tokens": 302042,
+        "cached_input_tokens": 111744,
+        "output_tokens": 2173,
+        "thinking_tokens": 541
+      }
+    ],
+    "cli_timing": [
+      {
+        "started_at": "2026-11-21T06:50:17+09:00",
+        "grading_seconds": 435.1,
+        "total_seconds": 435.1
+      }
+    ]
+  },
+  {
+    "video_id": "VID_0089",
+    "video_sha256": "42564bfce432995522dfd24b1f6496d6d49657f60595950271f9d966baa71874",
+    "results": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0089/results.json",
+    "cli_record": "sop-video-grading/runs/VID_0089/rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-3cc7717d58aa27089345ebe2b098a03b830069a8edf5b1fa8bee536dac2824a1/record.json",
+    "source_by_step": {
+      "3": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0089/original/grading.json",
+        "original_sha256": "cad80977411ca55569615777ade7a3fc8c2a8b34c3e3f2ec7a1648f2accdd6db",
+        "kind": "既有評分沿用",
+        "rule_profile": "original",
+        "rubric_version": "1.28-disposal.1"
+      },
+      "2": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0089/recalculate/selected.json",
+        "original_sha256": "50ce0ed7c3fce323be56a50fdeaa8bfe5c1aaa045fd7321818b969aa4e72aa35",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "29": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0089/recalculate/selected.json",
+        "original_sha256": "50ce0ed7c3fce323be56a50fdeaa8bfe5c1aaa045fd7321818b969aa4e72aa35",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "1": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0089/readsheet/selected.json",
+        "original_sha256": "05adc14bfca4d7b3ddb0e1c55b1f98e9666edd47025f30c6b8935881ed783d92",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "30": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0089/placement/selected.json",
+        "original_sha256": "6d679036d89d099fac2af7d5d3535fd5221519f518473955d5c9cee8bdc33658",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "placement",
+        "rubric_version": "1.30-disposal.4"
+      },
+      "4": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0089/separate174/grading.json",
+        "original_sha256": "4be28aa72cf9e596d58104a64b7e30b26b4e74868cdf79f12afc14412949fd41",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      },
+      "10": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0089/separate174/grading.json",
+        "original_sha256": "4be28aa72cf9e596d58104a64b7e30b26b4e74868cdf79f12afc14412949fd41",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      }
+    },
+    "cli_runs": 1,
+    "cli_usage": [
+      {
+        "input_tokens": 220713,
+        "cached_input_tokens": 55872,
+        "output_tokens": 2992,
+        "thinking_tokens": 1703
+      }
+    ],
+    "cli_timing": [
+      {
+        "started_at": "2026-11-21T06:57:39+09:00",
+        "grading_seconds": 282.4,
+        "total_seconds": 282.4
+      }
+    ]
+  },
+  {
+    "video_id": "VID_0091",
+    "video_sha256": "35b664b3fec80bb852952be95df14a73df6963c5bb83484338f44ba364a07ff4",
+    "results": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0091/results.json",
+    "cli_record": "sop-video-grading/runs/VID_0091/rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-8a867469c7bbf07cdc08b16f65d9062be63d5094700e57850105fa1256cab0ba/record.json",
+    "source_by_step": {
+      "3": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0091/original/grading.json",
+        "original_sha256": "1dcca2d73993f83beabd9e579739ecbae62381c6bc077a29684a996f07cb027b",
+        "kind": "既有評分沿用",
+        "rule_profile": "original",
+        "rubric_version": "1.28-disposal.1"
+      },
+      "2": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0091/recalculate/selected.json",
+        "original_sha256": "b130d96fcaf9d31798be4c2a7c883d63cabb666e7709589aea49c9bbe7f7c069",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "29": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0091/recalculate/selected.json",
+        "original_sha256": "b130d96fcaf9d31798be4c2a7c883d63cabb666e7709589aea49c9bbe7f7c069",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "1": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0091/readsheet/selected.json",
+        "original_sha256": "01af1b53ffec2646353d52012e50427e4eed05b70bca0229939526dd0b24db23",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "30": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0091/placement/selected.json",
+        "original_sha256": "ce004ffdc2ffe0ffca1a947f3f125fbbe5e8016e9a3af48586874d2dcb17e8b4",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "placement",
+        "rubric_version": "1.30-disposal.4"
+      },
+      "4": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0091/separate174/grading.json",
+        "original_sha256": "b4ad45bd4268a49afcc566baae6e461040c7d6a109ca90c132f5c399cb646377",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      },
+      "10": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0091/separate174/grading.json",
+        "original_sha256": "b4ad45bd4268a49afcc566baae6e461040c7d6a109ca90c132f5c399cb646377",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      }
+    },
+    "cli_runs": 1,
+    "cli_usage": [
+      {
+        "input_tokens": 444483,
+        "cached_input_tokens": 74422,
+        "output_tokens": 5189,
+        "thinking_tokens": 3008
+      }
+    ],
+    "cli_timing": [
+      {
+        "started_at": "2026-11-21T07:02:25+09:00",
+        "grading_seconds": 1082.6,
+        "total_seconds": 1082.6
+      }
+    ]
+  },
+  {
+    "video_id": "VID_0095",
+    "video_sha256": "c405dfeae0e0ea8de6b6f81d8c360b443b74ec3864e1e09105786c7a49e31d99",
+    "results": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0095/results.json",
+    "cli_record": "sop-video-grading/runs/VID_0095/rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-0803b7afe840f2e3e77ffaeb42843eb0d8526b15be019cdc845929b6889af917/record.json",
+    "source_by_step": {
+      "3": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0095/original/grading.json",
+        "original_sha256": "68f90ddc9b561adc9da80d01cf11fd0ef5961443102871d8719ba8507543cb91",
+        "kind": "既有評分沿用",
+        "rule_profile": "original",
+        "rubric_version": "1.28-disposal.1"
+      },
+      "2": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0095/recalculate/selected.json",
+        "original_sha256": "7b87d8e78a8e8496bfbb3fdb2e22daf08d8a184e563b6458fdf15c8a8b093d42",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "29": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0095/recalculate/selected.json",
+        "original_sha256": "7b87d8e78a8e8496bfbb3fdb2e22daf08d8a184e563b6458fdf15c8a8b093d42",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "1": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0095/readsheet/selected.json",
+        "original_sha256": "9d4984dd95f8564d9750d07764cbff3155f2024e005694637847d08b6a8410f2",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "30": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0095/placement/selected.json",
+        "original_sha256": "cf1d27964d12eb4fc0124cf06182e8592386b323088506c10f53943e8912c4fe",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "placement",
+        "rubric_version": "1.30-disposal.4"
+      },
+      "4": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0095/separate174/grading.json",
+        "original_sha256": "075b69e7373305deb03a2c1ba3018308ed8646ef78a428e8e9f24a41def1a8b9",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      },
+      "10": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0095/separate174/grading.json",
+        "original_sha256": "075b69e7373305deb03a2c1ba3018308ed8646ef78a428e8e9f24a41def1a8b9",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      }
+    },
+    "cli_runs": 1,
+    "cli_usage": [
+      {
+        "input_tokens": 368508,
+        "cached_input_tokens": 130368,
+        "output_tokens": 3186,
+        "thinking_tokens": 1510
+      }
+    ],
+    "cli_timing": [
+      {
+        "started_at": "2026-11-21T07:20:33+09:00",
+        "grading_seconds": 559.5,
+        "total_seconds": 559.6
+      }
+    ]
+  },
+  {
+    "video_id": "VID_0096",
+    "video_sha256": "9729bb5e28bef4651458628be085cf2211abde5ecb6e38db082a28ac523cd0d6",
+    "results": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0096/results.json",
+    "cli_record": "sop-video-grading/runs/VID_0096/rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-3846069ae3f38d31df3362a5420372d4aa1b449a54b5863cd56e86bb5dbd08a6/record.json",
+    "source_by_step": {
+      "3": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0096/original/grading.json",
+        "original_sha256": "73fc1f8e62a4222b268702afaec295e4a1d28d41d9ecfa2bd3407303d5360f4b",
+        "kind": "既有評分沿用",
+        "rule_profile": "original",
+        "rubric_version": "1.28-disposal.1"
+      },
+      "2": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0096/recalculate/selected.json",
+        "original_sha256": "e85f6e9748e340ffa93d93bbae2fa083bdbfc5536e51c7ba5bf69bb576b474c8",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "29": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0096/recalculate/selected.json",
+        "original_sha256": "e85f6e9748e340ffa93d93bbae2fa083bdbfc5536e51c7ba5bf69bb576b474c8",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "1": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0096/readsheet/selected.json",
+        "original_sha256": "1e0e33dc06b9eb53af565dbdc56e0cc611cec5dd56ada911a77427cb4eacdc19",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "30": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0096/placement/selected.json",
+        "original_sha256": "0ff1dc2e3c4a52c2fa5673ac24f9e89e0efc24a6db050632c1a3e766518f5d0f",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "placement",
+        "rubric_version": "1.30-disposal.4"
+      },
+      "4": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0096/separate174/grading.json",
+        "original_sha256": "168c9caef33c0eecf1b45afa6dec625a9d9540d9553b03ce83fd1b54a8211117",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      },
+      "10": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0096/separate174/grading.json",
+        "original_sha256": "168c9caef33c0eecf1b45afa6dec625a9d9540d9553b03ce83fd1b54a8211117",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      }
+    },
+    "cli_runs": 1,
+    "cli_usage": [
+      {
+        "input_tokens": 437387,
+        "cached_input_tokens": 74496,
+        "output_tokens": 5364,
+        "thinking_tokens": 3264
+      }
+    ],
+    "cli_timing": [
+      {
+        "started_at": "2026-11-21T07:30:00+09:00",
+        "grading_seconds": 802.9,
+        "total_seconds": 802.9
+      }
+    ]
+  },
+  {
+    "video_id": "VID_0097",
+    "video_sha256": "de2b2620df2ddd2d9895483b8b443a7725302ff138b8577fc4d40198605eb867",
+    "results": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0097/results.json",
+    "cli_record": "sop-video-grading/runs/VID_0097/rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-5532d1fe2f47b8dd90ae9f70a6c0fab588ed6d39c5ace47816a9c2e9b48aaa41/record.json",
+    "source_by_step": {
+      "3": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0097/original/grading.json",
+        "original_sha256": "f9dc8161f027c2f4e5b67cf768aee45317dcd03e0b6e6ef526b72ec0965b9572",
+        "kind": "既有評分沿用",
+        "rule_profile": "original",
+        "rubric_version": "1.28-disposal.1"
+      },
+      "2": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0097/recalculate/selected.json",
+        "original_sha256": "b5276faaf7e8f3a9720e8017d0587fd2a32b1812062b3f6293a5366e41fc1864",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "29": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0097/recalculate/selected.json",
+        "original_sha256": "b5276faaf7e8f3a9720e8017d0587fd2a32b1812062b3f6293a5366e41fc1864",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "1": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0097/readsheet/selected.json",
+        "original_sha256": "ce21977c259630c9723c6d941f411c9223d0cce59ef15f8493ef9ffee26d207d",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "30": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0097/placement/selected.json",
+        "original_sha256": "63a701c9dbdf7ba4423ec5a6d63236ceee9e23bade7a1233381415c32fa639ce",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "placement",
+        "rubric_version": "1.30-disposal.4"
+      },
+      "4": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0097/separate174/grading.json",
+        "original_sha256": "4281565efd1e39d1a1a64c9762505a06fdf62855018a93c627e44cb2de38f720",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      },
+      "10": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0097/separate174/grading.json",
+        "original_sha256": "4281565efd1e39d1a1a64c9762505a06fdf62855018a93c627e44cb2de38f720",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      }
+    },
+    "cli_runs": 1,
+    "cli_usage": [
+      {
+        "input_tokens": 339962,
+        "cached_input_tokens": 55872,
+        "output_tokens": 3830,
+        "thinking_tokens": 1848
+      }
+    ],
+    "cli_timing": [
+      {
+        "started_at": "2026-11-21T07:43:27+09:00",
+        "grading_seconds": 788.8,
+        "total_seconds": 788.9
+      }
+    ]
+  },
+  {
+    "video_id": "VID_0098",
+    "video_sha256": "ca99124fe3ebc7cd5b27d0f88d838f6dc150f4144c1b775a332b771594f16566",
+    "results": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0098/results.json",
+    "cli_record": "sop-video-grading/runs/VID_0098/rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-6dc95ff58aea2feec6d5c87bf6f5483ebc6578a180c9496838a90e5bcf63f7bf/record.json",
+    "source_by_step": {
+      "3": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0098/original/grading.json",
+        "original_sha256": "0f0a71b6a9acafa0bb563447b0d1a304c6ced7a62ce883d5f56b17bfa1bb2fe0",
+        "kind": "既有評分沿用",
+        "rule_profile": "original",
+        "rubric_version": "1.28-disposal.1"
+      },
+      "2": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0098/recalculate/selected.json",
+        "original_sha256": "9e36ffc837b6ce1c99251c8ee4b1aeac8ebd61ed2e571c7f8cb26b7d0697dc14",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "29": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0098/recalculate/selected.json",
+        "original_sha256": "9e36ffc837b6ce1c99251c8ee4b1aeac8ebd61ed2e571c7f8cb26b7d0697dc14",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "1": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0098/readsheet/selected.json",
+        "original_sha256": "255ddb4ce8dee040629cad88e743051d8c53f23ecc16cf537afcd075b93aeef4",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "30": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0098/placement/selected.json",
+        "original_sha256": "dfb4d3f5685294e5aed61ada6e4eef1fb4bd92d3e4e74aa393e5a8d3853c46b1",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "placement",
+        "rubric_version": "1.30-disposal.4"
+      },
+      "4": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0098/separate174/grading.json",
+        "original_sha256": "68fc5a77b16cf7379f809e44d1534d41d29bd66378085bd08faa57634a2d28f6",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      },
+      "10": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0098/separate174/grading.json",
+        "original_sha256": "68fc5a77b16cf7379f809e44d1534d41d29bd66378085bd08faa57634a2d28f6",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      }
+    },
+    "cli_runs": 1,
+    "cli_usage": [
+      {
+        "input_tokens": 488354,
+        "cached_input_tokens": 186240,
+        "output_tokens": 5423,
+        "thinking_tokens": 2492
+      }
+    ],
+    "cli_timing": [
+      {
+        "started_at": "2026-11-21T07:56:39+09:00",
+        "grading_seconds": 643.2,
+        "total_seconds": 643.2
+      }
+    ]
+  },
+  {
+    "video_id": "VID_0099",
+    "video_sha256": "fa568c924f0ea3d3ac7165335c4628fa366da63361d8b5bd0a1398a389cf218e",
+    "results": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0099/results.json",
+    "cli_record": "sop-video-grading/runs/VID_0099/rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-a15a3709bc5ae4bcac20af0911d4efacfe20f7f500f9206dcae887328ea34082/record.json",
+    "source_by_step": {
+      "3": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0099/original/grading.json",
+        "original_sha256": "a6e9c1e58537cf21c7a6624c45c7494d43485ce179925e36af171a443c57e6d8",
+        "kind": "既有評分沿用",
+        "rule_profile": "original",
+        "rubric_version": "1.28-disposal.1"
+      },
+      "2": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0099/recalculate/selected.json",
+        "original_sha256": "c60ab0266030a3697cc57a1f9b28174805c96781fff576dcbeb20fa7089d3ebe",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "29": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0099/recalculate/selected.json",
+        "original_sha256": "c60ab0266030a3697cc57a1f9b28174805c96781fff576dcbeb20fa7089d3ebe",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "1": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0099/readsheet/selected.json",
+        "original_sha256": "21e9ff5946129a146abbbf1b0c3e83e8c5c373ad9d814ba1a93ffd64c8bc7618",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "30": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0099/placement/selected.json",
+        "original_sha256": "961d6e422b81c4503d0505beb71157f29c4672c4fe04afad9edfd96d6636f061",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "placement",
+        "rubric_version": "1.30-disposal.4"
+      },
+      "4": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0099/separate174/grading.json",
+        "original_sha256": "9c7adf2a45abbe619bcec589070d7873216a947517540a16cbde65101abe9efa",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      },
+      "10": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0099/separate174/grading.json",
+        "original_sha256": "9c7adf2a45abbe619bcec589070d7873216a947517540a16cbde65101abe9efa",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      }
+    },
+    "cli_runs": 2,
+    "cli_usage": [
+      {
+        "input_tokens": 278666,
+        "cached_input_tokens": 18624,
+        "output_tokens": 3320,
+        "thinking_tokens": 1974
+      },
+      {
+        "input_tokens": 97515,
+        "cached_input_tokens": 0,
+        "output_tokens": 1117,
+        "thinking_tokens": 175
+      }
+    ],
+    "cli_timing": [
+      {
+        "started_at": "2026-11-21T08:07:26+09:00",
+        "grading_seconds": 473.1,
+        "total_seconds": 473.1
+      },
+      {
+        "started_at": "2026-11-21T17:33:49+09:00",
+        "grading_seconds": 119.5,
+        "total_seconds": 119.5,
+        "checkpoints_found": true
+      }
+    ]
+  },
+  {
+    "video_id": "VID_0100",
+    "video_sha256": "3df2b9c90c8d9213c391f9ba9148c65453725b55fff9550e7518b0b81edb5aa2",
+    "results": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0100/results.json",
+    "cli_record": "sop-video-grading/runs/VID_0100/rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-b5d08717f7dece1554cd549fb129fa48b2fe482be15a3aa8f172724ca90533e2/record.json",
+    "source_by_step": {
+      "3": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0100/original/grading.json",
+        "original_sha256": "a590827b8e7d0c336c823a205287089d314c1342cca3203571a3ef30a32dc75a",
+        "kind": "既有評分沿用",
+        "rule_profile": "original",
+        "rubric_version": "1.28-disposal.1"
+      },
+      "2": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0100/recalculate/selected.json",
+        "original_sha256": "e325355be4f872bd3e036fb9ed350675e51934ad7c3fe36e0905ab02858495ff",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "29": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0100/recalculate/selected.json",
+        "original_sha256": "e325355be4f872bd3e036fb9ed350675e51934ad7c3fe36e0905ab02858495ff",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "1": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0100/readsheet/selected.json",
+        "original_sha256": "c42c806e6048bbb59cff3220f318ce6d742c98dafcbbcc84c2ce52f5a8cc824c",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "30": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0100/placement/selected.json",
+        "original_sha256": "2843794b1ea17325ef91672b95ebe117cee24f34589b38c31ebc174270c8e742",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "placement",
+        "rubric_version": "1.30-disposal.4"
+      },
+      "4": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0100/separate174/grading.json",
+        "original_sha256": "dc87964f9debd5dadb28b5380a1cc10f1e09c46f4722e842e2d99e3197d1d689",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      },
+      "10": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0100/separate174/grading.json",
+        "original_sha256": "dc87964f9debd5dadb28b5380a1cc10f1e09c46f4722e842e2d99e3197d1d689",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      }
+    },
+    "cli_runs": 1,
+    "cli_usage": [
+      {
+        "input_tokens": 375010,
+        "cached_input_tokens": 111668,
+        "output_tokens": 3712,
+        "thinking_tokens": 1298
+      }
+    ],
+    "cli_timing": [
+      {
+        "started_at": "2026-11-21T17:36:38+09:00",
+        "grading_seconds": 1210.0,
+        "total_seconds": 1210.0
+      }
+    ]
+  },
+  {
+    "video_id": "VID_0103",
+    "video_sha256": "d6942de8bbd043d4137a36417ed7a7f2467f834fc258ddc578fa500229145f1d",
+    "results": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0103/results.json",
+    "cli_record": "sop-video-grading/runs/VID_0103/rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-4dcd45ee3a3cf4df09241ae488c862ef2c37dff58830279540ab6df56ebae703/record.json",
+    "source_by_step": {
+      "3": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0103/original/grading.json",
+        "original_sha256": "f1cd6b43491b1789257a0e049a3a0986f909085f0b429e71ea717f6f4ad21078",
+        "kind": "既有評分沿用",
+        "rule_profile": "original",
+        "rubric_version": "1.28-disposal.1"
+      },
+      "2": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0103/recalculate/selected.json",
+        "original_sha256": "313fddffff04734c8d089bbf91b3e9b2c6fefb8ef3ea8bced9f4bde15f416586",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "29": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0103/recalculate/selected.json",
+        "original_sha256": "313fddffff04734c8d089bbf91b3e9b2c6fefb8ef3ea8bced9f4bde15f416586",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "1": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0103/readsheet/selected.json",
+        "original_sha256": "4d0a477f3dd30f5f6b553eeff393132aeae3cd9b9475fa2de65114fde5a6a4b4",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "30": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0103/placement/selected.json",
+        "original_sha256": "9811ca6a999c70f0a6af062c383272be16e7f603fab5aae0f78272be3cd01139",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "placement",
+        "rubric_version": "1.30-disposal.4"
+      },
+      "4": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0103/separate174/grading.json",
+        "original_sha256": "25b76b86a0db7a2088c8c3c594bde8a642d4dd93d5bb33c9c0945722ffc6739a",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      },
+      "10": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0103/separate174/grading.json",
+        "original_sha256": "25b76b86a0db7a2088c8c3c594bde8a642d4dd93d5bb33c9c0945722ffc6739a",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      }
+    },
+    "cli_runs": 1,
+    "cli_usage": [
+      {
+        "input_tokens": 264628,
+        "cached_input_tokens": 74496,
+        "output_tokens": 3166,
+        "thinking_tokens": 1746
+      }
+    ],
+    "cli_timing": [
+      {
+        "started_at": "2026-11-21T17:56:57+09:00",
+        "grading_seconds": 658.0,
+        "total_seconds": 658.0
+      }
+    ]
+  },
+  {
+    "video_id": "VID_0106",
+    "video_sha256": "5d17f6ef8cff670c883b12cb610fe8469e0c009b6a05de8abe0b640bcc5523a1",
+    "results": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0106/results.json",
+    "cli_record": "sop-video-grading/runs/VID_0106/rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-086aea7b5b542f473e5375ff2fa2d39ba8573ca95ced988162f487286c571cc6/record.json",
+    "source_by_step": {
+      "3": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0106/original/grading.json",
+        "original_sha256": "d66f878e2357be5df3de214246a9f221b80820f118336013b8ff5fb5f51e2ed5",
+        "kind": "既有評分沿用",
+        "rule_profile": "original",
+        "rubric_version": "1.28-disposal.1"
+      },
+      "2": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0106/recalculate/selected.json",
+        "original_sha256": "f81e61b1f543a42beea4f141ad58f217fae8d588b16f4ac35f127ef4ec754ce9",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "29": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0106/recalculate/selected.json",
+        "original_sha256": "f81e61b1f543a42beea4f141ad58f217fae8d588b16f4ac35f127ef4ec754ce9",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "1": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0106/readsheet/selected.json",
+        "original_sha256": "e39611dd9b6657e784f1b6192beaca5f3a7d6322bbee4edd58f23ef2a9231081",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "30": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0106/placement/selected.json",
+        "original_sha256": "1488c6d2ed189f3072b806b0dc9e1e91eb2d1b536c6f4bd19204a661b4beb57f",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "placement",
+        "rubric_version": "1.30-disposal.4"
+      },
+      "4": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0106/separate174/grading.json",
+        "original_sha256": "2a68646323f9e09969604394ffd5f138faaeb7701a23911793d4bb0a9ea36aea",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      },
+      "10": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0106/separate174/grading.json",
+        "original_sha256": "2a68646323f9e09969604394ffd5f138faaeb7701a23911793d4bb0a9ea36aea",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      }
+    },
+    "cli_runs": 1,
+    "cli_usage": [
+      {
+        "input_tokens": 288144,
+        "cached_input_tokens": 74496,
+        "output_tokens": 3847,
+        "thinking_tokens": 2269
+      }
+    ],
+    "cli_timing": [
+      {
+        "started_at": "2026-11-21T18:07:58+09:00",
+        "grading_seconds": 483.4,
+        "total_seconds": 483.4
+      }
+    ]
+  },
+  {
+    "video_id": "VID_0111",
+    "video_sha256": "4e804f8e2e3242e7e5cab964c0614c2d54235bcab1e7a60c58cc80704da95f6d",
+    "results": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0111/results.json",
+    "cli_record": "sop-video-grading/runs/VID_0111/rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-195086902ce6731f2fe275fff378dd8c650e1ca876ae17e06c5f83e48499b547/record.json",
+    "source_by_step": {
+      "3": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0111/original/grading.json",
+        "original_sha256": "687d598c5627fba8f3fed49afe113fcd4ef910290f55709e012b8dee368e8dfa",
+        "kind": "既有評分沿用",
+        "rule_profile": "original",
+        "rubric_version": "1.28-disposal.1"
+      },
+      "2": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0111/recalculate/selected.json",
+        "original_sha256": "905e254a62bb3aa4bbb864eb68efceaf61ab139d8c6d20ae3908f6c494108cca",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "29": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0111/recalculate/selected.json",
+        "original_sha256": "905e254a62bb3aa4bbb864eb68efceaf61ab139d8c6d20ae3908f6c494108cca",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "1": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0111/readsheet/selected.json",
+        "original_sha256": "0699a70c742f11697252074a187628e0bc2ba99bb0e770a874ba2b1fe6f56745",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "30": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0111/placement/selected.json",
+        "original_sha256": "53332c45a73bccdb52dd24a93f207d69e11aa247388b5163312eafaaa5a461dd",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "placement",
+        "rubric_version": "1.30-disposal.4"
+      },
+      "4": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0111/separate174/grading.json",
+        "original_sha256": "6a1bcd7c5b77b7968351573c07bfa232e7bf2e97ae12abd9f415688e77356a64",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      },
+      "10": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0111/separate174/grading.json",
+        "original_sha256": "6a1bcd7c5b77b7968351573c07bfa232e7bf2e97ae12abd9f415688e77356a64",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      }
+    },
+    "cli_runs": 1,
+    "cli_usage": [
+      {
+        "input_tokens": 315473,
+        "cached_input_tokens": 55872,
+        "output_tokens": 3629,
+        "thinking_tokens": 1611
+      }
+    ],
+    "cli_timing": [
+      {
+        "started_at": "2026-11-21T18:16:10+09:00",
+        "grading_seconds": 564.2,
+        "total_seconds": 564.3
+      }
+    ]
+  },
+  {
+    "video_id": "VID_0118",
+    "video_sha256": "783098db8633fd6b76c4fc38cd8d54e86784c6fc18f96fd198f979c3a223cec7",
+    "results": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0118/results.json",
+    "cli_record": "sop-video-grading/runs/VID_0118/rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-c6fd54d3d6afcdadf5e0ebb70a4bc231f7af42caa344d9b7c18bcbc4223902b2/record.json",
+    "source_by_step": {
+      "3": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0118/original/grading.json",
+        "original_sha256": "9c4126160d44d42c604a9fb61eb733b75e0285e7294e19bd5c7383ccac0ad6ae",
+        "kind": "既有評分沿用",
+        "rule_profile": "original",
+        "rubric_version": "1.28-disposal.1"
+      },
+      "2": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0118/recalculate/selected.json",
+        "original_sha256": "e598d01ececaf609a8d7d6866b0f460e9f0a630f1b7d7674fd5ea1b6e07599dd",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "29": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0118/recalculate/selected.json",
+        "original_sha256": "e598d01ececaf609a8d7d6866b0f460e9f0a630f1b7d7674fd5ea1b6e07599dd",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "1": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0118/readsheet/selected.json",
+        "original_sha256": "fbe36c2457038fe726c45d4dd765630c3634d9985ab99e583c2af6639f9af6f4",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "30": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0118/placement/selected.json",
+        "original_sha256": "959e55342658e54c78773c58e3fb36eb89e37d34e8e9db8b5e65f4045c215843",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "placement",
+        "rubric_version": "1.30-disposal.4"
+      },
+      "4": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0118/separate174/grading.json",
+        "original_sha256": "74e8fa040c4a271af467e439770eaa15b7310e353f176a31c5ad6ed47da432fa",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      },
+      "10": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0118/separate174/grading.json",
+        "original_sha256": "74e8fa040c4a271af467e439770eaa15b7310e353f176a31c5ad6ed47da432fa",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      }
+    },
+    "cli_runs": 1,
+    "cli_usage": [
+      {
+        "input_tokens": 322808,
+        "cached_input_tokens": 62152,
+        "output_tokens": 2766,
+        "thinking_tokens": 905
+      }
+    ],
+    "cli_timing": [
+      {
+        "started_at": "2026-11-21T18:25:42+09:00",
+        "grading_seconds": 2481.1,
+        "total_seconds": 2481.1
+      }
+    ]
+  },
+  {
+    "video_id": "VID_0119",
+    "video_sha256": "3491718b31699092a0c8be9b9d1d25dc04887f29e7356786178aa9f1a04a08a5",
+    "results": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0119/results.json",
+    "cli_record": "sop-video-grading/runs/VID_0119/rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-04c4e06847ccac45c2b3f058e65bbbc4f5fe6159b3a206d2badcc71afd551fb2/record.json",
+    "source_by_step": {
+      "3": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0119/original/grading.json",
+        "original_sha256": "31fb81f695af6d46fe56bef8bb668a3ceee29db19bf5e986a0026e2d49fb3e6e",
+        "kind": "既有評分沿用",
+        "rule_profile": "original",
+        "rubric_version": "1.28-disposal.1"
+      },
+      "2": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0119/recalculate/selected.json",
+        "original_sha256": "171a15e207e7f2c3d41c9af675cd2951b794a2f6f9e2a2a92bd6f7a6cdb34017",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "29": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0119/recalculate/selected.json",
+        "original_sha256": "171a15e207e7f2c3d41c9af675cd2951b794a2f6f9e2a2a92bd6f7a6cdb34017",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "1": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0119/readsheet/selected.json",
+        "original_sha256": "26bc6ee6b7b2cbbae0acb8316b0c9995a1e099b85da660bf1f096a2dcaa4791b",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "30": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0119/placement/selected.json",
+        "original_sha256": "a5624d544d641166c64e01214977a6d4804595871cf7853c4d6c121ccda84199",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "placement",
+        "rubric_version": "1.30-disposal.4"
+      },
+      "4": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0119/separate174/grading.json",
+        "original_sha256": "84579a8abb9064439e934ff0109a0f8539f995dbbe6020458449a52458b18c96",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      },
+      "10": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0119/separate174/grading.json",
+        "original_sha256": "84579a8abb9064439e934ff0109a0f8539f995dbbe6020458449a52458b18c96",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      }
+    },
+    "cli_runs": 1,
+    "cli_usage": [
+      {
+        "input_tokens": 344330,
+        "cached_input_tokens": 111744,
+        "output_tokens": 2468,
+        "thinking_tokens": 642
+      }
+    ],
+    "cli_timing": [
+      {
+        "started_at": "2026-11-21T19:07:07+09:00",
+        "grading_seconds": 1043.7,
+        "total_seconds": 1043.7
+      }
+    ]
+  },
+  {
+    "video_id": "VID_0123",
+    "video_sha256": "2617c7461171fb2d68ceb8fd609eab6a41db69563604da61a9471dad00ca85cf",
+    "results": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0123/results.json",
+    "cli_record": "sop-video-grading/runs/VID_0123/rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-da8e459c7435ac05231fcc0e13eea87f9d49f0817858e312d2106c060b4ca46d/record.json",
+    "source_by_step": {
+      "3": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0123/original/grading.json",
+        "original_sha256": "88964936109aa15aa1738e3b23db25942957f8d817261a486003414f71d2d763",
+        "kind": "既有評分沿用",
+        "rule_profile": "original",
+        "rubric_version": "1.28-disposal.1"
+      },
+      "2": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0123/recalculate/selected.json",
+        "original_sha256": "0fd63cb38e03944d87fa94d7acd1bb07caaf3ee3b747266916ce4083d29c18c3",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "29": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0123/recalculate/selected.json",
+        "original_sha256": "0fd63cb38e03944d87fa94d7acd1bb07caaf3ee3b747266916ce4083d29c18c3",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "1": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0123/readsheet/selected.json",
+        "original_sha256": "d4f3ddaec71f684e2442d6d2b4a6fba3de48a7bd18a5d5fcd584391a39f22108",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "30": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0123/placement/selected.json",
+        "original_sha256": "5473a1cf23ca3a5876c138ecb8aac88922b0b2dd20d303c54094072eb49ec41e",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "placement",
+        "rubric_version": "1.30-disposal.4"
+      },
+      "4": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0123/separate174/grading.json",
+        "original_sha256": "588895bfe95cb334d6b69d86a42e6b8947ad794005393b958990683745021e69",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      },
+      "10": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0123/separate174/grading.json",
+        "original_sha256": "588895bfe95cb334d6b69d86a42e6b8947ad794005393b958990683745021e69",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      }
+    },
+    "cli_runs": 1,
+    "cli_usage": [
+      {
+        "input_tokens": 396918,
+        "cached_input_tokens": 92845,
+        "output_tokens": 4052,
+        "thinking_tokens": 1691
+      }
+    ],
+    "cli_timing": [
+      {
+        "started_at": "2026-11-21T19:24:39+09:00",
+        "grading_seconds": 491.8,
+        "total_seconds": 491.8
+      }
+    ]
+  },
+  {
+    "video_id": "VID_0134",
+    "video_sha256": "092956dde1d3c3c9ad2ebecc1ddbbbb7faf2bd513f9eb948295ed8a2f3ea34ef",
+    "results": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0134/results.json",
+    "cli_record": "sop-video-grading/runs/VID_0134/rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-49e33801444c041fd96d07587339989286bd6f5c423a23ca124b885331c59af4/record.json",
+    "source_by_step": {
+      "3": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0134/original/grading.json",
+        "original_sha256": "c6d5fc6106567d1c1d835c9485893ebc73becc5e89f932a90c9ddb4f001ec4ab",
+        "kind": "既有評分沿用",
+        "rule_profile": "original",
+        "rubric_version": "1.28-disposal.1"
+      },
+      "2": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0134/recalculate/selected.json",
+        "original_sha256": "cb0d6aafd8d836f37f0dbe96f73aac8adbc994cbe1bc63a0b0961af406796bbe",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "29": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0134/recalculate/selected.json",
+        "original_sha256": "cb0d6aafd8d836f37f0dbe96f73aac8adbc994cbe1bc63a0b0961af406796bbe",
+        "kind": "既有視覺回答重新彙總，非新模型判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "1": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0134/readsheet/selected.json",
+        "original_sha256": "e5ec762cc82b846abaa2e658c66599673646f5d389df4fe0a0a140ae9b098719",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "readsheet",
+        "rubric_version": "1.29-readsheet.4"
+      },
+      "30": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0134/placement/selected.json",
+        "original_sha256": "5f9a66cfc5887996e22c97613a2c1632030648e7ed9749700dd18f826611bae8",
+        "kind": "既有 Gemini 視覺判讀",
+        "rule_profile": "placement",
+        "rubric_version": "1.30-disposal.4"
+      },
+      "4": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0134/separate174/grading.json",
+        "original_sha256": "d4e2f0ec6ff058eec1551838a98a84c06cb2c697c08d20045b529dc7510e8ead",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      },
+      "10": {
+        "path": "sop-video-grading/experiments/2026-11-23-grading30pdf185/VID_0134/separate174/grading.json",
+        "original_sha256": "d4e2f0ec6ff058eec1551838a98a84c06cb2c697c08d20045b529dc7510e8ead",
+        "kind": "官方 CLI 已完成紀錄，原始分支版本",
+        "rule_profile": "separate174",
+        "rubric_version": "1.29-separate174.1"
+      }
+    },
+    "cli_runs": 1,
+    "cli_usage": [
+      {
+        "input_tokens": 349688,
+        "cached_input_tokens": 136020,
+        "output_tokens": 2509,
+        "thinking_tokens": 585
+      }
+    ],
+    "cli_timing": [
+      {
+        "started_at": "2026-11-21T19:32:55+09:00",
+        "grading_seconds": 2249.0,
+        "total_seconds": 2249.0
+      }
+    ]
+  }
+]
