@@ -1,0 +1,16 @@
+[
+ {
+  "turn": 1,
+  "seconds": 70.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 23758,
+  "cached_input_tokens": 0,
+  "output_tokens": 781,
+  "thinking_tokens": 337,
+  "materials": [
+   "clip@0-25.5（context box，有聲音；片段內 00:00 ＝ 影片 00:00.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"1a\", \"verdict\": \"正確\", \"explanation\": \"於 00:02.0 按壓洗手液開始洗手，搓洗至 00:24.0 雙手分開結束洗手，共計 22.0 秒，滿 10 秒。\", \"span\": [2.0, 24.0], \"evidence\": [\"clip@0-25.5\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"1b\", \"verdict\": \"正確\", \"explanation\": \"完整做出洗手七個動作：內（00:03.0–00:04.5）、外（00:05.0–00:08.5）、夾（00:09.0–00:11.0）、弓（00:11.5–00:14.0）、大（00:14.5–00:17.5）、立（00:18.0–00:19.5）、腕（00:20.0–00:23.5）。\", \"times\": [[3.0, 23.5]], \"evidence\": [\"clip@0-25.5\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"1c\", \"verdict\": \"正確\", \"explanation\": \"已檢查 00:00.0–00:25.0 全程，考生於 00:02.0 按壓洗手液並於 00:24.0 完成洗手，期間及洗手結束前皆未接觸藥瓶、稀釋液、空針、包裝或治療車等其他物品。\", \"times\": [], \"evidence\": [\"clip@0-25.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

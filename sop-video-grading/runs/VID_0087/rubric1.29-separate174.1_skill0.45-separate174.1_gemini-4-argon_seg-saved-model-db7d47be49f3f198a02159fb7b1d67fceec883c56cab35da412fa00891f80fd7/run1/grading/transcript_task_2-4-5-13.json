@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 8.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 20375,
+  "cached_input_tokens": 0,
+  "output_tokens": 153,
+  "thinking_tokens": 89,
+  "materials": [
+   "ov@16.8-99.5（hands_box，n=9）#0=00:16.8、#1=00:27.1、#2=00:37.5、#3=00:47.8、#4=00:58.1、#5=01:08.5、#6=01:18.8、#7=01:29.2、#8=01:39.5"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 18.0, \"end\": 36.0, \"fps\": 2, \"reason\": \"查看 00:18–00:36 期間學生拿起稀釋液檢查的動作與時間\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 138.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 23798,
+  "cached_input_tokens": 18624,
+  "output_tokens": 163,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@16.8-99.5（hands_box，n=9）#0=00:16.8、#1=00:27.1、#2=00:37.5、#3=00:47.8、#4=00:58.1、#5=01:08.5、#6=01:18.8、#7=01:29.2、#8=01:39.5",
+   "clip@18-36（context box，有聲音；片段內 00:00 ＝ 影片 00:18.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4d\", \"verdict\": \"正確\", \"explanation\": \"於 00:24.5–00:27.5（clip@18-36 片段內 00:06.5–00:09.5）拿起細長透明稀釋液瓶，橫持於胸前轉動檢視瓶身標示與液體後放回桌面。\", \"times\": [[24.5, 27.5]], \"evidence\": [\"ov@16.8-99.5 #1\", \"clip@18-36\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

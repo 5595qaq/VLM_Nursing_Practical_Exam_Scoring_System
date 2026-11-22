@@ -1,0 +1,16 @@
+[
+ {
+  "turn": 1,
+  "seconds": 21.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 22719,
+  "cached_input_tokens": 0,
+  "output_tokens": 1097,
+  "thinking_tokens": 573,
+  "materials": [
+   "clip@0-21.4（context box，有聲音；片段內 00:00 ＝ 影片 00:00.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"1a\", \"verdict\": \"正確\", \"explanation\": \"於 00:01.5 按壓乾洗手液開始洗手，持續搓洗至 00:19.0 雙手分開結束洗手，共計 17.5 秒，已滿 10 秒。\", \"span\": [1.5, 19.0], \"evidence\": [\"clip@0-21.4\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"1b\", \"verdict\": \"正確\", \"explanation\": \"洗手過程中完整做出七個動作：內（00:02.5–00:04.0 掌心對掌心）、外（00:04.5–00:06.0 手心搓手背）、夾（00:06.5–00:07.5 十指交叉搓指縫）、大（00:08.0–00:10.0 及 00:13.0–00:14.0 握住大拇指旋轉）、弓（00:10.5–00:12.5 彎曲手指在掌心搓指背）、立（00:14.5–00:16.0 指尖立在掌心搓）、腕（00:16.5–00:18.5 搓手腕）。\", \"times\": [[2.5, 18.5]], \"evidence\": [\"clip@0-21.4\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"1c\", \"verdict\": \"正確\", \"explanation\": \"已檢查 00:00.0–00:19.0 洗手結束前之時段，考生除按壓洗手液外未接觸任何其他物品；於 00:19.0 洗手結束後，才在 00:19.5 伸手接觸治療盤上的藥瓶（vial）。\", \"times\": [[19.5, 19.5]], \"evidence\": [\"clip@0-21.4\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

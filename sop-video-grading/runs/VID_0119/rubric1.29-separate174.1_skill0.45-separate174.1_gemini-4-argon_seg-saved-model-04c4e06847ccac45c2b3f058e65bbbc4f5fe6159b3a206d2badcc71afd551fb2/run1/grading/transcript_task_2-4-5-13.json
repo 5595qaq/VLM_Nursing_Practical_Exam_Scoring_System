@@ -1,0 +1,64 @@
+[
+ {
+  "turn": 1,
+  "seconds": 165.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 20390,
+  "cached_input_tokens": 0,
+  "output_tokens": 80,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@17.5-137（hands_box，n=9）#0=00:17.5、#1=00:32.4、#2=00:47.4、#3=01:02.3、#4=01:17.2、#5=01:32.2、#6=01:47.1、#7=02:02.1、#8=02:17.0"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 17.5, \"end\": 75.0, \"fps\": 2, \"reason\": \"查看 00:17.5–01:15.0 期間拿起稀釋液瓶、核對紀錄單或檢查稀釋液效期與有無異物的動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 497.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 31059,
+  "cached_input_tokens": 18624,
+  "output_tokens": 118,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@17.5-137（hands_box，n=9）#0=00:17.5、#1=00:32.4、#2=00:47.4、#3=01:02.3、#4=01:17.2、#5=01:32.2、#6=01:47.1、#7=02:02.1、#8=02:17.0",
+   "clip@17.5-75（context box，有聲音；片段內 00:00 ＝ 影片 00:17.5）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [28.5, 30.0, 31.0], \"region\": [0.3, 0.35, 0.55, 0.65], \"reason\": \"確認 00:28.0–00:31.5（clip 00:10.5–00:14.0）拿在手中檢視並放到治療車上的透明細長塑膠瓶是否為稀釋液\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 156.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 32279,
+  "cached_input_tokens": 18624,
+  "output_tokens": 100,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@17.5-137（hands_box，n=9）#0=00:17.5、#1=00:32.4、#2=00:47.4、#3=01:02.3、#4=01:17.2、#5=01:32.2、#6=01:47.1、#7=02:02.1、#8=02:17.0",
+   "clip@17.5-75（context box，有聲音；片段內 00:00 ＝ 影片 00:17.5）",
+   "zoom@28.5/30/31 region=[0.300, 0.350, 0.550, 0.650]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [28.5, 30.0, 31.0], \"region\": [0.35, 0.55, 0.55, 0.85], \"reason\": \"將放大區域往下移至雙手位置，確認 28.5–31.0 秒正在轉動檢視的細長透明瓶是否為稀釋液\"}",
+  "errors": []
+ },
+ {
+  "turn": 4,
+  "seconds": 159.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 33505,
+  "cached_input_tokens": 18624,
+  "output_tokens": 185,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@17.5-137（hands_box，n=9）#0=00:17.5、#1=00:32.4、#2=00:47.4、#3=01:02.3、#4=01:17.2、#5=01:32.2、#6=01:47.1、#7=02:02.1、#8=02:17.0",
+   "clip@17.5-75（context box，有聲音；片段內 00:00 ＝ 影片 00:17.5）",
+   "zoom@28.5/30/31 region=[0.300, 0.350, 0.550, 0.650]",
+   "zoom@28.5/30/31 region=[0.350, 0.550, 0.550, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4d\", \"verdict\": \"正確\", \"explanation\": \"於 00:28.0–00:31.5（clip@17.5-75 片段內 00:10.5–00:14.0）清楚看見學生取出細長透明塑膠、貼有綠色標籤的稀釋液瓶，低頭查看並轉動瓶身檢查標示與液體，隨後放置於治療車檯面上。\", \"times\": [[28.0, 31.5]], \"evidence\": [\"clip@17.5-75\", \"zoom@28.5\", \"zoom@30\", \"zoom@31\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

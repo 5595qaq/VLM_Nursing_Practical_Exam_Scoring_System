@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 53.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 20414,
+  "cached_input_tokens": 0,
+  "output_tokens": 73,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@25-220（hands_box，n=9）#0=00:25.0、#1=00:49.4、#2=01:13.8、#3=01:38.1、#4=02:02.5、#5=02:26.9、#6=02:51.2、#7=03:15.6、#8=03:40.0"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 15.0, \"end\": 50.0, \"fps\": 2, \"reason\": \"查看撕開空針包裝前（步驟9：00:27.0–00:37.8）是否有用手指指出包裝核對\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 68.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 27011,
+  "cached_input_tokens": 18624,
+  "output_tokens": 171,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@25-220（hands_box，n=9）#0=00:25.0、#1=00:49.4、#2=01:13.8、#3=01:38.1、#4=02:02.5、#5=02:26.9、#6=02:51.2、#7=03:15.6、#8=03:40.0",
+   "clip@15-50（context box，有聲音；片段內 00:00 ＝ 影片 00:15.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4e\", \"verdict\": \"錯誤\", \"explanation\": \"00:27.0–00:38.0（clip@15-50 片段內 00:12.0–00:23.0）考生於 00:27.0 拿起空針包裝，00:28.0–00:37.5 雙手捏住包裝上方直接撕開空針包裝，期間並未用手指指出包裝核對。\", \"times\": [[27.0, 38.0]], \"evidence\": [\"clip@15-50\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

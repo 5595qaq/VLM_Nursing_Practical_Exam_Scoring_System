@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 131.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 20379,
+  "cached_input_tokens": 0,
+  "output_tokens": 390,
+  "thinking_tokens": 318,
+  "materials": [
+   "ov@12.8-116.5（hands_box，n=9）#0=00:12.8、#1=00:25.8、#2=00:38.7、#3=00:51.7、#4=01:04.7、#5=01:17.6、#6=01:30.6、#7=01:43.5、#8=01:56.5"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 65.0, \"end\": 95.0, \"fps\": 2, \"reason\": \"查看 01:05–01:35 期間拿起稀釋液瓶檢查效期與有無異物以及開瓶的連續動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 279.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 26034,
+  "cached_input_tokens": 0,
+  "output_tokens": 206,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@12.8-116.5（hands_box，n=9）#0=00:12.8、#1=00:25.8、#2=00:38.7、#3=00:51.7、#4=01:04.7、#5=01:17.6、#6=01:30.6、#7=01:43.5、#8=01:56.5",
+   "clip@65-95（context box，有聲音；片段內 00:00 ＝ 影片 01:05.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4d\", \"verdict\": \"正確\", \"explanation\": \"01:17.0–01:20.0（clip@65-95 片段內 00:12.0–00:15.0，以及 ov@12.8-116.5 #5 01:17.6）學生在抽藥前拿起細長透明的稀釋液瓶，橫舉於胸前轉動並低頭查看瓶身效期標示與瓶內有無異物，隨後放回檯面並進行消毒開瓶。\", \"times\": [[77.0, 80.0]], \"evidence\": [\"ov@12.8-116.5 #5\", \"clip@65-95\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 5.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 20532,
+  "cached_input_tokens": 0,
+  "output_tokens": 73,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@68.8-224.6（hands_box，n=9）#0=01:08.8、#1=01:28.3、#2=01:47.8、#3=02:07.2、#4=02:26.7、#5=02:46.2、#6=03:05.7、#7=03:25.1、#8=03:44.6"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 70.0, \"end\": 130.0, \"fps\": 2, \"reason\": \"查看 01:10–02:10 期間考生持藥瓶與給藥紀錄單核對及指讀的起訖時間\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 204.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 30782,
+  "cached_input_tokens": 0,
+  "output_tokens": 367,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@68.8-224.6（hands_box，n=9）#0=01:08.8、#1=01:28.3、#2=01:47.8、#3=02:07.2、#4=02:26.7、#5=02:46.2、#6=03:05.7、#7=03:25.1、#8=03:44.6",
+   "clip@70-130（context box，有聲音；片段內 00:00 ＝ 影片 01:10.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4a\", \"verdict\": \"正確\", \"explanation\": \"考生於 01:11.0–02:04.5（clip@70-130 的 00:01.0–00:54.5）左手持 vial 藥瓶，低頭查看置於治療車前緣的給藥紀錄單並以右手指讀核對，累計查看時間達 53.5 秒，超過 10 秒。\", \"times\": [[71.0, 124.5]], \"evidence\": [\"ov@68.8-224.6 #1\", \"ov@68.8-224.6 #2\", \"clip@70-130\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"4b\", \"verdict\": \"正確\", \"explanation\": \"於 01:11.0–02:04.5（clip@70-130 的 00:01.0–00:54.5）查看給藥紀錄單時，明顯使用右手食指逐項指著治療車前緣的給藥紀錄單進行核對。\", \"times\": [[71.0, 124.5]], \"evidence\": [\"ov@68.8-224.6 #1\", \"ov@68.8-224.6 #2\", \"clip@70-130\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

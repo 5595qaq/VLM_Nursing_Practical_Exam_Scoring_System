@@ -1,0 +1,107 @@
+{
+ "video_id": "VID_0099",
+ "versions": {
+  "rubric": "1.29-separate174.1",
+  "skill": "0.45-separate174.1",
+  "model": "gemini-4-argon",
+  "segmentation": "saved-model-a15a3709bc5ae4bcac20af0911d4efacfe20f7f500f9206dcae887328ea34082"
+ },
+ "video_sha256": "fa568c924f0ea3d3ac7165335c4628fa366da63361d8b5bd0a1398a389cf218e",
+ "runs": [
+  {
+   "run": 1,
+   "by": "dakzungberrae",
+   "date": "2026-11-21",
+   "commit": "8b19fceceb76f7b0ff12d817880cf7f1cd32531b",
+   "video_sha256": "fa568c924f0ea3d3ac7165335c4628fa366da63361d8b5bd0a1398a389cf218e",
+   "steps": [],
+   "failed_tasks": [
+    {
+     "task": "4",
+     "error": "CreditLimitReached: Local credit budget reached"
+    },
+    {
+     "task": "10-seg2",
+     "error": "CreditLimitReached: Local credit budget reached"
+    }
+   ],
+   "segmentation": "saved model segmentation; sha256-tag saved-model-a15a3709bc5ae4bcac20af0911d4efacfe20f7f500f9206dcae887328ea34082",
+   "usage": {
+    "input_tokens": 278666,
+    "cached_input_tokens": 18624,
+    "output_tokens": 3320,
+    "thinking_tokens": 1974
+   },
+   "timing": {
+    "started_at": "2026-11-21T08:07:26+09:00",
+    "grading_seconds": 473.1,
+    "total_seconds": 473.1
+   },
+   "segmentation_import": {
+    "kind": "saved_model_segmentation",
+    "sha256": "a15a3709bc5ae4bcac20af0911d4efacfe20f7f500f9206dcae887328ea34082",
+    "provenance": {
+     "source_batch": "minimal-validation-20261120",
+     "source_code_heads": {
+      "readsheet": "4ba93298a43a6da5e32238a6dee7afd1e3be6846",
+      "placement": "eb43f65ca18b460fead36f138f3423511acf989d"
+     },
+     "source_snapshots": {
+      "readsheet": "64944fa6b0e0a2fb972910db6d91fddc1a27f06e932573e35afc4221c299758d",
+      "placement": "c7d92ce9ae73f9fc9824e58566e80f62c89627f11b7440857b8cfa7d301e3e95"
+     },
+     "source_had_uncommitted_changes": {
+      "readsheet": true,
+      "placement": false
+     }
+    },
+    "source_was_cli": false
+   }
+  },
+  {
+   "run": 2,
+   "by": "dakzungberrae",
+   "date": "2026-11-21",
+   "commit": "8b19fceceb76f7b0ff12d817880cf7f1cd32531b",
+   "video_sha256": "fa568c924f0ea3d3ac7165335c4628fa366da63361d8b5bd0a1398a389cf218e",
+   "steps": [
+    4,
+    10
+   ],
+   "failed_tasks": [],
+   "segmentation": "saved model segmentation; sha256-tag saved-model-a15a3709bc5ae4bcac20af0911d4efacfe20f7f500f9206dcae887328ea34082",
+   "usage": {
+    "input_tokens": 97515,
+    "cached_input_tokens": 0,
+    "output_tokens": 1117,
+    "thinking_tokens": 175
+   },
+   "timing": {
+    "started_at": "2026-11-21T17:33:49+09:00",
+    "grading_seconds": 119.5,
+    "total_seconds": 119.5,
+    "checkpoints_found": true
+   },
+   "segmentation_import": {
+    "kind": "saved_model_segmentation",
+    "sha256": "a15a3709bc5ae4bcac20af0911d4efacfe20f7f500f9206dcae887328ea34082",
+    "provenance": {
+     "source_batch": "minimal-validation-20261120",
+     "source_code_heads": {
+      "readsheet": "4ba93298a43a6da5e32238a6dee7afd1e3be6846",
+      "placement": "eb43f65ca18b460fead36f138f3423511acf989d"
+     },
+     "source_snapshots": {
+      "readsheet": "64944fa6b0e0a2fb972910db6d91fddc1a27f06e932573e35afc4221c299758d",
+      "placement": "c7d92ce9ae73f9fc9824e58566e80f62c89627f11b7440857b8cfa7d301e3e95"
+     },
+     "source_had_uncommitted_changes": {
+      "readsheet": true,
+      "placement": false
+     }
+    },
+    "source_was_cli": false
+   }
+  }
+ ]
+}
