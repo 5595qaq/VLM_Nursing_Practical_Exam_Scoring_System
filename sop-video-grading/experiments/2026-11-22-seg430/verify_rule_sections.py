@@ -1,4 +1,4 @@
-"""離線逐字核對保存快照與本 PR 的 SOP 4／30 規則；不呼叫模型。"""
+"""離線逐字核對保存快照與本 PR 的 SOP 4 規則；不呼叫模型。"""
 import hashlib
 import json
 from pathlib import Path
@@ -23,7 +23,6 @@ def main():
     checks = []
     for step, profile, start, end in [
         (4, 'readsheet', '  - **4 抽藥前確認的三類動作**', '- **步驟 29 使用原有切分方式**'),
-        (30, 'placement', '- **步驟 30 先找每一次完整放置', '## 6.'),
     ]:
         previous = section(source[profile]['segmentation_skill'], start, end)
         current = section(skill, start, end)

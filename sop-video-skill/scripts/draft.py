@@ -5,8 +5,7 @@ whole table and sends it back every turn.
 - A row is `key | ...` (a leading/trailing `|` as in a Markdown table is fine; `|---|` lines are skipped).
   The key is the first column (`5`, `15-17`, `step_id`); `05`, `5.`, `步驟 5` and `5` are the same key,
   and so are `15-17`, `15–17` and `15 - 17`. A later row with the same key replaces the earlier one;
-  `key | 刪除` (any remark after 刪除) removes it. SOP 30 placement rows instead keep a timed
-  row with visual evidence and `排除` when frames rule out the placement.
+  `key | 刪除` (any remark after 刪除) removes it.
 - Lines without `|` are notes. They are added after the earlier notes (a line already there is not
   repeated), so one new note never erases the earlier ones. A full rewrite (every step row present)
   rewrites the notes too: its notes replace the earlier ones, so stale notes can be dropped.
@@ -29,9 +28,6 @@ SEPARATOR = re.compile(r"^[\s|:\-]+$")
 LEAD_NUMBER = re.compile(r"(\d+)")
 STEP_PREFIX = re.compile(r"^(步驟|step)\s*(?=\d)", re.IGNORECASE)
 DASHES = re.compile(r"\s*[-–—~～]\s*")
-PLACEMENT_KEY = re.compile(r"30\.\d+")
-PLACEMENT_SPAN = re.compile(r"(\d+(?:\.\d+)?)\s*[-–—~～]\s*(\d+(?:\.\d+)?)")
-PLACEMENT_BOUNDARY_SLACK = 1.0  # The final can refine either detected boundary (SKILL.md 4).
 
 
 def _key(cell: str) -> str:
@@ -81,7 +77,7 @@ def merge(old: str, update: str) -> str:
     rows, notes = _parse(old)
     new_rows, new_notes = _parse(update)
     full = any(LEAD_NUMBER.match(k) for k in rows) and not missing_rows(old, update)
-    rows.update({key: row for key, row in new_rows.items() if row is not None or not PLACEMENT_KEY.fullmatch(key)})
+    rows.update(new_rows)
     notes = new_notes if full else notes + [line for line in new_notes if line not in notes]
     table = [rows[key] for key in sorted(rows, key=_order) if rows[key] is not None]
     return "\n".join(table + notes)
@@ -92,45 +88,6 @@ def missing_rows(current: str, update: str) -> list[str]:
     counts). Rows without a step number, such as the header, are not required."""
     have = _parse(_content(update))[0]
     return [key for key in sorted(_parse(current)[0], key=_order) if LEAD_NUMBER.match(key) and key not in have]
-
-
-def missing_placements(current: str, steps: list[dict]) -> list[str]:
-    """Account for each SOP 30 candidate regardless of confidence or phase in the draft."""
-    detected = sorted({(step["start"], step["end"]) for step in steps
-                       if step["step_id"] == 30 and step["status"] == "detected"})
-    unclear = sorted({tuple(step["logical_window"]) for step in steps
-                      if step["step_id"] == 30 and step["status"] == "not_visually_determinable"
-                      and step.get("logical_window")})
-    missing = []
-    candidates = []
-    rows, _ = _parse(current)
-    for key, row in rows.items():
-        if not PLACEMENT_KEY.fullmatch(key) or row is None:
-            continue
-        cells = row.split(" | ")
-        span = PLACEMENT_SPAN.fullmatch(cells[1]) if len(cells) > 1 else None
-        if not span:
-            missing.append(f"{key}（區間應為秒數，例如 83.0–84.5）")
-            continue
-        status = cells[3] if len(cells) > 3 else ""
-        if status == "排除":
-            if not cells[2].strip():
-                missing.append(f"{key}（排除須附影格及理由）")
-            continue
-        if status == "放置不清" and not cells[2].strip():
-            missing.append(f"{key}（放置不清須說明看不清的畫面）")
-            continue
-        start, end = map(float, span.groups())
-        candidates.append((start, end, f"{key}（{cells[1]}）", status))
-    for start, end, label, status in sorted(candidates):
-        intervals = unclear if status == "放置不清" else detected
-        for index, (left, right) in enumerate(intervals):
-            if max(abs(start - left), abs(end - right)) <= PLACEMENT_BOUNDARY_SLACK:
-                intervals.pop(index)
-                break
-        else:
-            missing.append(label)
-    return missing
 
 
 def main(argv: list[str]) -> int:

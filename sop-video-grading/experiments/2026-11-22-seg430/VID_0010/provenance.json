@@ -2,8 +2,7 @@
   "record_type": "historical_step_excerpt",
   "video_id": "VID_0010",
   "steps": [
-    4,
-    30
+    4
   ],
   "model": "gemini-4-argon",
   "thinking": "medium",
@@ -16,13 +15,6 @@
     "snapshot_sha256": "64944fa6b0e0a2fb972910db6d91fddc1a27f06e932573e35afc4221c299758d",
     "completed_at": "2026-11-19T21:58:48.728935+00:00",
     "source_sha256": "8a8d819604663e30fc8be7782c6ca68855226ea615dc71fb720107b0554fb040"
-  },
-  "segmentation_30": {
-    "version": "1.5.10-disposal.6",
-    "source_commit": "eb43f65ca18b460fead36f138f3423511acf989d",
-    "source_uncommitted": false,
-    "snapshot_sha256": "c7d92ce9ae73f9fc9824e58566e80f62c89627f11b7440857b8cfa7d301e3e95",
-    "source_sha256": "9f1c26ac0ec6205ff220427d3a8e87e809138fd097bd9bdf3db9c86f11af10c8"
   },
   "grading_4": {
     "source_sha256": "b617b95916e40e30f2d866a626758424f37f7bee5f71b0d83893d907178bef6e",
@@ -41,29 +33,10 @@
       "thinking_tokens": 1283
     }
   },
-  "grading_30": {
-    "source_commit": "eb43f65ca18b460fead36f138f3423511acf989d",
-    "segmentation_completed_at": "2026-11-19T22:06:36.388573+00:00",
-    "grading_completed_at": "2026-11-19T22:36:15.995163+00:00",
-    "grading_skill_version": "0.46-disposal.4",
-    "rubric_version": "1.30-disposal.4",
-    "usage": {
-      "input_tokens": 112348,
-      "cached_input_tokens": 0,
-      "output_tokens": 1246,
-      "thinking_tokens": 548
-    },
-    "source_sha256": "02e5a217d3abaf8c1818bef167d4be005fe99afb6c7aacc69a7e0b9255c82a10"
-  },
   "transcripts": {
     "segmentation-4": {
       "source_sha256": "76c12b08b575a4254d03dd6cc4b742fad9b22596d89fe40f5090ec06d50b3b2d",
       "published_sha256": "9eae5998f594908f99f802d43d943f89a3b9ca2b1742518c7e41d53f51d034c9",
-      "redacted": false
-    },
-    "segmentation-30": {
-      "source_sha256": "30196aaf935239486020a322eeab88432a1e0ad21dcd0d89383e4d30bf544cba",
-      "published_sha256": "78465d9e18fe74b3ed4da6c85b871b8001feba58a1e3b3e015b088a1f44cfb45",
       "redacted": false
     },
     "grading-4/transcript_task_2-4-5-13.json": {
@@ -80,22 +53,13 @@
       "source_sha256": "78d3a9596d658dbbf473d426e52d5ef71374063d2a286f92e5e27c71667dcb46",
       "published_sha256": "da1e4ffc062150c6a76a08666664071c63c73dc5b5a809b631587ea4284add1f",
       "redacted": false
-    },
-    "grading-30/transcript_task_28-29-30.json": {
-      "source_sha256": "8903bcdaa2c1e8c66afab35d09e77851ec2e85c265ddacbe6504d2127c443a15",
-      "published_sha256": "23d6cbf0ff277bea498af09540df5bce48747ea60021f728aebb2bd6f5a8a5ef",
-      "redacted": false
     }
   },
   "published_sha256": {
-    "grading-30-transcript_task_28-29-30.json": "23d6cbf0ff277bea498af09540df5bce48747ea60021f728aebb2bd6f5a8a5ef",
-    "grading-30.json": "e4bf188a2beacdf684650997215997c187ea014f4173ba4aec693b8c0ddd863a",
     "grading-4-transcript_task_2-4-5-13.json": "7b49da914fa42f8645051bd793adc86e5427ae8adbc14bf13d169716f1884a07",
     "grading-4-transcript_task_4-5-6-7-8-9.json": "cc8517924403fc4c82bb8f8254d493da67d6a5676e49b6884ed6c501d9161aae",
     "grading-4-transcript_task_4.json": "da1e4ffc062150c6a76a08666664071c63c73dc5b5a809b631587ea4284add1f",
     "grading-4.json": "945fed8fd6808dcc4a77eecd8ac93b4dac1905b0036d2fb0f7175bd3d5eba5f2",
-    "segmentation-30-transcript.json": "78465d9e18fe74b3ed4da6c85b871b8001feba58a1e3b3e015b088a1f44cfb45",
-    "segmentation-30.json": "595618003edc7eba358ca242d21b725a3f19bb0be3ad2944c9e831416df45b79",
     "segmentation-4-transcript.json": "9eae5998f594908f99f802d43d943f89a3b9ca2b1742518c7e41d53f51d034c9",
     "segmentation-4.json": "6ba0add3c1f98793555a6b4abe7b7a351847266bc03e074b609624a8e61c061a"
   }

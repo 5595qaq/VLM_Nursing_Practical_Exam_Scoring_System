@@ -133,5 +133,3 @@ LOCUST_VIDEO_URI=gs://bucket/videos/<sha256>_src.mp4 locust -H http://localhost:
 ## 首次真實模型驗收
 
 自動測試通過後，可由使用者提交 10 支代表性影片，查看 `docker compose logs -f worker` 的 429 比率與耗時，再決定是否調整 5 路設定。真實模型容量、延遲及計費不由 mock 測試保證。增加 worker 不會增加全域上限，改動設定需同時重啟所有 worker。
-
-SOP 4／30 合併版須驗證候選草稿保留、放置起訖、可選候選圖、429 checkpoint 續跑及 Gemini／Claude 假回覆。七支既有輸出與真實版本來源見 [`2026-11-22-seg430`](sop-video-grading/experiments/2026-11-22-seg430.md)；它們是歷史相容性資料，不是新版影片回歸。
