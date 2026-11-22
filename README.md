@@ -681,7 +681,7 @@ my-awesome-project/
 └── README.md
 ```
 
-### 既有切分匯入與分段評分（分支 grading30pdf185）
+### 既有切分匯入與分段評分（0.47／rubric 1.31，PR #186）
 
 官方 CLI 新增 `--segmentation-file BUNDLE.json`，讀取已保存的模型切分；與 `--labels`、`--new-segmentation` 互斥。bundle 必須包含 `source_kind: "saved_model_segmentation"`、原影片 `video_sha256`、完整 `segmentation`，及可選的 `provenance`。先驗證切分結構、VID 與影片雜湊；紀錄保留 `segmentation_import`，不得冒充本次重新切分或原生 CLI 切分。`--resume` 保留本版本已完成的小項並續接未完成任務；仍須遵守版本、commit 與重複執行檢查，不以 `--force`／`--allow-dirty` 取代。
 
