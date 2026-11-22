@@ -926,9 +926,21 @@ def test_sop30_grader_receives_substitute_phase_labels_without_model_explanation
 
     lines = "\n".join(grading._segment_lines(task, seg))
 
-    assert "步驟 30（給藥前放置，依切分替代錨點）：00:40.0–00:42.0" in lines
-    assert "步驟 30（給藥後放置，依切分替代錨點）：00:54.0–00:55.5" in lines
+    assert "步驟 30（舊替代標籤：給藥前放置；不代表實際給藥，須重新確認）：00:40.0–00:42.0" in lines
+    assert "步驟 30（舊替代標籤：給藥後放置；不代表實際給藥，須重新確認）：00:54.0–00:55.5" in lines
     assert "步驟 30：00:57.0–00:58.0" in lines
     assert "hidden" not in lines and "legacy evidence" not in lines
     task["criteria"][0]["step_id"] = 29
-    assert all("替代錨點" not in line for line in grading._segment_lines(task, seg))
+    assert all("替代" not in line for line in grading._segment_lines(task, seg))
+
+@pytest.mark.parametrize("label", ["第一次放置", "第二次放置", "第三次放置", "第4次放置"])
+def test_sop30_neutral_candidates_are_not_translated_into_administration(label):
+    seg=segmentation()
+    seg["steps"][-1].update(start=40.0,end=42.0,evidence=label+"（切分錨點：替代）：未公開的動作描述")
+    task={"window_steps":[30],"criteria":[{"step_id":30,"searching":False}]}
+    lines="\n".join(grading._segment_lines(task,seg))
+    assert f"{label}，替代操作錨點；未確認實際給藥" in lines
+    assert "給藥前放置" not in lines and "給藥後放置" not in lines
+    assert "未公開的動作描述" not in lines
+    task["criteria"][0]["step_id"]=29
+    assert label not in "\n".join(grading._segment_lines(task,seg))

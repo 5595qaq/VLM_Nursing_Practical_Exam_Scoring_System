@@ -14,6 +14,7 @@ usable audio is announced so the agent does not mark the flick wrong for silence
 import asyncio
 import importlib
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -244,7 +245,7 @@ def _searching(c: dict, segmentation: dict) -> bool:
 
 
 def _segment_lines(task: dict, segmentation: dict) -> list[str]:
-    """Segmentation times and, for SOP 30, phase labels derived from the agreed substitute anchor.
+    """Segmentation times and, for SOP 30, neutral operation order or warned legacy labels.
 
     The segmentation's status and full evidence are another model's description of the
     same frames, often already stating the answer ("單手持空針將針頭套回", "由針心處放回"); the
@@ -261,10 +262,15 @@ def _segment_lines(task: dict, segmentation: dict) -> list[str]:
                 phase_label = ""
                 if sid == 30 and grades_placement:
                     evidence = e.get("evidence", "").lstrip()
-                    for phase in ("給藥前放置", "給藥後放置"):
-                        if evidence.startswith(phase) and "切分錨點：替代" in evidence:
-                            phase_label = f"（{phase}，依切分替代錨點）"
-                            break
+                    if "切分錨點：替代" in evidence:
+                        neutral = re.match(r"第[一二三四五六七八九十百零\d]+次放置", evidence)
+                        if neutral:
+                            phase_label = f"（{neutral[0]}，替代操作錨點；未確認實際給藥）"
+                        else:
+                            for phase in ("給藥前放置", "給藥後放置"):
+                                if evidence.startswith(phase):
+                                    phase_label = f"（舊替代標籤：{phase}；不代表實際給藥，須重新確認）"
+                                    break
                 lines.append(f"  步驟 {sid}{phase_label}：{_fmt_t(e['start'])}–{_fmt_t(e['end'])}")
             elif e.get("logical_window"):
                 lo, hi = e["logical_window"]
@@ -316,7 +322,7 @@ def build_task_content(task: dict, video_id: str, duration: float, state: TaskSt
              if c.get("min_seconds") else "")
           + _package_note(c)
           for c in task["criteria"]),
-        "切分結果（相關步驟的時間；步驟 30 可附替代錨點的前後標籤。各項放置仍需看畫面確認）：",
+        "切分結果（相關步驟的時間；步驟 30 可附替代操作的中性次序，不能當成實際給藥證據。各項放置仍需看畫面確認）：",
         *_segment_lines(task, segmentation),
         "動作峰值（程式依 hands_box 內的畫面變化算出，只表示這些時間手有明顯動作，不代表是哪個動作；"
         "短動作請用 burst 或相鄰時間點的 zoom 在峰值附近確認）："

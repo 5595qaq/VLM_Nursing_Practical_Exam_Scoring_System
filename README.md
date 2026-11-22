@@ -681,11 +681,11 @@ my-awesome-project/
 └── README.md
 ```
 
-### 既有切分匯入與分段評分（0.47／rubric 1.31，PR #186）
+### 既有切分匯入與分段評分（0.46-grading30pdf185.2／rubric 1.30-grading30pdf185.2，待決提案 #186）
 
 官方 CLI 新增 `--segmentation-file BUNDLE.json`，讀取已保存的模型切分；與 `--labels`、`--new-segmentation` 互斥。bundle 必須包含 `source_kind: "saved_model_segmentation"`、原影片 `video_sha256`、完整 `segmentation`，及可選的 `provenance`。先驗證切分結構、VID 與影片雜湊；紀錄保留 `segmentation_import`，不得冒充本次重新切分或原生 CLI 切分。`--resume` 保留本版本已完成的小項並續接未完成任務；仍須遵守版本、commit 與重複執行檢查，不以 `--force`／`--allow-dirty` 取代。
 
-步驟 4 的讀單、稀釋液、包裝分開對話，最後仍彙總到步驟 4。步驟 10 每個切分候選區間獨立對話，保留 `grading/segment_results.json`；只有拆封後、第一次使用前的有效固定才算，其他包裝時段只作定位。這是任務拆分，不修改 `criteria/08-hand-posture.md` 的標準。步驟 30 分開評給藥前後；允許任務帶入明示的替代錨點標籤，放置是否完成仍須查畫面，不把切分說明當作正確證據。
+步驟 4 的讀單、稀釋液、包裝分開對話，最後仍彙總到步驟 4。步驟 10 每個切分候選區間獨立對話，保留 `grading/segment_results.json`；只有拆封後、第一次使用前的有效固定才算，其他包裝時段只作定位。這是任務拆分，不修改 `criteria/08-hand-posture.md` 的標準。步驟 30 分開評給藥前後；允許任務帶入明示的替代操作中性次序，保留第一次／第二次等原標籤，不改寫成臨床給藥前／後；歷史前後替代標籤附警示。放置是否完成仍須查畫面，不把切分說明當作正確證據。
 
 可選的 `SOP_CLI_CREDIT_POLICY` 指向本機 JSON（`total_limit_usd`），搭配有限的 `SOP_SKILL_GEMINI_MAX_OUTPUT_TOKENS`（1–32768）啟用持久化估算與同一回合重試；不設定則沿用原 CLI 呼叫。`MIN_CALL_INTERVAL_SECONDS` 最低 30 秒，429 後增加間隔。此歷史實作將整次呼叫序列化，非多請求並行；本次保留來源行為。估算採歷史固定單價，僅追蹤此處理程序，不查詢帳戶餘額、不保證不超過實際免費額度，也不改帳戶或權限。政策檔、帳務 ledger 不提交。
 
