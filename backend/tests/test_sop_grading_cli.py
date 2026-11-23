@@ -31,8 +31,8 @@ def fake(monkeypatch):
     """Fake grading. Tasks in `fail` fail before their first reply: no transcript, listed in failed_tasks."""
     state = {"calls": [], "fail": set()}
 
-    async def run_grading(source, segmentation, work, probe_dir=None, steps=None, previous=None):
-        state["calls"].append({"steps": steps, "previous": previous, "segmentation": segmentation})
+    async def run_grading(source, segmentation, work, probe_dir=None, steps=None, previous=None, resume=False):
+        state["calls"].append({"steps": steps, "previous": previous, "segmentation": segmentation, "resume": resume})
         tasks = [str(s) for s in sorted(steps)] if steps else ["1", "15-16-17"]
         for key in tasks:
             if key not in state["fail"]:
@@ -434,3 +434,47 @@ def test_a_recorded_segmentation_without_its_source_is_refused(tmp_path, video, 
         grade(recorder(video, runs), out, {1}, video)
     grade(recorder(video, runs), out, {1}, video, new_segmentation=True)
     assert fake["segmented"] == 1
+
+
+def test_rerun_of_failed_steps_keeps_what_the_record_graded(tmp_path, video, fake):
+    # a step with two tasks, one failed (429): the rerun sends only the criteria still 待判定 (resume), so the task
+    # that succeeded is not paid for again; --force regrades everything
+    runs = tmp_path / "runs"
+    fake["fail"] = {"1"}
+    grade(recorder(video, runs), work_folder(tmp_path, "a"), {1}, video)
+    assert fake["calls"][0]["resume"] is False  # nothing recorded yet
+
+    fake["fail"] = set()
+    rec = recorder(video, runs)
+    rec.check({1}, force=False)
+    asyncio.run(cli.run(video, VID, tmp_path / "a", {1}, None, rec, skill_tag()))
+    assert fake["calls"][1]["resume"] is True and fake["calls"][1]["previous"]["run"] == 1
+
+    rec = recorder(video, runs)
+    rec.check({1}, force=True)
+    asyncio.run(cli.run(video, VID, tmp_path / "a", {1}, None, rec, skill_tag(), force=True))
+    assert fake["calls"][2]["resume"] is False
+
+
+def test_rerun_after_a_code_change_regrades_the_whole_step(tmp_path, video, fake, capsys):
+    # the record's run used another commit (code fixed without a version bump): no mixing, regrade all
+    runs = tmp_path / "runs"
+    fake["fail"] = {"1"}
+    grade(recorder(video, runs, commit="aaa1111"), work_folder(tmp_path, "a"), {1}, video)
+    fake["fail"] = set()
+    rec = recorder(video, runs, commit="bbb2222")
+    rec.check({1}, force=False)
+    asyncio.run(cli.run(video, VID, tmp_path / "a", {1}, None, rec, skill_tag()))
+    assert fake["calls"][1]["resume"] is False
+    assert "其他 commit 的執行（aaa1111）" in capsys.readouterr().out
+
+
+def test_resume_notice_lists_the_kept_criteria(tmp_path, video, capsys):
+    rec = recorder(video, tmp_path / "runs")
+    rec.record = {"runs": [{"commit": rec.commit}]}
+    previous = {"steps": [{"step_id": 4, "criteria": [
+        {"criterion_id": "4a", "source": "vlm", "verdict": "正確"},
+        {"criterion_id": "4e", "source": "vlm", "verdict": "待判定"}]}]}
+    assert cli._resume_notice(rec, previous, {4}) is True
+    out = capsys.readouterr().out
+    assert "沿用紀錄已判定的標準：4a" in out and "4e" not in out
