@@ -202,12 +202,12 @@ def test_compare_and_summary():
     grading = fill_visual(grade_from_segmentation(seg))
     labels = {1: {"verdict": "錯誤", "why": "洗手時間不足15秒"}, 9: {"verdict": "正確", "why": ""},
               19: {"verdict": "部分正確", "why": ""}, 16: {"verdict": "錯誤", "why": ""},
-              21: {"verdict": "正確", "why": ""}}
+              21: {"verdict": "正確", "why": ""}, 30: {"verdict": "錯誤", "why": ""}}
     rows = compare(grading, labels)
-    assert [r["step_id"] for r in rows] == [1, 9, 19]  # 16 and 21 are removed (不適用) since rubric 1.25
+    assert [r["step_id"] for r in rows] == [1, 9, 19]  # 16, 21 (rubric 1.25) and 30 (1.31) are 不適用
     assert [r["kind"] for r in rows] == ["V", "P", "V"]  # step 9 has only a program criterion
     old = json.loads(json.dumps(grading))  # a rubric 1.23 record still has a verdict for steps 16 and 21
-    for sid in (16, 21):
+    for sid in (16, 21, 30):
         old["steps"][sid - 1].update(verdict="正確", criteria=[])
     assert [r["step_id"] for r in compare(old, labels)] == [1, 9, 19]
     s = summarize(rows)

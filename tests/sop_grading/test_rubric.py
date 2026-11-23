@@ -230,16 +230,11 @@ def test_step29_needs_the_record_sheet():
     assert aggregate(step29, {**passed, "29a": UNDETERMINED, "29b": WRONG}) == UNDETERMINED
 
 
-@pytest.mark.parametrize("v30a, v30b, expected", [
-    ("錯誤", "正確", WRONG),        # placed on the table: wrong even if held by the plunger end
-    ("部分正確", "正確", PARTIAL),  # put on the table first, then into the package
-    ("正確", "錯誤", PARTIAL),      # into the package but held by the needle
-    ("正確", "正確", CORRECT),
-])
-def test_step30_table_is_wrong(v30a, v30b, expected):
+def test_step30_is_removed():
+    # rubric 1.31: the teacher (2026-11-23) cancelled step 30, so 30a/30b are gone like step 11
     step30 = load_rubric()["steps"][29]
-    assert [c["key"] for c in step30["criteria"]] == [True, False]
-    assert aggregate(step30, {"30a": v30a, "30b": v30b}) == expected
+    assert step30["removed"] is True and step30["criteria"] == []
+    assert aggregate(step30, {}) == NOT_APPLICABLE
 
 
 @pytest.mark.parametrize("seconds, text", [(0, "00:00"), (59.9, "00:59"), (125.4, "02:05")])
