@@ -1,0 +1,35 @@
+{
+ "video_id": "VID_0011",
+ "versions": {
+  "rubric": "1.31",
+  "skill": "0.47",
+  "model": "gemini-4-argon",
+  "segmentation": "labels-dca0b7ac"
+ },
+ "video_sha256": "426a49f625173b078ec643b6b1761f2e67d67feacf1e7fbf0096ca41e768272d",
+ "runs": [
+  {
+   "run": 1,
+   "by": "od3w",
+   "date": "2026-11-23",
+   "commit": "8254a305045f758caf4c513aa5d637fb3ddf5d22",
+   "video_sha256": "426a49f625173b078ec643b6b1761f2e67d67feacf1e7fbf0096ca41e768272d",
+   "steps": [
+    13
+   ],
+   "failed_tasks": [],
+   "segmentation": "label times",
+   "usage": {
+    "input_tokens": 151116,
+    "cached_input_tokens": 0,
+    "output_tokens": 1119,
+    "thinking_tokens": 295
+   },
+   "timing": {
+    "started_at": "2026-11-23T14:58:20+00:00",
+    "grading_seconds": 138.0,
+    "total_seconds": 301.1
+   }
+  }
+ ]
+}
