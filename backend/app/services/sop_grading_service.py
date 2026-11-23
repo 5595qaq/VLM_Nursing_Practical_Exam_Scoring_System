@@ -129,6 +129,9 @@ def build_tasks(result: dict, rubric: dict, steps: set[int] | None, segmentation
             tasks.append({"key": name, "window_steps": window_steps, "criteria": cluster,
                           "window": [min(c["window"][0] for c in cluster), max(c["window"][1] for c in cluster)],
                           "needs_clip": any(c["audio"] or c["dense"] or c["clip"] for c in cluster)})
+            if any(c["criterion_id"] == "1c" for c in cluster):
+                tasks[-1]["wash_span"] = next(
+                    (c.get("span") for s in result["steps"] for c in s["criteria"] if c["criterion_id"] == "1a"), None)
     return tasks
 
 
@@ -307,6 +310,8 @@ def build_task_content(task: dict, video_id: str, duration: float, state: TaskSt
         "短動作請用 burst 或相鄰時間點的 zoom 在峰值附近確認）："
         + ("、".join(f"{_fmt_t(p['t'])}" for p in task.get("peaks", [])) or "（無）"),
         *_audio_line(task),
+        *([f"已完成的洗手計時 1a：span={task['wash_span']}（影片秒數），1c 依此結束時間比較實際接觸。"]
+          if task.get("wash_span") else []),
         f"剩餘預算：{budget}",
         "已執行動作：" + ("；".join(state.log) if state.log else "（無）"),
         "",
