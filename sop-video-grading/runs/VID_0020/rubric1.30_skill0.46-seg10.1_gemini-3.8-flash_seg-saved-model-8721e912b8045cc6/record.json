@@ -1,0 +1,110 @@
+{
+ "video_id": "VID_0020",
+ "versions": {
+  "rubric": "1.30",
+  "skill": "0.46-seg10.1",
+  "model": "gemini-3.8-flash",
+  "segmentation": "saved-model-8721e912b8045cc6"
+ },
+ "video_sha256": "c5793842b4e7666ce3f1dd9cf76141b36e864eb06cf49b28e1cde922f14d9eb6",
+ "runs": [
+  {
+   "run": 1,
+   "by": "5595QAQ",
+   "date": "2026-11-23",
+   "commit": "f880d13bbbfcc819cd0a67df762db1e70f3afa0f",
+   "video_sha256": "c5793842b4e7666ce3f1dd9cf76141b36e864eb06cf49b28e1cde922f14d9eb6",
+   "steps": [],
+   "failed_tasks": [
+    {
+     "task": "4",
+     "error": "SkillRunError: sheets.py failed (1): Traceback (most recent call last):\n  File \"/sop-video-skill/scripts/sheets.py\", line 50, in <module>\n    main()\n  File \"/sop-video-skill/scripts/sheets.py\", line 40, in main\n    imgs.append(label(crop_norm(grab(a.video, t), box), f\"#{k} {fmt_t(t)}\"))\n                                ^^^^^^^^^^^^^^^^\n  File \"/sop-video-skill/scripts/_video.py\", line 106, in grab\n    raise RuntimeError(f\"cannot grab frame at {t}s from {path}\")\nRuntimeError: cannot grab frame at "
+    },
+    {
+     "task": "2-4-5-13",
+     "error": "SkillRunError: sheets.py failed (1): Traceback (most recent call last):\n  File \"/sop-video-skill/scripts/sheets.py\", line 50, in <module>\n    main()\n  File \"/sop-video-skill/scripts/sheets.py\", line 40, in main\n    imgs.append(label(crop_norm(grab(a.video, t), box), f\"#{k} {fmt_t(t)}\"))\n                                ^^^^^^^^^^^^^^^^\n  File \"/sop-video-skill/scripts/_video.py\", line 106, in grab\n    raise RuntimeError(f\"cannot grab frame at {t}s from {path}\")\nRuntimeError: cannot grab frame at "
+    },
+    {
+     "task": "4-5-6-7-8-9",
+     "error": "SkillRunError: sheets.py failed (1): Traceback (most recent call last):\n  File \"/sop-video-skill/scripts/sheets.py\", line 50, in <module>\n    main()\n  File \"/sop-video-skill/scripts/sheets.py\", line 40, in main\n    imgs.append(label(crop_norm(grab(a.video, t), box), f\"#{k} {fmt_t(t)}\"))\n                                ^^^^^^^^^^^^^^^^\n  File \"/sop-video-skill/scripts/_video.py\", line 106, in grab\n    raise RuntimeError(f\"cannot grab frame at {t}s from {path}\")\nRuntimeError: cannot grab frame at "
+    },
+    {
+     "task": "10-seg1",
+     "error": "SkillRunError: sheets.py failed (1): Traceback (most recent call last):\n  File \"/sop-video-skill/scripts/sheets.py\", line 50, in <module>\n    main()\n  File \"/sop-video-skill/scripts/sheets.py\", line 40, in main\n    imgs.append(label(crop_norm(grab(a.video, t), box), f\"#{k} {fmt_t(t)}\"))\n                                ^^^^^^^^^^^^^^^^\n  File \"/sop-video-skill/scripts/_video.py\", line 106, in grab\n    raise RuntimeError(f\"cannot grab frame at {t}s from {path}\")\nRuntimeError: cannot grab frame at "
+    },
+    {
+     "task": "10-seg2",
+     "error": "SkillRunError: sheets.py failed (1): Traceback (most recent call last):\n  File \"/sop-video-skill/scripts/sheets.py\", line 50, in <module>\n    main()\n  File \"/sop-video-skill/scripts/sheets.py\", line 40, in main\n    imgs.append(label(crop_norm(grab(a.video, t), box), f\"#{k} {fmt_t(t)}\"))\n                                ^^^^^^^^^^^^^^^^\n  File \"/sop-video-skill/scripts/_video.py\", line 106, in grab\n    raise RuntimeError(f\"cannot grab frame at {t}s from {path}\")\nRuntimeError: cannot grab frame at "
+    }
+   ],
+   "segmentation": "saved model segmentation; sha256-tag saved-model-8721e912b8045cc6",
+   "usage": {
+    "input_tokens": 0,
+    "cached_input_tokens": 0,
+    "output_tokens": 0,
+    "thinking_tokens": 0
+   },
+   "timing": {
+    "started_at": "2026-11-23T08:22:52+00:00",
+    "grading_seconds": 23.5,
+    "total_seconds": 23.6
+   },
+   "segmentation_import": {
+    "kind": "saved_model_segmentation",
+    "sha256": "8721e912b8045cc697c83f798008b365cb926ca778e782b0f51e5c2ed17e820e",
+    "provenance": {
+     "base": {
+      "record": "rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-8721e912b8045cc697c83f798008b365cb926ca778e782b0f51e5c2ed17e820e",
+      "segmentation": "saved-model-8721e912b8045cc697c83f798008b365cb926ca778e782b0f51e5c2ed17e820e",
+      "segmentation_sha256": "da6dadd333e33e2cb20c3b8268751b673fdad54f9e4cafbad792bc4932832442",
+      "run": 1,
+      "by": "dakzungberrae",
+      "date": "2026-11-21",
+      "commit": "8b19fceceb76f7b0ff12d817880cf7f1cd32531b",
+      "source": "saved model segmentation; sha256-tag saved-model-8721e912b8045cc697c83f798008b365cb926ca778e782b0f51e5c2ed17e820e"
+     }
+    }
+   }
+  },
+  {
+   "run": 2,
+   "by": "5595QAQ",
+   "date": "2026-11-23",
+   "commit": "f880d13bbbfcc819cd0a67df762db1e70f3afa0f",
+   "video_sha256": "c5793842b4e7666ce3f1dd9cf76141b36e864eb06cf49b28e1cde922f14d9eb6",
+   "steps": [
+    4,
+    10
+   ],
+   "failed_tasks": [],
+   "segmentation": "saved model segmentation; sha256-tag saved-model-8721e912b8045cc6",
+   "usage": {
+    "input_tokens": 586989,
+    "cached_input_tokens": 239470,
+    "output_tokens": 27325,
+    "thinking_tokens": 23947
+   },
+   "timing": {
+    "started_at": "2026-11-23T08:30:16+00:00",
+    "grading_seconds": 167.1,
+    "total_seconds": 437.6
+   },
+   "segmentation_import": {
+    "kind": "saved_model_segmentation",
+    "sha256": "8721e912b8045cc697c83f798008b365cb926ca778e782b0f51e5c2ed17e820e",
+    "provenance": {
+     "base": {
+      "record": "rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-8721e912b8045cc697c83f798008b365cb926ca778e782b0f51e5c2ed17e820e",
+      "segmentation": "saved-model-8721e912b8045cc697c83f798008b365cb926ca778e782b0f51e5c2ed17e820e",
+      "segmentation_sha256": "da6dadd333e33e2cb20c3b8268751b673fdad54f9e4cafbad792bc4932832442",
+      "run": 1,
+      "by": "dakzungberrae",
+      "date": "2026-11-21",
+      "commit": "8b19fceceb76f7b0ff12d817880cf7f1cd32531b",
+      "source": "saved model segmentation; sha256-tag saved-model-8721e912b8045cc697c83f798008b365cb926ca778e782b0f51e5c2ed17e820e"
+     }
+    }
+   }
+  }
+ ]
+}

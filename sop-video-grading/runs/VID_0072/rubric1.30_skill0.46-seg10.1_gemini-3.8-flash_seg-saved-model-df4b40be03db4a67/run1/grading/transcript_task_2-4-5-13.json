@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 6.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 20269,
+  "cached_input_tokens": 0,
+  "output_tokens": 660,
+  "thinking_tokens": 592,
+  "materials": [
+   "ov@16-116.5（hands_box，n=9）#0=00:16.0、#1=00:28.6、#2=00:41.1、#3=00:53.7、#4=01:06.2、#5=01:18.8、#6=01:31.4、#7=01:43.9、#8=01:56.5"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 20.0, \"end\": 55.0, \"fps\": 2, \"reason\": \"確認考生在步驟 4 期間（00:20–00:55）是否有拿起稀釋液瓶檢查效期與異物\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 23.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 25627,
+  "cached_input_tokens": 15613,
+  "output_tokens": 1333,
+  "thinking_tokens": 1111,
+  "materials": [
+   "ov@16-116.5（hands_box，n=9）#0=00:16.0、#1=00:28.6、#2=00:41.1、#3=00:53.7、#4=01:06.2、#5=01:18.8、#6=01:31.4、#7=01:43.9、#8=01:56.5",
+   "clip@20-55（context box，有聲音；片段內 00:00 ＝ 影片 00:20.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4d\", \"verdict\": \"正確\", \"explanation\": \"00:21.0–00:24.5（clip@20-55 片段內 00:01.0–00:04.5）及 00:44.5–00:48.0（clip@20-55 片段內 00:24.5–00:28.0）考生拿起細長塑膠稀釋液瓶橫放於眼前，雙手持瓶轉動並端詳檢視瓶身標示與瓶內液體，抽藥前確實有拿起稀釋液檢查效期與有無異物。\", \"times\": [[21.0, 24.5], [44.5, 48.0]], \"evidence\": [\"clip@20-55\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

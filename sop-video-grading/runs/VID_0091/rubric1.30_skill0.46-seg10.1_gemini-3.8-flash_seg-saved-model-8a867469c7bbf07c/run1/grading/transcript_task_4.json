@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 8.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 20327,
+  "cached_input_tokens": 16297,
+  "output_tokens": 520,
+  "thinking_tokens": 456,
+  "materials": [
+   "ov@20-85（hands_box，n=9）#0=00:20.0、#1=00:28.1、#2=00:36.2、#3=00:44.4、#4=00:52.5、#5=01:00.6、#6=01:08.8、#7=01:16.9、#8=01:25.0"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 20.0, \"end\": 45.0, \"fps\": 2, \"reason\": \"確認 00:20-00:45 期間是否有持藥瓶核對給藥紀錄單或指讀動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 18.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 24197,
+  "cached_input_tokens": 0,
+  "output_tokens": 2783,
+  "thinking_tokens": 2440,
+  "materials": [
+   "ov@20-85（hands_box，n=9）#0=00:20.0、#1=00:28.1、#2=00:36.2、#3=00:44.4、#4=00:52.5、#5=01:00.6、#6=01:08.8、#7=01:16.9、#8=01:25.0",
+   "clip@20-45（context box，有聲音；片段內 00:00 ＝ 影片 00:20.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [\n  {\"criterion_id\": \"4a\", \"verdict\": \"錯誤\",\n   \"explanation\": \"00:33.5–00:35.0（clip@20-45 片段內 00:13.5–00:15.0）考生左手持 vial 藥瓶、右手食指指向給藥紀錄單進行核對，實際查看紀錄單時間僅約 1.5 秒；00:36.5 考生將 vial 放回桌面後轉去操作空針包裝，未再持藥瓶核對紀錄單，累計不足 10 秒。\",\n   \"times\": [[33.5, 35.0]], \"evidence\": [\"clip@20-45\", \"ov@20-85 #2\"], \"confidence\": 0.85, \"reason\": null},\n  {\"criterion_id\": \"4b\", \"verdict\": \"正確\",\n   \"explanation\": \"00:33.5–00:35.0（clip@20-45 片段內 00:13.5–00:15.0）考生在查看給藥紀錄單時，右手食指伸出並明顯指在紀錄單上進行指讀確認。\",\n   \"times\": [[33.5, 35.0]], \"evidence\": [\"clip@20-45\"], \"confidence\": 0.9, \"reason\": null}\n]}",
+  "errors": []
+ }
+]

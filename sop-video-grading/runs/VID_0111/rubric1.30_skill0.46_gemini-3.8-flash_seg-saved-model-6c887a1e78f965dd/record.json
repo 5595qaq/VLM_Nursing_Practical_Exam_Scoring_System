@@ -1,0 +1,51 @@
+{
+ "video_id": "VID_0111",
+ "versions": {
+  "rubric": "1.30",
+  "skill": "0.46",
+  "model": "gemini-3.8-flash",
+  "segmentation": "saved-model-6c887a1e78f965dd"
+ },
+ "video_sha256": "4e804f8e2e3242e7e5cab964c0614c2d54235bcab1e7a60c58cc80704da95f6d",
+ "runs": [
+  {
+   "run": 1,
+   "by": "5595QAQ",
+   "date": "2026-11-23",
+   "commit": "4b279094ed1aa9c469f0d3cbd9b10af7330082c7",
+   "video_sha256": "4e804f8e2e3242e7e5cab964c0614c2d54235bcab1e7a60c58cc80704da95f6d",
+   "steps": [
+    22
+   ],
+   "failed_tasks": [],
+   "segmentation": "saved model segmentation; sha256-tag saved-model-6c887a1e78f965dd",
+   "usage": {
+    "input_tokens": 139763,
+    "cached_input_tokens": 97578,
+    "output_tokens": 8044,
+    "thinking_tokens": 7024
+   },
+   "timing": {
+    "started_at": "2026-11-23T08:17:38+00:00",
+    "grading_seconds": 251.2,
+    "total_seconds": 251.2
+   },
+   "segmentation_import": {
+    "kind": "saved_model_segmentation",
+    "sha256": "6c887a1e78f965dd93c4102e8e905585d66417379b99396fbdd92f31add9e5f0",
+    "provenance": {
+     "base": {
+      "record": "rubric1.29-handpos22d.1_skill0.45-handpos22d.1_gemini-4-argon_seg-labels-9a4015ea",
+      "segmentation": "labels-9a4015ea",
+      "segmentation_sha256": "bb0ab17cdc50bd365d8c30c2cf5b0d89e13a68abd9fc81df413df2c8a8e8758f",
+      "run": 1,
+      "by": "余亮岑",
+      "date": "2026-11-13",
+      "commit": "befe9f7519b8c21cb143784034351f333256f349",
+      "source": "label times"
+     }
+    }
+   }
+  }
+ ]
+}

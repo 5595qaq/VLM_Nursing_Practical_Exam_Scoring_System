@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 8.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 20204,
+  "cached_input_tokens": 0,
+  "output_tokens": 926,
+  "thinking_tokens": 820,
+  "materials": [
+   "ov@672-688（hands_box，n=9）#0=11:12.0、#1=11:14.0、#2=11:16.0、#3=11:18.0、#4=11:20.0、#5=11:22.0、#6=11:24.0、#7=11:26.0、#8=11:28.0"
+  ],
+  "reply": "{\"action\": \"clip\", \"fps\": 2, \"region\": [0.35, 0.6, 0.65, 0.95], \"start\": 682.0, \"end\": 688.0, \"reason\": \"觀察 11:22–11:28 刺入 vial、打入空氣至舉起倒置的過程，確認插針手勢、中心位置與 vial 是否離桌\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 10.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 21296,
+  "cached_input_tokens": 0,
+  "output_tokens": 1537,
+  "thinking_tokens": 1445,
+  "materials": [
+   "ov@672-688（hands_box，n=9）#0=11:12.0、#1=11:14.0、#2=11:16.0、#3=11:18.0、#4=11:20.0、#5=11:22.0、#6=11:24.0、#7=11:26.0、#8=11:28.0",
+   "clip@682-688（region=[0.350, 0.600, 0.650, 0.950]，原始解析度裁切，有聲音；片段內 00:00 ＝ 影片 11:22.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [684.0, 684.5], \"region\": [0.42, 0.65, 0.65, 0.95], \"reason\": \"確認 11:24.0 針頭刺入 vial 瞬間之持針手勢（22b）與是否刺入中心（22c）\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 15.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 22523,
+  "cached_input_tokens": 0,
+  "output_tokens": 1998,
+  "thinking_tokens": 1450,
+  "materials": [
+   "ov@672-688（hands_box，n=9）#0=11:12.0、#1=11:14.0、#2=11:16.0、#3=11:18.0、#4=11:20.0、#5=11:22.0、#6=11:24.0、#7=11:26.0、#8=11:28.0",
+   "clip@682-688（region=[0.350, 0.600, 0.650, 0.950]，原始解析度裁切，有聲音；片段內 00:00 ＝ 影片 11:22.0）",
+   "zoom@684/684.5 region=[0.420, 0.650, 0.650, 0.950]"
+  ],
+  "reply": "{\n  \"action\": \"final\",\n  \"criteria\": [\n    {\n      \"criterion_id\": \"22b\",\n      \"verdict\": \"正確\",\n      \"explanation\": \"11:24.0–11:24.5（clip@682-688 00:02.0–00:02.5、zoom@684/684.5）右手以持毛筆方式持針，拇指與食指握住針筒外管，針筒垂直向下刺入橡皮塞，手指未碰觸針頭、針座或活塞柄內側。\",\n      \"times\": [[684.0, 684.5]],\n      \"evidence\": [\"zoom@684\", \"zoom@684.5\", \"clip@682-688\"],\n      \"confidence\": 0.95,\n      \"reason\": null\n    },\n    {\n      \"criterion_id\": \"22c\",\n      \"verdict\": \"正確\",\n      \"explanation\": \"11:24.5（zoom@684.5）針頭垂直刺入 vial 頂部橡皮塞中心位置。\",\n      \"times\": [[684.5, 684.5]],\n      \"evidence\": [\"zoom@684.5\"],\n      \"confidence\": 0.95,\n      \"reason\": null\n    },\n    {\n      \"criterion_id\": \"22d\",\n      \"verdict\": \"錯誤\",\n      \"explanation\": \"11:24.5（clip@682-688 00:02.5）刺入時 vial 雖在桌面上，但 11:25.5–11:26.0（clip@682-688 00:03.5–00:04.0）右手推針心打入空氣尚未推到底時，左手便將 vial 拿離桌面舉起，不符合打入空氣時 vial 須固定在桌面的標準。\",\n      \"times\": [[684.5, 686.0]],\n      \"evidence\": [\"clip@682-688\", \"zoom@684.5\"],\n      \"confidence\": 0.9,\n      \"reason\": null\n    }\n  ]\n}",
+  "errors": []
+ }
+]

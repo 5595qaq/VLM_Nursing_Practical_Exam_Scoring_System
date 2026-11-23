@@ -1,0 +1,135 @@
+{
+ "video_id": "VID_0020",
+ "versions": {
+  "rubric": "1.30",
+  "skill": "0.46",
+  "model": "gemini-3.8-flash",
+  "segmentation": "saved-model-5b53fe9a6add43e4"
+ },
+ "video_sha256": "c5793842b4e7666ce3f1dd9cf76141b36e864eb06cf49b28e1cde922f14d9eb6",
+ "runs": [
+  {
+   "run": 1,
+   "by": "5595QAQ",
+   "date": "2026-11-23",
+   "commit": "4b279094ed1aa9c469f0d3cbd9b10af7330082c7",
+   "video_sha256": "c5793842b4e7666ce3f1dd9cf76141b36e864eb06cf49b28e1cde922f14d9eb6",
+   "steps": [],
+   "failed_tasks": [
+    {
+     "task": "22",
+     "error": "SkillRunError: sheets.py failed (1): Traceback (most recent call last):\n  File \"/sop-video-skill/scripts/sheets.py\", line 50, in <module>\n    main()\n  File \"/sop-video-skill/scripts/sheets.py\", line 40, in main\n    imgs.append(label(crop_norm(grab(a.video, t), box), f\"#{k} {fmt_t(t)}\"))\n                                ^^^^^^^^^^^^^^^^\n  File \"/sop-video-skill/scripts/_video.py\", line 106, in grab\n    raise RuntimeError(f\"cannot grab frame at {t}s from {path}\")\nRuntimeError: cannot grab frame at "
+    }
+   ],
+   "segmentation": "saved model segmentation; sha256-tag saved-model-5b53fe9a6add43e4",
+   "usage": {
+    "input_tokens": 0,
+    "cached_input_tokens": 0,
+    "output_tokens": 0,
+    "thinking_tokens": 0
+   },
+   "timing": {
+    "started_at": "2026-11-23T08:15:35+00:00",
+    "grading_seconds": 44.2,
+    "total_seconds": 141.8
+   },
+   "segmentation_import": {
+    "kind": "saved_model_segmentation",
+    "sha256": "5b53fe9a6add43e46dad784c71e44ff162fba8c81618a8ddbb564ed4f5fe3de5",
+    "provenance": {
+     "base": {
+      "record": "rubric1.29-handpos22d.1_skill0.45-handpos22d.1_gemini-4-argon_seg-labels-dd1ca8b0",
+      "segmentation": "labels-dd1ca8b0",
+      "segmentation_sha256": "508c1a3345a77c2430e4c7dc2630729c31e4f052db27ebcd92be0c74e61159cd",
+      "run": 1,
+      "by": "余亮岑",
+      "date": "2026-11-18",
+      "commit": "6fb1bf195775154b9dc11f6895d3ed470e7eab1d",
+      "source": "label times"
+     }
+    }
+   }
+  },
+  {
+   "run": 2,
+   "by": "5595QAQ",
+   "date": "2026-11-23",
+   "commit": "4b279094ed1aa9c469f0d3cbd9b10af7330082c7",
+   "video_sha256": "c5793842b4e7666ce3f1dd9cf76141b36e864eb06cf49b28e1cde922f14d9eb6",
+   "steps": [],
+   "failed_tasks": [
+    {
+     "task": "22",
+     "error": "SkillRunError: sheets.py failed (1): Traceback (most recent call last):\n  File \"/sop-video-skill/scripts/sheets.py\", line 50, in <module>\n    main()\n  File \"/sop-video-skill/scripts/sheets.py\", line 40, in main\n    imgs.append(label(crop_norm(grab(a.video, t), box), f\"#{k} {fmt_t(t)}\"))\n                                ^^^^^^^^^^^^^^^^\n  File \"/sop-video-skill/scripts/_video.py\", line 106, in grab\n    raise RuntimeError(f\"cannot grab frame at {t}s from {path}\")\nRuntimeError: cannot grab frame at "
+    }
+   ],
+   "segmentation": "saved model segmentation; sha256-tag saved-model-5b53fe9a6add43e4",
+   "usage": {
+    "input_tokens": 0,
+    "cached_input_tokens": 0,
+    "output_tokens": 0,
+    "thinking_tokens": 0
+   },
+   "timing": {
+    "started_at": "2026-11-23T08:24:21+00:00",
+    "grading_seconds": 7.0,
+    "total_seconds": 7.1
+   },
+   "segmentation_import": {
+    "kind": "saved_model_segmentation",
+    "sha256": "5b53fe9a6add43e46dad784c71e44ff162fba8c81618a8ddbb564ed4f5fe3de5",
+    "provenance": {
+     "base": {
+      "record": "rubric1.29-handpos22d.1_skill0.45-handpos22d.1_gemini-4-argon_seg-labels-dd1ca8b0",
+      "segmentation": "labels-dd1ca8b0",
+      "segmentation_sha256": "508c1a3345a77c2430e4c7dc2630729c31e4f052db27ebcd92be0c74e61159cd",
+      "run": 1,
+      "by": "余亮岑",
+      "date": "2026-11-18",
+      "commit": "6fb1bf195775154b9dc11f6895d3ed470e7eab1d",
+      "source": "label times"
+     }
+    }
+   }
+  },
+  {
+   "run": 3,
+   "by": "5595QAQ",
+   "date": "2026-11-23",
+   "commit": "4b279094ed1aa9c469f0d3cbd9b10af7330082c7",
+   "video_sha256": "c5793842b4e7666ce3f1dd9cf76141b36e864eb06cf49b28e1cde922f14d9eb6",
+   "steps": [
+    22
+   ],
+   "failed_tasks": [],
+   "segmentation": "saved model segmentation; sha256-tag saved-model-5b53fe9a6add43e4",
+   "usage": {
+    "input_tokens": 139984,
+    "cached_input_tokens": 97620,
+    "output_tokens": 8854,
+    "thinking_tokens": 7801
+   },
+   "timing": {
+    "started_at": "2026-11-23T08:28:21+00:00",
+    "grading_seconds": 145.3,
+    "total_seconds": 399.6
+   },
+   "segmentation_import": {
+    "kind": "saved_model_segmentation",
+    "sha256": "5b53fe9a6add43e46dad784c71e44ff162fba8c81618a8ddbb564ed4f5fe3de5",
+    "provenance": {
+     "base": {
+      "record": "rubric1.29-handpos22d.1_skill0.45-handpos22d.1_gemini-4-argon_seg-labels-dd1ca8b0",
+      "segmentation": "labels-dd1ca8b0",
+      "segmentation_sha256": "508c1a3345a77c2430e4c7dc2630729c31e4f052db27ebcd92be0c74e61159cd",
+      "run": 1,
+      "by": "余亮岑",
+      "date": "2026-11-18",
+      "commit": "6fb1bf195775154b9dc11f6895d3ed470e7eab1d",
+      "source": "label times"
+     }
+    }
+   }
+  }
+ ]
+}
