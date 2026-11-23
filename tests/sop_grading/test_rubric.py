@@ -16,6 +16,7 @@ def test_rubric_json_is_valid():
 def test_rubric_classification_matches_the_plan():
     by_id = criteria_by_id(load_rubric())
     assert by_id["1a"]["category"] == "visual" and by_id["1a"]["min_seconds"] == 10
+    assert by_id["1a"]["cumulative_seconds"] is True  # D-01-01: washing resumed after a new pump of soap adds up
     assert by_id["1a"]["key"] is True and by_id["1b"]["key"] is True
     assert by_id["1b"]["allow_partial"] is False
     assert by_id["1b"]["category"] == "visual" and by_id["1b"]["sample_interval"] == 0.5
@@ -240,3 +241,10 @@ def test_step30_is_removed():
 @pytest.mark.parametrize("seconds, text", [(0, "00:00"), (59.9, "00:59"), (125.4, "02:05")])
 def test_fmt_time(seconds, text):
     assert fmt_time(seconds) == text
+
+
+def test_timed_action_needs_cumulative_timing_and_a_description():
+    assert any("timed_action needs" in e
+               for e in broken(lambda r: r["steps"][0]["criteria"][1].update(timed_action="洗手")))  # 1b (not timed)
+    assert any("timed_action needs" in e
+               for e in broken(lambda r: r["steps"][0]["criteria"][0].update(timed_action="")))  # 1a
