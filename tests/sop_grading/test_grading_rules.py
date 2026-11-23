@@ -225,8 +225,9 @@ def test_step10_fixing_wrong_is_step_wrong():
 
 
 def test_window_is_clipped_to_video(segmentation):
-    seg_step(segmentation, 30).update(start=399.0, end=400.0)
-    assert criterion(grade_from_segmentation(segmentation), "30a")["window"] == [397.0, 400.0]
+    for sid in (29, 30):  # 29a looks at steps 29-30, the last ones in the video
+        seg_step(segmentation, sid).update(start=399.0, end=400.0)
+    assert criterion(grade_from_segmentation(segmentation), "29a")["window"] == [397.0, 400.0]
 
 
 def test_not_visible_criterion_is_fixed_and_explained(segmentation):
