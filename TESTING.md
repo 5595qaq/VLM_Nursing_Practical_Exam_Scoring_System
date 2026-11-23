@@ -134,3 +134,11 @@ LOCUST_VIDEO_URI=gs://bucket/videos/<sha256>_src.mp4 locust -H http://localhost:
 ## 首次真實模型驗收
 
 自動測試通過後，可由使用者提交 10 支代表性影片，查看 `docker compose logs -f worker` 的 429 比率與耗時，再決定是否調整 5 路設定。真實模型容量、延遲及計費不由 mock 測試保證。增加 worker 不會增加全域上限，改動設定需同時重啟所有 worker。
+
+## #192 歷史紀錄離線檢查
+
+`python sop-video-grading/experiments/2026-11-23-grading30pdf185/verify_bundle.py`
+檢查原始檔 SHA-256、逐步來源版本、歷史彙總與 CLI final 格式；
+`python -m pytest tests/sop_grading/test_verify_archived_bundle.py -q` 檢查錯誤來源選擇、
+資料竄改與 import 隔離。詳見該資料夾的 README。這些檢查沒有模型呼叫，不代表
+目前 main 或新版本已完成影片評分／切分回歸。

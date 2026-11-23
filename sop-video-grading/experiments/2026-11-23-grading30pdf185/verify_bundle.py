@@ -3,7 +3,6 @@ from pathlib import Path
 import hashlib
 import importlib.util
 import inspect
-import itertools
 import json
 import re
 import sys
@@ -23,6 +22,40 @@ def module(path, name):
     spec.loader.exec_module(result)
     return result
 
+def verify_archived_step(step, meta, profiles):
+    """Check the saved verdict with the rubric that actually produced it."""
+    name = meta['rule_profile']
+    if name == 'original':
+        # Step 3 reuses original results; that profile has no archived source code.
+        assert step['step_id'] == 3
+        return 0
+    rubric, logic = profiles[name]
+    assert rubric['version'] == meta['rubric_version'], (step['step_id'], name, 'rubric version')
+    rule = next(s for s in rubric['steps'] if s['step_id'] == step['step_id'])
+    criteria = step['criteria']
+    ids = [c['criterion_id'] for c in criteria]
+    assert len(ids) == len(set(ids)) and set(ids) == {c['id'] for c in rule['criteria']}, (step['step_id'], 'criteria')
+    verdicts = {c['criterion_id']: c['verdict'] for c in criteria}
+    reasons = {c['criterion_id']: c.get('reason') for c in criteria}
+    options = {'reasons': reasons} if 'reasons' in inspect.signature(logic.aggregate).parameters else {}
+    actual = logic.aggregate(rule, verdicts, **options)
+    assert actual == step['verdict'], (step['step_id'], name, actual, step['verdict'])
+    return 1
+
+
+def historical_validator(scripts, rubric_module):
+    """Bind historical validator imports without leaking into other tools/tests."""
+    previous = sys.modules.get('rubric')
+    sys.modules['rubric'] = rubric_module
+    try:
+        return module(scripts / 'validate_grading.py', 'historical_validator')
+    finally:
+        if previous is None:
+            sys.modules.pop('rubric', None)
+        else:
+            sys.modules['rubric'] = previous
+
+
 def verify():
     archived = read(HERE / 'files-sha256.json')
     for path, value in archived.items():
@@ -33,31 +66,12 @@ def verify():
         for item in profile['files'].values():
             assert digest(REPO / item['path']) == item['sha256'], item['path']
             source_files += 1
-    current = module(REPO / 'sop-video-grading/scripts/rubric.py', 'current_rubric')
-    rubric = current.load_rubric()
     old = {}
     for name in source:
         root = HERE / 'sources' / name / 'sop-video-grading'
         old[name] = (read(root / 'rubric.json'), module(root / 'scripts/rubric.py', name))
-    for sid in [1, 2, 4, 29, 30]:
-        profile = 'placement' if sid == 30 else 'separate174'
-        assert rubric['steps'][sid - 1] == old[profile][0]['steps'][sid - 1], sid
-    for group, profile in [('01-hand-washing.md', 'readsheet'), ('02-drug-sheet.md', 'readsheet'), ('09-disposal.md', 'placement')]:
-        assert (REPO / 'sop-video-grading/criteria' / group).read_text(encoding='utf-8') == (
-            HERE / 'sources' / profile / 'sop-video-grading/criteria' / group).read_text(encoding='utf-8'), group
-    combinations = 0
-    for sid in [1, 2, 4, 29, 30]:
-        profile = 'placement' if sid == 30 else 'separate174'
-        prev_rubric, previous = old[profile]
-        step = rubric['steps'][sid - 1]
-        for values in itertools.product(['正確','錯誤','部分正確','無法判定','待判定','不適用'], repeat=len(step['criteria'])):
-            verdicts = dict(zip([c['id'] for c in step['criteria']], values))
-            for reason in [None, '藥單看不見']:
-                reasons = {c['id']: reason for c in step['criteria']}
-                options = {'reasons': reasons} if 'reasons' in inspect.signature(previous.aggregate).parameters else {}
-                assert current.aggregate(step, verdicts, reasons=reasons) == previous.aggregate(
-                    prev_rubric['steps'][sid-1], verdicts, **options), (sid, values)
-                combinations += 1
+    # This archive combines historical runs. Current main is not their source.
+    aggregations = 0
     index = read(HERE / 'index.json')
     assert len(index) == len({i['video_id'] for i in index}) == 30
     steps = 0
@@ -69,7 +83,10 @@ def verify():
             meta = item['source_by_step'][str(step['step_id'])]
             path = REPO / meta['path']
             assert digest(path) == meta['original_sha256']
-            assert step == next(s for s in read(path)['steps'] if s['step_id'] == step['step_id'])
+            original = read(path)
+            assert original['rubric_version'] == meta['rubric_version'], (item['video_id'], step['step_id'], 'source version')
+            assert step == next(s for s in original['steps'] if s['step_id'] == step['step_id'])
+            aggregations += verify_archived_step(step, meta, old)
             steps += 1
         record_path = REPO / item['cli_record']
         record = read(record_path)
@@ -84,11 +101,10 @@ def verify():
         assert digest(REPO / case['source']) == case['original_sha256']
     # Validate current final records using the *actual historical CLI rubric*.
     scripts = HERE / 'sources/separate174/sop-video-grading/scripts'
-    sys.path.insert(0, str(scripts))
-    validator = module(scripts/'validate_grading.py', 'historical_validator')
+    validator = historical_validator(scripts, old['separate174'][1])
     for item in index:
         grading = read((REPO/item['cli_record']).parent/'grading.json')
-        errors = validator.validate_grading(grading, final=True)
+        errors = validator.validate_grading(grading, rubric=old['separate174'][0], final=True)
         selected_errors = []
         for error in errors:
             step_id = re.search(r'\(step (\d+)\)', error)
@@ -98,9 +114,12 @@ def verify():
         assert not selected_errors, (item['video_id'], selected_errors)
     summary = read(HERE/'metrics.json')['summary']
     assert (summary['compared'],summary['agreement'],summary['error_tp'],summary['error_total']) == (180,152,34,42)
-    print(json.dumps({'videos':30,'steps_with_separate10':steps,'pdf_steps':180,'difference_source_hashes':28,
-                      'source_files':source_files,'archived_files':len(archived),'aggregate_combinations':combinations,'native_cli_records':30,
-                      'historical_selected_final_validations':30,'model_calls':0}, ensure_ascii=False))
+    result = {'videos':30,'steps_with_separate10':steps,'pdf_steps':180,'difference_source_hashes':28,
+                      'source_files':source_files,'archived_files':len(archived),'historical_step_aggregations':aggregations,'native_cli_records':30,
+                      'historical_selected_final_validations':30,'model_calls':0,
+                      'current_main_equivalence_checked':False,'new_video_regression':False}
+    print(json.dumps(result, ensure_ascii=False))
+    return result
 
 if __name__ == '__main__':
     verify()

@@ -1,0 +1,38 @@
+{
+  "base_commit": "f5d71f237da10d934059f34d9d8551426d44ddb3",
+  "scope": "historical archive verification only; no active grading or segmentation changes",
+  "original_main_failure_reproduced": "AssertionError(1)",
+  "offline_bundle": {
+    "videos": 30,
+    "steps_with_separate10": 210,
+    "pdf_steps": 180,
+    "difference_source_hashes": 28,
+    "source_files": 243,
+    "archived_files": 1094,
+    "historical_step_aggregations": 180,
+    "native_cli_records": 30,
+    "historical_selected_final_validations": 30,
+    "model_calls": 0,
+    "current_main_equivalence_checked": false,
+    "new_video_regression": false
+  },
+  "tests": {
+    "targeted": {
+      "passed": 16
+    },
+    "sop_grading": {
+      "passed": 286,
+      "skipped": 24,
+      "failed": 0
+    }
+  },
+  "skipped_scope": "existing media-tool dependent tests; no grading runtime code changed",
+  "source_publication": "source-publication.json",
+  "historical_verification_json_unchanged": true,
+  "video_regression": {
+    "performed": false,
+    "reason": "insufficient budget"
+  },
+  "new_independent_reference": false,
+  "claims": "archive consistency only; not current-main equivalence or new model accuracy"
+}
