@@ -231,7 +231,7 @@ def test_step29_needs_the_record_sheet():
 
 
 def test_step30_is_removed():
-    # rubric 1.30-drop30.1: the teacher (2026-11-23) cancelled step 30, so 30a/30b are gone like step 11
+    # rubric 1.31: the teacher (2026-11-23) cancelled step 30, so 30a/30b are gone like step 11
     step30 = load_rubric()["steps"][29]
     assert step30["removed"] is True and step30["criteria"] == []
     assert aggregate(step30, {}) == NOT_APPLICABLE
