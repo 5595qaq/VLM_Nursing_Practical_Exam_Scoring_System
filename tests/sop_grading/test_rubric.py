@@ -243,8 +243,8 @@ def test_fmt_time(seconds, text):
     assert fmt_time(seconds) == text
 
 
-def test_timed_action_needs_cumulative_timing_and_a_description():
-    assert any("timed_action needs" in e
-               for e in broken(lambda r: r["steps"][0]["criteria"][1].update(timed_action="洗手")))  # 1b (not timed)
-    assert any("timed_action needs" in e
-               for e in broken(lambda r: r["steps"][0]["criteria"][0].update(timed_action="")))  # 1a
+def test_cumulative_timing_names_the_action_timed():
+    expected = "cumulative_seconds and timed_action"
+    assert any(expected in e for e in broken(lambda r: r["steps"][0]["criteria"][1].update(timed_action="洗手")))  # 1b
+    assert any(expected in e for e in broken(lambda r: r["steps"][0]["criteria"][0].update(timed_action="")))  # 1a
+    assert any(expected in e for e in broken(lambda r: r["steps"][0]["criteria"][0].pop("timed_action")))

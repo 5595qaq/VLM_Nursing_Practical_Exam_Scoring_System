@@ -129,7 +129,7 @@ async def test_washing_task_asks_for_timed_parts(video, tmp_path):
     model = FakeModel({"1a": [no_times]})
     outcome = await grading.run_grading(video, segmentation(), tmp_path, model, steps={1})
     first, retry = requests_for(model, "1a")
-    assert "累計計時：final 填 times=[[開始, 結束], ...]，只填洗手（每段從按壓洗手液" in first[0]["text"]
+    assert "累計計時：final 填 times=[[開始, 結束], ...]，只填洗手的影片秒數" in first[0]["text"]
     assert "cumulative timing needs times" in retry[0]["text"]
     wash = next(c for s in outcome["result"]["steps"] for c in s["criteria"] if c["criterion_id"] == "1a")
     assert wash["verdict"] == "正確" and wash["times"] == [[0.0, 16.0]] and outcome["failed_tasks"] == []

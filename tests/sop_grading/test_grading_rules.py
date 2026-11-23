@@ -70,6 +70,11 @@ def test_wash_order_uses_the_actual_wash_end_and_earliest_step_two_start(segment
     # washing resumed after a new pump of soap (D-01-01): the order is checked against the end of the last part
     criterion(result, "1a")["times"] = [[0.0, 6.0], [15.0, 21.0]]
     assert build_step(spec, step["criteria"], segmentation=segmentation)["verdict"] == "錯誤"
+    # 1a 無法判定 may list the parts it saw; their end is not the end of washing, so 1c keeps the segmentation verdict
+    criterion(result, "1a").update(verdict="無法判定", times=[[0.0, 6.0]])
+    out = build_step(spec, step["criteria"], segmentation=segmentation)
+    assert next(c for c in out["criteria"] if c["criterion_id"] == "1c") is criterion(result, "1c")
+    criterion(result, "1a")["verdict"] = "正確"
     # records before rubric 1.30-washsum measured one span
     del criterion(result, "1a")["times"]
     criterion(result, "1a")["span"] = [0.0, 21.0]
