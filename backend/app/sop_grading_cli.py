@@ -12,7 +12,9 @@ usage: python -m app.sop_grading_cli VIDEO --video-id VID_0083 --out WORK/VID_00
 --labels builds segmentation.json from the label sheet's times (labels_to_segmentation.py) instead of
 running sop-video-skill: faster and cheaper while tuning the grading agent.
 --steps regrades only those steps' visual criteria and keeps the rest from an existing grading.json.
-A regraded task that fails keeps its earlier grade (it is listed in failed_tasks).
+A regraded task that fails keeps its earlier grade (it is listed in failed_tasks). Without --force, --steps on a
+version that already has a record only sends the criteria still 待判定 there (resume): a task that succeeded
+before is not paid for again when another task of the same step failed.
 A run that stopped before it was recorded (killed, or segmentation ended on a 429 or a dropped connection)
 leaves checkpoints in the work folder, and the same command continues from them. A recorded run with
 failed tasks keeps their checkpoints too: --steps with those steps continues them. Tokens already spent
@@ -307,8 +309,11 @@ async def run(video: Path, video_id: str, out: Path, steps: set[int] | None,
     print("grading", video_id, "steps", sorted(steps) if steps else "all", flush=True)
     resumed = resumed or any(sop_checkpoint.is_checkpoint(f.name) for f in work.iterdir())
     grading_clock = time.monotonic()
+    # Continuing a recorded run (--steps of the same version): criteria the record already graded are kept, so
+    # a task that succeeded is not paid for again when another task of the same step failed. --force regrades all.
+    resume = previous is not None and recorder is not None and not force
     outcome = await sop_grading_service.run_grading(source, segmentation, work, probe_dir=seg_dir,
-                                                    steps=steps, previous=previous)
+                                                    steps=steps, previous=previous, resume=resume)
     timing["grading_seconds"] = round(time.monotonic() - grading_clock, 1)
     timing["total_seconds"] = round(time.monotonic() - clock, 1)
     if resumed:

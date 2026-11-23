@@ -31,8 +31,8 @@ def fake(monkeypatch):
     """Fake grading. Tasks in `fail` fail before their first reply: no transcript, listed in failed_tasks."""
     state = {"calls": [], "fail": set()}
 
-    async def run_grading(source, segmentation, work, probe_dir=None, steps=None, previous=None):
-        state["calls"].append({"steps": steps, "previous": previous, "segmentation": segmentation})
+    async def run_grading(source, segmentation, work, probe_dir=None, steps=None, previous=None, resume=False):
+        state["calls"].append({"steps": steps, "previous": previous, "segmentation": segmentation, "resume": resume})
         tasks = [str(s) for s in sorted(steps)] if steps else ["1", "15-16-17"]
         for key in tasks:
             if key not in state["fail"]:
@@ -434,3 +434,23 @@ def test_a_recorded_segmentation_without_its_source_is_refused(tmp_path, video, 
         grade(recorder(video, runs), out, {1}, video)
     grade(recorder(video, runs), out, {1}, video, new_segmentation=True)
     assert fake["segmented"] == 1
+
+
+def test_rerun_of_failed_steps_keeps_what_the_record_graded(tmp_path, video, fake):
+    # a step with two tasks, one failed (429): the rerun sends only the criteria still 待判定 (resume), so the task
+    # that succeeded is not paid for again; --force regrades everything
+    runs = tmp_path / "runs"
+    fake["fail"] = {"1"}
+    grade(recorder(video, runs), work_folder(tmp_path, "a"), {1}, video)
+    assert fake["calls"][0]["resume"] is False  # nothing recorded yet
+
+    fake["fail"] = set()
+    rec = recorder(video, runs)
+    rec.check({1}, force=False)
+    asyncio.run(cli.run(video, VID, tmp_path / "a", {1}, None, rec, skill_tag()))
+    assert fake["calls"][1]["resume"] is True and fake["calls"][1]["previous"]["run"] == 1
+
+    rec = recorder(video, runs)
+    rec.check({1}, force=True)
+    asyncio.run(cli.run(video, VID, tmp_path / "a", {1}, None, rec, skill_tag(), force=True))
+    assert fake["calls"][2]["resume"] is False
