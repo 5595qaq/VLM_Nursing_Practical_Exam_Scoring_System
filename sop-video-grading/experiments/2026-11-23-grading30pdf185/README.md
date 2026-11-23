@@ -15,6 +15,10 @@ python -m pytest tests/sop_grading/test_verify_archived_bundle.py -q
 彙總判定，以及 30 支 CLI 紀錄的歷史 final 格式。只略過未選步驟的待判定錯誤。
 不讀目前 main 的 rubric／criteria，也不檢查 main 與過去版本等價。
 
+根目錄 `.gitattributes` 把這個資料夾設成 `-text`，checkout 時不轉換換行；否則 Windows 的
+`core.autocrlf=true` 會把 LF 換成 CRLF，雜湊對不上。在設定加入前就 checkout 的工作目錄，
+要重新 checkout 這個資料夾（刪掉後 `git checkout HEAD -- <資料夾>`）。
+
 `verification.json` 是 #186 當時執行的紀錄；裡面的 16,920 組 main 相容性比較是
 當時整合分支的歷史結果，不能套用在只匯入資料的 #192 或目前 main。修正後不再
 執行這項相容性比較，輸出改為 `historical_step_aggregations`，不覆寫歷史驗證紀錄。
