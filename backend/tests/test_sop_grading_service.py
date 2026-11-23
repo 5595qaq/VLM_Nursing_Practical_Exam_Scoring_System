@@ -282,13 +282,13 @@ async def test_sheet_out_of_frame_decides_across_attempts(video, tmp_path):
 
 async def test_resumed_steps_send_only_their_pending_tasks(video, tmp_path):
     # sop_grading_cli reruns a step whose 4e task failed (--steps 4, resume): only the 4e task goes to the model
-    first = await grading.run_grading(video, segmentation(), tmp_path / "a", FakeModel(), steps={4})
-    previous = json.loads(json.dumps(first["result"]))
-    for s in previous["steps"]:
-        for c in s["criteria"]:
-            if c["criterion_id"] == "4e":
-                c.update(verdict="待判定", reason=None, source="vlm")
+    first = await grading.run_grading(video, segmentation(), tmp_path / "a",
+                                      FakeModel({"4e": [RuntimeError("429 RESOURCE_EXHAUSTED")]}), steps={4})
+    assert first["failed_tasks"]  # the 4e task failed; the others were graded
+    previous = json.loads(json.dumps(first["result"]))  # the result as the record saves it
+    assert next(c for s in previous["steps"] for c in s["criteria"] if c["criterion_id"] == "4e")["verdict"] == "待判定"
     kept = next(c for s in previous["steps"] for c in s["criteria"] if c["criterion_id"] == "4a")
+    assert kept["verdict"] != "待判定"
     model = FakeModel()
     later = await grading.run_grading(video, segmentation(), tmp_path / "b", model, steps={4},
                                       previous=previous, resume=True)

@@ -454,3 +454,27 @@ def test_rerun_of_failed_steps_keeps_what_the_record_graded(tmp_path, video, fak
     rec.check({1}, force=True)
     asyncio.run(cli.run(video, VID, tmp_path / "a", {1}, None, rec, skill_tag(), force=True))
     assert fake["calls"][2]["resume"] is False
+
+
+def test_rerun_after_a_code_change_regrades_the_whole_step(tmp_path, video, fake, capsys):
+    # the record's run used another commit (code fixed without a version bump): no mixing, regrade all
+    runs = tmp_path / "runs"
+    fake["fail"] = {"1"}
+    grade(recorder(video, runs, commit="aaa1111"), work_folder(tmp_path, "a"), {1}, video)
+    fake["fail"] = set()
+    rec = recorder(video, runs, commit="bbb2222")
+    rec.check({1}, force=False)
+    asyncio.run(cli.run(video, VID, tmp_path / "a", {1}, None, rec, skill_tag()))
+    assert fake["calls"][1]["resume"] is False
+    assert "其他 commit 的執行（aaa1111）" in capsys.readouterr().out
+
+
+def test_resume_notice_lists_the_kept_criteria(tmp_path, video, capsys):
+    rec = recorder(video, tmp_path / "runs")
+    rec.record = {"runs": [{"commit": rec.commit}]}
+    previous = {"steps": [{"step_id": 4, "criteria": [
+        {"criterion_id": "4a", "source": "vlm", "verdict": "正確"},
+        {"criterion_id": "4e", "source": "vlm", "verdict": "待判定"}]}]}
+    assert cli._resume_notice(rec, previous, {4}) is True
+    out = capsys.readouterr().out
+    assert "沿用紀錄已判定的標準：4a" in out and "4e" not in out

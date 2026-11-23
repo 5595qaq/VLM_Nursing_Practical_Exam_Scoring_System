@@ -13,8 +13,9 @@ usage: python -m app.sop_grading_cli VIDEO --video-id VID_0083 --out WORK/VID_00
 running sop-video-skill: faster and cheaper while tuning the grading agent.
 --steps regrades only those steps' visual criteria and keeps the rest from an existing grading.json.
 A regraded task that fails keeps its earlier grade (it is listed in failed_tasks). Without --force, --steps on a
-version that already has a record only sends the criteria still 待判定 there (resume): a task that succeeded
-before is not paid for again when another task of the same step failed.
+version that already has a record only sends the criteria still 待判定 there (resume, printing what it keeps):
+a task that succeeded before is not paid for again when another task of the same step failed. When a run of
+the record used another commit, the steps are graded again in full (a step never mixes two program versions).
 A run that stopped before it was recorded (killed, or segmentation ended on a 429 or a dropped connection)
 leaves checkpoints in the work folder, and the same command continues from them. A recorded run with
 failed tasks keeps their checkpoints too: --steps with those steps continues them. Tokens already spent
@@ -309,9 +310,7 @@ async def run(video: Path, video_id: str, out: Path, steps: set[int] | None,
     print("grading", video_id, "steps", sorted(steps) if steps else "all", flush=True)
     resumed = resumed or any(sop_checkpoint.is_checkpoint(f.name) for f in work.iterdir())
     grading_clock = time.monotonic()
-    # Continuing a recorded run (--steps of the same version): criteria the record already graded are kept, so
-    # a task that succeeded is not paid for again when another task of the same step failed. --force regrades all.
-    resume = previous is not None and recorder is not None and not force
+    resume = recorder is not None and previous is not None and not force and _resume_notice(recorder, previous, steps)
     outcome = await sop_grading_service.run_grading(source, segmentation, work, probe_dir=seg_dir,
                                                     steps=steps, previous=previous, resume=resume)
     timing["grading_seconds"] = round(time.monotonic() - grading_clock, 1)
@@ -328,6 +327,22 @@ async def run(video: Path, video_id: str, out: Path, steps: set[int] | None,
         if recorder.segmentation_from and imported is None:  # again at the end, where it is not lost among the grading logs
             print(reuse_notice(recorder.segmentation_from), flush=True)
     return outcome
+
+
+def _resume_notice(recorder: Recorder, previous: dict, steps: set[int]) -> bool:
+    """Continuing a recorded run (--steps of the same version): keep the criteria the record already graded, so a
+    task that succeeded is not paid for again when another task of the same step failed. Only when every run of
+    the record used this commit: a step must not mix the results of two program versions. Prints what is kept."""
+    commits = {r["commit"] for r in recorder.record["runs"]}
+    if commits != {recorder.commit}:
+        print(f"紀錄裡有其他 commit 的執行（{'、'.join(sorted(commits - {recorder.commit}))}），"
+              f"步驟 {','.join(map(str, sorted(steps)))} 全部重評，不沿用紀錄已判定的標準", flush=True)
+        return False
+    kept = [c["criterion_id"] for s in previous["steps"] if s["step_id"] in steps
+            for c in s["criteria"] if c.get("source") == "vlm" and c["verdict"] != "待判定"]
+    if kept:
+        print(f"沿用紀錄已判定的標準：{'、'.join(kept)}，只補評待判定的標準（要全部重評請加 --force）", flush=True)
+    return True
 
 
 def main() -> None:
