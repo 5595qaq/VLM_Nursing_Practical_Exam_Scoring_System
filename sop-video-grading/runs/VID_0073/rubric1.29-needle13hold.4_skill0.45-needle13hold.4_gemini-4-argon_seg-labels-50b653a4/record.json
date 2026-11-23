@@ -1,0 +1,66 @@
+{
+ "video_id": "VID_0073",
+ "versions": {
+  "rubric": "1.29-needle13hold.4",
+  "skill": "0.45-needle13hold.4",
+  "model": "gemini-4-argon",
+  "segmentation": "labels-50b653a4"
+ },
+ "video_sha256": "6733f9f1e7f9d44d1727e1f3e31984fe3d0e29d8a7e8fcf37357a06a2ab01a1e",
+ "runs": [
+  {
+   "run": 1,
+   "by": "od3w",
+   "date": "2026-11-23",
+   "commit": "ce06cb3cfedfe76bcf344793f1cf5804afdffff9",
+   "video_sha256": "6733f9f1e7f9d44d1727e1f3e31984fe3d0e29d8a7e8fcf37357a06a2ab01a1e",
+   "steps": [],
+   "failed_tasks": [
+    {
+     "task": "13",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    },
+    {
+     "task": "13-14",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    }
+   ],
+   "segmentation": "label times",
+   "usage": {
+    "input_tokens": 19868,
+    "cached_input_tokens": 0,
+    "output_tokens": 142,
+    "thinking_tokens": 53
+   },
+   "timing": {
+    "started_at": "2026-11-23T08:29:39+00:00",
+    "grading_seconds": 344.5,
+    "total_seconds": 488.4
+   }
+  },
+  {
+   "run": 2,
+   "by": "od3w",
+   "date": "2026-11-23",
+   "commit": "ce06cb3cfedfe76bcf344793f1cf5804afdffff9",
+   "video_sha256": "6733f9f1e7f9d44d1727e1f3e31984fe3d0e29d8a7e8fcf37357a06a2ab01a1e",
+   "steps": [
+    13
+   ],
+   "failed_tasks": [],
+   "segmentation": "recorded segmentation.json",
+   "usage": {
+    "input_tokens": 76291,
+    "cached_input_tokens": 0,
+    "output_tokens": 567,
+    "thinking_tokens": 164
+   },
+   "timing": {
+    "started_at": "2026-11-23T10:38:00+00:00",
+    "grading_seconds": 27.3,
+    "total_seconds": 27.4,
+    "checkpoints_found": true
+   }
+  }
+ ]
+}

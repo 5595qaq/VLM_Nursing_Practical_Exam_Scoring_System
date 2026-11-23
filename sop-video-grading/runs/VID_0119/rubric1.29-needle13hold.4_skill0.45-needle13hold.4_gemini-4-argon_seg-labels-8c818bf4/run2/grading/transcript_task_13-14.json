@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 9.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 20997,
+  "cached_input_tokens": 0,
+  "output_tokens": 90,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@128-140（context box，有聲音；片段內 00:00 ＝ 影片 02:08.0）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 131.5, \"end\": 144.0, \"fps\": 1, \"region\": [0.3, 0.25, 0.6, 0.7], \"reason\": \"逐秒確認插入稀釋液瓶完成後到抽取稀釋液結束並開始拔針的時間與針筒方向\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 15.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 22494,
+  "cached_input_tokens": 0,
+  "output_tokens": 201,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@128-140（context box，有聲音；片段內 00:00 ＝ 影片 02:08.0）",
+   "clip@131.5-144（region=[0.300, 0.250, 0.600, 0.700]，原始解析度裁切，有聲音；片段內 00:00 ＝ 影片 02:11.5）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"13b\", \"verdict\": \"正確\", \"explanation\": \"學生於 02:12.5 首次將針頭插入稀釋液瓶，02:13.5 拔出後於 02:14.5 第二次插入完成，並於 02:19.0 開始拔針離開瓶子；以最後一次插入後為準，02:14.5–02:19.0 逐秒看過，針頭都比針筒尾端低（全程維持斜向下角度）。\", \"times\": [[134.5, 139.0]], \"evidence\": [\"clip@128-140\", \"clip@131.5-144\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

@@ -1,0 +1,62 @@
+{
+ "video_id": "VID_0076",
+ "versions": {
+  "rubric": "1.29-needle13hold.4",
+  "skill": "0.45-needle13hold.4",
+  "model": "gemini-4-argon",
+  "segmentation": "labels-26c89e94"
+ },
+ "video_sha256": "5e056a691870cc4957f00604e1bbabd539d22e0d24f0c32ad5446aee3155de2c",
+ "runs": [
+  {
+   "run": 1,
+   "by": "od3w",
+   "date": "2026-11-23",
+   "commit": "ce06cb3cfedfe76bcf344793f1cf5804afdffff9",
+   "video_sha256": "5e056a691870cc4957f00604e1bbabd539d22e0d24f0c32ad5446aee3155de2c",
+   "steps": [],
+   "failed_tasks": [
+    {
+     "task": "13-14",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    }
+   ],
+   "segmentation": "label times",
+   "usage": {
+    "input_tokens": 145535,
+    "cached_input_tokens": 18187,
+    "output_tokens": 1227,
+    "thinking_tokens": 510
+   },
+   "timing": {
+    "started_at": "2026-11-23T00:58:43+00:00",
+    "grading_seconds": 362.2,
+    "total_seconds": 486.1
+   }
+  },
+  {
+   "run": 2,
+   "by": "od3w",
+   "date": "2026-11-23",
+   "commit": "ce06cb3cfedfe76bcf344793f1cf5804afdffff9",
+   "video_sha256": "5e056a691870cc4957f00604e1bbabd539d22e0d24f0c32ad5446aee3155de2c",
+   "steps": [
+    13
+   ],
+   "failed_tasks": [],
+   "segmentation": "recorded segmentation.json",
+   "usage": {
+    "input_tokens": 125358,
+    "cached_input_tokens": 18187,
+    "output_tokens": 1401,
+    "thinking_tokens": 700
+   },
+   "timing": {
+    "started_at": "2026-11-23T03:07:00+00:00",
+    "grading_seconds": 139.6,
+    "total_seconds": 139.7,
+    "checkpoints_found": true
+   }
+  }
+ ]
+}

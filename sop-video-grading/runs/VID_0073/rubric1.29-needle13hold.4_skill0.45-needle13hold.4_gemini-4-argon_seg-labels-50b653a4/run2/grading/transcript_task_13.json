@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 11.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 19868,
+  "cached_input_tokens": 0,
+  "output_tokens": 142,
+  "thinking_tokens": 53,
+  "materials": [
+   "ov@67-80（hands_box，n=9）#0=01:07.0、#1=01:08.6、#2=01:10.2、#3=01:11.9、#4=01:13.5、#5=01:15.1、#6=01:16.8、#7=01:18.4、#8=01:20.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [75.1, 76.8, 78.4, 80.0], \"region\": [0.35, 0.5, 0.65, 0.85], \"reason\": \"放大確認右手將針頭插入稀釋液瓶時，左手其餘手指是否固定針筒\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 7.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 21122,
+  "cached_input_tokens": 0,
+  "output_tokens": 167,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@67-80（hands_box，n=9）#0=01:07.0、#1=01:08.6、#2=01:10.2、#3=01:11.9、#4=01:13.5、#5=01:15.1、#6=01:16.8、#7=01:18.4、#8=01:20.0",
+   "zoom@75.1/76.8/78.4/80 region=[0.350, 0.500, 0.650, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"13a\", \"verdict\": \"正確\", \"explanation\": \"01:15.1–01:20.0 右手持空針將針頭插入稀釋液瓶口，左手夾住稀釋液瓶後，於 01:18.4–01:20.0 以左手其餘手指（大拇指等）固定針筒前端。\", \"times\": [[75.1, 80.0]], \"evidence\": [\"zoom@75.1\", \"zoom@76.8\", \"zoom@78.4\", \"zoom@80\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
