@@ -1,0 +1,32 @@
+[
+ {
+  "turn": 1,
+  "seconds": 17.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 24723,
+  "cached_input_tokens": 0,
+  "output_tokens": 1829,
+  "thinking_tokens": 1537,
+  "materials": [
+   "clip@18-55.5（context box，有聲音；片段內 00:00 ＝ 影片 00:18.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [\n  {\n    \"criterion_id\": \"4a\",\n    \"verdict\": \"錯誤\",\n    \"explanation\": \"00:18.0–00:55.5（clip@18-55.5）期間，考生依序拿起並檢視稀釋液、空針包裝與 vial 藥瓶，但在整段區間內均未持藥瓶查看或核對給藥紀錄單，未達成查看給藥紀錄單累計至少 10 秒之標準。\",\n    \"times\": [],\n    \"evidence\": [\"clip@18-55.5\"],\n    \"confidence\": 0.9,\n    \"reason\": null\n  },\n  {\n    \"criterion_id\": \"4b\",\n    \"verdict\": \"錯誤\",\n    \"explanation\": \"00:18.0–00:55.5（clip@18-55.5）全程畫面清晰，雙手皆在操作範圍內，考生未曾用手指指出給藥紀錄單進行指讀核對。\",\n    \"times\": [],\n    \"evidence\": [\"clip@18-55.5\"],\n    \"confidence\": 0.9,\n    \"reason\": null\n  }\n]}",
+  "errors": [
+   "criterion 4b: 錯誤 needs times [[start, end], ...]: the video seconds the verdict rests on (the part you watched when the action did not happen)"
+  ]
+ },
+ {
+  "turn": 2,
+  "seconds": 9.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 25021,
+  "cached_input_tokens": 0,
+  "output_tokens": 865,
+  "thinking_tokens": 603,
+  "materials": [
+   "clip@18-55.5（context box，有聲音；片段內 00:00 ＝ 影片 00:18.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4a\", \"verdict\": \"錯誤\", \"explanation\": \"00:18.0–00:55.5（clip@18-55.5）期間，考生依序拿起並檢視稀釋液、空針包裝與 vial 藥瓶，但在整段區間內均未持藥瓶查看或核對給藥紀錄單，未達成查看給藥紀錄單累計至少 10 秒之標準。\", \"times\": [], \"evidence\": [\"clip@18-55.5\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"4b\", \"verdict\": \"錯誤\", \"explanation\": \"00:18.0–00:55.5（clip@18-55.5）全程畫面清晰，雙手皆在操作範圍內，考生未曾用手指指出給藥紀錄單進行指讀核對。\", \"times\": [[18.0, 55.5]], \"evidence\": [\"clip@18-55.5\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

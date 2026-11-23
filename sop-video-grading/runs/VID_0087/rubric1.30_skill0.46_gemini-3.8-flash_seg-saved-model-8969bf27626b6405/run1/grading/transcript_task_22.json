@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 8.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 20192,
+  "cached_input_tokens": 0,
+  "output_tokens": 874,
+  "thinking_tokens": 762,
+  "materials": [
+   "ov@227-235（hands_box，n=9）#0=03:47.0、#1=03:48.0、#2=03:49.0、#3=03:50.0、#4=03:51.0、#5=03:52.0、#6=03:53.0、#7=03:54.0、#8=03:55.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [229.5, 230.2, 231.0, 232.5], \"region\": [0.42, 0.55, 0.62, 0.8], \"reason\": \"觀察步驟 22 插針那一刻的持針手勢（22b）、針頭是否插入中心（22c），以及打入空氣時 vial 是否維持在桌面（22d）\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 14.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 21437,
+  "cached_input_tokens": 16300,
+  "output_tokens": 1555,
+  "thinking_tokens": 961,
+  "materials": [
+   "ov@227-235（hands_box，n=9）#0=03:47.0、#1=03:48.0、#2=03:49.0、#3=03:50.0、#4=03:51.0、#5=03:52.0、#6=03:53.0、#7=03:54.0、#8=03:55.0",
+   "zoom@229.5/230.2/231/232.5 region=[0.420, 0.550, 0.620, 0.800]"
+  ],
+  "reply": "{\n  \"action\": \"final\",\n  \"criteria\": [\n    {\n      \"criterion_id\": \"22b\",\n      \"verdict\": \"正確\",\n      \"explanation\": \"03:49.5–03:50.2（zoom@229.5、zoom@230.2）針頭刺入 vial 瞬間，右手以拇指、食指與中指持握針筒外管（持毛筆方式），針筒垂直向下刺入，手指未碰觸針頭、針座及活塞柄內側。\",\n      \"times\": [[229.5, 230.2]],\n      \"evidence\": [\"zoom@229.5\", \"zoom@230.2\"],\n      \"confidence\": 0.9,\n      \"reason\": null\n    },\n    {\n      \"criterion_id\": \"22c\",\n      \"verdict\": \"正確\",\n      \"explanation\": \"03:50.2（zoom@230.2）畫面清晰顯示針頭準確刺入 vial 頂部橡皮塞中心處。\",\n      \"times\": [[230.2, 230.2]],\n      \"evidence\": [\"zoom@230.2\"],\n      \"confidence\": 0.9,\n      \"reason\": null\n    },\n    {\n      \"criterion_id\": \"22d\",\n      \"verdict\": \"正確\",\n      \"explanation\": \"03:49.5–03:53.0（zoom@229.5–232.5、ov@227-235 #2–#6）刺入與推針心打入空氣的全程中，vial 均穩置於桌面上，左手扶持固定瓶身，右手垂直刺入並打入空氣，全程未將 vial 拿離桌面（03:54.0 打完後舉起倒置屬步驟 23）。\",\n      \"times\": [[229.5, 233.0]],\n      \"evidence\": [\"ov@227-235 #2\", \"ov@227-235 #3\", \"ov@227-235 #4\", \"ov@227-235 #5\", \"ov@227-235 #6\", \"zoom@230.2\", \"zoom@231.0\", \"zoom@232.5\"],\n      \"confidence\": 0.95,\n      \"reason\": null\n    }\n  ]\n}",
+  "errors": []
+ }
+]

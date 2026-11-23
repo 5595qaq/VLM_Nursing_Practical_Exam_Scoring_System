@@ -1,0 +1,64 @@
+[
+ {
+  "turn": 1,
+  "seconds": 9.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 20192,
+  "cached_input_tokens": 0,
+  "output_tokens": 995,
+  "thinking_tokens": 888,
+  "materials": [
+   "ov@247-256（hands_box，n=9）#0=04:07.0、#1=04:08.1、#2=04:09.2、#3=04:10.4、#4=04:11.5、#5=04:12.6、#6=04:13.8、#7=04:14.9、#8=04:16.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"region\": [0.45, 0.18, 0.65, 0.45], \"times\": [248.5, 249.2, 250.2], \"reason\": \"確認步驟22插針那一刻右手持針手勢（是否持毛筆、針筒是否垂直、手指位置）、針頭是否插入vial中心，以及vial是否固定在桌面打入空氣\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 5.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 21432,
+  "cached_input_tokens": 0,
+  "output_tokens": 401,
+  "thinking_tokens": 311,
+  "materials": [
+   "ov@247-256（hands_box，n=9）#0=04:07.0、#1=04:08.1、#2=04:09.2、#3=04:10.4、#4=04:11.5、#5=04:12.6、#6=04:13.8、#7=04:14.9、#8=04:16.0",
+   "zoom@248.5/249.2/250.2 region=[0.450, 0.180, 0.650, 0.450]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [248.8, 249.3, 250.0, 250.8], \"region\": [0.45, 0.45, 0.65, 0.75], \"reason\": \"確認步驟22插針時右手持針姿勢、是否插入中心及vial是否在桌面\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 9.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 22683,
+  "cached_input_tokens": 0,
+  "output_tokens": 753,
+  "thinking_tokens": 651,
+  "materials": [
+   "ov@247-256（hands_box，n=9）#0=04:07.0、#1=04:08.1、#2=04:09.2、#3=04:10.4、#4=04:11.5、#5=04:12.6、#6=04:13.8、#7=04:14.9、#8=04:16.0",
+   "zoom@248.5/249.2/250.2 region=[0.450, 0.180, 0.650, 0.450]",
+   "zoom@248.8/249.3/250/250.8 region=[0.450, 0.450, 0.650, 0.750]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [248.8, 249.2, 249.8, 250.5], \"region\": [0.45, 0.6, 0.65, 0.85], \"reason\": \"確認針尖插入vial橡皮塞中心、持針手勢與針筒垂直度，以及vial是否穩置於桌面上並由一手固定\"}",
+  "errors": []
+ },
+ {
+  "turn": 4,
+  "seconds": 10.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 23950,
+  "cached_input_tokens": 16306,
+  "output_tokens": 1374,
+  "thinking_tokens": 837,
+  "materials": [
+   "ov@247-256（hands_box，n=9）#0=04:07.0、#1=04:08.1、#2=04:09.2、#3=04:10.4、#4=04:11.5、#5=04:12.6、#6=04:13.8、#7=04:14.9、#8=04:16.0",
+   "zoom@248.5/249.2/250.2 region=[0.450, 0.180, 0.650, 0.450]",
+   "zoom@248.8/249.3/250/250.8 region=[0.450, 0.450, 0.650, 0.750]",
+   "zoom@248.8/249.2/249.8/250.5 region=[0.450, 0.600, 0.650, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [\n  {\"criterion_id\": \"22b\", \"verdict\": \"正確\",\n   \"explanation\": \"04:08.8–04:09.2（zoom@248.8、zoom@249.2）針頭刺入 vial 橡皮塞那一刻，右手以拇指、食指與中指握住針筒外管呈持毛筆姿勢，針筒垂直向下刺入，手指未碰觸針頭、針座及活塞柄內側。\",\n   \"times\": [[248.8, 249.2]], \"evidence\": [\"zoom@248.8\", \"zoom@249.2\"], \"confidence\": 0.9, \"reason\": null},\n  {\"criterion_id\": \"22c\", \"verdict\": \"正確\",\n   \"explanation\": \"04:09.2–04:09.8（zoom@249.2、zoom@249.8）針頭準確刺入 vial 瓶口橡皮塞之正中心位置。\",\n   \"times\": [[249.2, 249.8]], \"evidence\": [\"zoom@249.2\", \"zoom@249.8\"], \"confidence\": 0.9, \"reason\": null},\n  {\"criterion_id\": \"22d\", \"verdict\": \"正確\",\n   \"explanation\": \"04:08.8–04:10.5（zoom@248.8、zoom@249.2、zoom@249.8、zoom@250.5）針頭刺入 vial 及推針心打入空氣的全程，vial 均平穩立於桌面上，左手扶住固定、右手垂直刺入並注入空氣，未將 vial 拿離桌面；打完空氣後約 04:11.5 才舉起倒置進入步驟 23。\",\n   \"times\": [[248.8, 250.5]], \"evidence\": [\"zoom@248.8\", \"zoom@249.2\", \"zoom@249.8\", \"zoom@250.5\", \"ov@247-256 #4\"], \"confidence\": 0.95, \"reason\": null}\n]}",
+  "errors": []
+ }
+]

@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 7.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 20400,
+  "cached_input_tokens": 0,
+  "output_tokens": 694,
+  "thinking_tokens": 629,
+  "materials": [
+   "ov@68.8-224.6（hands_box，n=9）#0=01:08.8、#1=01:28.3、#2=01:47.8、#3=02:07.2、#4=02:26.7、#5=02:46.2、#6=03:05.7、#7=03:25.1、#8=03:44.6"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 70.0, \"end\": 130.0, \"fps\": 2, \"reason\": \"觀察01:10–02:10間持藥瓶核對給藥紀錄單與指讀的起訖時間\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 13.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 28669,
+  "cached_input_tokens": 0,
+  "output_tokens": 1089,
+  "thinking_tokens": 769,
+  "materials": [
+   "ov@68.8-224.6（hands_box，n=9）#0=01:08.8、#1=01:28.3、#2=01:47.8、#3=02:07.2、#4=02:26.7、#5=02:46.2、#6=03:05.7、#7=03:25.1、#8=03:44.6",
+   "clip@70-130（context box，有聲音；片段內 00:00 ＝ 影片 01:10.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4a\", \"verdict\": \"正確\", \"explanation\": \"01:11.5–02:04.0（clip@70-130 片段內 00:01.5–00:54.0）右手持藥瓶，視線專注查看前方給藥紀錄單並口頭核對，累計時間達 52.5 秒，遠超過 10 秒標準。\", \"times\": [[71.5, 124.0]], \"evidence\": [\"clip@70-130\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"4b\", \"verdict\": \"正確\", \"explanation\": \"01:11.5–02:04.0（clip@70-130 片段內 00:01.5–00:22.0 及 00:30.5–00:53.0）查看給藥紀錄單時，左手食指清楚且持續指向給藥紀錄單上的項目進行指讀核對。\", \"times\": [[71.5, 92.0], [100.5, 123.0]], \"evidence\": [\"clip@70-130\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 9.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 20200,
+  "cached_input_tokens": 16297,
+  "output_tokens": 699,
+  "thinking_tokens": 597,
+  "materials": [
+   "ov@245-253（hands_box，n=9）#0=04:05.0、#1=04:06.0、#2=04:07.0、#3=04:08.0、#4=04:09.0、#5=04:10.0、#6=04:11.0、#7=04:12.0、#8=04:13.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [247.0, 248.0, 249.5, 251.0], \"region\": [0.35, 0.45, 0.6, 0.85], \"reason\": \"確認插針時右手持針姿勢是否為毛筆式且垂直、針頭是否插入中心，以及vial是否固定在桌面上打入空氣\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 20.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 21430,
+  "cached_input_tokens": 0,
+  "output_tokens": 1336,
+  "thinking_tokens": 833,
+  "materials": [
+   "ov@245-253（hands_box，n=9）#0=04:05.0、#1=04:06.0、#2=04:07.0、#3=04:08.0、#4=04:09.0、#5=04:10.0、#6=04:11.0、#7=04:12.0、#8=04:13.0",
+   "zoom@247/248/249.5/251 region=[0.350, 0.450, 0.600, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [\n  {\"criterion_id\": \"22b\", \"verdict\": \"正確\", \"explanation\": \"04:08.0（zoom@248）針頭刺入橡皮塞瞬間，右手以拇指、食指與中指握持針筒外管，針筒保持垂直向下刺入，手指未碰觸針頭、針座或活塞柄內側，符合持毛筆方式垂直刺入之標準。\", \"times\": [[248, 248]], \"evidence\": [\"zoom@248\", \"ov@245-253 #3\"], \"confidence\": 0.95, \"reason\": null},\n  {\"criterion_id\": \"22c\", \"verdict\": \"正確\", \"explanation\": \"04:08.0–04:11.0（zoom@248, zoom@249.5, zoom@251）畫面清楚顯示針頭準確垂直刺入 vial 頂部橡皮塞中心位置，未偏向邊緣。\", \"times\": [[248, 251]], \"evidence\": [\"zoom@248\", \"zoom@249.5\", \"zoom@251\"], \"confidence\": 0.95, \"reason\": null},\n  {\"criterion_id\": \"22d\", \"verdict\": \"正確\", \"explanation\": \"04:07.0–04:11.0（zoom@247, zoom@248, zoom@249.5, zoom@251 及 ov@245-253 #2–#6）在刺入及推針心打入空氣的全程，vial 均平穩置於桌面上，左手扶持固定，完全未將 vial 拿離桌面。\", \"times\": [[247, 251]], \"evidence\": [\"zoom@247\", \"zoom@248\", \"zoom@249.5\", \"zoom@251\", \"ov@245-253 #2\", \"ov@245-253 #6\"], \"confidence\": 0.95, \"reason\": null}\n]}",
+  "errors": []
+ }
+]

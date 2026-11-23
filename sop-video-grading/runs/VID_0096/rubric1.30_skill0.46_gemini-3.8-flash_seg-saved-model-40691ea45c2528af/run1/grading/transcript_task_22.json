@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 10.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 20184,
+  "cached_input_tokens": 16297,
+  "output_tokens": 925,
+  "thinking_tokens": 816,
+  "materials": [
+   "ov@282-290（hands_box，n=9）#0=04:42.0、#1=04:43.0、#2=04:44.0、#3=04:45.0、#4=04:46.0、#5=04:47.0、#6=04:48.0、#7=04:49.0、#8=04:50.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [284.0, 285.0, 286.0, 287.0], \"region\": [0.42, 0.52, 0.62, 0.82], \"reason\": \"確認插針瞬間持針手勢（22b）、針頭是否插入中心（22c）及vial是否在桌面刺入與打入空氣（22d）\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 10.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 21405,
+  "cached_input_tokens": 16300,
+  "output_tokens": 1232,
+  "thinking_tokens": 746,
+  "materials": [
+   "ov@282-290（hands_box，n=9）#0=04:42.0、#1=04:43.0、#2=04:44.0、#3=04:45.0、#4=04:46.0、#5=04:47.0、#6=04:48.0、#7=04:49.0、#8=04:50.0",
+   "zoom@284/285/286/287 region=[0.420, 0.520, 0.620, 0.820]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [\n  {\"criterion_id\": \"22b\", \"verdict\": \"正確\",\n   \"explanation\": \"04:45.0（zoom@285）針頭刺入 vial 橡皮塞瞬間，右手以持毛筆姿勢（拇指、食指與中指握持針筒外管）垂直向下插入，手指未碰觸針頭、針座及活塞柄內側。\",\n   \"times\": [[285.0, 285.5]], \"evidence\": [\"zoom@285\", \"ov@282-290 #3\"], \"confidence\": 0.95, \"reason\": null},\n  {\"criterion_id\": \"22c\", \"verdict\": \"正確\",\n   \"explanation\": \"04:45.0–04:46.0（zoom@285、zoom@286）畫面清楚可見針頭準確刺入 vial 瓶口橡皮塞中央位置，非邊緣。\",\n   \"times\": [[285.0, 286.0]], \"evidence\": [\"zoom@285\", \"zoom@286\"], \"confidence\": 0.95, \"reason\": null},\n  {\"criterion_id\": \"22d\", \"verdict\": \"正確\",\n   \"explanation\": \"04:45.0–04:47.0（zoom@285、zoom@286、zoom@287）針頭刺入至推針心打入空氣期間，vial 瓶身全程平放於檯面上由左手固定，未曾離桌面，空氣推完後於 04:48（步驟 23）才舉起倒置。\",\n   \"times\": [[285.0, 287.0]], \"evidence\": [\"zoom@285\", \"zoom@286\", \"zoom@287\", \"ov@282-290 #3\", \"ov@282-290 #5\"], \"confidence\": 0.95, \"reason\": null}\n]}",
+  "errors": []
+ }
+]

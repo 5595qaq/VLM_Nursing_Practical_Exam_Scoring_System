@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 8.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 20224,
+  "cached_input_tokens": 0,
+  "output_tokens": 825,
+  "thinking_tokens": 725,
+  "materials": [
+   "ov@353-366（hands_box，n=9）#0=05:53.0、#1=05:54.6、#2=05:56.2、#3=05:57.9、#4=05:59.5、#5=06:01.1、#6=06:02.8、#7=06:04.4、#8=06:06.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [355.3, 356.2, 357.9, 359.5], \"region\": [0.4, 0.45, 0.65, 0.85], \"reason\": \"確認步驟22插針時持針手勢（持毛筆、垂直）、是否插入vial中心、以及vial是否在桌面上操作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 13.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 21466,
+  "cached_input_tokens": 0,
+  "output_tokens": 896,
+  "thinking_tokens": 837,
+  "materials": [
+   "ov@353-366（hands_box，n=9）#0=05:53.0、#1=05:54.6、#2=05:56.2、#3=05:57.9、#4=05:59.5、#5=06:01.1、#6=06:02.8、#7=06:04.4、#8=06:06.0",
+   "zoom@355.3/356.2/357.9/359.5 region=[0.400, 0.450, 0.650, 0.850]"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 355.0, \"end\": 364.0, \"fps\": 2, \"reason\": \"觀察步驟22中插針、推針心打空氣與重插的完整過程與時間點\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 18.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 22978,
+  "cached_input_tokens": 0,
+  "output_tokens": 1907,
+  "thinking_tokens": 1374,
+  "materials": [
+   "ov@353-366（hands_box，n=9）#0=05:53.0、#1=05:54.6、#2=05:56.2、#3=05:57.9、#4=05:59.5、#5=06:01.1、#6=06:02.8、#7=06:04.4、#8=06:06.0",
+   "zoom@355.3/356.2/357.9/359.5 region=[0.400, 0.450, 0.650, 0.850]",
+   "clip@355-364（context box，有聲音；片段內 00:00 ＝ 影片 05:55.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [\n  {\"criterion_id\": \"22b\", \"verdict\": \"正確\", \"explanation\": \"05:55.8 學生首次插針時未抽空氣且針筒傾斜，隨即拔出抽空氣；依規定多次插針以最後一次為準。05:58.8–05:59.5（zoom@359.5、clip@355-364 00:03.8–00:04.5）再次刺入時，右手拇指與食指、中指握住針筒外管呈持毛筆姿勢，針筒垂直向下插入，手指未觸碰針頭、針座或活塞柄內側。\", \"times\": [[358.8, 359.8]], \"evidence\": [\"zoom@359.5\", \"clip@355-364\"], \"confidence\": 0.95, \"reason\": null},\n  {\"criterion_id\": \"22c\", \"verdict\": \"正確\", \"explanation\": \"05:59.5（zoom@359.5、clip@355-364 00:04.5）右手持空針將針頭垂直準確刺入桌上 vial 瓶口橡皮塞之正中心。\", \"times\": [[359.0, 360.0]], \"evidence\": [\"zoom@359.5\", \"clip@355-364\"], \"confidence\": 0.95, \"reason\": null},\n  {\"criterion_id\": \"22d\", \"verdict\": \"正確\", \"explanation\": \"05:58.8–06:00.5（clip@355-364 00:03.8–00:05.5、zoom@359.5）刺入並推針心打入空氣的全程中，vial 均穩穩立於桌面上未曾拿離，左手扶持固定 vial，右手垂直刺入推注空氣。\", \"times\": [[358.8, 360.5]], \"evidence\": [\"zoom@359.5\", \"clip@355-364\"], \"confidence\": 0.95, \"reason\": null}\n]}",
+  "errors": []
+ }
+]
