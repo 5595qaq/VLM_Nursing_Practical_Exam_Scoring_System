@@ -67,7 +67,7 @@ def build_step(step: dict, criteria: list[dict], *, segmentation: dict | None = 
 
 
 def _wash_end(c: dict) -> float | None:
-    """End of the measured washing: the last of 1a's times (rubric 1.30-washsum: one [start, end] per pump of
+    """End of the measured washing: the last of 1a's times (rubric 1.31-washsum: one [start, end] per pump of
     soap, summed), or its span (records before that). None unless 1a is 正確 or 錯誤: a 無法判定 1a may list the
     parts it saw, whose end is not the end of washing."""
     if c["verdict"] not in (CORRECT, WRONG):

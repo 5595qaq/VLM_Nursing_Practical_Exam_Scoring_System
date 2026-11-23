@@ -75,7 +75,7 @@ def test_wash_order_uses_the_actual_wash_end_and_earliest_step_two_start(segment
     out = build_step(spec, step["criteria"], segmentation=segmentation)
     assert next(c for c in out["criteria"] if c["criterion_id"] == "1c") is criterion(result, "1c")
     criterion(result, "1a")["verdict"] = "正確"
-    # records before rubric 1.30-washsum measured one span
+    # records before rubric 1.31-washsum measured one span
     del criterion(result, "1a")["times"]
     criterion(result, "1a")["span"] = [0.0, 21.0]
     assert build_step(spec, step["criteria"], segmentation=segmentation)["verdict"] == "錯誤"
