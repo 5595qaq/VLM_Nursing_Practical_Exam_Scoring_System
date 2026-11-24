@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 5.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 21188,
+  "cached_input_tokens": 0,
+  "output_tokens": 90,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@297-307（hands_box，n=9）#0=04:57.0、#1=04:58.2、#2=04:59.5、#3=05:00.8、#4=05:02.0、#5=05:03.2、#6=05:04.5、#7=05:05.8、#8=05:07.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [300.5, 301.5, 302.5, 303.2], \"region\": [0.1, 0.45, 0.75, 0.98], \"reason\": \"確認針頭插入桌上針套的過程，以及左手何時碰觸針套\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 9.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 22451,
+  "cached_input_tokens": 0,
+  "output_tokens": 212,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@297-307（hands_box，n=9）#0=04:57.0、#1=04:58.2、#2=04:59.5、#3=05:00.8、#4=05:02.0、#5=05:03.2、#6=05:04.5、#7=05:05.8、#8=05:07.0",
+   "zoom@300.5/301.5/302.5/303.2 region=[0.100, 0.450, 0.750, 0.980]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"28b\", \"verdict\": \"正確\", \"explanation\": \"05:00.5–05:02.5 針頭套平放在桌面上，考生以右手單手握持針筒將針頭插入桌上的針頭套內，期間左手懸空未碰觸針頭套；05:03.2 針尖完全入套後拿起空針，才以左手壓緊針頭套。\", \"times\": [[300.5, 303.2]], \"evidence\": [\"ov@297-307 #3\", \"ov@297-307 #4\", \"zoom@300.5\", \"zoom@301.5\", \"zoom@302.5\", \"zoom@303.2\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
