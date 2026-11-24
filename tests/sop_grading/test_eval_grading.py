@@ -250,3 +250,15 @@ def test_unusable_video_is_skipped_even_with_another_exclude(tmp_path, capsys):
     assert main(["eval_grading.py", str(path), "--labels", str(labels), "--exclude", "VID_0099"]) == 0
     assert "沒有可比對的人工標註" in capsys.readouterr().out
     assert load_labels(labels, set()) == {}
+
+
+def test_contact_check_adds_no_time_to_step_one():
+    # 1c cites the whole stretch before washing; with no contact it must not count as the step's time
+    wash = {"criterion_id": "1a", "source": "vlm", "verdict": "正確", "explanation": "00:02 按壓", "span": [2.0, 18.5]}
+    order = {"criterion_id": "1c", "source": "vlm", "verdict": "正確", "times": [],
+             "explanation": "00:00–00:18 沒有接觸物品"}
+    assert agent_spans({"criteria": [wash, order]}) == [(2.0, 18.5)]
+    order.update(verdict="錯誤", times=[[19.0, 19.0]])  # a contact next to the washing is not the washing time
+    assert agent_spans({"criteria": [wash, order]}) == [(2.0, 18.5)]
+    order.update(verdict="無法判定", times=[[0.0, 18.0]], reason="畫面被遮擋")  # what it watched
+    assert agent_spans({"criteria": [wash, order]}) == [(2.0, 18.5)]

@@ -18,6 +18,11 @@ needle (10b, rubric package_spans): actions may also look at the spans the hands
 clip action overlapping a listed span (any clip when none is listed; a twist lasts a second or two). The backend sends a 無法判定 or 錯誤 to a person with those spans.
 Pointing at the syringe package (4e): 錯誤 only after a clip action; the gesture lasts two or three seconds
 in a window of a minute or more.
+Washing order (1c, rule wash_before_contact, a task of its own): times are contact points [[t, t], ...]
+or [] (no contact seen; 錯誤 needs the points), and 正確 with [] only after clips (or the opening clip)
+covered the video from the window start to the end of the last washing (task criterion "wash_end"),
+also when the only contacts listed come after it.
+The task does not know when 1a measured the end of washing: rules.build_step compares the points with it.
 A clip above 5 fps may last at most 8 s.
 
 A rejected action is NOT executed and does NOT consume budget.
@@ -27,8 +32,8 @@ from pathlib import Path
 
 from jsonschema import Draft202012Validator
 
-from rubric import criteria_by_id, load_rubric
-from validate_grading import WRAPPER, check_criterion, check_vial_cutoff
+from rubric import CORRECT, WRONG, criteria_by_id, load_rubric
+from validate_grading import WRAPPER, check_contact_times, check_criterion, check_vial_cutoff
 
 SCHEMA_PATH = Path(__file__).resolve().parent.parent / "actions.schema.json"
 
@@ -140,7 +145,8 @@ def _check_times(cid: str, c: dict, spec: dict, ranges: list[tuple[float, float]
     times = c.get("times") or []
     if spec.get("min_seconds") and not spec.get("cumulative_seconds"):
         return [f"criterion {cid}: use span, not times, for a timed criterion"] if times else []
-    if not times and not spec.get("cumulative_seconds") and c["verdict"] != "無法判定":
+    if (not times and not spec.get("cumulative_seconds") and c["verdict"] != "無法判定"
+            and spec.get("rule", {}).get("type") != "wash_before_contact"):  # 1c: [] means no contact seen
         return [f"criterion {cid}: {c['verdict']} needs times [[start, end], ...]: the video seconds the verdict "
                 "rests on (the part you watched when the action did not happen)"]
     errors = []
@@ -181,7 +187,45 @@ def _check_final(action: dict, task: dict, used: dict, rubric: dict, duration: f
             errors.append(f"criterion {cid}: before marking 錯誤, use clip with a region on both hands and the "
                           "syringe (fps up to 10, ≤ 8 s) on a listed wrapper span (where it comes out) and after it: "
                           "a twist lasts a second or two and frames 2–4 s apart miss it")
+        if specs[cid].get("rule", {}).get("type") == "wash_before_contact":
+            errors += check_contact_times(c) + _check_contact_coverage(cid, c, task)
     return errors + check_vial_cutoff(action["criteria"])
+
+
+COVER_GAP = 1.0  # seconds of the time up to the end of washing that may fall between the clips seen
+COVER_MAX = BUDGET["clip"] * CLIP_SPAN[1]  # the most a task's clips can cover when it has no opening clip
+
+
+def contact_until(crit: dict) -> float:
+    """1c must have watched its window up to the end of the last detected washing (task criterion
+    "wash_end"); the window's end when the segmentation detected none."""
+    return crit["window"][1] if crit.get("wash_end") is None else crit["wash_end"]
+
+
+def _check_contact_coverage(cid: str, c: dict, task: dict) -> list[str]:
+    """1c 正確 or 錯誤 without a contact seen before washing ended: the clips seen (the opening clip covers the
+    task window) must cover the video from the window start to the end of the last washing. Otherwise a
+    contact before washing was never looked at, and rules.build_step would grade from the points listed."""
+    if c["verdict"] not in (CORRECT, WRONG):
+        return []
+    crit = next(x for x in task["criteria"] if x["criterion_id"] == cid)
+    start, until = crit["window"][0], contact_until(crit)
+    if any(s < until for s, _ in c.get("times") or []):
+        return []  # a contact before washing ended is already seen: 1c is 錯誤 whatever came before
+    seen = sorted(([task["window"]] if task.get("opening_clip") else []) + list(task.get("clips") or []))
+    reach = start
+    for a, b in seen:
+        if a > reach + COVER_GAP:
+            break
+        reach = max(reach, b)
+    if reach + COVER_GAP >= until:
+        return []
+    if until - start > COVER_MAX and not task.get("opening_clip"):
+        return [f"criterion {cid}: {start:g}-{until:g} s is longer than the {BUDGET['clip']} clips of this task can "
+                f"cover; list the contacts seen, or use 無法判定 (reason 資訊不足) with needs_review"]
+    return [f"criterion {cid}: without a contact before washing ended, clips must cover {start:g}-{until:g} s "
+            f"(up to the end of the last washing); the clips seen stop at {reach:g} s. Clip the rest, or list "
+            "the contacts seen"]
 
 
 def _check_flick(cid: str, c: dict, audio: dict | None, used: dict) -> list[str]:

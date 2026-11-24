@@ -2,6 +2,10 @@
 
 未發布的修改先寫在 `changelog.d/`（一個分支一個檔，見 `changelog.d/README.md`），合併前改成正式版本時才移到這裡；規則見 `AGENTS.md`「多人協作」。
 
+## 0.49（rubric 1.33）
+
+- **1c 改看實際接觸物品的時點，容許 1 秒**（`DECISIONS.md` D-01-05，從 #186 拆出）：rubric 1c 從程式判定（`wash_before_later_steps`，比切分的後續步驟起點）改成評分 agent 看畫面（`category: visual`、`clip`、`rule.type: wash_before_contact`、`tolerance_seconds: 1.0`），看的區間從影片開頭開始。1c **自己一個評分任務**（不和 1a、1b 共用，避免洗手任務的區間變長、拿不到 2 fps 片段）。`times` 只填接觸時點 `[[t, t]]`，沒有接觸填 `[]`；沒有看到洗手結束前的接觸時（`[]`，或只列洗手後的接觸），任務裡看過的 clip 要涵蓋影片開頭到最後一次洗手結束（`validate_grading_action`；超過 clip 預算能涵蓋的長度時要判無法判定並轉人工複核）。所有任務做完後，`rules.build_step` 用 1a 量到的洗手結束比較接觸時點並決定 1c 的判定（1a 無法判定時 1c 無法判定），`validate_grading.check_wash_order` 檢查一致。`eval_grading.py` 比時間時不拿 1c 的時間（接觸時點不是洗手時段，說明裡引用的是洗手前整段）。1c 的任務名稱固定是 `1-1c`。`criteria/01-hand-washing.md`、評分 `SKILL.md` 的 final 格式一併更新。舊 rubric 的程式判定路徑保留。
+
 ## 0.48（rubric 1.32）
 
 - **1a 洗手中途中斷再洗，前後各段相加**（`DECISIONS.md` D-01-01，老師 2026-11-08，issue #135）：rubric 1a 加上 `cumulative_seconds: true`，final 從單一 `span` 改成 `times` 列出每段洗手（每段從按壓洗手液到雙手分開，中斷後重新按壓另起一段），程式加總滿 10 秒才正確，中斷的時間不算。1c（洗手順序）用最後一段的結束比較；舊紀錄的 `span` 照舊讀。1a 判無法判定時不拿它的 times 比較 1c。新增 rubric 欄位 `timed_action`（要計時的動作，`cumulative_seconds` 必填；2a、4a、29a 填「實際查看給藥紀錄單」），任務說明的累計計時提示改由它產生：2a、4a、29a 的結尾從「沒看到查看紀錄單填 []」變成「沒看到實際查看給藥紀錄單填 []」，意思不變。用 `validate_grading.py --final` 檢查 rubric 1.30 以前的紀錄時，1a 會出現「use times, not span」，這是 rubric 版本不符的錯誤，依 AGENTS.md 不算。`criteria/01-hand-washing.md`、評分 `SKILL.md` 的 final 格式一併更新。
