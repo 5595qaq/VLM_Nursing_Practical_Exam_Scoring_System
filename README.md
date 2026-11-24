@@ -45,7 +45,7 @@ Gemini 推論在雲端執行；worker 不需要 GPU。增加 worker 數量不會
 | `GEMINI_GLOBAL_CONCURRENCY` | 5 | 所有 worker 共用的 Gemini 任務上限，包含 SDK 退避期間 |
 | `GEMINI_CALL_STAGGER_MS` | 250 | 同一批切段／四個 Agent 任務的最早執行時間間距 |
 | `GEMINI_RETRY_ATTEMPTS` | 10 | 每次邏輯模型呼叫的 HTTP attempts，包含第一次（退避 1、2、4…最多 60 秒，10 次約等 4 分鐘）；有備用地區時是「所有地區都回 429」的輪數 |
-| `GCP_FALLBACK_LOCATIONS` | `us,eu` | `GCP_LOCATION` 回 429 時依序改用的 Vertex AI 地區（逗號分隔）。有備用地區時，429 不在原地區等待，馬上換下一個，並記住成功的地區，之後的呼叫從那裡開始；所有地區都 429 才照上一列退避後再輪一次。設成空字串（`GCP_FALLBACK_LOCATIONS=`）只用 `GCP_LOCATION`，429 由 SDK 原地重試。Gemini 4 只在 `global`、`us`、`eu`（另有 `europe-west2`、`asia-southeast1` 只有 argon）提供，`us-central1` 這類單一區域會回 404 |
+| `GCP_FALLBACK_LOCATIONS` | `us,eu` | `GCP_LOCATION` 回 429 時依序改用的 Vertex AI 地區（逗號分隔）。有備用地區時，429 不在原地區等待，馬上換下一個，並記住成功的地區（依模型分開，15 分鐘後再先試 `GCP_LOCATION`）；換到的地區沒有這個模型（404 等）就跳過；所有地區都 429 才照上一列退避後再輪一次。設成空字串（`GCP_FALLBACK_LOCATIONS=`）只用 `GCP_LOCATION`，429 由 SDK 原地重試。Gemini 4 只在 `global`、`us`、`eu`（另有 `europe-west2`、`asia-southeast1` 只有 argon）提供，`us-central1` 這類單一區域會回 404 |
 | `GEMINI_CALL_TIMEOUT_SECONDS` | 900 | 單次邏輯模型呼叫的最長等待秒數 |
 | `GEMINI_QUEUE_RETRY_BASE_SECONDS` | 60 | 暫時性模型錯誤後，PgQueuer 第一次重新派送前的等待秒數 |
 | `GEMINI_QUEUE_RETRY_MAX_SECONDS` | 900 | queue 層指數退避的最長等待秒數 |

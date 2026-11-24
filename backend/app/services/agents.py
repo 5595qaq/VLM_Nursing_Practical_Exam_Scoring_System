@@ -3,6 +3,7 @@ import json
 import logging
 import random
 import re
+import time
 from pathlib import Path
 from typing import Any, Callable
 
@@ -12,7 +13,7 @@ import httpx
 
 from app.config import settings
 from app.services import usage
-from app.services.model_logging import LoggedTransport, attempt_state
+from app.services.model_logging import LoggedTransport, attempt_state, context
 
 _PROMPTS_DIR = Path(__file__).resolve().parent.parent / "prompts"
 logger = logging.getLogger("app.gemini")
@@ -34,7 +35,9 @@ AGENT_SEGMENT_KEYS = {
 TIME_CUTTING_PROMPT = (_PROMPTS_DIR / "Time_cuting.txt").read_text(encoding="utf-8")
 _client = None  # GCP_LOCATION
 _fallback_clients: dict[str, genai.Client] = {}  # GCP_FALLBACK_LOCATIONS, created on first use
-_preferred_location: str | None = None  # the last location that answered; later calls start there
+# model -> (location that answered after a 429, monotonic time); that model's calls start there for a while
+_preferred: dict[str, tuple[str, float]] = {}
+PREFERENCE_SECONDS = 15 * 60  # then try GCP_LOCATION first again, in case it has recovered
 
 _TIMESTAMP_PATTERN = re.compile(r"^\d{2}:[0-5]\d$")
 _SEGMENT_RESPONSE_SCHEMA = {
@@ -94,52 +97,63 @@ def get_client(location: str | None = None):
     return _fallback_clients[location]
 
 
+def _warn(event: str, **values) -> None:
+    logger.warning(json.dumps({"event": event, **(context.get() or {}), **values}))
+
+
 async def generate_content(**kwargs):
     """models.generate_content, moving to the next location when one answers 429.
 
-    Starts at the last location that answered, so after one failover the later calls of the process
-    go straight there (and keep Gemini's implicit cache warm). When every location answers 429, waits
-    as the SDK would (1, 2, 4 ... 60 s) and tries them all again, GEMINI_RETRY_ATTEMPTS rounds in all."""
-    global _preferred_location
+    After a 429 moved a model to another location, that model's calls start there for
+    PREFERENCE_SECONDS (keeping Gemini's implicit cache warm); a success does not change the order
+    otherwise, so parallel calls do not flip it back and forth. A location reached after a 429 that
+    answers another client error (e.g. 404: the model is not offered there) is skipped, not raised.
+    When every location answers 429, waits as the SDK would (1, 2, 4 ... 60 s) and tries them all
+    again, GEMINI_RETRY_ATTEMPTS rounds in all, then raises the last 429."""
     order = locations()
     if len(order) == 1:
         return await get_client().aio.models.generate_content(**kwargs)
-    if _preferred_location in order:
-        i = order.index(_preferred_location)
+    model = kwargs.get("model", "")
+    preferred = _preferred.get(model)
+    if preferred and time.monotonic() - preferred[1] < PREFERENCE_SECONDS and preferred[0] in order:
+        i = order.index(preferred[0])
         order = order[i:] + order[:i]
-    last: Exception | None = None
-    for round_ in range(settings.GEMINI_RETRY_ATTEMPTS):
+    last_429: errors.ClientError | None = None
+    for round_ in range(max(1, settings.GEMINI_RETRY_ATTEMPTS)):
         if round_:
             await asyncio.sleep(min(60, 2 ** (round_ - 1)) + random.random())
         for location in order:
+            client = get_client() if location == settings.GCP_LOCATION else get_client(location)
             try:
-                client = get_client() if location == settings.GCP_LOCATION else get_client(location)
                 response = await client.aio.models.generate_content(**kwargs)
             except errors.ClientError as exc:
-                if exc.code != 429:
-                    raise
-                last = exc
-                logger.warning(json.dumps({"event": "gemini_location_429", "location": location,
-                                           "model": kwargs.get("model"), "round": round_ + 1}))
+                if exc.code == 429:
+                    last_429 = exc
+                    _warn("gemini_location_429", location=location, model=model, round=round_ + 1)
+                    continue
+                if last_429 is None:
+                    raise  # the first location tried: a real error, as without failover
+                _warn("gemini_location_skipped", location=location, model=model, status=exc.code)
                 continue
-            if location != _preferred_location:
-                if _preferred_location is not None or location != settings.GCP_LOCATION:
-                    logger.warning(json.dumps({"event": "gemini_location_switch", "location": location,
-                                               "model": kwargs.get("model")}))
-                _preferred_location = location
+            if last_429 is not None:
+                _preferred[model] = (location, time.monotonic())
+                _warn("gemini_location_switch", location=location, model=model)
             return response
-    raise last
+    raise last_429  # set: a location is only skipped after a 429
 
 
 async def close_client():
-    global _client, _preferred_location
-    for client in [_client, *_fallback_clients.values()]:
-        if client is not None:
-            await client.aio.aclose()
-            client.close()
+    global _client
+    clients = [c for c in [_client, *_fallback_clients.values()] if c is not None]
     _client = None
     _fallback_clients.clear()
-    _preferred_location = None
+    _preferred.clear()
+    for client in clients:  # close every one even if an earlier one fails
+        try:
+            await client.aio.aclose()
+            client.close()
+        except Exception:
+            logger.exception("closing a Gemini client failed")
 
 
 def timestamp_to_seconds(timestamp: str) -> int:

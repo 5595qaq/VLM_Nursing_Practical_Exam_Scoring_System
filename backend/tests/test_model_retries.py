@@ -155,7 +155,7 @@ class _Location:
 def three_locations(monkeypatch):
     monkeypatch.setattr(agents.settings, "GCP_LOCATION", "global")
     monkeypatch.setattr(agents.settings, "GCP_FALLBACK_LOCATIONS", ["us", "eu"])
-    monkeypatch.setattr(agents, "_preferred_location", None)
+    monkeypatch.setattr(agents, "_preferred", {})
     sleeps = []
     async def no_sleep(seconds):
         sleeps.append(seconds)
@@ -222,3 +222,67 @@ async def test_with_fallbacks_the_sdk_does_not_retry_429_itself(monkeypatch):
         assert agents.get_client("us") is agents.get_client("us") is not agents.get_client()
     finally:
         await agents.close_client()
+
+
+async def test_a_location_without_the_model_is_skipped_after_a_429(three_locations, caplog):
+    use, _ = three_locations
+    clients = {"global": _Location("global", [429]), "us": _Location("us", [404]), "eu": _Location("eu", ["ok"])}
+    use(clients)
+    with caplog.at_level("WARNING", logger="app.gemini"):
+        assert await agents.generate_content(model="m") == "answer from eu"
+    events = [json.loads(r.message)["event"] for r in caplog.records if r.name == "app.gemini"]
+    assert events == ["gemini_location_429", "gemini_location_skipped", "gemini_location_switch"]
+
+
+async def test_the_preferred_location_is_per_model(three_locations):
+    use, _ = three_locations
+    clients = {"global": _Location("global", [429, "ok"]), "us": _Location("us", ["ok"]), "eu": _Location("eu", ["ok"])}
+    use(clients)
+    assert await agents.generate_content(model="argon") == "answer from us"
+    assert await agents.generate_content(model="pro") == "answer from global"
+
+
+async def test_a_success_without_a_429_does_not_move_the_preference(three_locations):
+    use, _ = three_locations
+    agents._preferred["m"] = ("us", agents.time.monotonic())
+    clients = {"global": _Location("global", ["ok"]), "us": _Location("us", [429, "ok"]), "eu": _Location("eu", ["ok"])}
+    use(clients)
+    assert await agents.generate_content(model="m") == "answer from global"  # us 429, then global
+    assert agents._preferred["m"][0] == "global"
+    assert await agents.generate_content(model="m") == "answer from global"
+
+
+async def test_the_preference_expires_and_gcp_location_is_tried_again(three_locations, monkeypatch):
+    use, _ = three_locations
+    agents._preferred["m"] = ("us", agents.time.monotonic() - agents.PREFERENCE_SECONDS - 1)
+    clients = {"global": _Location("global", ["ok"]), "us": _Location("us", ["ok"]), "eu": _Location("eu", ["ok"])}
+    use(clients)
+    assert await agents.generate_content(model="m") == "answer from global"
+
+
+async def test_zero_retry_attempts_still_tries_each_location_once(three_locations, monkeypatch):
+    use, sleeps = three_locations
+    monkeypatch.setattr(agents.settings, "GEMINI_RETRY_ATTEMPTS", 0)
+    clients = {name: _Location(name, [429]) for name in ("global", "us", "eu")}
+    use(clients)
+    with pytest.raises(errors.ClientError):
+        await agents.generate_content(model="m")
+    assert [c.calls for c in clients.values()] == [1, 1, 1] and sleeps == []
+
+
+async def test_closing_continues_past_a_client_that_fails(monkeypatch):
+    closed = []
+    class Client:
+        def __init__(self, name, fail):
+            self.name, self.fail = name, fail
+            async def aclose():
+                if fail:
+                    raise RuntimeError("boom")
+            self.aio = type("Aio", (), {"aclose": staticmethod(aclose)})()
+        def close(self):
+            closed.append(self.name)
+    monkeypatch.setattr(agents, "_client", Client("global", True))
+    monkeypatch.setitem(agents._fallback_clients, "us", Client("us", False))
+    agents._preferred["m"] = ("us", 0.0)
+    await agents.close_client()
+    assert closed == ["us"] and agents._client is None and not agents._fallback_clients and not agents._preferred
