@@ -45,6 +45,70 @@ def test_valid_final_passes():
     assert validate(final(), TASK, FRESH, DURATION) == []
 
 
+def contact_task(**changes) -> dict:
+    """1c in a task of its own (rubric 1.33): it looks from 00:00, the last washing ends at 50 s."""
+    task = {"window": [0.0, 67.0], "clips": [],
+            "criteria": [{"criterion_id": "1c", "window": [0.0, 67.0], "wash_end": 50.0}]}
+    task.update(changes)
+    return task
+
+
+def contact_final(verdict="正確", times=(), **changes) -> dict:
+    c = {"criterion_id": "1c", "verdict": verdict, "times": [list(t) for t in times], "confidence": 0.9,
+         "reason": None, "explanation": "00:00–00:50 雙手沒有碰到物品，00:50 開始洗手。", "evidence": ["clip@0-60"]}
+    c.update(changes)
+    return {"action": "final", "criteria": [c]}
+
+
+def test_contact_task_lists_points_without_knowing_the_wash_end():
+    used = {**FRESH, "clip": 1}
+    seen = contact_task(clips=[[0.0, 60.0]])
+    # no wash end in this task: 錯誤 or 正確 follows the agent's own view, rules.build_step compares with 1a later
+    assert validate(contact_final("錯誤", [(20.0, 20.0)], explanation="00:20 拿起 vial。"), seen, used, DURATION) == []
+    assert validate(contact_final("正確", [(66.0, 66.0)], explanation="00:66 洗完後才拿起 vial。"), seen, used, DURATION) == []
+    assert any("use times [[t, t]" in e for e in validate(contact_final("錯誤", [(20.0, 22.0)]), seen, used, DURATION))
+    assert any("錯誤 needs the contact times" in e for e in validate(contact_final("錯誤"), seen, used, DURATION))
+    assert any("watch a clip" in e for e in validate(contact_final("錯誤", [(20.0, 20.0)]), contact_task(), FRESH, DURATION))
+
+
+@pytest.mark.parametrize("task, ok", [
+    (contact_task(clips=[[0.0, 60.0]]), True),                    # one clip from 00:00 past the washing start
+    (contact_task(clips=[[30.0, 60.0], [0.0, 30.5]]), True),     # two clips, in any order
+    (contact_task(clips=[[0.0, 20.0], [40.0, 60.0]]), False),    # 20–40 s never watched
+    (contact_task(clips=[[2.0, 60.0]]), False),                    # the first 2 s missed
+    (contact_task(clips=[[0.0, 45.0]]), False),                    # stops 5 s before washing ends
+    (contact_task(window=[0.0, 55.0], opening_clip=True,
+                  criteria=[{"criterion_id": "1c", "window": [0.0, 55.0], "wash_end": 50.0}]), True),
+])
+@pytest.mark.parametrize("final", [contact_final(), contact_final(times=[(60.0, 60.0)])])  # none, or only after
+def test_no_contact_before_washing_ends_needs_clips_up_to_it(task, ok, final):
+    errors = validate(final, task, {**FRESH, "clip": len(task["clips"])}, DURATION)
+    assert (errors == []) is ok, errors
+    if not ok:
+        assert any("clips must cover 0-50 s" in e for e in errors), errors
+
+
+def test_contact_before_washing_ends_needs_no_more_clips():
+    final = contact_final("錯誤", [(20.0, 20.0)], explanation="00:20 拿起 vial。")
+    assert validate(final, contact_task(clips=[[10.0, 30.0]]), {**FRESH, "clip": 1}, DURATION) == []
+
+
+def test_contact_check_too_long_for_the_clip_budget_asks_for_review():
+    task = contact_task(window=[0.0, 172.0], clips=[[0.0, 60.0], [60.0, 120.0]],
+                        criteria=[{"criterion_id": "1c", "window": [0.0, 172.0], "wash_end": 170.0}])
+    errors = validate(contact_final(), task, {**FRESH, "clip": 2}, DURATION)
+    assert any("longer than the 2 clips" in e and "needs_review" in e for e in errors), errors
+    undetermined = contact_final("無法判定", reason="資訊不足", needs_review=True,
+                                 review_reason="洗手前 02:00 之後沒有看到", explanation="00:00–02:00 沒看到接觸，02:00–02:50 沒看。")
+    assert validate(undetermined, task, {**FRESH, "clip": 2}, DURATION) == []
+
+
+def test_no_washing_detected_checks_up_to_the_window_end():
+    task = contact_task(criteria=[{"criterion_id": "1c", "window": [0.0, 67.0], "wash_end": None}], clips=[[0.0, 60.0]])
+    errors = validate(contact_final(), task, {**FRESH, "clip": 1}, DURATION)
+    assert any("clips must cover 0-67 s" in e for e in errors), errors
+
+
 def test_unknown_action():
     assert_rejected({"action": "set_crop"}, "unknown action")
 

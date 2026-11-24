@@ -76,6 +76,8 @@ def final_for(content, verdict="正確"):
     for c in criteria:  # timed criteria (cumulative): measured times that match the verdict
         if c["criterion_id"] == "1a":
             c["times"] = [[0.0, 16.0]] if verdict == "正確" else [[0.0, 9.0]]
+        elif c["criterion_id"] == "1c":
+            c["times"] = [] if verdict == "正確" else [[0.0, 0.0]]
         elif c["criterion_id"] in {"2a", "4a", "29a"}:
             start = c["times"][0][0]
             c["times"] = [[start, start + 10.0]] if verdict == "正確" else []
@@ -119,6 +121,44 @@ async def test_grading_grades_every_visual_criterion(video, tmp_path):
     assert "15-16-17" in outcome["tasks"] and "25-26-27" in outcome["tasks"]
     assert outcome["usage"]["input_tokens"] == 100 * len(model.requests)
     assert (tmp_path / "grading.json").exists() and (tmp_path / "transcript_task_15-16-17.json").exists()
+
+
+async def test_wash_contact_gets_its_own_task_and_ignores_reading_overlap(video, tmp_path):
+    # rubric 1.33: 1c looks from 00:00 in a task of its own, so 1a/1b keep their washing window and its 2 fps clip
+    seg = segmentation(wash_first=True)
+    seg["steps"][1].update(start=2.5, end=13.5)
+    model = FakeModel()
+    outcome = await grading.run_grading(video, seg, tmp_path, model, steps={1})
+    assert outcome["failed_tasks"] == []
+    assert outcome["tasks"] == ["1", "1-1c"]
+    wash = outcome["result"]["steps"][0]
+    assert wash["verdict"] == "正確"
+    assert {c["criterion_id"] for c in wash["criteria"]} == {"1a", "1b", "1c"}
+    contact = next(c for c in wash["criteria"] if c["criterion_id"] == "1c")
+    assert contact["source"] == "vlm" and contact["times"] == []
+    assert {frozenset(CRITERION.findall(r[0]["text"])) for r in model.requests} == {
+        frozenset({"1a", "1b"}), frozenset({"1c"})}
+    first = requests_for(model, "1c")[0][0]["text"]
+    assert "只列實際接觸物品的時點" in first and "clip 要涵蓋 00:00.0–00:16.0（最後一次洗手結束）" in first
+
+
+def test_contact_task_knows_when_the_last_washing_ends():
+    seg = segmentation()
+    seg["steps"][0].update(start=40.0, end=55.0)
+    seg["steps"].append({**seg["steps"][0], "start": 5.0, "end": 9.0})  # an earlier, short wash
+    result = grading.load_grading_module("rules").grade_from_segmentation(seg)
+    tasks = grading.build_tasks(result, grading.load_grading_module("rubric").load_rubric(), {1}, seg)
+    contact = next(t for t in tasks if t["key"] == "1-1c")
+    assert [c["criterion_id"] for c in contact["criteria"]] == ["1c"]
+    assert contact["criteria"][0]["wash_end"] == 55.0 and contact["window"][0] == 0.0
+    wash = next(t for t in tasks if t["key"] == "1")
+    assert wash["window"][0] > 0.0
+    # 1c alone (1a/1b already graded) keeps the name "1-1c", so a resumed run finds its checkpoint
+    for c in result["steps"][0]["criteria"]:
+        if c["criterion_id"] != "1c":
+            c["verdict"] = "正確"
+    tasks = grading.build_tasks(result, grading.load_grading_module("rubric").load_rubric(), {1}, seg)
+    assert [t["key"] for t in tasks] == ["1-1c"]
 
 
 async def test_washing_task_asks_for_timed_parts(video, tmp_path):

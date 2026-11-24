@@ -87,7 +87,8 @@ def build_tasks(result: dict, rubric: dict, steps: set[int] | None, segmentation
     """Group the 待判定 criteria into model conversations, one per window_steps. Criteria with the same
     rubric `task` (5a and 6a, rubric 1.18) share one when their windows lie within WINDOW_SLACK of each
     other (TASK_MERGE_GAP). A criterion searching its range (rules.searched) gets a task of its own:
-    sharing would stretch the other criteria's few seconds to the whole range. Task names (the
+    sharing would stretch the other criteria's few seconds to the whole range; so does 1c (rule
+    wash_before_contact), which looks from 00:00 while 1a/1b need a 2 fps clip of the washing. Task names (the
     transcript file names) are the window steps, plus "-search" or, if still taken, the criterion ids."""
     specs = load_grading_module("rubric").criteria_by_id(rubric)
     groups: dict[tuple, list[dict]] = {}
@@ -110,9 +111,14 @@ def build_tasks(result: dict, rubric: dict, steps: set[int] | None, segmentation
                 crit["first_use"], crit["package_spans"] = package_spans(segmentation)
             if c["criterion_id"] == "4e":
                 crit["tear_start"] = _step_start(segmentation, spec["window_steps"][-1])
+            own_task = spec.get("rule", {}).get("type") == "wash_before_contact"
+            if own_task:  # 1c looks from 00:00: sharing would stretch 1a/1b's window and thin their clip
+                crit["wash_end"] = _last_wash_end(segmentation)
             crit["searching"] = _searching(crit, segmentation)
             if crit["searching"]:
                 key = ("search", c["criterion_id"])
+            elif own_task:
+                key = ("own", c["criterion_id"])
             elif spec.get("task"):
                 key = ("task", spec["task"])
             else:
@@ -124,13 +130,33 @@ def build_tasks(result: dict, rubric: dict, steps: set[int] | None, segmentation
         for cluster in clusters:
             window_steps = sorted({s for c in cluster for s in c["window_steps"]})
             name = "-".join(map(str, window_steps)) + ("-search" if key[0] == "search" else "")
-            if name in names:
+            if name in names or key[0] == "own":  # "own": a fixed name, so a resumed run finds its checkpoint
                 name += "-" + "-".join(c["criterion_id"] for c in cluster)
             names.add(name)
             tasks.append({"key": name, "window_steps": window_steps, "criteria": cluster,
                           "window": [min(c["window"][0] for c in cluster), max(c["window"][1] for c in cluster)],
                           "needs_clip": any(c["audio"] or c["dense"] or c["clip"] for c in cluster)})
     return tasks
+
+
+def _contact_note(c: dict) -> str:
+    if "wash_end" not in c:
+        return ""
+    action = load_grading_module("validate_grading_action")
+    start, until = c["window"][0], action.contact_until(c)
+    note = (f"；只列實際接觸物品的時點 times=[[t, t], ...]，洗手結束由程式用 1a 的計時比較；"
+            f"沒有看到洗手結束前的接觸時，clip 要涵蓋 {_fmt_t(start)}–{_fmt_t(until)}"
+            + ("（最後一次洗手結束）" if c["wash_end"] is not None else "（任務區間結束）"))
+    if until - start > action.COVER_MAX and until - start > OPENING_CLIP_MAX_SECONDS:
+        note += "；這段比 clip 預算能涵蓋的長，沒看到接觸時判無法判定並轉人工複核"
+    return note
+
+
+def _last_wash_end(segmentation: dict) -> float | None:
+    """End of the last detected washing (step 1): 1c must have looked at everything up to it."""
+    ends = [e["end"] for e in segmentation["steps"]
+            if e["step_id"] == 1 and e["status"] == "detected" and e.get("end") is not None]
+    return max(ends) if ends else None
 
 
 def _near_clusters(crits: list[dict]) -> list[list[dict]]:
@@ -301,6 +327,7 @@ def build_task_content(task: dict, video_id: str, duration: float, state: TaskSt
              f"；要計時：final 填 span=[開始, 結束]（影片秒數），滿 {c['min_seconds']:g} 秒才是正確"
              if c.get("min_seconds") else "")
           + _package_note(c)
+          + _contact_note(c)
           for c in task["criteria"]),
         "切分結果（相關步驟的時間；只有時間，做了什麼要自己從畫面判斷）：",
         *_segment_lines(task, segmentation),
