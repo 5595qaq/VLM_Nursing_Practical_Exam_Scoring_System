@@ -125,7 +125,29 @@ def check_rubric(rubric: dict) -> list[str]:
                 errors.append(f"criterion {cid}: not_visible criterion needs a reason and cannot be key")
     errors += [f"task {name} has only one criterion (a task name is shared by the criteria graded together)"
                for name, n in tasks.items() if n < 2]
+    errors += _check_wrong_with(rubric)
     return errors
+
+
+def _check_wrong_with(rubric: dict) -> list[str]:
+    """wrong_with names a key visual criterion of another step (15b for 17a): doing that order backwards
+    fails both steps (DECISIONS D-00-03), so the program marks this one 錯誤 too. Not chained."""
+    specs = criteria_by_id(rubric)
+    errors = []
+    for cid, c in specs.items():
+        if "wrong_with" not in c:
+            continue
+        src = specs.get(c["wrong_with"]) if isinstance(c["wrong_with"], str) else None
+        if (c["category"] != "visual" or not c.get("key") or src is None or src["category"] != "visual"
+                or not src.get("key") or src["step_id"] == c["step_id"] or "wrong_with" in src):
+            errors.append(f"criterion {cid}: wrong_with needs a key visual criterion and the id of a key visual "
+                          f"criterion of another step that has no wrong_with itself")
+    return errors
+
+
+def wrong_with_links(rubric: dict) -> dict[str, str]:
+    """criterion id -> the criterion whose 錯誤 makes it 錯誤 (rubric wrong_with)."""
+    return {cid: c["wrong_with"] for cid, c in criteria_by_id(rubric).items() if "wrong_with" in c}
 
 
 def _search_range_ok(value, sid: int, category: str, window_steps: list[int]) -> bool:

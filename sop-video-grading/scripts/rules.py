@@ -16,11 +16,12 @@ usage: python rules.py segmentation.json [-o grading.json]
 
 import argparse
 import json
+import re
 import sys
 from pathlib import Path
 
 from rubric import (CHECK_STEP, CORRECT, NOT_APPLICABLE, PENDING, SOURCE_FOR, STEP_COUNT, UNDETERMINED, WRONG, aggregate,
-                    fmt_time, load_rubric, search_range, contact_order, wash_end)
+                    criteria_by_id, fmt_time, load_rubric, search_range, contact_order, wash_end, wrong_with_links)
 
 WINDOW_MARGIN = 2.0  # seconds added on both sides of a visual criterion's window
 CHECK_MARGIN = 10.0  # a segment_check entry is a tagged moment that may be a few seconds off: look wider
@@ -39,7 +40,42 @@ def grade_from_segmentation(seg: dict, rubric: dict | None = None,
         search_step = any(c.get("search_steps") for c in step["criteria"])
         criteria = [_grade(c, step["step_id"], entries, duration, margin, search_step) for c in step["criteria"]]
         steps.append(build_step(step, criteria))
-    return {"video_id": seg["video_id"], "rubric_version": rubric["version"], "steps": steps}
+    return {"video_id": seg["video_id"], "rubric_version": rubric["version"],
+            "steps": link_wrong(steps, rubric)}
+
+
+_MMSS = re.compile(r"\d{2}:\d{2}(?:\.\d+)?")
+
+
+def link_wrong(steps: list[dict], rubric: dict, *, segmentation: dict | None = None) -> list[dict]:
+    """Doing an order backwards fails every related step (DECISIONS D-00-03, D-05-03): a criterion with
+    `wrong_with` (17a with 15b, 27a with 25b, 7a with 8b) becomes 錯誤 when that criterion of another
+    step is 錯誤, and its step is aggregated again. A criterion still 待判定 is left for the grading
+    agent; once graded, the next call links it."""
+    links = wrong_with_links(rubric)
+    if not links:
+        return steps
+    specs = criteria_by_id(rubric)
+    graded = {c["criterion_id"]: c for s in steps for c in s["criteria"]}
+    by_id = {s["step_id"]: s for s in rubric["steps"]}
+    out = []
+    for step in steps:
+        criteria, changed = [], False
+        for c in step["criteria"]:
+            src = graded.get(links.get(c["criterion_id"], ""))
+            if src is not None and src["verdict"] == WRONG and c["verdict"] not in (WRONG, PENDING):
+                c, changed = _linked_wrong(c, src, specs[src["criterion_id"]]), True
+            criteria.append(c)
+        out.append(build_step(by_id[step["step_id"]], criteria, segmentation=segmentation) if changed else step)
+    return out
+
+
+def _linked_wrong(c: dict, src: dict, spec: dict) -> dict:
+    when = _MMSS.search(src["explanation"])
+    note = (f"{spec['id']}「{spec['text']}」錯誤" + (f"（{when.group(0)} 起）" if when else "")
+            + f"：順序做反，相關步驟全部錯誤，程式把 {c['criterion_id']} 改判錯誤")
+    return {**c, "verdict": WRONG, "reason": None, "evidence": c["evidence"] or list(src["evidence"]),
+            "explanation": c["explanation"].rstrip("。") + "。" + note + "。"}
 
 
 def build_step(step: dict, criteria: list[dict], *, segmentation: dict | None = None) -> dict:

@@ -62,10 +62,15 @@ def test_rubric_classification_matches_the_plan():
     assert by_id["4e"]["window_steps"] == [4, 5, 6, 7, 8, 9] and by_id["4e"]["after_step"] is True
     assert by_id["4d"]["window_steps"] == [2, 4, 5, 13] and by_id["4d"]["after_step"]
     assert "9b" not in by_id and by_id["9a"]["category"] == "program"
-    # 5a and 6a share one task but keep their own windows; 7a and 8a stay apart (rubric 1.18)
+    # 5a and 6a share one task but keep their own windows (rubric 1.18); so do 7a, 8a and 8b, the order of
+    # disinfecting and opening the diluent (DECISIONS D-00-03)
     assert by_id["5a"]["task"] == by_id["6a"]["task"] == "5-6"
     assert by_id["5a"]["window_steps"] == [5] and by_id["6a"]["window_steps"] == [6]
-    assert "task" not in by_id["7a"] and "task" not in by_id["8a"]
+    assert by_id["7a"]["task"] == by_id["8a"]["task"] == by_id["8b"]["task"] == "7-8"
+    assert by_id["8b"]["key"] is True and by_id["8b"]["window_steps"] == [7, 8]
+    # doing an order backwards fails every related step (DECISIONS D-00-03, D-05-03)
+    assert {cid: c["wrong_with"] for cid, c in by_id.items() if "wrong_with" in c} == {
+        "7a": "8b", "17a": "15b", "27a": "25b"}
     # pushing the air out is its own non-key criterion, in the same task as the flick (rubric 1.7)
     for flick, expel in (("17a", "17b"), ("27a", "27b")):
         assert by_id[flick]["key"] is True and by_id[expel]["key"] is False
@@ -100,6 +105,22 @@ def test_duplicate_criterion_id_is_rejected():
         r["steps"][5]["criteria"][0]["id"] = "6a"
         r["steps"][5]["criteria"].append(dict(r["steps"][5]["criteria"][0]))
     assert any("duplicate id" in e for e in broken(mutate))
+
+
+@pytest.mark.parametrize("target, source", [
+    ("17a", "99z"),  # no such criterion
+    ("17a", "17b"),  # same step
+    ("17a", "13b"),  # not key
+    ("17b", "15b"),  # the linked criterion itself is not key
+    ("15b", "17a"),  # chained: 17a already follows 15b
+])
+def test_wrong_with_must_name_a_key_visual_criterion_of_another_step(target, source):
+    def mutate(r):
+        for step in r["steps"]:
+            for c in step["criteria"]:
+                if c["id"] == target:
+                    c["wrong_with"] = source
+    assert any(f"criterion {target}: wrong_with" in e for e in broken(mutate))
 
 
 def test_criterion_id_must_match_step():

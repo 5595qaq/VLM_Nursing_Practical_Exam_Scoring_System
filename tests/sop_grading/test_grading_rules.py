@@ -5,7 +5,7 @@ import json
 import pytest
 
 from grading_helpers import criterion, fill_visual, flag_review, make_segmentation, result_step, seg_step
-from rules import build_step, grade_from_segmentation, main
+from rules import build_step, grade_from_segmentation, link_wrong, main
 from rubric import aggregate, load_rubric
 from validate_grading import check_wash_order, validate_grading
 from validate_result import validate_result as validate_segmentation
@@ -179,6 +179,50 @@ def test_flick_without_pushing_air_out_is_partial(segmentation):
             if c["criterion_id"] == wrong:
                 c["verdict"] = "錯誤"
         assert build_step(spec, step["criteria"])["verdict"] == verdict
+
+
+def _set_wrong(result, cid, explanation):
+    c = criterion(result, cid)
+    c.update(verdict="錯誤", explanation=explanation)
+    sid = int(cid.rstrip("abcdefghijklmnopqrstuvwxyz"))
+    spec = next(s for s in load_rubric()["steps"] if s["step_id"] == sid)
+    i = next(i for i, s in enumerate(result["steps"]) if s["step_id"] == sid)
+    result["steps"][i] = build_step(spec, result["steps"][i]["criteria"])
+
+
+@pytest.mark.parametrize("source, target, step", [("15b", "17a", 17), ("25b", "27a", 27), ("8b", "7a", 7)])
+def test_doing_an_order_backwards_fails_the_related_step(segmentation, source, target, step):
+    # DECISIONS D-00-03, D-05-03: flicking before padding fails 15 and 17; opening the diluent before
+    # disinfecting it fails 7 and 8
+    result = fill_visual(grade_from_segmentation(segmentation), "正確")
+    _set_wrong(result, source, "02:30.5 未墊棉片就彈針，02:33 才墊上。")
+    linked = {"steps": link_wrong(result["steps"], load_rubric()), **{k: v for k, v in result.items() if k != "steps"}}
+    c = criterion(linked, target)
+    assert c["verdict"] == "錯誤" and c["reason"] is None
+    assert f"{source}「" in c["explanation"] and "02:30.5 起" in c["explanation"]
+    assert result_step(linked, step)["verdict"] == "錯誤"
+    assert validate_grading(linked, final=True) == []
+    # the other steps are untouched
+    assert [s for s in linked["steps"] if s["step_id"] != step] == [s for s in result["steps"] if s["step_id"] != step]
+
+
+def test_linking_leaves_correct_and_pending_criteria_alone(segmentation):
+    result = grade_from_segmentation(segmentation)  # 15b and 17a still 待判定
+    assert link_wrong(result["steps"], load_rubric()) == result["steps"]
+    result = fill_visual(result, "正確")
+    assert link_wrong(result["steps"], load_rubric()) == result["steps"]
+    # 15b 錯誤 but 17a not graded yet: the agent grades it first, the next call links it
+    result = grade_from_segmentation(segmentation)
+    c = criterion(result, "15b")
+    c.update(verdict="錯誤", source="vlm", explanation="02:30 先彈後墊。", evidence=["clip@1-2"])
+    assert criterion({"steps": link_wrong(result["steps"], load_rubric())}, "17a")["verdict"] == "待判定"
+
+
+def test_validate_grading_requires_the_linked_criterion_to_fail(segmentation):
+    result = fill_visual(grade_from_segmentation(segmentation), "正確")
+    _set_wrong(result, "15b", "02:30.5 未墊棉片就彈針。")
+    errors = validate_grading(result, final=True)
+    assert any("criterion 17a: 15b is 錯誤, so 17a must be 錯誤 too" in e for e in errors)
 
 
 def test_no_washing_is_wrong(segmentation):

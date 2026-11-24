@@ -696,6 +696,8 @@ async def run_grading(video_path: Path, segmentation: dict, workdir: Path, model
                     or (old.get(c["criterion_id"], c) if c["verdict"] == "待判定" else c)
                     for c in step["criteria"]]
         result["steps"][i] = rules.build_step(specs[step["step_id"]], criteria, segmentation=segmentation)
+    # after every step is built: 15b 錯誤 also fails 17a (rubric wrong_with, DECISIONS D-00-03)
+    result["steps"] = rules.link_wrong(result["steps"], rubric, segmentation=segmentation)
 
     failed = [{"task": t["key"], "error": f"{type(exc).__name__}: {exc}"[:500]} for t, _, _, exc in outcomes if exc]
     errors = validate.validate_grading(result, rubric, final=not failed)
