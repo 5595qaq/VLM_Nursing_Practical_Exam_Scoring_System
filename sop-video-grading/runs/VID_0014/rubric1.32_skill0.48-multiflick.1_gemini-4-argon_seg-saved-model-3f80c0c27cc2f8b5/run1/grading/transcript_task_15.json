@@ -1,0 +1,64 @@
+[
+ {
+  "turn": 1,
+  "seconds": 12.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 20119,
+  "cached_input_tokens": 0,
+  "output_tokens": 125,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@386-538.6（hands_box，n=9）#0=06:26.0、#1=06:45.1、#2=07:04.1、#3=07:23.2、#4=07:42.3、#5=08:01.4、#6=08:20.4、#7=08:39.5、#8=08:58.6"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [388.7, 405.1, 443.2, 519.5], \"region\": [0.35, 0.25, 0.7, 0.65], \"reason\": \"用 zoom 確認在 06:28.7、06:45.1、07:23.2 及 08:39.5 針頭與針筒接合處是否有墊白色方形酒精棉片\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 10.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 21338,
+  "cached_input_tokens": 0,
+  "output_tokens": 207,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@386-538.6（hands_box，n=9）#0=06:26.0、#1=06:45.1、#2=07:04.1、#3=07:23.2、#4=07:42.3、#5=08:01.4、#6=08:20.4、#7=08:39.5、#8=08:58.6",
+   "zoom@388.7/405.1/443.2/519.5 region=[0.350, 0.250, 0.700, 0.650]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"15a\", \"verdict\": \"正確\", \"explanation\": \"於 06:28.7、07:23.2 及 08:39.5 的 zoom 畫面中，清楚看到白色方形酒精棉片墊在針頭與針筒（針心）接合處。\", \"times\": [[388.7, 443.2], [519.5, 519.5]], \"evidence\": [\"ov@386-538.6 #0\", \"ov@386-538.6 #3\", \"ov@386-538.6 #7\", \"zoom@388.7\", \"zoom@443.2\", \"zoom@519.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": [
+   "criterion 15a: watch a clip of the window before grading 15a; overview frames 2–4 s apart cannot show whether the hands keep moving"
+  ]
+ },
+ {
+  "turn": 3,
+  "seconds": 4.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 21602,
+  "cached_input_tokens": 0,
+  "output_tokens": 98,
+  "thinking_tokens": 42,
+  "materials": [
+   "ov@386-538.6（hands_box，n=9）#0=06:26.0、#1=06:45.1、#2=07:04.1、#3=07:23.2、#4=07:42.3、#5=08:01.4、#6=08:20.4、#7=08:39.5、#8=08:58.6",
+   "zoom@388.7/405.1/443.2/519.5 region=[0.350, 0.250, 0.700, 0.650]"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 386.0, \"end\": 416.0, \"fps\": 2, \"reason\": \"觀看步驟 15 開始時墊上酒精棉片的連續動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 4,
+  "seconds": 13.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 27015,
+  "cached_input_tokens": 0,
+  "output_tokens": 439,
+  "thinking_tokens": 202,
+  "materials": [
+   "ov@386-538.6（hands_box，n=9）#0=06:26.0、#1=06:45.1、#2=07:04.1、#3=07:23.2、#4=07:42.3、#5=08:01.4、#6=08:20.4、#7=08:39.5、#8=08:58.6",
+   "zoom@388.7/405.1/443.2/519.5 region=[0.350, 0.250, 0.700, 0.650]",
+   "clip@386-416（context box，有聲音；片段內 00:00 ＝ 影片 06:26.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"15a\", \"verdict\": \"正確\", \"explanation\": \"於 06:26.0–06:55.5（clip@386-416 片段內 00:00.0–00:29.5）及 zoom 畫面（06:28.7、06:45.1、07:23.2、08:39.5）清楚看到左手將白色方形酒精棉片墊在針頭與針筒交接處進行排氣動作。\", \"times\": [[386.0, 486.0], [506.0, 536.6]], \"evidence\": [\"clip@386-416\", \"zoom@388.7\", \"zoom@405.1\", \"zoom@443.2\", \"zoom@519.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
