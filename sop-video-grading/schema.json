@@ -57,7 +57,7 @@
         "reason": {"$ref": "#/$defs/reason"},
         "times": {"type": "array", "items": {"type": "array", "items": {"type": "number", "minimum": 0}, "minItems": 2, "maxItems": 2}, "description": "評分 agent 判定依據的影片時間（秒）；舊紀錄沒有這個欄位，時間寫在 explanation"},
         "span": {"type": "array", "items": {"type": "number", "minimum": 0}, "minItems": 2, "maxItems": 2,
-                 "description": "有 min_seconds、沒有 cumulative_seconds 的標準：評分 agent 量到的動作開始與結束（影片秒數），程式據此檢查是否滿秒數。rubric 1.31-washsum 起 1a 洗手改用 times 累計計時，之前的紀錄 1a 用這個欄位"},
+                 "description": "有 min_seconds、沒有 cumulative_seconds 的標準：評分 agent 量到的動作開始與結束（影片秒數），程式據此檢查是否滿秒數。rubric 1.32 起 1a 洗手改用 times 累計計時，之前的紀錄 1a 用這個欄位"},
         "window": {
           "anyOf": [
             {"type": "array", "items": {"type": "number", "minimum": 0}, "minItems": 2, "maxItems": 2},

@@ -247,7 +247,7 @@ WASH = {"window": [38.6, 57.4], "criteria": [{"criterion_id": "1a", "window": [3
 
 
 def span_rubric() -> dict:
-    """The rubric before 1.31-washsum, when 1a was timed with one span (the code path stays for min_seconds
+    """The rubric before 1.32, when 1a was timed with one span (the code path stays for min_seconds
     without cumulative_seconds)."""
     rubric = copy.deepcopy(load_rubric())
     for c in rubric["steps"][0]["criteria"]:
