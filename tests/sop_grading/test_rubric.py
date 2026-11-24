@@ -226,6 +226,12 @@ def test_first_and_second_comparison_have_independent_required_thresholds():
     assert aggregate(second, {**passed, "4d": WRONG}) == WRONG
     assert aggregate(second, {**passed, "4e": WRONG}) == WRONG
     assert aggregate(second, {**passed, "4e": UNDETERMINED}) == UNDETERMINED  # hidden: a key unseen
+    # an unseen 4d/4e leaves the step 無法判定 even when 4b failed (it used to be 部分正確) ...
+    assert aggregate(second, {**passed, "4b": WRONG, "4e": UNDETERMINED}) == UNDETERMINED
+    assert aggregate(second, {**passed, "4d": UNDETERMINED}, reasons={"4d": "切分未定位"}) == UNDETERMINED
+    # ... but a failed key still wins
+    assert aggregate(second, {**passed, "4a": WRONG, "4e": UNDETERMINED}) == WRONG
+    assert aggregate(second, {**passed, "4d": WRONG, "4e": UNDETERMINED}) == WRONG
     # the sheet out of frame settles step 4; criteria still pending cannot change that
     hidden4 = {"4a": "藥單看不見"}
     assert aggregate(second, {**passed, "4a": UNDETERMINED}, reasons=hidden4) == UNDETERMINED

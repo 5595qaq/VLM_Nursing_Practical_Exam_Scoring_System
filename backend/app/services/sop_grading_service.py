@@ -504,16 +504,6 @@ def _package_review(c: dict, segmentation: dict) -> dict:
             "review_reason": f"評分 agent {what}，要人工看（{where}）：{times}{after}{agent}"}
 
 
-def _sheet_unseen_point(graded: dict[str, dict], old: dict[str, dict]) -> None:
-    """4e is its own task (a longer window than 4a/4b/4d), so its agent can miss that the drug sheet is out
-    of frame and mark 錯誤, which turns step 4 錯誤 (VID_0119 before read2.4). 4a's finding decides, also
-    when one of the two comes from an earlier attempt (`old`: the other task failed then)."""
-    read, point = graded.get("4a") or old.get("4a"), graded.get("4e") or old.get("4e")
-    if read and point and read.get("reason") == "藥單看不見" and point["verdict"] not in ("無法判定", "待判定"):
-        graded["4e"] = {**point, "verdict": "無法判定", "reason": "藥單看不見",
-                        "explanation": f"4a 判定藥單不在畫面內，無法確認核對；評分 agent 原判{point['verdict']}：{point['explanation']}"}
-
-
 async def run_task(task: dict, video_id: str, runner: GradingRunner, boxes: dict, segmentation: dict,
                    model_call: ModelCall, system: str, workdir: Path,
                    state: TaskState | None = None, rule_digest: str = "",
@@ -698,7 +688,6 @@ async def run_grading(video_path: Path, segmentation: dict, workdir: Path, model
         elif state is not None and usage_reported:  # kept for the next attempt; the caller records this run's usage
             sop_checkpoint.mark_reported(_task_checkpoint(workdir, task))
     graded = {c["criterion_id"]: c for _, criteria, _, _ in outcomes for c in criteria}
-    _sheet_unseen_point(graded, old)
     specs = {s["step_id"]: s for s in rubric["steps"]}
     for i, step in enumerate(result["steps"]):
         # A failed task keeps the previous grade (if any) instead of falling back to 待判定, so a failed
