@@ -46,13 +46,18 @@ def test_washing_too_short_makes_step_wrong(segmentation):
 
 
 
-def test_missing_motion_with_enough_time_makes_step_wrong(segmentation):
+def test_missing_motion_with_enough_time_makes_step_partial(segmentation):
+    # teacher 2026-11-08 (DECISIONS D-01-03): washed long enough but not every motion -> 部分正確
     step = result_step(fill_visual(grade_from_segmentation(segmentation), "正確"), 1)
     for c in step["criteria"]:
         if c["criterion_id"] == "1b":
             c["verdict"] = "錯誤"
     from rubric import load_rubric
     from rules import build_step
+    assert build_step(load_rubric()["steps"][0], step["criteria"])["verdict"] == "部分正確"
+    for c in step["criteria"]:  # too short as well: 1a is key
+        if c["criterion_id"] == "1a":
+            c["verdict"] = "錯誤"
     assert build_step(load_rubric()["steps"][0], step["criteria"])["verdict"] == "錯誤"
 
 
