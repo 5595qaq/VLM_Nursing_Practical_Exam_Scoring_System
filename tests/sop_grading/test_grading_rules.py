@@ -61,6 +61,16 @@ def test_missing_motion_with_enough_time_makes_step_partial(segmentation):
     assert build_step(load_rubric()["steps"][0], step["criteria"])["verdict"] == "錯誤"
 
 
+@pytest.mark.parametrize("wash, order", [("正確", "無法判定"), ("無法判定", "無法判定")])
+def test_missing_motion_with_an_unconfirmed_key_is_undetermined(wash, order):
+    # step 1 requires its key criteria confirmed: a 1b miss alone gives neither 部分正確 nor 錯誤 while
+    # 1a or 1c is unseen (code review of washlast.1)
+    from rubric import aggregate, load_rubric
+    step1 = load_rubric()["steps"][0]
+    assert aggregate(step1, {"1a": wash, "1b": "錯誤", "1c": order}) == "無法判定"
+    assert aggregate(step1, {"1a": "錯誤", "1b": "錯誤", "1c": order}) == "錯誤"
+
+
 def test_wash_order_does_not_use_reading_start_as_object_contact(segmentation):
     second = seg_step(segmentation, 2)
     second.update(status="detected", start=2.5, end=13.5, logical_window=None)
