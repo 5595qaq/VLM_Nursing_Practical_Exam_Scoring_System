@@ -21,7 +21,7 @@ from pathlib import Path
 from jsonschema import Draft202012Validator
 
 from rubric import (CORRECT, NOT_APPLICABLE, PARTIAL, PENDING, STEP_COUNT, UNDETERMINED, WRONG,
-                    aggregate, contact_order, load_rubric, wash_end, wrong_with_links)
+                    aggregate, contact_order, link_note, load_rubric, wash_end, wrong_with_links)
 
 SCHEMA_PATH = Path(__file__).resolve().parent.parent / "schema.json"
 
@@ -82,6 +82,8 @@ def check_wrong_with(result: dict, rubric: dict) -> list[str]:
         c, src = graded.get(cid), graded.get(src_id)
         if c and src and src["verdict"] == WRONG and c["verdict"] not in (WRONG, PENDING):
             errors.append(f"criterion {cid}: {src_id} is {WRONG}, so {cid} must be {WRONG} too (wrong_with)")
+        if c and src and src["verdict"] != WRONG and link_note(cid) in c["explanation"]:
+            errors.append(f"criterion {cid}: linked to {src_id}, which is no longer {WRONG}; regrade {cid}")
     return errors
 
 

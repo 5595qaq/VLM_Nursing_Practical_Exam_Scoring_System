@@ -199,7 +199,7 @@ def test_doing_an_order_backwards_fails_the_related_step(segmentation, source, t
     linked = {"steps": link_wrong(result["steps"], load_rubric()), **{k: v for k, v in result.items() if k != "steps"}}
     c = criterion(linked, target)
     assert c["verdict"] == "錯誤" and c["reason"] is None
-    assert f"{source}「" in c["explanation"] and "02:30.5 起" in c["explanation"]
+    assert f"{source}「" in c["explanation"] and "（02:30.5、02:33）" in c["explanation"]
     assert result_step(linked, step)["verdict"] == "錯誤"
     assert validate_grading(linked, final=True) == []
     # the other steps are untouched
@@ -216,6 +216,27 @@ def test_linking_leaves_correct_and_pending_criteria_alone(segmentation):
     c = criterion(result, "15b")
     c.update(verdict="錯誤", source="vlm", explanation="02:30 先彈後墊。", evidence=["clip@1-2"])
     assert criterion({"steps": link_wrong(result["steps"], load_rubric())}, "17a")["verdict"] == "待判定"
+
+
+def test_linked_note_cites_video_times_not_clip_times(segmentation):
+    result = fill_visual(grade_from_segmentation(segmentation), "正確")
+    _set_wrong(result, "15b", "06:26 先墊再彈；08:28.0–08:31.5（clip@500-520 片段內 00:08.0–00:11.5）先彈後墊。")
+    c = criterion({"steps": link_wrong(result["steps"], load_rubric())}, "17a")
+    assert "（06:26、08:28.0、08:31.5）" in c["explanation"] and "00:08.0" not in c["explanation"]
+    criterion(result, "15b")["times"] = [[508.0, 511.5]]  # structured video seconds win
+    c = criterion({"steps": link_wrong(result["steps"], load_rubric())}, "17a")
+    assert "（08:28–08:31）" in c["explanation"]
+
+
+def test_a_stale_link_is_rejected(segmentation):
+    # 15b regraded 正確 after 17a was linked: the old 17a 錯誤 must not survive (code review of orderfail.1)
+    result = fill_visual(grade_from_segmentation(segmentation), "正確")
+    _set_wrong(result, "15b", "02:30.5 未墊棉片就彈針。")
+    result["steps"] = link_wrong(result["steps"], load_rubric())
+    c = criterion(result, "15b")
+    c.update(verdict="正確", explanation="02:30 先墊棉片才彈針。")
+    errors = validate_grading(result, final=True)
+    assert any("criterion 17a: linked to 15b, which is no longer 錯誤" in e for e in errors)
 
 
 def test_validate_grading_requires_the_linked_criterion_to_fail(segmentation):

@@ -21,7 +21,8 @@ import sys
 from pathlib import Path
 
 from rubric import (CHECK_STEP, CORRECT, NOT_APPLICABLE, PENDING, SOURCE_FOR, STEP_COUNT, UNDETERMINED, WRONG, aggregate,
-                    criteria_by_id, fmt_time, load_rubric, search_range, contact_order, wash_end, wrong_with_links)
+                    criteria_by_id, fmt_time, link_note, load_rubric, search_range, contact_order, wash_end,
+                    wrong_with_links)
 
 WINDOW_MARGIN = 2.0  # seconds added on both sides of a visual criterion's window
 CHECK_MARGIN = 10.0  # a segment_check entry is a tagged moment that may be a few seconds off: look wider
@@ -45,6 +46,7 @@ def grade_from_segmentation(seg: dict, rubric: dict | None = None,
 
 
 _MMSS = re.compile(r"\d{2}:\d{2}(?:\.\d+)?")
+_CLIP_MMSS = re.compile(r"片段內[^\d]{0,3}\d{2}:\d{2}(?:\.\d+)?(?:\s*[–\-~～至到、及和與]\s*\d{2}:\d{2}(?:\.\d+)?)*")
 
 
 def link_wrong(steps: list[dict], rubric: dict, *, segmentation: dict | None = None) -> list[dict]:
@@ -70,10 +72,18 @@ def link_wrong(steps: list[dict], rubric: dict, *, segmentation: dict | None = N
     return out
 
 
+def _src_times(src: dict) -> str:
+    """Where the source criterion looked, in video time: its `times` (video seconds), else the mm:ss its
+    explanation cites outside 「片段內」 (clip-relative)."""
+    if src.get("times"):
+        return "、".join(fmt_time(a) if a == b else f"{fmt_time(a)}–{fmt_time(b)}" for a, b in src["times"])
+    return "、".join(_MMSS.findall(_CLIP_MMSS.sub("", src["explanation"]))[:3])
+
+
 def _linked_wrong(c: dict, src: dict, spec: dict) -> dict:
-    when = _MMSS.search(src["explanation"])
-    note = (f"{spec['id']}「{spec['text']}」錯誤" + (f"（{when.group(0)} 起）" if when else "")
-            + f"：順序做反，相關步驟全部錯誤，程式把 {c['criterion_id']} 改判錯誤")
+    when = _src_times(src)
+    note = (f"{spec['id']}「{spec['text']}」錯誤" + (f"（{when}）" if when else "")
+            + "：依 DECISIONS D-00-03／D-05-03 相關步驟一起錯誤，" + link_note(c["criterion_id"]))
     return {**c, "verdict": WRONG, "reason": None, "evidence": c["evidence"] or list(src["evidence"]),
             "explanation": c["explanation"].rstrip("。") + "。" + note + "。"}
 

@@ -123,6 +123,16 @@ def test_wrong_with_must_name_a_key_visual_criterion_of_another_step(target, sou
     assert any(f"criterion {target}: wrong_with" in e for e in broken(mutate))
 
 
+def test_linked_steps_are_regraded_together():
+    from rubric import with_linked_steps
+    rubric = load_rubric()
+    assert with_linked_steps(None, rubric) is None
+    assert with_linked_steps({15}, rubric) == {15, 17}
+    assert with_linked_steps({17, 3}, rubric) == {3, 15, 17}
+    assert with_linked_steps({7}, rubric) == {7, 8}
+    assert with_linked_steps({25, 1}, rubric) == {1, 25, 27}
+
+
 def test_criterion_id_must_match_step():
     assert any("step number plus a letter" in e
                for e in broken(lambda r: r["steps"][4]["criteria"][0].update(id="6z")))

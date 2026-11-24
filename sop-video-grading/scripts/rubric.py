@@ -150,6 +150,25 @@ def wrong_with_links(rubric: dict) -> dict[str, str]:
     return {cid: c["wrong_with"] for cid, c in criteria_by_id(rubric).items() if "wrong_with" in c}
 
 
+def link_note(cid: str) -> str:
+    """The phrase rules.link_wrong appends to a criterion it marks 錯誤; validate_grading looks for it."""
+    return f"程式把 {cid} 改判錯誤"
+
+
+def with_linked_steps(steps: set[int] | None, rubric: dict) -> set[int] | None:
+    """`steps` plus the steps linked to them by wrong_with, both ways (15 and 17, 7 and 8): regrading one
+    without the other would keep a link made from the old grade. They share a task, so no extra task."""
+    if not steps:
+        return steps
+    specs = criteria_by_id(rubric)
+    out = set(steps)
+    for cid, src in wrong_with_links(rubric).items():
+        pair = {specs[cid]["step_id"], specs[src]["step_id"]}
+        if pair & out:
+            out |= pair
+    return out
+
+
 def _search_range_ok(value, sid: int, category: str, window_steps: list[int]) -> bool:
     """search_steps is [first, last] with first < sid < last (the steps the missing step must lie between),
     and it covers the criterion's window_steps."""
