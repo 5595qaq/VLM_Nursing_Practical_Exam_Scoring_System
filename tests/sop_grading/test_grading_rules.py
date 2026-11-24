@@ -219,6 +219,54 @@ def test_pointing_at_the_package_window_runs_through_the_steps_before_tearing(se
     assert criterion(result, "4e")["window"][1] > criterion(result, "4a")["window"][1]
 
 
+def _step4_checks(segmentation):
+    # a 1.5.11 segmentation: step 4 split into its three checks, each named by `check` (issue #196)
+    seg_step(segmentation, 4).update(start=40.0, end=48.0, check="讀單")
+    segmentation["steps"] += [
+        {"step_id": 4, "start": 62.0, "end": 66.0, "confidence": 0.7, "status": "detected",
+         "evidence": "檢視稀釋液瓶身", "check": "稀釋液"},
+        {"step_id": 4, "start": 75.0, "end": 77.0, "confidence": 0.7, "status": "detected",
+         "evidence": "檢視空針包裝背面", "check": "空針包裝"}]
+    assert validate_segmentation(segmentation) == []
+
+
+def test_step4_checks_use_the_entries_named_by_check(segmentation):
+    _step4_checks(segmentation)
+    result = grade_from_segmentation(segmentation)
+    # 4a/4b look at the 讀單 entries only (its reading time adds up across them), not the other checks
+    assert criterion(result, "4a")["window"] == [38.0, 50.0]
+    assert criterion(result, "4d")["window"] == [52.0, 76.0]  # the 稀釋液 entry ±10 s, not steps 2-13
+    # 4e only around the 空針包裝 entry: finding the moment is the segmentation's job (step4check.2)
+    assert criterion(result, "4e")["window"] == [65.0, 87.0]
+    assert "「空針包裝」段" in criterion(result, "4e")["explanation"]
+
+
+def test_step4_check_not_performed_is_wrong_and_unclear_is_undetermined(segmentation):
+    # the segmentation looked and saw no such check -> 錯誤 by rule; could not see -> 無法判定 (切分未定位)
+    _step4_checks(segmentation)
+    package = next(s for s in segmentation["steps"] if s.get("check") == "空針包裝")
+    package.update(start=None, end=None, status="not_performed", evidence="撕包裝前未檢視空針包裝")
+    diluent = next(s for s in segmentation["steps"] if s.get("check") == "稀釋液")
+    diluent.update(start=None, end=None, status="not_visually_determinable", evidence="手擋住稀釋液",
+                   logical_window=[55.0, 70.0])
+    result = grade_from_segmentation(segmentation)
+    e, d = criterion(result, "4e"), criterion(result, "4d")
+    assert (e["verdict"], e["source"], e["window"]) == ("錯誤", "rule", None)
+    assert "「空針包裝」未執行" in e["explanation"]
+    assert (d["verdict"], d["source"], d["reason"]) == ("無法判定", "rule", "切分未定位")
+    assert criterion(result, "4a")["verdict"] == "待判定"  # the read-sheet entry is still detected
+
+
+def test_step4_check_missing_falls_back_to_window_steps(segmentation):
+    # an older segmentation has no `check`: the window_steps ranges as before
+    before = grade_from_segmentation(segmentation)
+    assert criterion(before, "4d")["window"][0] < 40.0 and criterion(before, "4d")["window"][1] > 130.0
+    # the diluent check not seen: 4d searches steps 2-13 again
+    _step4_checks(segmentation)
+    segmentation["steps"] = [s for s in segmentation["steps"] if s.get("check") != "稀釋液"]
+    assert criterion(grade_from_segmentation(segmentation), "4d")["window"] == criterion(before, "4d")["window"]
+
+
 def test_step_not_found_is_searched_between_search_steps(segmentation):
     # VID_0100 1.5.2: segmentation missed the 03:03 wipe; the agent searches steps 5-18 instead of 錯誤
     seg_step(segmentation, 6).update(start=None, end=None, status="not_performed", evidence="只把棉片蓋上")
@@ -335,3 +383,43 @@ def test_cli_writes_output(tmp_path):
     seg_path.write_text(json.dumps(make_segmentation(), ensure_ascii=False), encoding="utf-8")
     assert main(["rules.py", str(seg_path), "-o", str(out)]) == 0
     assert validate_grading(json.loads(out.read_text(encoding="utf-8"))) == []
+
+
+def test_reading_sheet_criteria_ignore_the_other_checks_results(segmentation):
+    # review of step4check.2: 稀釋液／空針包裝 not_performed must not make 4a/4b 錯誤 ("步驟 4 未執行")
+    _step4_checks(segmentation)
+    for row in segmentation["steps"]:
+        if row.get("check") in ("稀釋液", "空針包裝"):
+            row.update(start=None, end=None, status="not_performed", evidence="看過，沒做")
+    read = seg_step(segmentation, 4)
+    read.update(start=None, end=None, status="not_visually_determinable", evidence="紀錄單未入鏡",
+                logical_window=[40.0, 48.0])
+    result = grade_from_segmentation(segmentation)
+    assert criterion(result, "4a")["verdict"] == "待判定" and criterion(result, "4a")["window"] == [38.0, 50.0]
+    assert criterion(result, "4d")["verdict"] == "錯誤" and criterion(result, "4e")["verdict"] == "錯誤"
+    read.update(status="not_performed", logical_window=None, evidence="未見核對紀錄單")
+    assert criterion(grade_from_segmentation(segmentation), "4a")["verdict"] == "錯誤"
+
+
+def test_step4_check_with_any_unclear_entry_is_undetermined(segmentation):
+    # review of 0.53: one not_performed and one unclear entry of the same check → 無法判定, not 錯誤
+    _step4_checks(segmentation)
+    diluent = next(s for s in segmentation["steps"] if s.get("check") == "稀釋液")
+    diluent.update(start=None, end=None, status="not_performed", evidence="看過這段，沒檢查")
+    segmentation["steps"].append({"step_id": 4, "start": None, "end": None, "confidence": 0.3,
+                                  "status": "not_visually_determinable", "evidence": "手擋住稀釋液",
+                                  "logical_window": [55.0, 70.0], "check": "稀釋液"})
+    d = criterion(grade_from_segmentation(segmentation), "4d")
+    assert (d["verdict"], d["reason"]) == ("無法判定", "切分未定位")
+
+
+def test_search_window_ignores_the_other_checks_logical_windows(segmentation):
+    # review of 0.53: 5a searches [4, 18]; an unclear 空針包裝 entry's logical window must not widen it
+    _step4_checks(segmentation)
+    seg_step(segmentation, 5).update(start=None, end=None, status="not_visually_determinable",
+                                     evidence="手擋住", logical_window=None)
+    before = criterion(grade_from_segmentation(segmentation), "5a")["window"]
+    package = next(s for s in segmentation["steps"] if s.get("check") == "空針包裝")
+    package.update(start=None, end=None, status="not_visually_determinable", evidence="看不清楚",
+                   logical_window=[1.0, 400.0])
+    assert criterion(grade_from_segmentation(segmentation), "5a")["window"] == before

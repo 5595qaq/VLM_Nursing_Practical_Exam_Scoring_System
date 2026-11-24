@@ -31,6 +31,12 @@ def make_valid_result() -> dict:
     for sid in (17, 27):
         steps[sid - 1]["handoff"] = "flick_detector"
         steps[sid - 1]["merged_with"] = [sid - 1]
+    # step 4: one entry per check (validate_action requires all three, issue #196)
+    steps[3]["check"] = "讀單"
+    steps.insert(4, {"step_id": 4, "start": 44.0, "end": 46.0, "confidence": 0.7, "status": "detected",
+                     "evidence": "ov@40-50 #4 檢視稀釋液", "check": "稀釋液"})
+    steps.insert(5, {"step_id": 4, "start": None, "end": None, "confidence": 0.6, "status": "not_performed",
+                     "evidence": "ov@40-100 看過，撕包裝前未檢視空針包裝", "check": "空針包裝"})
 
     return {
         "video_id": "VID_0001",
@@ -214,6 +220,19 @@ def test_handoff_only_on_flick_steps():
     assert_rejected(result, "handoff is only for steps [17, 27]")
 
 
+def test_check_only_on_step_4_of_any_status():
+    result = make_valid_result()
+    assert validate_result(result) == []  # step 4 has a detected and a not_performed entry with check
+    step(result, 5)["check"] = "讀單"
+    assert_rejected(result, "check is only for step 4 entries")
+
+
+def test_check_must_be_a_known_kind():
+    result = make_valid_result()
+    step(result, 4)["check"] = "藥瓶"
+    assert validate_result(result)
+
+
 def test_detected_flick_step_needs_handoff():
     result = make_valid_result()
     del step(result, 17)["handoff"]
@@ -330,3 +349,11 @@ def test_span_only_touching_observation_is_rejected():
     result = make_valid_result()
     result["unassigned_spans"] = [{"start": 530.0, "end": 540.0, "note": "整理桌面"}]
     assert_rejected(result, "unassigned_spans[0]: needs an overlapping")
+
+
+def test_step_4_all_not_performed_still_needs_skipped():
+    result = make_valid_result()
+    for s in result["steps"]:
+        if s["step_id"] == 4:
+            s.update(start=None, end=None, status="not_performed", evidence="ov 看過，未做")
+    assert_rejected(result, "step 4: not_performed needs a 'skipped' observation")

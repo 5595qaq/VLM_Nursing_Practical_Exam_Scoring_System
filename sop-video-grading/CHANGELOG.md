@@ -2,6 +2,16 @@
 
 未發布的修改先寫在 `changelog.d/`（一個分支一個檔，見 `changelog.d/README.md`），合併前改成正式版本時才移到這裡；規則見 `AGENTS.md`「多人協作」。
 
+## 0.53（rubric 1.36）
+
+4d、4e 的區間改由切分的步驟 4 `check` 決定（issue #196，PR #197；分支版本 SKILL 0.47-step4check.1、0.50-step4check.2／rubric 1.31-step4check.1、1.34-step4check.2）。要搭配切分 1.5.12 以上；舊切分沒有 `check` 時照舊。結果見 `experiments/2026-11-23-step4check.md`。
+
+- **4d、4e 的時間由切分負責（issue #196）**：rubric 新欄位 `segment_check`（4d「稀釋液」、4e「空針包裝」），對應切分步驟 4 每筆的 `check`。切分有同一類的 detected 項目時，評分只看那些項目前後各 10 秒（`rules.CHECK_MARGIN`；切分標的時間可能差幾秒），只判做得對不對；那一類切分標 `not_performed`（看過、沒做）時程式直接判錯誤，標 `not_visually_determinable` 時判無法判定（切分未定位）。沒有對應項目的舊切分照舊用 `window_steps`（4d 步驟 2–13、4e 4–9，4e 判錯誤前要看撕開包裝前的片段）。4a／4b 不用：查看紀錄單的時間是累計的，可能分散在幾段。評分任務的分組與名稱不變（`2-4-5-13`、`4-5-6-7-8-9`），只有區間變小。任務說明寫「區間取自切分步驟 4「稀釋液」那一筆」，切分時間只列那一筆（`sop_grading_service._check_note`、`_segment_lines`）。`check_rubric` 只允許步驟 4 的 visual 標準用 `segment_check`；測試確認 `SEGMENT_CHECKS` 和 sop-video-skill `schema.json` 的 enum 一致。標準文字不變，沒有改 `criteria/02`。
+- step4check.1 → .2（2026-11-24，使用者決定「找時間是切分的工作」）：拿掉 `segment_check_until`（4e 不再延伸到撕開包裝）與「沒標到就退回大範圍搜尋」的作法，改成切分每類都要輸出一筆。.1 的做法 B 驗證（手動補 `check`）在 Gemini 4 的 429 中只跑出 VID_0011 的 4a／4b／4d，4e 的大範圍任務一直失敗，紀錄不採用。
+- step4check.2 的 code review 修正：步驟 4 有 `check` 時，4a、4b 只看「讀單」項目（另外兩類的 not_performed 不會讓 4a 判「步驟 4 未執行」，區間也不會被另外兩類撐大）；4e 用切分找到的那一段時，任務說明與 4e 判錯誤的退回訊息改成「用 clip 看這一段」（撕開包裝可能不在區間內，`criteria/02` 由 #189 修改中，這次不動）；rubric `description` 補上 `segment_check`。
+- 0.53 的 code review 修正：同一類 check 有 `not_performed` 也有 `not_visually_determinable` 時判無法判定（原本判錯誤）；步驟 4 有 `check` 時，所有沒有 `segment_check` 的標準（4a、4b，以及搜尋範圍含步驟 4 的 5a／7a／8a）都只看「讀單」項目，另外兩類看不清楚時的 `logical_window` 不會撐大搜尋區間；同一個任務裡混有沒有 `segment_check` 的標準時，任務說明列出步驟 4 的每一筆（`sop_grading_service._segment_lines`）。
+- **4d 只判要看的區間，不自己往外找稀釋液**（使用者 2026-11-25，`DECISIONS.md` D-02-09）：`criteria/02` 拿掉 D-02-07 的「疑似拿錯時在原搜尋區間補看」「確認拿的是另一藥瓶時，仍在原搜尋區間內找真正稀釋液的檢查」；區間內拿的是別瓶時那段不算 4d，找時間是切分的工作。物品辨認的規則保留。
+
 ## 0.52（rubric 1.35）
 
 - **18d／22d 不要求另一手扶 vial，步驟 18 插入後可以拿起**（老師 2026-11-24，`DECISIONS.md` D-08-09，issue #209；分支版本 SKILL 0.49-handpos209.1、.2／rubric 1.33-handpos209.1、.2）：rubric 18d／22d 文字拿掉「一手固定」，改成「不要求另一手扶 vial」；`criteria/08-hand-posture.md` 寫明 vial 放在桌上、另一手沒扶不扣分（之前就沒有因為沒扶而扣分）。18d 寫明只看**針頭刺穿瓶塞那一刻**：還沒刺穿就拿起、在空中刺入 → 錯誤；在桌上刺穿後拿起打稀釋液 → 不算錯誤（handpos209.2）。這和老師 2026-11-08 的 VID_0091 步驟 18 判例衝突（03:20 在桌上刺穿、03:27.5 才拿起，老師判錯誤），使用者 2026-11-24 決定照 11-24 的回答；VID_0091、0095、0119、0123 步驟 18 列入人工核對。步驟 22 打空氣時拿起 vial 仍是錯誤（老師 2026-11-14）。

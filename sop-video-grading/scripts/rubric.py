@@ -15,6 +15,9 @@ CATEGORIES = {"program", "visual", "not_visible"}
 SOURCE_FOR = {"program": "rule", "visual": "vlm", "not_visible": "fixed"}
 RULE_TYPES = {"detected", "wash_before_later_steps"}
 ACTIONS_SCHEMA_PATH = Path(__file__).resolve().parent.parent / "actions.schema.json"
+# the `check` a segmentation entry of step 4 carries (sop-video-skill schema.json, issue #196)
+SEGMENT_CHECKS = {"讀單", "稀釋液", "空針包裝"}
+CHECK_STEP = 4  # only step 4's segmentation entries carry `check` (sop-video-skill validate_result.py)
 
 
 def unconfirmed_reasons() -> set[str]:
@@ -30,6 +33,7 @@ def unconfirmed_reasons() -> set[str]:
                 yield from enums(value)
     found = list(enums(json.loads(ACTIONS_SCHEMA_PATH.read_text(encoding="utf-8"))))
     return set().union(*found)
+
 
 CORRECT, WRONG, PARTIAL = "正確", "錯誤", "部分正確"
 UNDETERMINED, NOT_APPLICABLE, PENDING = "無法判定", "不適用", "待判定"
@@ -95,6 +99,11 @@ def check_rubric(rubric: dict) -> list[str]:
                     errors.append(f"criterion {cid}: unconfirmed_step_reason needs a key visual criterion and a reason")
                 elif reason not in unconfirmed_reasons():
                     errors.append(f"criterion {cid}: unconfirmed_step_reason {reason!r} is not a reason the grading agent can give (actions.schema.json)")
+            if "segment_check" in c and (cat != "visual" or step["step_id"] != CHECK_STEP
+                                         or not isinstance(c["segment_check"], str)
+                                         or c["segment_check"] not in SEGMENT_CHECKS):
+                errors.append(f"criterion {cid}: segment_check needs a visual criterion of step {CHECK_STEP} "
+                              f"and one of {sorted(SEGMENT_CHECKS)}")
             if "allow_partial" in c and (cat != "visual" or not isinstance(c["allow_partial"], bool)):
                 errors.append(f"criterion {cid}: allow_partial needs a visual criterion and true/false")
             if "clip" in c and (cat != "visual" or not isinstance(c["clip"], bool)):

@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 113.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 20701,
+  "cached_input_tokens": 0,
+  "output_tokens": 186,
+  "thinking_tokens": 131,
+  "materials": [
+   "ov@304-332（hands_box，n=9）#0=05:04.0、#1=05:07.5、#2=05:11.0、#3=05:14.5、#4=05:18.0、#5=05:21.5、#6=05:25.0、#7=05:28.5、#8=05:32.0"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 311.0, \"end\": 325.0, \"fps\": 2, \"reason\": \"查看撕開空針包裝前是否有用手指指出包裝核對\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 13.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 23164,
+  "cached_input_tokens": 0,
+  "output_tokens": 195,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@304-332（hands_box，n=9）#0=05:04.0、#1=05:07.5、#2=05:11.0、#3=05:14.5、#4=05:18.0、#5=05:21.5、#6=05:25.0、#7=05:28.5、#8=05:32.0",
+   "clip@311-325（context box，有聲音；片段內 00:00 ＝ 影片 05:11.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4e\", \"verdict\": \"正確\", \"explanation\": \"於 05:14.5 拿起空針包裝，在 05:15.0–05:16.5（clip@311-325 的 00:04.0–00:05.5）撕開包裝前，清楚看到考生將空針包裝翻至背面並用右手食指指讀核對包裝上的標示，隨後於 05:19.0 開始撕開包裝。\", \"times\": [[315.0, 316.5]], \"evidence\": [\"ov@304-332 #3\", \"clip@311-325\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

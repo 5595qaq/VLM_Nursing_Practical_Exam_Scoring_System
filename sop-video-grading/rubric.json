@@ -1,6 +1,6 @@
 {
-  "version": "1.35",
-  "description": "無菌抽藥技術－vial 粉劑 30 步評分標準。category：program＝由切分結果以程式判定；visual＝評分 agent 看畫面（audio=true 時連聲音一起聽）；not_visible＝影片看不到，固定輸出「無法判定」且不影響步驟判定。visual 的 window_steps＝要看的步驟區間；task＝同名的標準共用一個評分任務（兩條都不在搜尋、且區間相距不超過 10 秒時；否則各自一個任務）；search_steps＝[第一步, 最後一步]，切分沒找到該步時，改在這兩步之間（含）所有步驟的區間內找，且該步的切分 not_performed 不直接判錯誤；after_step=true＝動作可以發生在自己的步驟之後，該步的切分 not_performed 也不直接判錯誤。key=true 的標準錯誤時整步判「錯誤」。require_key_confirmation=true 時，關鍵標準須確認達標才可判整步正確或部分正確。cumulative_seconds=true 時，用 times 加總實際動作時間；timed_action＝要計時的動作（累計計時必填，任務說明用）。unconfirmed_step_reason＝這條關鍵標準判無法判定、且原因是這個字串時，整步判無法判定（例：紀錄單未入鏡時填「藥單看不見」）。",
+  "version": "1.36",
+  "description": "無菌抽藥技術－vial 粉劑 30 步評分標準。category：program＝由切分結果以程式判定；visual＝評分 agent 看畫面（audio=true 時連聲音一起聽）；not_visible＝影片看不到，固定輸出「無法判定」且不影響步驟判定。visual 的 window_steps＝要看的步驟區間；task＝同名的標準共用一個評分任務（兩條都不在搜尋、且區間相距不超過 10 秒時；否則各自一個任務）；search_steps＝[第一步, 最後一步]，切分沒找到該步時，改在這兩步之間（含）所有步驟的區間內找，且該步的切分 not_performed 不直接判錯誤；after_step=true＝動作可以發生在自己的步驟之後，該步的切分 not_performed 也不直接判錯誤。key=true 的標準錯誤時整步判「錯誤」。require_key_confirmation=true 時，關鍵標準須確認達標才可判整步正確或部分正確。cumulative_seconds=true 時，用 times 加總實際動作時間；timed_action＝要計時的動作（累計計時必填，任務說明用）。unconfirmed_step_reason＝這條關鍵標準判無法判定、且原因是這個字串時，整步判無法判定（例：紀錄單未入鏡時填「藥單看不見」）。segment_check（只用於步驟 4）＝切分步驟 4 標同一類 check 的項目決定區間（detected 那段前後 10 秒）或判定（not_performed 錯誤、看不清楚無法判定），沒有這類項目的舊切分才用 window_steps；步驟 4 有 check 時，沒有 segment_check 的標準（4a、4b）只看「讀單」項目。",
   "steps": [
     {"step_id": 1, "text": "洗手。", "criteria": [
       {"id": "1a", "text": "洗手至少 10 秒（從按壓洗手液到洗手結束、雙手分開；中途中斷、重新按壓洗手液再洗時，前後各段相加）", "category": "visual", "key": true, "window_steps": [1], "sample_interval": 0.5, "min_seconds": 10, "cumulative_seconds": true, "timed_action": "洗手", "note": "使用者確認（2026-11-09）：在 0.5 秒一格的片段找出實際按壓洗手液及洗手結束的時間；程式以實測時間檢查是否至少 10 秒，不足時整步錯誤。老師 2026-11-08（DECISIONS D-01-01）：中斷後重新按壓再洗，前後兩段相加，所以用 times 列出每段、程式加總"},
@@ -20,8 +20,8 @@
       {"id": "4a", "text": "取出 vial 後、抽藥前持藥瓶核對，實際查看給藥紀錄單累計至少 10 秒。紀錄單未入鏡或本身遭遮擋，無法確認查看時間時判無法判定（藥單看不見）。", "category": "visual", "key": true, "unconfirmed_step_reason": "藥單看不見", "window_steps": [4], "sample_interval": 0.5, "min_seconds": 10, "cumulative_seconds": true, "timed_action": "實際查看給藥紀錄單"},
       {"id": "4b", "text": "查看給藥紀錄單時明顯用手指指出紀錄單", "category": "visual", "key": false, "allow_partial": false, "window_steps": [4]},
       {"id": "4c", "text": "確認的藥物與紀錄單相符", "category": "not_visible", "reason": "資訊不足", "note": "鏡頭看不到藥瓶標籤與紀錄單內容"},
-      {"id": "4d", "text": "抽藥前拿起稀釋液檢查效期與有無異物", "category": "visual", "key": false, "window_steps": [2, 4, 5, 13], "after_step": true, "note": "老師確認：可以先檢查稀釋液再做 2 讀；有無做此項不改變 2 讀的計時。"},
-      {"id": "4e", "text": "撕開空針包裝前，用手指指出包裝核對", "category": "visual", "key": false, "window_steps": [4, 5, 6, 7, 8, 9], "after_step": true, "note": "空針可先準備，包裝核對可早於第二次五對；此項不計入 2 讀的秒數。"}
+      {"id": "4d", "text": "抽藥前拿起稀釋液檢查效期與有無異物", "category": "visual", "key": false, "segment_check": "稀釋液", "window_steps": [2, 4, 5, 13], "after_step": true, "note": "老師確認：可以先檢查稀釋液再做 2 讀；有無做此項不改變 2 讀的計時。"},
+      {"id": "4e", "text": "撕開空針包裝前，用手指指出包裝核對", "category": "visual", "key": false, "segment_check": "空針包裝", "window_steps": [4, 5, 6, 7, 8, 9], "after_step": true, "note": "空針可先準備，包裝核對可早於第二次五對；此項不計入 2 讀的秒數。"}
     ]},
     {"step_id": 5, "text": "將vial瓶口打開。", "criteria": [
       {"id": "5a", "text": "將 vial 瓶口打開", "category": "visual", "key": true, "window_steps": [5], "task": "5-6", "search_steps": [4, 18], "clip": true, "note": "使用者決定（2026-10-30，rubric 1.17）：由 program 改成評分 agent 判定，原因與實驗見 CHANGELOG 0.30；rubric 1.18 起 5a／6a 同一個任務（CHANGELOG 0.31）"}

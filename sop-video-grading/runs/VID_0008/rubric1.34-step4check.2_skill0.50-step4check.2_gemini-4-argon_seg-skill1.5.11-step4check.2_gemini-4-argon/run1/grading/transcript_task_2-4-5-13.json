@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 7.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 20716,
+  "cached_input_tokens": 0,
+  "output_tokens": 91,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@28-242（hands_box，n=9）#0=00:28.0、#1=00:54.8、#2=01:21.5、#3=01:48.2、#4=02:15.0、#5=02:41.8、#6=03:08.5、#7=03:35.2、#8=04:02.0"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 28.0, \"end\": 55.0, \"fps\": 2, \"reason\": \"檢查 00:28–00:55（包含切分步驟 4 的 00:38.0–00:40.5）是否有拿起稀釋液檢查效期標示及有無異物\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 22.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 25825,
+  "cached_input_tokens": 0,
+  "output_tokens": 299,
+  "thinking_tokens": 212,
+  "materials": [
+   "ov@28-242（hands_box，n=9）#0=00:28.0、#1=00:54.8、#2=01:21.5、#3=01:48.2、#4=02:15.0、#5=02:41.8、#6=03:08.5、#7=03:35.2、#8=04:02.0",
+   "clip@28-55（context box，有聲音；片段內 00:00 ＝ 影片 00:28.0）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 182.0, \"end\": 242.0, \"fps\": 2, \"reason\": \"查看 03:02–04:02（包含切分步驟 4 的 03:44–03:52）是否拿起稀釋液檢查效期與有無異物\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 16.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 37078,
+  "cached_input_tokens": 0,
+  "output_tokens": 763,
+  "thinking_tokens": 609,
+  "materials": [
+   "ov@28-242（hands_box，n=9）#0=00:28.0、#1=00:54.8、#2=01:21.5、#3=01:48.2、#4=02:15.0、#5=02:41.8、#6=03:08.5、#7=03:35.2、#8=04:02.0",
+   "clip@28-55（context box，有聲音；片段內 00:00 ＝ 影片 00:28.0）",
+   "clip@182-242（context box，有聲音；片段內 00:00 ＝ 影片 03:02.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4d\", \"verdict\": \"正確\", \"explanation\": \"03:42–03:51（clip@182-242 片段內 00:40.0–00:49.5）在抽取稀釋液前，左手拿起稀釋液瓶轉動檢視瓶身標示與液體，並低頭與給藥紀錄單核對。\", \"times\": [[222.0, 231.5]], \"evidence\": [\"clip@182-242\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

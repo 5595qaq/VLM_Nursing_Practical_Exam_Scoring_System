@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 7.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 23908,
+  "cached_input_tokens": 0,
+  "output_tokens": 79,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@148-171.4（context box，有聲音；片段內 00:00 ＝ 影片 02:28.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [150.5, 160.5], \"region\": [0.25, 0.55, 0.75, 0.9], \"reason\": \"確認給藥紀錄單位置以及考生手指指讀給藥紀錄單與手持藥瓶之細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 7.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 25102,
+  "cached_input_tokens": 0,
+  "output_tokens": 104,
+  "thinking_tokens": 31,
+  "materials": [
+   "clip@148-171.4（context box，有聲音；片段內 00:00 ＝ 影片 02:28.0）",
+   "zoom@150.5/160.5 region=[0.250, 0.550, 0.750, 0.900]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [150.5, 160.5], \"region\": [0.25, 0.72, 0.75, 0.98], \"reason\": \"確認畫面下緣的給藥紀錄單與手指指讀動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 12.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 26336,
+  "cached_input_tokens": 0,
+  "output_tokens": 406,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@148-171.4（context box，有聲音；片段內 00:00 ＝ 影片 02:28.0）",
+   "zoom@150.5/160.5 region=[0.250, 0.550, 0.750, 0.900]",
+   "zoom@150.5/160.5 region=[0.250, 0.720, 0.750, 0.980]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4a\", \"verdict\": \"正確\", \"explanation\": \"給藥紀錄單平放在治療車最前緣（鐵架下方）。於 02:29.5–02:44.5（clip@148-171.4 片段內 00:01.5–00:16.5）考生低頭查看給藥紀錄單並以右手手指逐項指讀核對（02:29.5–02:36.5 持 vial 核對、02:37.0–02:44.5 搭配稀釋液核對），實際查看給藥紀錄單累計 15.0 秒，已滿 10 秒。\", \"times\": [[149.5, 164.5]], \"evidence\": [\"clip@148-171.4\", \"zoom@150.5\", \"zoom@160.5\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"4b\", \"verdict\": \"正確\", \"explanation\": \"於 02:29.5–02:44.5（clip@148-171.4 片段內 00:01.5–00:16.5）查看給藥紀錄單時，清楚看到考生以右手手指逐項指出給藥紀錄單上的內容進行核對。\", \"times\": [[149.5, 164.5]], \"evidence\": [\"clip@148-171.4\", \"zoom@150.5\", \"zoom@160.5\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

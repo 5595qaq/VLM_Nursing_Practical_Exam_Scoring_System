@@ -21,6 +21,7 @@ SCHEMA_PATH = Path(__file__).resolve().parent.parent / "schema.json"
 STEP_COUNT = 30
 REMOVED_STEP = 11  # removed from the score sheet; always not_performed
 FLICK_STEPS = {17, 27}  # handed off to flick_detector (SKILL.md 4.7)
+CHECK_STEP = 4  # step 4 entries name their check (讀單／稀釋液／空針包裝); grading uses it (issue #196)
 BUDGET_LIMITS = {"crop_rounds": 5, "overview_calls": 20, "zoom_calls": 15}
 MAX_ZOOM_CALLS = BUDGET_LIMITS["zoom_calls"]
 SPAN_OBSERVATION_TYPES = {"extra_action", "left_work_area"}
@@ -99,6 +100,8 @@ def _check_rules(result: dict) -> list[str]:
         if sid in step.get("merged_with", []):
             errors.append(f"{where}: merged_with must not contain the step itself")
 
+        if "check" in step and sid != CHECK_STEP:
+            errors.append(f"{where}: check is only for step {CHECK_STEP} entries")
         if "handoff" in step and sid not in FLICK_STEPS:
             errors.append(f"{where}: handoff is only for steps {sorted(FLICK_STEPS)}")
         if sid in FLICK_STEPS and status == "detected" and step.get("handoff") != "flick_detector":
@@ -110,7 +113,12 @@ def _check_rules(result: dict) -> list[str]:
             errors.extend(_check_span(f"observations[{i}]", obs["start"], obs["end"], duration))
 
     skipped_steps = {sid for o in observations if o["type"] == "skipped" for sid in o["steps"]}
-    for sid in sorted({s["step_id"] for s in steps if s["status"] == "not_performed"} - {REMOVED_STEP}):
+    # a step-4 entry with `check` is one of its three checks, not the whole step skipped (issue #196),
+    # unless every entry of step 4 is not_performed
+    whole = {sid for sid in {s["step_id"] for s in steps}
+             if all(s["status"] == "not_performed" for s in steps if s["step_id"] == sid)}
+    for sid in sorted({s["step_id"] for s in steps if s["status"] == "not_performed"
+                       and ("check" not in s or s["step_id"] in whole)} - {REMOVED_STEP}):
         if sid not in skipped_steps:
             errors.append(f"step {sid}: not_performed needs a 'skipped' observation listing it")
 

@@ -96,3 +96,8 @@ def test_delete_with_a_remark_and_keys_written_other_ways():
 def test_skill_md_states_the_same_rewrite_interval():
     skill = (Path(draft.__file__).resolve().parents[1] / "SKILL.md").read_text(encoding="utf-8")
     assert f"每 {draft.FULL_EVERY} 個動作" in skill
+
+
+def test_full_width_hyphen_in_a_step4_key_is_the_same_row():
+    # review of 0.53: 「4－稀釋液」 and 「4-稀釋液」 are one draft row
+    assert draft._key("4－稀釋液") == draft._key("4-稀釋液") == draft._key("4‐稀釋液")

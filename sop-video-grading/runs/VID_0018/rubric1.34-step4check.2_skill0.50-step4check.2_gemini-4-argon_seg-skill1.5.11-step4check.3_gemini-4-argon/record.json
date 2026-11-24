@@ -1,0 +1,42 @@
+{
+ "video_id": "VID_0018",
+ "versions": {
+  "rubric": "1.34-step4check.2",
+  "skill": "0.50-step4check.2",
+  "model": "gemini-4-argon",
+  "segmentation": "skill1.5.11-step4check.3_gemini-4-argon"
+ },
+ "video_sha256": "97693de749dce10939690ff3df6d34c06763b719c00f60477f166d26cb71d41b",
+ "runs": [
+  {
+   "run": 1,
+   "by": "5595QAQ",
+   "date": "2026-11-24",
+   "commit": "6d96e2eb41c03c9daf8c829751600bc154006d69",
+   "video_sha256": "97693de749dce10939690ff3df6d34c06763b719c00f60477f166d26cb71d41b",
+   "steps": [
+    4
+   ],
+   "failed_tasks": [],
+   "segmentation": "sop-video-skill 1.5.11-step4check.3 gemini-4-argon",
+   "usage": {
+    "input_tokens": 271015,
+    "cached_input_tokens": 0,
+    "output_tokens": 3052,
+    "thinking_tokens": 1352
+   },
+   "segmentation_usage": {
+    "input_tokens": 735509,
+    "cached_input_tokens": 528096,
+    "output_tokens": 34003,
+    "thinking_tokens": 339
+   },
+   "timing": {
+    "started_at": "2026-11-24T19:03:37+00:00",
+    "segmentation_seconds": 771.5,
+    "grading_seconds": 177.6,
+    "total_seconds": 1305.4
+   }
+  }
+ ]
+}

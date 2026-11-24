@@ -356,6 +356,29 @@ async def test_pointing_wrong_needs_a_clip_near_the_segmented_tearing(video, tmp
     assert c["verdict"] == "錯誤" and outcome["failed_tasks"] == []
 
 
+async def test_tagged_step4_checks_narrow_the_task_and_its_listed_times(video, tmp_path):
+    # issue #196: a 稀釋液-tagged entry gives 4d its window; the prompt lists only that entry, not steps 2-13
+    seg = segmentation()
+    seg["steps"][3]["check"] = "讀單"
+    seg["steps"] += [
+        {"step_id": 4, "start": 40.0, "end": 41.0, "confidence": 0.6, "status": "detected",
+         "evidence": "ov", "check": "稀釋液"},
+        {"step_id": 4, "start": 44.0, "end": 45.0, "confidence": 0.6, "status": "detected",
+         "evidence": "ov", "check": "空針包裝"}]
+    model = FakeModel()
+    outcome = await grading.run_grading(video, seg, tmp_path, model, steps={4})
+    assert outcome["failed_tasks"] == []
+    text = requests_for(model, "4d")[0][0]["text"]
+    assert "區間取自切分步驟 4「稀釋液」那一筆" in text
+    listed = text.split("切分結果")[1].split("動作峰值")[0]
+    assert "步驟 4：00:40.0" in listed and "步驟 13" not in listed and "00:27.0" not in listed
+    four_e = requests_for(model, "4e")[0][0]["text"]
+    # 4e stays around its 空針包裝 entry: no stretch to tearing (step 9 at 00:16.2), no tear_start clip rule
+    assert "延伸到步驟" not in four_e and "步驟 9：" not in four_e.split("切分結果")[1]
+    assert "步驟 4：00:44.0" in four_e.split("切分結果")[1]
+    assert "不必看撕開前幾秒" in four_e  # the tear may be outside the window; clip the package check instead
+
+
 async def test_fixing_the_needle_task_lists_the_wrapper_spans(video, tmp_path):
     # 10b's window is step 10 (00:16–00:21.5); the wrapper span 00:00.5–00:03 is listed and open to actions
     seg = segmentation()
@@ -929,3 +952,17 @@ async def test_usage_counts_cached_and_thinking_tokens(video, tmp_path):
     turn = json.loads((tmp_path / "transcript_task_15-16-17.json").read_text(encoding="utf-8"))[0]
     assert {k: turn[k] for k in ("input_tokens", "cached_input_tokens", "output_tokens", "thinking_tokens")} == {
         "input_tokens": 100, "cached_input_tokens": 40, "output_tokens": 10, "thinking_tokens": 3}
+
+
+def test_a_task_mixing_checked_and_unchecked_criteria_lists_every_step4_entry():
+    # review of 0.53: 4a/4b in the same task as 4d need the 讀單 times too, not only the 稀釋液 entry
+    seg = segmentation()
+    seg["steps"][3]["check"] = "讀單"
+    seg["steps"].append({"step_id": 4, "start": 40.0, "end": 41.0, "confidence": 0.6, "status": "detected",
+                         "evidence": "ov", "check": "稀釋液"})
+    task = {"window_steps": [4], "criteria": [
+        {"criterion_id": "4a", "step_id": 4, "searching": False},
+        {"criterion_id": "4d", "step_id": 4, "searching": False, "segment_check": "稀釋液"}]}
+    lines = "\n".join(grading._segment_lines(task, seg))
+    read = seg["steps"][3]
+    assert f"步驟 4：{grading._fmt_t(read['start'])}" in lines and "步驟 4：00:40.0" in lines

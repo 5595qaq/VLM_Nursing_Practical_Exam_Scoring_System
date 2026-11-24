@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 9.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 20729,
+  "cached_input_tokens": 0,
+  "output_tokens": 220,
+  "thinking_tokens": 147,
+  "materials": [
+   "ov@143-172.4（hands_box，n=9）#0=02:23.0、#1=02:26.7、#2=02:30.3、#3=02:34.0、#4=02:37.7、#5=02:41.4、#6=02:45.1、#7=02:48.7、#8=02:52.4"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 143.0, \"end\": 172.4, \"fps\": 2, \"reason\": \"查看 02:23.0–02:52.4 期間拿起稀釋液檢查效期與有無異物的連續動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 6.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 26311,
+  "cached_input_tokens": 0,
+  "output_tokens": 103,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@143-172.4（hands_box，n=9）#0=02:23.0、#1=02:26.7、#2=02:30.3、#3=02:34.0、#4=02:37.7、#5=02:41.4、#6=02:45.1、#7=02:48.7、#8=02:52.4",
+   "clip@143-172.4（context box，有聲音；片段內 00:00 ＝ 影片 02:23.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [154.0, 156.5, 158.5, 161.0], \"region\": [0.3, 0.35, 0.75, 0.75], \"reason\": \"確認考生在 02:34.0–02:41.0 拿起檢視的物品是否為稀釋液瓶\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 24.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 27560,
+  "cached_input_tokens": 0,
+  "output_tokens": 404,
+  "thinking_tokens": 239,
+  "materials": [
+   "ov@143-172.4（hands_box，n=9）#0=02:23.0、#1=02:26.7、#2=02:30.3、#3=02:34.0、#4=02:37.7、#5=02:41.4、#6=02:45.1、#7=02:48.7、#8=02:52.4",
+   "clip@143-172.4（context box，有聲音；片段內 00:00 ＝ 影片 02:23.0）",
+   "zoom@154/156.5/158.5/161 region=[0.300, 0.350, 0.750, 0.750]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4d\", \"verdict\": \"正確\", \"explanation\": \"02:36.0–02:38.0（clip@143-172.4 片段內 00:13.0–00:15.0）學生拿起稀釋液塑膠瓶檢視瓶身標示與液體並口述「沒有過期」，隨後放回桌面。\", \"times\": [[156.0, 158.0]], \"evidence\": [\"clip@143-172.4\", \"zoom@156.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

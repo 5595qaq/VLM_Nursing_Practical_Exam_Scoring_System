@@ -109,7 +109,14 @@ def build_tasks(result: dict, rubric: dict, steps: set[int] | None, segmentation
                     "search_steps": spec.get("search_steps")}
             if spec.get("package_spans"):
                 crit["first_use"], crit["package_spans"] = package_spans(segmentation)
-            if c["criterion_id"] == "4e":
+            check = spec.get("segment_check")
+            if check and any(e["step_id"] == spec["step_id"] and e["status"] == "detected"
+                             and e.get("check") == check for e in segmentation["steps"]):
+                # rules._check_result took the window from those entries (issue #196)
+                crit["segment_check"] = check
+            elif c["criterion_id"] == "4e":
+                # an older segmentation: 4e searches up to tearing the package, where its 錯誤 needs a clip.
+                # With a tagged 空針包裝 entry the segmentation found the check; 錯誤 is judged there.
                 crit["tear_start"] = _step_start(segmentation, spec["window_steps"][-1])
             own_task = spec.get("rule", {}).get("type") == "wash_before_contact"
             if own_task:  # 1c looks from 00:00: sharing would stretch 1a/1b's window and thin their clip
@@ -274,9 +281,18 @@ def _segment_lines(task: dict, segmentation: dict) -> list[str]:
     search range, so the agent knows what happens where."""
     search_range = load_grading_module("rubric").search_range
     searched = {s for c in task["criteria"] if c["searching"] for s in search_range(c)}
+    steps = {*task["window_steps"], *(c["step_id"] for c in task["criteria"]), *searched}
+    checks = {c["step_id"]: c["segment_check"] for c in task["criteria"] if c.get("segment_check")}
+    if checks and all(c.get("segment_check") for c in task["criteria"]):
+        # a window taken from a tagged entry (issue #196): list only that entry, not the window_steps the
+        # window no longer covers; the agent cannot look there
+        steps = set(checks)
+    else:
+        checks = {}  # a task mixing in criteria without segment_check (4a/4b) needs every step-4 entry
     lines = []
-    for sid in sorted({*task["window_steps"], *(c["step_id"] for c in task["criteria"]), *searched}):
-        for e in (e for e in segmentation["steps"] if e["step_id"] == sid):
+    for sid in sorted(steps):
+        for e in (e for e in segmentation["steps"] if e["step_id"] == sid
+                  and (sid not in checks or e.get("check") == checks[sid])):
             if e["start"] is not None:
                 lines.append(f"  步驟 {sid}：{_fmt_t(e['start'])}–{_fmt_t(e['end'])}")
             elif e.get("logical_window"):
@@ -327,7 +343,7 @@ def build_task_content(task: dict, video_id: str, duration: float, state: TaskSt
              f"；要計時：final 填 span=[開始, 結束]（影片秒數），滿 {c['min_seconds']:g} 秒才是正確"
              if c.get("min_seconds") else "")
           + _package_note(c)
-          + _contact_note(c)
+          + _contact_note(c) + _check_note(c)
           for c in task["criteria"]),
         "切分結果（相關步驟的時間；只有時間，做了什麼要自己從畫面判斷）：",
         *_segment_lines(task, segmentation),
@@ -437,6 +453,16 @@ def _step_start(segmentation: dict, step_id: int) -> float | None:
     return min((e["start"] if e["start"] is not None else e["logical_window"][0]
                 for e in segmentation["steps"] if e["step_id"] == step_id
                 and (e["start"] is not None or e.get("logical_window"))), default=None)
+
+
+def _check_note(c: dict) -> str:
+    """Task line for a criterion whose window came from a tagged step-4 entry (rules._check_result)."""
+    if not c.get("segment_check"):
+        return ""
+    point = ("；這段是切分找到的空針包裝檢查，撕開包裝的時刻可能不在區間內：判錯誤前用 clip 看這一段，"
+             "不必看撕開前幾秒" if c["criterion_id"] == "4e" else "")
+    return (f"；區間取自切分步驟 {c['step_id']}「{c['segment_check']}」那一筆，前後各 10 秒；"
+            f"切分標的時間可能差幾秒，在區間內前後找；在這段裡判斷做得對不對{point}")
 
 
 def _package_note(c: dict) -> str:

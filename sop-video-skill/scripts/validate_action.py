@@ -27,6 +27,28 @@ ZOOM_MAX_AREA, ZOOM_MAX_SIDE = 0.50, 0.75
 OVERVIEW_MIN_SPAN, OVERVIEW_MAX_SPAN = 4.0, 90.0
 
 
+def _check_names():
+    """The step-4 `check` names, read from schema.json so the two cannot drift apart (issue #196)."""
+    with open(os.path.join(HERE, "..", "schema.json"), encoding="utf-8") as f:
+        schema = json.load(f)
+    found = []
+
+    def walk(node):
+        if isinstance(node, dict):
+            if isinstance(node.get("check"), dict) and "enum" in node["check"]:
+                found.append(tuple(node["check"]["enum"]))
+            for v in node.values():
+                walk(v)
+        elif isinstance(node, list):
+            for v in node:
+                walk(v)
+    walk(schema)
+    return found[0]
+
+
+CHECKS = _check_names()
+
+
 def box_errs(name, b):
     if not (isinstance(b, list) and len(b) == 4 and all(isinstance(v, (int, float)) for v in b)):
         return [f"{name} must be [x0,y0,x1,y1]"]
@@ -76,6 +98,17 @@ def validate(act, state, duration=None):
             # Optional in schema.json only for older results and labels_to_segmentation.py.
             errs.append("result: package_spans is required (every span the hands hold the syringe wrapper; "
                         "[] if never)")
+        four = [s for s in act["result"]["steps"] if s["step_id"] == 4]
+        unnamed = [s for s in four if "check" not in s]
+        if unnamed:
+            # Optional in schema.json only for older results; grading takes 4d/4e from it.
+            errs.append(f"result: every step 4 entry needs check ({'／'.join(CHECKS)}); {len(unnamed)} without it")
+        missing = [k for k in CHECKS if k not in {s.get("check") for s in four}]
+        if missing:
+            # Grading does not search for these itself (issue #196): an unseen check is not_performed or
+            # not_visually_determinable, never just left out.
+            errs.append(f"result: step 4 needs an entry for each check; missing {'、'.join(missing)} "
+                        "(not_performed when you looked and it was not done, not_visually_determinable when unclear)")
         meta_duration = act["result"]["meta"]["duration"]
         if duration and abs(meta_duration - duration) > 0.5:
             errs.append(f"result: meta.duration {meta_duration} does not match the video ({duration:.1f} s)")
