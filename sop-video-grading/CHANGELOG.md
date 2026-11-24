@@ -2,6 +2,14 @@
 
 未發布的修改先寫在 `changelog.d/`（一個分支一個檔，見 `changelog.d/README.md`），合併前改成正式版本時才移到這裡；規則見 `AGENTS.md`「多人協作」。
 
+## 0.56（rubric 1.39）
+
+- 20a「雙手旋轉 vial」改成老師確認（老師 2026-11-08 回覆 Q14，`experiments/2026-11-08-teacher-reply.md`；`DECISIONS.md` D-07-01；分支版本 SKILL 0.45-rolling20a.1／rubric 1.29-rolling20a.1，PR #173）：**只改文字，判法不變**。
+  - `criteria/07-rolling-20a.md`：只用單手搖晃 vial 判錯誤並加上 `needs_review: true`，拿掉「暫定」「標準待老師確認」。
+  - `rubric.json` 20a 的 `note`：拿掉「暫定（標準文字未經人工核對）」，改成老師確認「雙手掌心夾住 vial 來回搓滾或旋轉、不要求多久；只用單手搖晃判錯誤並轉人工」。`text`、`key`、`category`、`window_steps`、`clip` 都不改。
+  - 判法沒變，不重跑付費評分。
+- `.github/CODEOWNERS`：`criteria/07-rolling-20a.md` 由 @od3w 負責。
+
 ## 0.55（rubric 1.38）
 
 讀單：4d、4e 改關鍵（issue #136，PR #214；分支版本 SKILL 0.53-key4de.1／rubric 1.36-key4de.1）。沒有付費重跑（只改 rubric 的 key 與程式），離線影響見 `experiments/2026-11-25-key4de.md`。
