@@ -286,3 +286,12 @@ async def test_closing_continues_past_a_client_that_fails(monkeypatch):
     agents._preferred["m"] = ("us", 0.0)
     await agents.close_client()
     assert closed == ["us"] and agents._client is None and not agents._fallback_clients and not agents._preferred
+
+
+async def test_a_bad_request_after_a_429_is_raised_not_hidden(three_locations):
+    use, sleeps = three_locations
+    clients = {"global": _Location("global", [429]), "us": _Location("us", [400]), "eu": _Location("eu", ["ok"])}
+    use(clients)
+    with pytest.raises(errors.ClientError) as caught:
+        await agents.generate_content(model="m")
+    assert caught.value.code == 400 and clients["eu"].calls == 0 and sleeps == []

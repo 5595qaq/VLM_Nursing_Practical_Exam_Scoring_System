@@ -107,7 +107,7 @@ async def generate_content(**kwargs):
     After a 429 moved a model to another location, that model's calls start there for
     PREFERENCE_SECONDS (keeping Gemini's implicit cache warm); a success does not change the order
     otherwise, so parallel calls do not flip it back and forth. A location reached after a 429 that
-    answers another client error (e.g. 404: the model is not offered there) is skipped, not raised.
+    answers 404 (the model is not offered there) is skipped; any other error is raised as usual.
     When every location answers 429, waits as the SDK would (1, 2, 4 ... 60 s) and tries them all
     again, GEMINI_RETRY_ATTEMPTS rounds in all, then raises the last 429."""
     order = locations()
@@ -131,8 +131,8 @@ async def generate_content(**kwargs):
                     last_429 = exc
                     _warn("gemini_location_429", location=location, model=model, round=round_ + 1)
                     continue
-                if last_429 is None:
-                    raise  # the first location tried: a real error, as without failover
+                if last_429 is None or exc.code != 404:
+                    raise  # a real error (bad request, auth ...), as without failover
                 _warn("gemini_location_skipped", location=location, model=model, status=exc.code)
                 continue
             if last_429 is not None:
