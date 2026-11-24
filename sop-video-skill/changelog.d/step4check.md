@@ -5,3 +5,4 @@
   - 步驟 11 本來就固定 `not_performed`；步驟 16 仍是 15b／17a／17b 的區間外框，切分沒有額外確認要求，不改。
 - step4check.1 → .2：.1 只要求 detected 加 `check`，沒看到的類別不輸出，評分只好退回大範圍搜尋。
 - step4check.2 的 code review 修正：步驟 4 每一筆都是 `not_performed` 時（整步沒做）仍要 `skipped` observation；草稿改成三列時要送 `4 | 刪除`，避免舊的「4」列留著、每次完整重寫都被要求。
+- step4check.2 → .3（2026-11-25，使用者同意）：.2 在 VID_0011 把「稀釋液」標到 vial 與另一個小瓶、把「空針包裝」標到針頭包裝，真正的檢查時間落在評分區間外（`sop-video-grading/experiments/2026-11-23-step4check.md`，參考答案為 Claude 抽影格，暫定）。SKILL.md 第 4 節與 `references/sop_steps.md` 步驟 4 加上「先認物品再找時間」：「稀釋液」只算之後步驟 12–14 抽液的那個容器，「空針包裝」只算步驟 9 撕開的長條空針包裝，`evidence` 寫出用哪個影格認出物品。
