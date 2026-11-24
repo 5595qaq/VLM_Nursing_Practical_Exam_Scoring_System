@@ -245,9 +245,10 @@ async def test_the_preferred_location_is_per_model(three_locations):
 async def test_a_success_without_a_429_does_not_move_the_preference(three_locations):
     use, _ = three_locations
     agents._preferred["m"] = ("us", agents.time.monotonic())
-    clients = {"global": _Location("global", ["ok"]), "us": _Location("us", [429, "ok"]), "eu": _Location("eu", ["ok"])}
+    clients = {"global": _Location("global", ["ok"]), "us": _Location("us", [429, "ok"]), "eu": _Location("eu", [429])}
     use(clients)
-    assert await agents.generate_content(model="m") == "answer from global"  # us 429, then global
+    # the order starts at the preferred us and rotates: us 429, eu 429, then global
+    assert await agents.generate_content(model="m") == "answer from global"
     assert agents._preferred["m"][0] == "global"
     assert await agents.generate_content(model="m") == "answer from global"
 
