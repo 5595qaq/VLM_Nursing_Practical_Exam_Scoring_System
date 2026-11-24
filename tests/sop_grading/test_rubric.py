@@ -57,7 +57,8 @@ def test_rubric_classification_matches_the_plan():
     assert by_id["24c"]["window_steps"] == [23, 24]
     assert by_id["10b"]["window_steps"] == [10]
     # pointing at the package belongs to the second read and counts until the package is torn open
-    assert by_id["4e"]["category"] == "visual" and by_id["4e"]["key"] is False
+    # 4d and 4e are key: not checking the diluent or not pointing at the package fails step 4 (D-02-03, D-02-04)
+    assert by_id["4e"]["category"] == "visual" and by_id["4e"]["key"] is True and by_id["4d"]["key"] is True
     assert by_id["4e"]["window_steps"] == [4, 5, 6, 7, 8, 9] and by_id["4e"]["after_step"] is True
     assert by_id["4d"]["window_steps"] == [2, 4, 5, 13] and by_id["4d"]["after_step"]
     assert "9b" not in by_id and by_id["9a"]["category"] == "program"
@@ -222,7 +223,9 @@ def test_first_and_second_comparison_have_independent_required_thresholds():
     assert aggregate(second, {**passed, "4a": WRONG}) == WRONG
     assert aggregate(second, {**passed, "4b": WRONG}) == PARTIAL
     assert aggregate(second, {**passed, "4a": UNDETERMINED, "4b": WRONG}) == UNDETERMINED
-    assert aggregate(second, {**passed, "4d": WRONG, "4e": WRONG}) == PARTIAL
+    assert aggregate(second, {**passed, "4d": WRONG}) == WRONG
+    assert aggregate(second, {**passed, "4e": WRONG}) == WRONG
+    assert aggregate(second, {**passed, "4e": UNDETERMINED}) == UNDETERMINED  # hidden: a key unseen
     # the sheet out of frame settles step 4; criteria still pending cannot change that
     hidden4 = {"4a": "藥單看不見"}
     assert aggregate(second, {**passed, "4a": UNDETERMINED}, reasons=hidden4) == UNDETERMINED
