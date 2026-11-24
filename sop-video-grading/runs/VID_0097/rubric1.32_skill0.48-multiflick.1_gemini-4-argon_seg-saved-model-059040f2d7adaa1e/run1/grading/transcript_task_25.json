@@ -1,0 +1,64 @@
+[
+ {
+  "turn": 1,
+  "seconds": 21.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 20070,
+  "cached_input_tokens": 0,
+  "output_tokens": 89,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@222-287.2（hands_box，n=9）#0=03:42.0、#1=03:50.2、#2=03:58.3、#3=04:06.4、#4=04:14.6、#5=04:22.8、#6=04:30.9、#7=04:39.1、#8=04:47.2"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [230.2, 279.1], \"region\": [0.3, 0.0, 0.7, 0.45], \"reason\": \"放大確認 03:50.2 與 04:39.1 針頭與針筒接合處是否有墊白色酒精棉片\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 8.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 21224,
+  "cached_input_tokens": 18349,
+  "output_tokens": 178,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@222-287.2（hands_box，n=9）#0=03:42.0、#1=03:50.2、#2=03:58.3、#3=04:06.4、#4=04:14.6、#5=04:22.8、#6=04:30.9、#7=04:39.1、#8=04:47.2",
+   "zoom@230.2/279.1 region=[0.300, 0.000, 0.700, 0.450]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"25a\", \"verdict\": \"正確\", \"explanation\": \"考生於兩次排氣時皆有將白色方形酒精棉片墊在針頭與針筒接合處（03:50.2 與 04:39.1 以 zoom 清楚確認）。\", \"times\": [[230.2, 230.2], [279.1, 279.1]], \"evidence\": [\"ov@222-287.2 #1\", \"ov@222-287.2 #7\", \"zoom@230.2\", \"zoom@279.1\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": [
+   "criterion 25a: watch a clip of the window before grading 25a; overview frames 2–4 s apart cannot show whether the hands keep moving"
+  ]
+ },
+ {
+  "turn": 3,
+  "seconds": 7.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 21459,
+  "cached_input_tokens": 0,
+  "output_tokens": 51,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@222-287.2（hands_box，n=9）#0=03:42.0、#1=03:50.2、#2=03:58.3、#3=04:06.4、#4=04:14.6、#5=04:22.8、#6=04:30.9、#7=04:39.1、#8=04:47.2",
+   "zoom@230.2/279.1 region=[0.300, 0.000, 0.700, 0.450]"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 222.0, \"end\": 236.0, \"fps\": 2, \"reason\": \"觀看第一次排氣墊酒精棉片的連續動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 4,
+  "seconds": 9.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 23701,
+  "cached_input_tokens": 0,
+  "output_tokens": 195,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@222-287.2（hands_box，n=9）#0=03:42.0、#1=03:50.2、#2=03:58.3、#3=04:06.4、#4=04:14.6、#5=04:22.8、#6=04:30.9、#7=04:39.1、#8=04:47.2",
+   "zoom@230.2/279.1 region=[0.300, 0.000, 0.700, 0.450]",
+   "clip@222-236（context box，有聲音；片段內 00:00 ＝ 影片 03:42.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"25a\", \"verdict\": \"正確\", \"explanation\": \"於 03:45.0–03:53.5（clip@222-236 片段內 00:03.0–00:11.5）及 04:39.1 進行排氣時，皆清楚可見白色方形酒精棉片墊在針頭與針筒接合處（針柄）。\", \"times\": [[225.0, 233.5], [279.1, 279.1]], \"evidence\": [\"clip@222-236\", \"zoom@230.2\", \"zoom@279.1\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
