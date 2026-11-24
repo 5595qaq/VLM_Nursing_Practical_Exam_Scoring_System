@@ -29,6 +29,7 @@ services:
       # google-auth 讀這個變數；ADC 檔沒有寫 project 時，可避免「No project ID could be determined」警告
       - GOOGLE_CLOUD_PROJECT=${GCP_PROJECT_ID}
       - GCP_LOCATION=${GCP_LOCATION:-global}
+      - GCP_FALLBACK_LOCATIONS=${GCP_FALLBACK_LOCATIONS-us,eu}
       - GCS_BUCKET_NAME=${GCS_BUCKET_NAME}
       - GEMINI_MODEL_NAME=${GEMINI_MODEL_NAME:-gemini-3.1-pro-preview}
       - GOOGLE_APPLICATION_CREDENTIALS=/secrets/gcp-key.json

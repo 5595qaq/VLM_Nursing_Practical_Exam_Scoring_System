@@ -1,0 +1,653 @@
+{
+ "video_id": "VID_0014",
+ "versions": {
+  "rubric": "1.31-wash1c.2",
+  "skill": "0.47-wash1c.2",
+  "model": "gemini-4-argon",
+  "segmentation": "saved-model-6a38c75488e393bb"
+ },
+ "video_sha256": "a0b4e06f2741029494c628e2feed4860eb66d611bdd87fdf82ac9d6e2f245f05",
+ "runs": [
+  {
+   "run": 1,
+   "by": "5595QAQ",
+   "date": "2026-11-23",
+   "commit": "f841450cb892e2b1f7f271d9c3439e62d76c124c",
+   "video_sha256": "a0b4e06f2741029494c628e2feed4860eb66d611bdd87fdf82ac9d6e2f245f05",
+   "steps": [],
+   "failed_tasks": [
+    {
+     "task": "1-1c",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    }
+   ],
+   "segmentation": "saved model segmentation; sha256-tag saved-model-6a38c75488e393bb",
+   "usage": {
+    "input_tokens": 46375,
+    "cached_input_tokens": 0,
+    "output_tokens": 867,
+    "thinking_tokens": 433
+   },
+   "timing": {
+    "started_at": "2026-11-23T20:07:59+00:00",
+    "grading_seconds": 330.3,
+    "total_seconds": 501.0
+   },
+   "segmentation_import": {
+    "kind": "saved_model_segmentation",
+    "sha256": "6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+    "provenance": {
+     "base": {
+      "record": "rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+      "segmentation": "saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+      "segmentation_sha256": "b06822f4e76951e1ae327e32f4817788d10a1bc303f936f9fce48036c4d3f596",
+      "run": 1,
+      "by": "dakzungberrae",
+      "date": "2026-11-21",
+      "commit": "8b19fceceb76f7b0ff12d817880cf7f1cd32531b",
+      "source": "saved model segmentation; sha256-tag saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38"
+     }
+    }
+   }
+  },
+  {
+   "run": 2,
+   "by": "5595QAQ",
+   "date": "2026-11-23",
+   "commit": "f841450cb892e2b1f7f271d9c3439e62d76c124c",
+   "video_sha256": "a0b4e06f2741029494c628e2feed4860eb66d611bdd87fdf82ac9d6e2f245f05",
+   "steps": [],
+   "failed_tasks": [
+    {
+     "task": "1-1c",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    }
+   ],
+   "segmentation": "saved model segmentation; sha256-tag saved-model-6a38c75488e393bb",
+   "usage": {
+    "input_tokens": 0,
+    "cached_input_tokens": 0,
+    "output_tokens": 0,
+    "thinking_tokens": 0
+   },
+   "timing": {
+    "started_at": "2026-11-23T20:31:58+00:00",
+    "grading_seconds": 313.5,
+    "total_seconds": 313.5,
+    "checkpoints_found": true
+   },
+   "segmentation_import": {
+    "kind": "saved_model_segmentation",
+    "sha256": "6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+    "provenance": {
+     "base": {
+      "record": "rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+      "segmentation": "saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+      "segmentation_sha256": "b06822f4e76951e1ae327e32f4817788d10a1bc303f936f9fce48036c4d3f596",
+      "run": 1,
+      "by": "dakzungberrae",
+      "date": "2026-11-21",
+      "commit": "8b19fceceb76f7b0ff12d817880cf7f1cd32531b",
+      "source": "saved model segmentation; sha256-tag saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38"
+     }
+    }
+   }
+  },
+  {
+   "run": 3,
+   "by": "5595QAQ",
+   "date": "2026-11-23",
+   "commit": "f841450cb892e2b1f7f271d9c3439e62d76c124c",
+   "video_sha256": "a0b4e06f2741029494c628e2feed4860eb66d611bdd87fdf82ac9d6e2f245f05",
+   "steps": [],
+   "failed_tasks": [
+    {
+     "task": "1-1c",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    }
+   ],
+   "segmentation": "saved model segmentation; sha256-tag saved-model-6a38c75488e393bb",
+   "usage": {
+    "input_tokens": 0,
+    "cached_input_tokens": 0,
+    "output_tokens": 0,
+    "thinking_tokens": 0
+   },
+   "timing": {
+    "started_at": "2026-11-23T20:57:26+00:00",
+    "grading_seconds": 314.5,
+    "total_seconds": 314.6,
+    "checkpoints_found": true
+   },
+   "segmentation_import": {
+    "kind": "saved_model_segmentation",
+    "sha256": "6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+    "provenance": {
+     "base": {
+      "record": "rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+      "segmentation": "saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+      "segmentation_sha256": "b06822f4e76951e1ae327e32f4817788d10a1bc303f936f9fce48036c4d3f596",
+      "run": 1,
+      "by": "dakzungberrae",
+      "date": "2026-11-21",
+      "commit": "8b19fceceb76f7b0ff12d817880cf7f1cd32531b",
+      "source": "saved model segmentation; sha256-tag saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38"
+     }
+    }
+   }
+  },
+  {
+   "run": 4,
+   "by": "5595QAQ",
+   "date": "2026-11-23",
+   "commit": "f841450cb892e2b1f7f271d9c3439e62d76c124c",
+   "video_sha256": "a0b4e06f2741029494c628e2feed4860eb66d611bdd87fdf82ac9d6e2f245f05",
+   "steps": [],
+   "failed_tasks": [
+    {
+     "task": "1-1c",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    }
+   ],
+   "segmentation": "saved model segmentation; sha256-tag saved-model-6a38c75488e393bb",
+   "usage": {
+    "input_tokens": 0,
+    "cached_input_tokens": 0,
+    "output_tokens": 0,
+    "thinking_tokens": 0
+   },
+   "timing": {
+    "started_at": "2026-11-23T22:13:14+00:00",
+    "grading_seconds": 315.9,
+    "total_seconds": 316.0,
+    "checkpoints_found": true
+   },
+   "segmentation_import": {
+    "kind": "saved_model_segmentation",
+    "sha256": "6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+    "provenance": {
+     "base": {
+      "record": "rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+      "segmentation": "saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+      "segmentation_sha256": "b06822f4e76951e1ae327e32f4817788d10a1bc303f936f9fce48036c4d3f596",
+      "run": 1,
+      "by": "dakzungberrae",
+      "date": "2026-11-21",
+      "commit": "8b19fceceb76f7b0ff12d817880cf7f1cd32531b",
+      "source": "saved model segmentation; sha256-tag saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38"
+     }
+    }
+   }
+  },
+  {
+   "run": 5,
+   "by": "5595QAQ",
+   "date": "2026-11-23",
+   "commit": "f841450cb892e2b1f7f271d9c3439e62d76c124c",
+   "video_sha256": "a0b4e06f2741029494c628e2feed4860eb66d611bdd87fdf82ac9d6e2f245f05",
+   "steps": [],
+   "failed_tasks": [
+    {
+     "task": "1-1c",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    }
+   ],
+   "segmentation": "saved model segmentation; sha256-tag saved-model-6a38c75488e393bb",
+   "usage": {
+    "input_tokens": 0,
+    "cached_input_tokens": 0,
+    "output_tokens": 0,
+    "thinking_tokens": 0
+   },
+   "timing": {
+    "started_at": "2026-11-23T23:13:13+00:00",
+    "grading_seconds": 316.4,
+    "total_seconds": 316.4,
+    "checkpoints_found": true
+   },
+   "segmentation_import": {
+    "kind": "saved_model_segmentation",
+    "sha256": "6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+    "provenance": {
+     "base": {
+      "record": "rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+      "segmentation": "saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+      "segmentation_sha256": "b06822f4e76951e1ae327e32f4817788d10a1bc303f936f9fce48036c4d3f596",
+      "run": 1,
+      "by": "dakzungberrae",
+      "date": "2026-11-21",
+      "commit": "8b19fceceb76f7b0ff12d817880cf7f1cd32531b",
+      "source": "saved model segmentation; sha256-tag saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38"
+     }
+    }
+   }
+  },
+  {
+   "run": 6,
+   "by": "5595QAQ",
+   "date": "2026-11-24",
+   "commit": "f841450cb892e2b1f7f271d9c3439e62d76c124c",
+   "video_sha256": "a0b4e06f2741029494c628e2feed4860eb66d611bdd87fdf82ac9d6e2f245f05",
+   "steps": [],
+   "failed_tasks": [
+    {
+     "task": "1-1c",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    }
+   ],
+   "segmentation": "saved model segmentation; sha256-tag saved-model-6a38c75488e393bb",
+   "usage": {
+    "input_tokens": 0,
+    "cached_input_tokens": 0,
+    "output_tokens": 0,
+    "thinking_tokens": 0
+   },
+   "timing": {
+    "started_at": "2026-11-24T00:13:13+00:00",
+    "grading_seconds": 310.7,
+    "total_seconds": 310.7,
+    "checkpoints_found": true
+   },
+   "segmentation_import": {
+    "kind": "saved_model_segmentation",
+    "sha256": "6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+    "provenance": {
+     "base": {
+      "record": "rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+      "segmentation": "saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+      "segmentation_sha256": "b06822f4e76951e1ae327e32f4817788d10a1bc303f936f9fce48036c4d3f596",
+      "run": 1,
+      "by": "dakzungberrae",
+      "date": "2026-11-21",
+      "commit": "8b19fceceb76f7b0ff12d817880cf7f1cd32531b",
+      "source": "saved model segmentation; sha256-tag saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38"
+     }
+    }
+   }
+  },
+  {
+   "run": 7,
+   "by": "5595QAQ",
+   "date": "2026-11-24",
+   "commit": "f841450cb892e2b1f7f271d9c3439e62d76c124c",
+   "video_sha256": "a0b4e06f2741029494c628e2feed4860eb66d611bdd87fdf82ac9d6e2f245f05",
+   "steps": [],
+   "failed_tasks": [
+    {
+     "task": "1-1c",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    }
+   ],
+   "segmentation": "saved model segmentation; sha256-tag saved-model-6a38c75488e393bb",
+   "usage": {
+    "input_tokens": 0,
+    "cached_input_tokens": 0,
+    "output_tokens": 0,
+    "thinking_tokens": 0
+   },
+   "timing": {
+    "started_at": "2026-11-24T01:13:12+00:00",
+    "grading_seconds": 313.0,
+    "total_seconds": 313.0,
+    "checkpoints_found": true
+   },
+   "segmentation_import": {
+    "kind": "saved_model_segmentation",
+    "sha256": "6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+    "provenance": {
+     "base": {
+      "record": "rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+      "segmentation": "saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+      "segmentation_sha256": "b06822f4e76951e1ae327e32f4817788d10a1bc303f936f9fce48036c4d3f596",
+      "run": 1,
+      "by": "dakzungberrae",
+      "date": "2026-11-21",
+      "commit": "8b19fceceb76f7b0ff12d817880cf7f1cd32531b",
+      "source": "saved model segmentation; sha256-tag saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38"
+     }
+    }
+   }
+  },
+  {
+   "run": 8,
+   "by": "5595QAQ",
+   "date": "2026-11-24",
+   "commit": "f841450cb892e2b1f7f271d9c3439e62d76c124c",
+   "video_sha256": "a0b4e06f2741029494c628e2feed4860eb66d611bdd87fdf82ac9d6e2f245f05",
+   "steps": [],
+   "failed_tasks": [
+    {
+     "task": "1-1c",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    }
+   ],
+   "segmentation": "saved model segmentation; sha256-tag saved-model-6a38c75488e393bb",
+   "usage": {
+    "input_tokens": 0,
+    "cached_input_tokens": 0,
+    "output_tokens": 0,
+    "thinking_tokens": 0
+   },
+   "timing": {
+    "started_at": "2026-11-24T02:13:13+00:00",
+    "grading_seconds": 311.8,
+    "total_seconds": 311.8,
+    "checkpoints_found": true
+   },
+   "segmentation_import": {
+    "kind": "saved_model_segmentation",
+    "sha256": "6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+    "provenance": {
+     "base": {
+      "record": "rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+      "segmentation": "saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+      "segmentation_sha256": "b06822f4e76951e1ae327e32f4817788d10a1bc303f936f9fce48036c4d3f596",
+      "run": 1,
+      "by": "dakzungberrae",
+      "date": "2026-11-21",
+      "commit": "8b19fceceb76f7b0ff12d817880cf7f1cd32531b",
+      "source": "saved model segmentation; sha256-tag saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38"
+     }
+    }
+   }
+  },
+  {
+   "run": 9,
+   "by": "5595QAQ",
+   "date": "2026-11-24",
+   "commit": "f841450cb892e2b1f7f271d9c3439e62d76c124c",
+   "video_sha256": "a0b4e06f2741029494c628e2feed4860eb66d611bdd87fdf82ac9d6e2f245f05",
+   "steps": [],
+   "failed_tasks": [
+    {
+     "task": "1-1c",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    }
+   ],
+   "segmentation": "saved model segmentation; sha256-tag saved-model-6a38c75488e393bb",
+   "usage": {
+    "input_tokens": 0,
+    "cached_input_tokens": 0,
+    "output_tokens": 0,
+    "thinking_tokens": 0
+   },
+   "timing": {
+    "started_at": "2026-11-24T03:13:14+00:00",
+    "grading_seconds": 311.3,
+    "total_seconds": 311.4,
+    "checkpoints_found": true
+   },
+   "segmentation_import": {
+    "kind": "saved_model_segmentation",
+    "sha256": "6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+    "provenance": {
+     "base": {
+      "record": "rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+      "segmentation": "saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+      "segmentation_sha256": "b06822f4e76951e1ae327e32f4817788d10a1bc303f936f9fce48036c4d3f596",
+      "run": 1,
+      "by": "dakzungberrae",
+      "date": "2026-11-21",
+      "commit": "8b19fceceb76f7b0ff12d817880cf7f1cd32531b",
+      "source": "saved model segmentation; sha256-tag saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38"
+     }
+    }
+   }
+  },
+  {
+   "run": 10,
+   "by": "5595QAQ",
+   "date": "2026-11-24",
+   "commit": "f841450cb892e2b1f7f271d9c3439e62d76c124c",
+   "video_sha256": "a0b4e06f2741029494c628e2feed4860eb66d611bdd87fdf82ac9d6e2f245f05",
+   "steps": [],
+   "failed_tasks": [
+    {
+     "task": "1-1c",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    }
+   ],
+   "segmentation": "saved model segmentation; sha256-tag saved-model-6a38c75488e393bb",
+   "usage": {
+    "input_tokens": 0,
+    "cached_input_tokens": 0,
+    "output_tokens": 0,
+    "thinking_tokens": 0
+   },
+   "timing": {
+    "started_at": "2026-11-24T04:13:11+00:00",
+    "grading_seconds": 310.5,
+    "total_seconds": 310.5,
+    "checkpoints_found": true
+   },
+   "segmentation_import": {
+    "kind": "saved_model_segmentation",
+    "sha256": "6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+    "provenance": {
+     "base": {
+      "record": "rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+      "segmentation": "saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+      "segmentation_sha256": "b06822f4e76951e1ae327e32f4817788d10a1bc303f936f9fce48036c4d3f596",
+      "run": 1,
+      "by": "dakzungberrae",
+      "date": "2026-11-21",
+      "commit": "8b19fceceb76f7b0ff12d817880cf7f1cd32531b",
+      "source": "saved model segmentation; sha256-tag saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38"
+     }
+    }
+   }
+  },
+  {
+   "run": 11,
+   "by": "5595QAQ",
+   "date": "2026-11-24",
+   "commit": "f841450cb892e2b1f7f271d9c3439e62d76c124c",
+   "video_sha256": "a0b4e06f2741029494c628e2feed4860eb66d611bdd87fdf82ac9d6e2f245f05",
+   "steps": [],
+   "failed_tasks": [
+    {
+     "task": "1-1c",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    }
+   ],
+   "segmentation": "saved model segmentation; sha256-tag saved-model-6a38c75488e393bb",
+   "usage": {
+    "input_tokens": 0,
+    "cached_input_tokens": 0,
+    "output_tokens": 0,
+    "thinking_tokens": 0
+   },
+   "timing": {
+    "started_at": "2026-11-24T05:13:13+00:00",
+    "grading_seconds": 313.6,
+    "total_seconds": 313.6,
+    "checkpoints_found": true
+   },
+   "segmentation_import": {
+    "kind": "saved_model_segmentation",
+    "sha256": "6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+    "provenance": {
+     "base": {
+      "record": "rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+      "segmentation": "saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+      "segmentation_sha256": "b06822f4e76951e1ae327e32f4817788d10a1bc303f936f9fce48036c4d3f596",
+      "run": 1,
+      "by": "dakzungberrae",
+      "date": "2026-11-21",
+      "commit": "8b19fceceb76f7b0ff12d817880cf7f1cd32531b",
+      "source": "saved model segmentation; sha256-tag saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38"
+     }
+    }
+   }
+  },
+  {
+   "run": 12,
+   "by": "5595QAQ",
+   "date": "2026-11-24",
+   "commit": "f841450cb892e2b1f7f271d9c3439e62d76c124c",
+   "video_sha256": "a0b4e06f2741029494c628e2feed4860eb66d611bdd87fdf82ac9d6e2f245f05",
+   "steps": [],
+   "failed_tasks": [
+    {
+     "task": "1-1c",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    }
+   ],
+   "segmentation": "saved model segmentation; sha256-tag saved-model-6a38c75488e393bb",
+   "usage": {
+    "input_tokens": 0,
+    "cached_input_tokens": 0,
+    "output_tokens": 0,
+    "thinking_tokens": 0
+   },
+   "timing": {
+    "started_at": "2026-11-24T06:13:12+00:00",
+    "grading_seconds": 310.7,
+    "total_seconds": 310.8,
+    "checkpoints_found": true
+   },
+   "segmentation_import": {
+    "kind": "saved_model_segmentation",
+    "sha256": "6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+    "provenance": {
+     "base": {
+      "record": "rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+      "segmentation": "saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+      "segmentation_sha256": "b06822f4e76951e1ae327e32f4817788d10a1bc303f936f9fce48036c4d3f596",
+      "run": 1,
+      "by": "dakzungberrae",
+      "date": "2026-11-21",
+      "commit": "8b19fceceb76f7b0ff12d817880cf7f1cd32531b",
+      "source": "saved model segmentation; sha256-tag saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38"
+     }
+    }
+   }
+  },
+  {
+   "run": 13,
+   "by": "5595QAQ",
+   "date": "2026-11-24",
+   "commit": "f841450cb892e2b1f7f271d9c3439e62d76c124c",
+   "video_sha256": "a0b4e06f2741029494c628e2feed4860eb66d611bdd87fdf82ac9d6e2f245f05",
+   "steps": [],
+   "failed_tasks": [
+    {
+     "task": "1-1c",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    }
+   ],
+   "segmentation": "saved model segmentation; sha256-tag saved-model-6a38c75488e393bb",
+   "usage": {
+    "input_tokens": 0,
+    "cached_input_tokens": 0,
+    "output_tokens": 0,
+    "thinking_tokens": 0
+   },
+   "timing": {
+    "started_at": "2026-11-24T07:13:14+00:00",
+    "grading_seconds": 311.1,
+    "total_seconds": 311.1,
+    "checkpoints_found": true
+   },
+   "segmentation_import": {
+    "kind": "saved_model_segmentation",
+    "sha256": "6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+    "provenance": {
+     "base": {
+      "record": "rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+      "segmentation": "saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+      "segmentation_sha256": "b06822f4e76951e1ae327e32f4817788d10a1bc303f936f9fce48036c4d3f596",
+      "run": 1,
+      "by": "dakzungberrae",
+      "date": "2026-11-21",
+      "commit": "8b19fceceb76f7b0ff12d817880cf7f1cd32531b",
+      "source": "saved model segmentation; sha256-tag saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38"
+     }
+    }
+   }
+  },
+  {
+   "run": 14,
+   "by": "5595QAQ",
+   "date": "2026-11-24",
+   "commit": "f841450cb892e2b1f7f271d9c3439e62d76c124c",
+   "video_sha256": "a0b4e06f2741029494c628e2feed4860eb66d611bdd87fdf82ac9d6e2f245f05",
+   "steps": [],
+   "failed_tasks": [
+    {
+     "task": "1-1c",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    }
+   ],
+   "segmentation": "saved model segmentation; sha256-tag saved-model-6a38c75488e393bb",
+   "usage": {
+    "input_tokens": 0,
+    "cached_input_tokens": 0,
+    "output_tokens": 0,
+    "thinking_tokens": 0
+   },
+   "timing": {
+    "started_at": "2026-11-24T08:13:14+00:00",
+    "grading_seconds": 315.4,
+    "total_seconds": 315.5,
+    "checkpoints_found": true
+   },
+   "segmentation_import": {
+    "kind": "saved_model_segmentation",
+    "sha256": "6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+    "provenance": {
+     "base": {
+      "record": "rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+      "segmentation": "saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+      "segmentation_sha256": "b06822f4e76951e1ae327e32f4817788d10a1bc303f936f9fce48036c4d3f596",
+      "run": 1,
+      "by": "dakzungberrae",
+      "date": "2026-11-21",
+      "commit": "8b19fceceb76f7b0ff12d817880cf7f1cd32531b",
+      "source": "saved model segmentation; sha256-tag saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38"
+     }
+    }
+   }
+  },
+  {
+   "run": 15,
+   "by": "5595QAQ",
+   "date": "2026-11-24",
+   "commit": "f841450cb892e2b1f7f271d9c3439e62d76c124c",
+   "video_sha256": "a0b4e06f2741029494c628e2feed4860eb66d611bdd87fdf82ac9d6e2f245f05",
+   "steps": [
+    1
+   ],
+   "failed_tasks": [],
+   "segmentation": "saved model segmentation; sha256-tag saved-model-6a38c75488e393bb",
+   "usage": {
+    "input_tokens": 22518,
+    "cached_input_tokens": 0,
+    "output_tokens": 157,
+    "thinking_tokens": 0
+   },
+   "timing": {
+    "started_at": "2026-11-24T09:55:30+00:00",
+    "grading_seconds": 10.5,
+    "total_seconds": 10.5,
+    "checkpoints_found": true
+   },
+   "segmentation_import": {
+    "kind": "saved_model_segmentation",
+    "sha256": "6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+    "provenance": {
+     "base": {
+      "record": "rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+      "segmentation": "saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+      "segmentation_sha256": "b06822f4e76951e1ae327e32f4817788d10a1bc303f936f9fce48036c4d3f596",
+      "run": 1,
+      "by": "dakzungberrae",
+      "date": "2026-11-21",
+      "commit": "8b19fceceb76f7b0ff12d817880cf7f1cd32531b",
+      "source": "saved model segmentation; sha256-tag saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38"
+     }
+    }
+   }
+  }
+ ]
+}

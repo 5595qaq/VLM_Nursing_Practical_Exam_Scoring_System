@@ -44,7 +44,8 @@ Gemini 推論在雲端執行；worker 不需要 GPU。增加 worker 數量不會
 | `MAX_ACTIVE_VIDEOS_PER_EVALUATION` | 10 | 每個評分工作的活動影片窗口 |
 | `GEMINI_GLOBAL_CONCURRENCY` | 5 | 所有 worker 共用的 Gemini 任務上限，包含 SDK 退避期間 |
 | `GEMINI_CALL_STAGGER_MS` | 250 | 同一批切段／四個 Agent 任務的最早執行時間間距 |
-| `GEMINI_RETRY_ATTEMPTS` | 10 | 每次邏輯模型呼叫的 HTTP attempts，包含第一次（退避 1、2、4…最多 60 秒，10 次約等 4 分鐘） |
+| `GEMINI_RETRY_ATTEMPTS` | 10 | 每次邏輯模型呼叫的 HTTP attempts，包含第一次（退避 1、2、4…最多 60 秒，10 次約等 4 分鐘）；有備用地區時是「所有地區都回 429」的輪數 |
+| `GCP_FALLBACK_LOCATIONS` | `us,eu` | `GCP_LOCATION` 回 429 時依序改用的 Vertex AI 地區（逗號分隔）。有備用地區時，429 不在原地區等待，馬上換下一個，並記住成功的地區（依模型分開，15 分鐘後再先試 `GCP_LOCATION`）；換到的地區沒有這個模型（404）就跳過，其他錯誤照常回報；所有地區都 429 才照上一列退避後再輪一次。設成空字串（`GCP_FALLBACK_LOCATIONS=`）只用 `GCP_LOCATION`，429 由 SDK 原地重試。Gemini 4 只在 `global`、`us`、`eu`（另有 `europe-west2`、`asia-southeast1` 只有 argon）提供，`us-central1` 這類單一區域會回 404 |
 | `GEMINI_CALL_TIMEOUT_SECONDS` | 900 | 單次邏輯模型呼叫的最長等待秒數 |
 | `GEMINI_QUEUE_RETRY_BASE_SECONDS` | 60 | 暫時性模型錯誤後，PgQueuer 第一次重新派送前的等待秒數 |
 | `GEMINI_QUEUE_RETRY_MAX_SECONDS` | 900 | queue 層指數退避的最長等待秒數 |
@@ -114,7 +115,7 @@ python sop-video-skill/scripts/schema_tools.py sop-video-skill/schema.json > out
 | 設定 | 預設 | 意義 |
 | --- | --- | --- |
 | `SOP_SKILL_PROVIDER` | `gemini` | 執行 skill 的模型：`gemini`，或 `claude`（Vertex AI 上的 Claude） |
-| `SOP_SKILL_GEMINI_MODEL` | `gemini-4-argon` | Gemini 模型 ID（region 沿用 `GCP_LOCATION`） |
+| `SOP_SKILL_GEMINI_MODEL` | `gemini-4-argon` | Gemini 模型 ID（region 沿用 `GCP_LOCATION`，429 時改用 `GCP_FALLBACK_LOCATIONS`） |
 | `SOP_SKILL_GEMINI_THINKING_LEVEL` | （空） | 選填：Gemini 的 `thinking_level`（例如 `low`、`high`），空白表示使用模型預設 |
 | `SOP_SKILL_GEMINI_MAX_OUTPUT_TOKENS` | 0 | 選填：單回合輸出上限，0 表示使用模型預設 |
 | `CLAUDE_MODEL_NAME` | `claude-opus-5-5` | `SOP_SKILL_PROVIDER=claude` 時的 Claude 模型 ID |
@@ -169,7 +170,7 @@ Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499、連線中斷，或 Claude 回�
 | `scripts/motion_peaks.py` | 以每秒 15 格分析任務區間內 hands_box 的畫面變化，找出手有明顯動作的時間點（不呼叫模型） |
 | `scripts/audio_peaks.py` | 找出任務區間內短促的響聲與連續響聲（彈針聲），並判斷影片有沒有可用的聲音（不呼叫模型） |
 | `scripts/burst.py` | 在 0.3–3 秒內平均取 3–12 張原始解析度的局部畫面，看不到 1 秒的短動作 |
-| `scripts/eval_grading.py` | 與人工標註表比對：每步的人工／模型判定與說明、一致率、錯誤召回、誤報（另外列出有看畫面標準的步驟）。時間也比：評分 agent 的 `times`，舊紀錄或空的 `times` 改看該步說明裡引用的 mm:ss（計時標準用它的 `span`；「片段內」的 clip 相對時間不算；沒有引用時改用紀錄裡切分的區間，再沒有時用 `logical_window`，表格標「（agent）」的是前者）和標註時間沒有重疊、起點也差超過 3 秒，或標註有時間但模型沒有，判定一致也算錯（一致率以這個為準，括號內是只比判定的結果）；找不到同一支影片的 `segmentation.json` 或標註沒有時間時只比判定。預設排除沒有說明或標「AI判定」的影片（`--exclude`），影片檔有問題而不使用的影片（`UNUSABLE_VIDEOS`，見 `AGENTS.md`「已知有問題的影片」）一律略過，`compare_arms.py`、`review_page.py` 也一樣 |
+| `scripts/eval_grading.py` | 與人工標註表比對：每步的人工／模型判定與說明、一致率、錯誤召回、誤報（另外列出有看畫面標準的步驟）。時間也比：評分 agent 的 `times`，舊紀錄或空的 `times` 改看該步說明裡引用的 mm:ss（舊紀錄的計時標準用它的 `span`；「片段內」的 clip 相對時間不算；沒有引用時改用紀錄裡切分的區間，再沒有時用 `logical_window`，表格標「（agent）」的是前者）和標註時間沒有重疊、起點也差超過 3 秒，或標註有時間但模型沒有，判定一致也算錯（一致率以這個為準，括號內是只比判定的結果）；找不到同一支影片的 `segmentation.json` 或標註沒有時間時只比判定。預設排除沒有說明或標「AI判定」的影片（`--exclude`），影片檔有問題而不使用的影片（`UNUSABLE_VIDEOS`，見 `AGENTS.md`「已知有問題的影片」）一律略過，`compare_arms.py`、`review_page.py` 也一樣 |
 | `scripts/compare_arms.py` | 在同一批影片上比較多份評分紀錄（不同規則、模型或做法）：一致率、成對差異（McNemar）、重跑翻轉、token 與時間，列出各組判定不同的步驟；可排除步驟（`--exclude-steps`）或讓指定步驟的錯誤＝部分正確（`--merge-faults-steps`），不呼叫模型 |
 | `scripts/labels_to_segmentation.py` | 用人工標註表的開始／結束秒數組出切分結果，調整評分 agent 時可跳過切分 skill |
 | `scripts/make_segmentation_bundle.py` | 從既有紀錄的切分做出 `--segmentation-file` 用的 bundle（可把某一步換成另一份切分的片段），記下來源 |
@@ -184,9 +185,9 @@ Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499、連線中斷，或 Claude 回�
 
 步驟定義沿用 `sop-video-skill/references/sop_steps.md`。
 
-步驟 1 從按壓洗手液起算，至少 10 秒並完成七個動作，且在步驟 2 及所有後續步驟開始前完成。步驟 2 在取出 vial 時結束；步驟 4 在取出後、抽藥前核對；步驟 29 沿用原有切分方式。評分時確認抽完藥並把空針放上針座後，有持瓶核對紀錄單。三步各自累計實際查看給藥紀錄單的時間，未滿 10 秒整步錯誤；時間達標且其他關鍵項目通過，但沒有指讀時判部分正確。
+步驟 1 從按壓洗手液起算，至少 10 秒（中途中斷、重新按壓再洗時各段相加）並完成七個動作，且在實際接觸藥瓶、稀釋液、空針、包裝、治療車等物品前完成（1c，容許 1 秒）。步驟 2 在取出 vial 時結束；步驟 4 在取出後、抽藥前核對；步驟 29 沿用原有切分方式。評分時確認抽完藥並把空針放上針座後，有持瓶核對紀錄單。三步各自累計實際查看給藥紀錄單的時間，未滿 10 秒整步錯誤；時間達標且其他關鍵項目通過，但沒有指讀時判部分正確。
 
-評分 agent（`backend/app/services/sop_grading_service.py`）把待判定的標準依 `window_steps` 分組（例如 15b 與 17a 共用步驟 15–17 的區間），`rubric.json` 的 `task` 同名的標準（5a／6a）也放在同一組但各自保留區間（區間相距超過 10 秒時分開）；切分未找到、要在 `search_steps` 範圍內搜尋的標準一律自己一組（任務名稱加 `-search`）。每組跑一段短對話：外部程式先附上區間的 3×3 影格，需要聲音、每 0.5 秒一格或看連續動作（`rubric.json` 標 `clip: true`，例如 20a 雙手旋轉 vial）時改附 2 fps 的帶聲音片段；任務說明列出相關步驟的切分時間（只有時間，不附切分模型的依據文字，避免評分照抄切分的描述）與程式算出的動作峰值，告訴模型短動作可能在哪裡（區間超過 180 秒時分段分析再合併，不會只看前 180 秒）；模型可再要求 `overview`／`zoom`／`burst`／`clip`（每組各 3／3／3／2 次；`clip` 可加 `region` 只裁一塊、fps 最高 10，超過 5 時 ≤ 8 秒），最後以 `final` 判定該組的每一條標準。不合格的動作（`validate_grading_action.py` 檢查不過，或腳本以 `REJECTED` 拒絕，例如要求的時間超出原檔長度）會連同錯誤訊息退回給模型，不執行也不扣預算；連續 4 次不合格，該組才算失敗。開場影格每 2–4 秒才一張，不到 1 秒的短動作（彈針、墊棉片、碰觸的瞬間）可能落在兩格之間，所以 SKILL.md 要求在峰值附近用 `burst` 確認；持續的持握姿勢（持毛筆、夾瓶、持針心尾端、單手回套）則在手穩定持握的時間點用 overview 或 zoom 看，判錯誤前要在兩個以上時間點都看到同樣的問題（依據見 `sop-video-grading/EXPERIMENTS.md`）。有幾條標準由 `validate_grading_action.py` 檢查判錯誤前用過對應的素材，否則退回：彈針（17a／27a）要先用過 `burst`。固定針頭（10b，`rubric.json` 標 `package_spans: true`）的任務說明會列出切分的 `package_spans`（每一段手拿空針包裝的時間，只列第一次使用空針（步驟 13）之前開始的），模型在這些時段（各 ±10 秒）也可以要求素材，判取出前隔著包裝與取出後有沒有固定：可判正確、錯誤或無法判定，判錯誤前要先用過 `clip`；判無法判定或錯誤時程式加上需人工複核，並在 `review_reason` 列出這些時段（另列取出後到拔針頭蓋的時間：最後一段手拿包裝時段結束，到第一次使用空針後 10 秒）。片段帶聲音只有 Gemini 支援，所以評分一律使用 Gemini（`SOP_SKILL_GEMINI_MODEL`）。
+評分 agent（`backend/app/services/sop_grading_service.py`）把待判定的標準依 `window_steps` 分組（例如 15b 與 17a 共用步驟 15–17 的區間），`rubric.json` 的 `task` 同名的標準（5a／6a）也放在同一組但各自保留區間（區間相距超過 10 秒時分開）；切分未找到、要在 `search_steps` 範圍內搜尋的標準一律自己一組（任務名稱加 `-search`）。洗手順序（1c，`rule.type: wash_before_contact`）也自己一組（任務名稱固定 `1-1c`）：它從 00:00 看到洗手結束，只列實際接觸物品的時點，沒看到洗手結束前的接觸時要用 clip 看過這整段；所有任務做完後，程式用 1a 量到的洗手結束比較並決定 1c 的判定。每組跑一段短對話：外部程式先附上區間的 3×3 影格，需要聲音、每 0.5 秒一格或看連續動作（`rubric.json` 標 `clip: true`，例如 20a 雙手旋轉 vial）時改附 2 fps 的帶聲音片段；任務說明列出相關步驟的切分時間（只有時間，不附切分模型的依據文字，避免評分照抄切分的描述）與程式算出的動作峰值，告訴模型短動作可能在哪裡（區間超過 180 秒時分段分析再合併，不會只看前 180 秒）；模型可再要求 `overview`／`zoom`／`burst`／`clip`（每組各 3／3／3／2 次；`clip` 可加 `region` 只裁一塊、fps 最高 10，超過 5 時 ≤ 8 秒），最後以 `final` 判定該組的每一條標準。不合格的動作（`validate_grading_action.py` 檢查不過，或腳本以 `REJECTED` 拒絕，例如要求的時間超出原檔長度）會連同錯誤訊息退回給模型，不執行也不扣預算；連續 4 次不合格，該組才算失敗。開場影格每 2–4 秒才一張，不到 1 秒的短動作（彈針、墊棉片、碰觸的瞬間）可能落在兩格之間，所以 SKILL.md 要求在峰值附近用 `burst` 確認；持續的持握姿勢（持毛筆、夾瓶、持針心尾端、單手回套）則在手穩定持握的時間點用 overview 或 zoom 看，判錯誤前要在兩個以上時間點都看到同樣的問題（依據見 `sop-video-grading/EXPERIMENTS.md`）。有幾條標準由 `validate_grading_action.py` 檢查判錯誤前用過對應的素材，否則退回：彈針（17a／27a）要先用過 `burst`。固定針頭（10b，`rubric.json` 標 `package_spans: true`）的任務說明會列出切分的 `package_spans`（每一段手拿空針包裝的時間，只列第一次使用空針（步驟 13）之前開始的），模型在這些時段（各 ±10 秒）也可以要求素材，判取出前隔著包裝與取出後有沒有固定：可判正確、錯誤或無法判定，判錯誤前要先用過 `clip`；判無法判定或錯誤時程式加上需人工複核，並在 `review_reason` 列出這些時段（另列取出後到拔針頭蓋的時間：最後一段手拿包裝時段結束，到第一次使用空針後 10 秒）。片段帶聲音只有 Gemini 支援，所以評分一律使用 Gemini（`SOP_SKILL_GEMINI_MODEL`）。
 
 #### 執行模式：SOP 步驟切分＋評分
 

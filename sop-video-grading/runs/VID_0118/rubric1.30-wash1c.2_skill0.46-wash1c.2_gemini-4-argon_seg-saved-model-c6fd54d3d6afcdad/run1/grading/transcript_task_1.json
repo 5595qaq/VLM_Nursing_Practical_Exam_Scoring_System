@@ -1,0 +1,16 @@
+[
+ {
+  "turn": 1,
+  "seconds": 19.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 22772,
+  "cached_input_tokens": 0,
+  "output_tokens": 416,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@0-20.4（context box，有聲音；片段內 00:00 ＝ 影片 00:00.0）"
+  ],
+  "reply": "{\n  \"action\": \"final\",\n  \"criteria\": [\n    {\n      \"criterion_id\": \"1a\",\n      \"verdict\": \"正確\",\n      \"explanation\": \"00:02.0 按壓洗手液開始洗手，00:18.5 洗手結束並彎腰分開雙手，持續 16.5 秒，已滿 10 秒。\",\n      \"evidence\": [\"clip@0-20.4\"],\n      \"confidence\": 0.9,\n      \"reason\": null,\n      \"span\": [2.0, 18.5]\n    },\n    {\n      \"criterion_id\": \"1b\",\n      \"verdict\": \"正確\",\n      \"explanation\": \"七個洗手動作皆有完成：內（00:03.0–00:04.0 掌心搓掌心）、外（00:04.5–00:06.0 手心搓手背）、夾（00:06.5–00:07.5 十指交錯搓指縫）、弓（00:08.0–00:10.0 指背在掌心搓揉）、立（00:10.5–00:13.0 指尖立於掌心搓揉）、大（00:13.5–00:15.5 旋轉搓揉大拇指）、腕（00:16.5–00:18.0 搓揉手腕）。\",\n      \"evidence\": [\"clip@0-20.4\"],\n      \"confidence\": 0.9,\n      \"reason\": null,\n      \"times\": [[3.0, 18.0]]\n    }\n  ]\n}",
+  "errors": []
+ }
+]

@@ -68,6 +68,8 @@ def fill_visual(result: dict, verdict: str = "正確") -> dict:
                         c["span"] = span
                 if c["criterion_id"] == "2d" and verdict == "正確":
                     c["times"] = [[start + 11, start + 11]]
+                if c["criterion_id"] == "1c":
+                    c["times"] = [] if verdict == "正確" else [[0.0, 0.0]]
         result["steps"][i] = build_step(rubric[step["step_id"]], step["criteria"])
     return result
 

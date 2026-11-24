@@ -20,7 +20,7 @@ import sys
 from pathlib import Path
 
 from rubric import (CORRECT, NOT_APPLICABLE, PENDING, SOURCE_FOR, STEP_COUNT, UNDETERMINED, WRONG, aggregate,
-                    fmt_time, load_rubric, search_range)
+                    fmt_time, load_rubric, search_range, contact_order, wash_end)
 
 WINDOW_MARGIN = 2.0  # seconds added on both sides of a visual criterion's window
 
@@ -46,12 +46,16 @@ def build_step(step: dict, criteria: list[dict], *, segmentation: dict | None = 
     if step.get("removed"):
         return {"step_id": step["step_id"], "verdict": NOT_APPLICABLE,
                 "explanation": "評分表已移除此步驟，不評分。", "confidence": 1.0, "criteria": []}
-    if segmentation is not None and step["step_id"] == 1:
-        measured = next((c.get("span") for c in criteria if c["criterion_id"] == "1a"), None)
-        if measured is not None:
+    if segmentation is not None and step["step_id"] == 1 and any(
+        c["id"] == "1c" and c["category"] == "program" for c in step["criteria"]
+    ):  # 1c was a program check of the segmentation's step starts before rubric wash_before_contact
+        end = next((wash_end(c) for c in criteria if c["criterion_id"] == "1a"), None)
+        if end is not None:
             later = [e for e in segmentation["steps"] if e["step_id"] >= 2]
-            criteria = [_wash_before_later_steps(measured[1], later) if c["criterion_id"] == "1c" else c
+            criteria = [_wash_before_later_steps(end, later) if c["criterion_id"] == "1c" else c
                         for c in criteria]
+    if step["step_id"] == 1:
+        criteria = _order_from_contacts(step, criteria)
     texts = {c["id"]: c["text"] for c in step["criteria"]}
     verdict = aggregate(step, {c["criterion_id"]: c["verdict"] for c in criteria})
     scored = [c for c, r in zip(criteria, step["criteria"]) if r["category"] != "not_visible"]
@@ -103,6 +107,30 @@ def searched(c: dict, entries: list[dict]) -> bool:
 def search_note(sid: int, steps: list[int]) -> str:
     """How the window was chosen; criteria/10-presence.md keys off 「切分未找到步驟 N」."""
     return f"切分未找到步驟 {sid}，要在整個區間（步驟 {steps[0]}–{steps[-1]} 之間）內找"
+
+
+def _order_from_contacts(step: dict, criteria: list[dict]) -> list[dict]:
+    """1c (wash_before_contact) is graded in a task of its own, which does not know when 1a measured the
+    end of washing: compare its contact points with that end here. 1a 無法判定 -> 1c 無法判定."""
+    spec = next((c for c in step["criteria"] if c["id"] == "1c"), None)
+    rule = (spec or {}).get("rule", {})
+    graded = {c["criterion_id"]: c for c in criteria}
+    order, wash = graded.get("1c"), graded.get("1a")
+    if (rule.get("type") != "wash_before_contact" or not order or order.get("source") != "vlm"
+            or order["verdict"] not in (CORRECT, WRONG) or not wash or wash["verdict"] == PENDING):
+        return criteria
+    end = wash_end(wash)
+    if end is None:
+        fixed = {**order, "verdict": UNDETERMINED, "reason": "資訊不足",
+                 "explanation": order["explanation"].rstrip("。") + "。1a 沒有量到洗手結束時間，無法比較接觸順序。"}
+    else:
+        expected = contact_order(order.get("times", []), end, rule["tolerance_seconds"])
+        if expected == order["verdict"]:
+            return criteria
+        fixed = {**order, "verdict": expected,
+                 "explanation": order["explanation"].rstrip("。") + f"。程式以 1a 量到的洗手結束 {fmt_time(end)}"
+                                f"（容許 {rule['tolerance_seconds']:g} 秒）比較接觸時間，判{expected}。"}
+    return [fixed if c is order else c for c in criteria]
 
 
 def _wash_before_later_steps(wash_end: float | None, later: list[dict]) -> dict:
@@ -159,6 +187,8 @@ def _grade(c: dict, sid: int, entries: dict[int, list[dict]], duration: float, m
         steps = f"{window_steps[0]}–{window_steps[-1]}" if search else "、".join(map(str, window_steps))
         return _criterion(c, UNDETERMINED, f"切分結果未定位步驟 {steps}，無法取得要看的畫面區間。",
                           source="rule", evidence=seg_ref, reason="切分未定位")
+    if c.get("rule", {}).get("type") == "wash_before_contact":
+        window[0] = 0.0  # contacts before washing count too: look from the start of the video
     where = f"{search_note(sid, window_steps)}；" if search else ""
     return _criterion(c, PENDING, f"等待評分 agent 看畫面判定（{where}區間 {fmt_time(window[0])}–{fmt_time(window[1])}）。",
                       window=window)

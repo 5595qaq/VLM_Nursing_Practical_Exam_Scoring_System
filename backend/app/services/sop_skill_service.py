@@ -680,7 +680,7 @@ async def gemini_call(system: str, content: list[dict]) -> ModelReply:
     token = attempt_state.set({"attempt": 0})
     try:
         async with asyncio.timeout(settings.GEMINI_CALL_TIMEOUT_SECONDS):
-            response = await agents.get_client().aio.models.generate_content(
+            response = await agents.generate_content(
                 model=settings.SOP_SKILL_GEMINI_MODEL,
                 contents=contents,
                 config=types.GenerateContentConfig(**config),

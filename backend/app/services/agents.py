@@ -1,18 +1,22 @@
 import asyncio
 import json
+import logging
+import random
 import re
+import time
 from pathlib import Path
 from typing import Any, Callable
 
 from google import genai
-from google.genai import types
+from google.genai import errors, types
 import httpx
 
 from app.config import settings
 from app.services import usage
-from app.services.model_logging import LoggedTransport, attempt_state
+from app.services.model_logging import LoggedTransport, attempt_state, context
 
 _PROMPTS_DIR = Path(__file__).resolve().parent.parent / "prompts"
+logger = logging.getLogger("app.gemini")
 
 AGENT_PROMPTS = {
     "Agent_A": (_PROMPTS_DIR / "Agent_A.txt").read_text(encoding="utf-8"),
@@ -29,7 +33,11 @@ AGENT_SEGMENT_KEYS = {
 }
 
 TIME_CUTTING_PROMPT = (_PROMPTS_DIR / "Time_cuting.txt").read_text(encoding="utf-8")
-_client = None
+_client = None  # GCP_LOCATION
+_fallback_clients: dict[str, genai.Client] = {}  # GCP_FALLBACK_LOCATIONS, created on first use
+# model -> (location that answered after a 429, monotonic time); that model's calls start there for a while
+_preferred: dict[str, tuple[str, float]] = {}
+PREFERENCE_SECONDS = 15 * 60  # then try GCP_LOCATION first again, in case it has recovered
 
 _TIMESTAMP_PATTERN = re.compile(r"^\d{2}:[0-5]\d$")
 _SEGMENT_RESPONSE_SCHEMA = {
@@ -51,33 +59,101 @@ _SEGMENT_RESPONSE_SCHEMA = {
 }
 
 
-def get_client():
-    global _client
-    if _client is None:
-        _client = genai.Client(
-            vertexai=True,
-            project=settings.GCP_PROJECT_ID,
-            location=settings.GCP_LOCATION,
-            http_options=types.HttpOptions(
-                retry_options=types.HttpRetryOptions(
-                    attempts=settings.GEMINI_RETRY_ATTEMPTS,
-                    initial_delay=1, exp_base=2, max_delay=60, jitter=1,
-                    http_status_codes=[408, 429, 500, 502, 503, 504],
-                ),
-                httpx_async_client=httpx.AsyncClient(
-                    transport=LoggedTransport(), timeout=None,
-                ),
+def locations() -> list[str]:
+    """GCP_LOCATION first, then the fallbacks, without repeats."""
+    return list(dict.fromkeys([settings.GCP_LOCATION, *settings.GCP_FALLBACK_LOCATIONS]))
+
+
+def _new_client(location: str) -> genai.Client:
+    # With fallbacks, a 429 goes to the next location at once (generate_content) instead of being
+    # retried here for minutes; other transient errors are still retried by the SDK.
+    codes = [408, 500, 502, 503, 504] if len(locations()) > 1 else [408, 429, 500, 502, 503, 504]
+    return genai.Client(
+        vertexai=True,
+        project=settings.GCP_PROJECT_ID,
+        location=location,
+        http_options=types.HttpOptions(
+            retry_options=types.HttpRetryOptions(
+                attempts=settings.GEMINI_RETRY_ATTEMPTS,
+                initial_delay=1, exp_base=2, max_delay=60, jitter=1,
+                http_status_codes=codes,
             ),
-        )
-    return _client
+            httpx_async_client=httpx.AsyncClient(
+                transport=LoggedTransport(), timeout=None,
+            ),
+        ),
+    )
+
+
+def get_client(location: str | None = None):
+    """The client for `location` (default GCP_LOCATION)."""
+    global _client
+    if location is None or location == settings.GCP_LOCATION:
+        if _client is None:
+            _client = _new_client(settings.GCP_LOCATION)
+        return _client
+    if location not in _fallback_clients:
+        _fallback_clients[location] = _new_client(location)
+    return _fallback_clients[location]
+
+
+def _warn(event: str, **values) -> None:
+    logger.warning(json.dumps({"event": event, **(context.get() or {}), **values}))
+
+
+async def generate_content(**kwargs):
+    """models.generate_content, moving to the next location when one answers 429.
+
+    After a 429 moved a model to another location, that model's calls start there for
+    PREFERENCE_SECONDS (keeping Gemini's implicit cache warm); a success does not change the order
+    otherwise, so parallel calls do not flip it back and forth. A location reached after a 429 that
+    answers 404 (the model is not offered there) is skipped; any other error is raised as usual.
+    When every location answers 429, waits as the SDK would (1, 2, 4 ... 60 s) and tries them all
+    again, GEMINI_RETRY_ATTEMPTS rounds in all, then raises the last 429."""
+    order = locations()
+    if len(order) == 1:
+        return await get_client().aio.models.generate_content(**kwargs)
+    model = kwargs.get("model", "")
+    preferred = _preferred.get(model)
+    if preferred and time.monotonic() - preferred[1] < PREFERENCE_SECONDS and preferred[0] in order:
+        i = order.index(preferred[0])
+        order = order[i:] + order[:i]
+    last_429: errors.ClientError | None = None
+    for round_ in range(max(1, settings.GEMINI_RETRY_ATTEMPTS)):
+        if round_:
+            await asyncio.sleep(min(60, 2 ** (round_ - 1)) + random.random())
+        for location in order:
+            client = get_client() if location == settings.GCP_LOCATION else get_client(location)
+            try:
+                response = await client.aio.models.generate_content(**kwargs)
+            except errors.ClientError as exc:
+                if exc.code == 429:
+                    last_429 = exc
+                    _warn("gemini_location_429", location=location, model=model, round=round_ + 1)
+                    continue
+                if last_429 is None or exc.code != 404:
+                    raise  # a real error (bad request, auth ...), as without failover
+                _warn("gemini_location_skipped", location=location, model=model, status=exc.code)
+                continue
+            if last_429 is not None:
+                _preferred[model] = (location, time.monotonic())
+                _warn("gemini_location_switch", location=location, model=model)
+            return response
+    raise last_429  # set: a location is only skipped after a 429
 
 
 async def close_client():
     global _client
-    if _client is not None:
-        await _client.aio.aclose()
-        _client.close()
-        _client = None
+    clients = [c for c in [_client, *_fallback_clients.values()] if c is not None]
+    _client = None
+    _fallback_clients.clear()
+    _preferred.clear()
+    for client in clients:  # close every one even if an earlier one fails
+        try:
+            await client.aio.aclose()
+            client.close()
+        except Exception:
+            logger.exception("closing a Gemini client failed")
 
 
 def timestamp_to_seconds(timestamp: str) -> int:
@@ -148,7 +224,7 @@ async def _generate_json(contents, response_json_schema=None, on_progress=None):
             on_progress("queued")
             on_progress("analyzing")
         async with asyncio.timeout(settings.GEMINI_CALL_TIMEOUT_SECONDS):
-            response = await get_client().aio.models.generate_content(
+            response = await generate_content(
                 model=settings.GEMINI_MODEL_NAME,
                 contents=contents,
                 config=types.GenerateContentConfig(**config_kwargs),

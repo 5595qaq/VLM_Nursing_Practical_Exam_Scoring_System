@@ -9,7 +9,8 @@ import json
 import pytest
 
 from grading_helpers import criterion, fill_visual, flag_review, make_segmentation, result_step
-from rules import grade_from_segmentation
+from rubric import load_rubric
+from rules import build_step, grade_from_segmentation
 from validate_grading import main, validate_grading
 
 
@@ -24,6 +25,34 @@ def assert_rejected(result: dict, expected: str, *, final: bool = False) -> None
 
 def test_graded_result_passes_final():
     assert validate_grading(graded(), final=True) == []
+
+
+@pytest.mark.parametrize("contacts, verdict", [
+    ([], "正確"), ([[13.0, 13.0]], "正確"), ([[12.4, 12.4]], "正確"),
+    ([[11.5, 11.5]], "正確"), ([[11.49, 11.49]], "錯誤"), ([[2.5, 2.5]], "錯誤"),
+])
+def test_wash_order_is_validated_from_physical_contacts(contacts, verdict):
+    result = graded()
+    criterion(result, "1a")["times"] = [[0.5, 12.5]]
+    order = criterion(result, "1c")
+    order.update(verdict=verdict, times=contacts, explanation="00:00–00:13 檢查手部接觸物品的動作。")
+    spec = load_rubric()["steps"][0]
+    result["steps"][0] = build_step(spec, result_step(result, 1)["criteria"])
+    assert validate_grading(result, final=True) == []
+    order["verdict"] = "錯誤" if verdict == "正確" else "正確"
+    assert_rejected(result, "actual contact times")
+
+
+def test_wash_order_requires_contact_points_and_measured_wash_end():
+    result = graded()
+    order = criterion(result, "1c")
+    order["times"] = [[0.0, 12.5]]
+    assert_rejected(result, "use times [[t, t]")
+    order.update(verdict="錯誤", times=[])
+    assert_rejected(result, "錯誤 needs the contact times")
+    order.update(verdict="正確")
+    criterion(result, "1a").pop("times")
+    assert_rejected(result, "without the wash end 1a measured")
 
 
 def test_pending_is_allowed_before_final():

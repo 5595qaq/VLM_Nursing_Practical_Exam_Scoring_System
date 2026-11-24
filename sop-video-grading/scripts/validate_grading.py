@@ -21,7 +21,7 @@ from pathlib import Path
 from jsonschema import Draft202012Validator
 
 from rubric import (CORRECT, NOT_APPLICABLE, PARTIAL, PENDING, STEP_COUNT, UNDETERMINED, WRONG,
-                    aggregate, load_rubric)
+                    aggregate, contact_order, load_rubric, wash_end)
 
 SCHEMA_PATH = Path(__file__).resolve().parent.parent / "schema.json"
 
@@ -91,11 +91,41 @@ def _check_step(where: str, step: dict, spec: dict, final: bool) -> list[str]:
         errors.extend(check_criterion(f"{where} criterion {c['criterion_id']}", c, rule, final))
 
     errors.extend(check_vial_cutoff(step["criteria"]))
+    errors.extend(check_wash_order(step["criteria"], spec))
     expected = aggregate(spec, {c["criterion_id"]: c["verdict"] for c in step["criteria"]})
     if step["verdict"] != expected:
         errors.append(f"{where}: verdict {step['verdict']} does not match its criteria (expected {expected})")
     if step.get("needs_review", False) != any(c.get("needs_review") for c in step["criteria"]):
         errors.append(f"{where}: needs_review must be true exactly when a criterion needs review")
+    return errors
+
+
+def check_contact_times(c: dict) -> list[str]:
+    """1c (wash_before_contact) lists object contacts as points [[t, t], ...]; [] when none were seen."""
+    if c["verdict"] in (CORRECT, WRONG) and ("times" not in c or any(s != e for s, e in c["times"])):
+        return ["criterion 1c: use times [[t, t], ...] for actual object contacts, or [] when none were seen"]
+    if c["verdict"] == WRONG and not c.get("times"):
+        return ["criterion 1c: 錯誤 needs the contact times [[t, t], ...]"]
+    return []
+
+
+def check_wash_order(criteria: list[dict], spec: dict) -> list[str]:
+    """1c (wash_before_contact): its verdict follows from the contact points and the wash end 1a measured
+    (rules.build_step sets it); without a measured end 1c is 無法判定."""
+    grades = {c["criterion_id"]: c for c in criteria}
+    order = grades.get("1c")
+    rule = next((c.get("rule", {}) for c in spec["criteria"] if c["id"] == "1c"), {})
+    if not order or rule.get("type") != "wash_before_contact" or order.get("source", "vlm") != "vlm":
+        return []
+    if order["verdict"] not in (CORRECT, WRONG) or grades.get("1a", {}).get("verdict") == PENDING:
+        return []
+    errors = check_contact_times(order)
+    end = wash_end(grades.get("1a"))
+    if end is None:
+        return errors + ["criterion 1c: cannot confirm contact order without the wash end 1a measured; use 無法判定"]
+    expected = contact_order(order.get("times", []), end, rule["tolerance_seconds"])
+    if order["verdict"] != expected:
+        errors.append(f"criterion 1c: actual contact times with {rule['tolerance_seconds']:g} s tolerance require {expected}")
     return errors
 
 
