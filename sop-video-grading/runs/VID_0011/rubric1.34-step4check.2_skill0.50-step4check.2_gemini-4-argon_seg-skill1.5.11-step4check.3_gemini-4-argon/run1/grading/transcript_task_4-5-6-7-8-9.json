@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 7.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 20774,
+  "cached_input_tokens": 0,
+  "output_tokens": 73,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@127.8-155.4（hands_box，n=9）#0=02:07.8、#1=02:11.2、#2=02:14.7、#3=02:18.2、#4=02:21.6、#5=02:25.1、#6=02:28.5、#7=02:31.9、#8=02:35.4"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 127.8, \"end\": 155.4, \"fps\": 2, \"reason\": \"查看 02:07.8–02:35.4 區間內是否有用手指指出空針包裝核對的動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 13.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 25994,
+  "cached_input_tokens": 0,
+  "output_tokens": 464,
+  "thinking_tokens": 374,
+  "materials": [
+   "ov@127.8-155.4（hands_box，n=9）#0=02:07.8、#1=02:11.2、#2=02:14.7、#3=02:18.2、#4=02:21.6、#5=02:25.1、#6=02:28.5、#7=02:31.9、#8=02:35.4",
+   "clip@127.8-155.4（context box，有聲音；片段內 00:00 ＝ 影片 02:07.8）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [139.3, 139.8, 148.0, 148.5], \"region\": [0.25, 0.5, 0.75, 0.85], \"reason\": \"確認考生拿起空針包裝及放置於桌面時是否有用手指指出包裝核對\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 9.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 27223,
+  "cached_input_tokens": 0,
+  "output_tokens": 206,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@127.8-155.4（hands_box，n=9）#0=02:07.8、#1=02:11.2、#2=02:14.7、#3=02:18.2、#4=02:21.6、#5=02:25.1、#6=02:28.5、#7=02:31.9、#8=02:35.4",
+   "clip@127.8-155.4（context box，有聲音；片段內 00:00 ＝ 影片 02:07.8）",
+   "zoom@139.3/139.8/148/148.5 region=[0.250, 0.500, 0.750, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4e\", \"verdict\": \"錯誤\", \"explanation\": \"02:18.8–02:20.8（clip@127.8-155.4 片段內 00:11.0–00:13.0）考生取出空針包裝放到治療車上，過程（如 zoom@139.8）僅雙手握持包裝將其放下，02:21.3–02:24.3 僅低頭目視車面器材，未用手指指出空針包裝進行核對。\", \"times\": [[138.8, 144.3]], \"evidence\": [\"clip@127.8-155.4\", \"zoom@139.8\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

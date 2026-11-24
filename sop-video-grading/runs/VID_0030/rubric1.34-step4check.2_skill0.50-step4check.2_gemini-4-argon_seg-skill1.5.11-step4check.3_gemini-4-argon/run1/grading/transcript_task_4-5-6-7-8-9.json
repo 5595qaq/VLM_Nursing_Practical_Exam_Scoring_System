@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 8.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 20762,
+  "cached_input_tokens": 0,
+  "output_tokens": 236,
+  "thinking_tokens": 163,
+  "materials": [
+   "ov@174-200（hands_box，n=9）#0=02:54.0、#1=02:57.2、#2=03:00.5、#3=03:03.8、#4=03:07.0、#5=03:10.2、#6=03:13.5、#7=03:16.8、#8=03:20.0"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 180.0, \"end\": 194.0, \"fps\": 4, \"reason\": \"查看 03:00–03:14 拿起空針包裝並檢查的連續動作，確認是否有用手指指出包裝核對\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 8.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 25325,
+  "cached_input_tokens": 0,
+  "output_tokens": 106,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@174-200（hands_box，n=9）#0=02:54.0、#1=02:57.2、#2=03:00.5、#3=03:03.8、#4=03:07.0、#5=03:10.2、#6=03:13.5、#7=03:16.8、#8=03:20.0",
+   "clip@180-194（context box，有聲音；片段內 00:00 ＝ 影片 03:00.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [187.5, 188.5, 189.2], \"region\": [0.35, 0.45, 0.65, 0.85], \"reason\": \"放大確認 03:07.5–03:09.2 學生檢視空針包裝背面時，右手食指是否指出包裝上的字樣進行核對\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 10.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 26562,
+  "cached_input_tokens": 0,
+  "output_tokens": 280,
+  "thinking_tokens": 80,
+  "materials": [
+   "ov@174-200（hands_box，n=9）#0=02:54.0、#1=02:57.2、#2=03:00.5、#3=03:03.8、#4=03:07.0、#5=03:10.2、#6=03:13.5、#7=03:16.8、#8=03:20.0",
+   "clip@180-194（context box，有聲音；片段內 00:00 ＝ 影片 03:00.0）",
+   "zoom@187.5/188.5/189.2 region=[0.350, 0.450, 0.650, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4e\", \"verdict\": \"正確\", \"explanation\": \"03:04.0 拿起空針包裝檢視，於 03:07.0–03:09.5（clip@180-194 片段內 00:07.0–00:09.5）左手持空針包裝，右手食指指出包裝背面標示進行核對，之後於 03:10.0 放回桌面。\", \"times\": [[187.0, 189.5]], \"evidence\": [\"clip@180-194\", \"zoom@187.5\", \"zoom@188.5\", \"zoom@189.2\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
