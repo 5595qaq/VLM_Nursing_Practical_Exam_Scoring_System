@@ -92,7 +92,8 @@ def _check_step(where: str, step: dict, spec: dict, final: bool) -> list[str]:
 
     errors.extend(check_vial_cutoff(step["criteria"]))
     errors.extend(check_wash_order(step["criteria"], spec))
-    expected = aggregate(spec, {c["criterion_id"]: c["verdict"] for c in step["criteria"]})
+    expected = aggregate(spec, {c["criterion_id"]: c["verdict"] for c in step["criteria"]},
+                         reasons={c["criterion_id"]: c.get("reason") for c in step["criteria"]})
     if step["verdict"] != expected:
         errors.append(f"{where}: verdict {step['verdict']} does not match its criteria (expected {expected})")
     if step.get("needs_review", False) != any(c.get("needs_review") for c in step["criteria"]):

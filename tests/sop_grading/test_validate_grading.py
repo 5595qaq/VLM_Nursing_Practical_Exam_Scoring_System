@@ -55,6 +55,18 @@ def test_wash_order_requires_contact_points_and_measured_wash_end():
     assert_rejected(result, "without the wash end 1a measured")
 
 
+@pytest.mark.parametrize("step_id", [2, 4, 29])
+def test_step_with_record_sheet_out_of_frame_is_undetermined(step_id):
+    result = graded()
+    grade = criterion(result, f"{step_id}a")
+    grade.update(verdict="無法判定", reason="藥單看不見", times=[],
+                 explanation="給藥紀錄單未入鏡，無法確認實際查看時間。")
+    step = result_step(result, step_id)
+    result["steps"][step_id - 1] = build_step(load_rubric()["steps"][step_id - 1], step["criteria"])
+    assert result_step(result, step_id)["verdict"] == "無法判定"
+    assert validate_grading(result, final=True) == []
+
+
 def test_pending_is_allowed_before_final():
     result = grade_from_segmentation(make_segmentation())
     assert validate_grading(result) == []
