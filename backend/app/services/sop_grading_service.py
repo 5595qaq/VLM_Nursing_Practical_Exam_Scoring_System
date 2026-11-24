@@ -287,6 +287,8 @@ def _segment_lines(task: dict, segmentation: dict) -> list[str]:
         # a window taken from a tagged entry (issue #196): list only that entry, not the window_steps the
         # window no longer covers; the agent cannot look there
         steps = set(checks)
+    else:
+        checks = {}  # a task mixing in criteria without segment_check (4a/4b) needs every step-4 entry
     lines = []
     for sid in sorted(steps):
         for e in (e for e in segmentation["steps"] if e["step_id"] == sid

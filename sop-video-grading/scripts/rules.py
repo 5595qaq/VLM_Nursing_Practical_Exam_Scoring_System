@@ -154,12 +154,13 @@ def _wash_before_later_steps(wash_end: float | None, later: list[dict]) -> dict:
 
 def _grade(c: dict, sid: int, entries: dict[int, list[dict]], duration: float, margin: float,
            search_step: bool = False) -> dict:
+    tagged = entries.get(CHECK_STEP, [])
+    if not c.get("segment_check") and any("check" in e for e in tagged):
+        # A tagged step 4 (issue #196): only 4d/4e (segment_check) use the diluent and package rows. For 4a/4b
+        # they say nothing about reading the sheet, and for 5a/7a/8a, whose search ranges include step 4, their
+        # logical windows (vial out → package torn) would widen the window; everyone else sees the 讀單 rows.
+        entries = {**entries, CHECK_STEP: [e for e in tagged if e.get("check", "讀單") == "讀單"]}
     own = entries.get(sid, [])
-    if sid == CHECK_STEP and not c.get("segment_check") and any("check" in e for e in own):
-        # A tagged step 4 (issue #196): 4a/4b are about the 讀單 check only. The diluent and package rows,
-        # including their not_performed, say nothing about reading the sheet (or its window).
-        own = [e for e in own if e.get("check", "讀單") == "讀單"]
-        entries = {**entries, sid: own}
     status = _status(own)
     seg_ref = [f"seg:step {sid}"]
 
@@ -210,8 +211,8 @@ def _check_result(c: dict, sid: int, own: list[dict], duration: float, margin: f
     """A criterion with `segment_check` (4d, 4e) graded from the step-4 entries the segmentation tagged with
     that `check` (issue #196): finding the moment is the segmentation's job, the grading agent only looks at it.
       detected → 待判定, window = those entries ± CHECK_MARGIN;
-      not_performed → 錯誤 (the segmentation looked and saw no such check);
-      not_visually_determinable → 無法判定 (切分未定位).
+      all not_performed → 錯誤 (the segmentation looked and saw no such check);
+      any not_visually_determinable → 無法判定 (切分未定位).
     None when no entry carries that check (an older segmentation): the caller falls back to window_steps."""
     check = c["segment_check"]
     rows = [e for e in own if e.get("check") == check]
@@ -225,7 +226,7 @@ def _check_result(c: dict, sid: int, own: list[dict], duration: float, margin: f
         return _criterion(c, PENDING, f"等待評分 agent 看畫面判定（切分步驟 {sid}「{check}」段，"
                                       f"區間 {fmt_time(window[0])}–{fmt_time(window[1])}）。", window=window)
     conf = max(e["confidence"] for e in rows)
-    if any(e["status"] == "not_performed" for e in rows):
+    if all(e["status"] == "not_performed" for e in rows):  # any unclear row → 無法判定, not 錯誤
         return _criterion(c, WRONG, f"切分結果：步驟 {sid}「{check}」未執行（{_seg_evidence(rows)}）。",
                           source="rule", evidence=seg_ref, confidence=conf)
     return _criterion(c, UNDETERMINED, f"切分結果：步驟 {sid}「{check}」無法定位（{_seg_evidence(rows)}）。",

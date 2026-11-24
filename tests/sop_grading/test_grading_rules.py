@@ -399,3 +399,27 @@ def test_reading_sheet_criteria_ignore_the_other_checks_results(segmentation):
     assert criterion(result, "4d")["verdict"] == "錯誤" and criterion(result, "4e")["verdict"] == "錯誤"
     read.update(status="not_performed", logical_window=None, evidence="未見核對紀錄單")
     assert criterion(grade_from_segmentation(segmentation), "4a")["verdict"] == "錯誤"
+
+
+def test_step4_check_with_any_unclear_entry_is_undetermined(segmentation):
+    # review of 0.53: one not_performed and one unclear entry of the same check → 無法判定, not 錯誤
+    _step4_checks(segmentation)
+    diluent = next(s for s in segmentation["steps"] if s.get("check") == "稀釋液")
+    diluent.update(start=None, end=None, status="not_performed", evidence="看過這段，沒檢查")
+    segmentation["steps"].append({"step_id": 4, "start": None, "end": None, "confidence": 0.3,
+                                  "status": "not_visually_determinable", "evidence": "手擋住稀釋液",
+                                  "logical_window": [55.0, 70.0], "check": "稀釋液"})
+    d = criterion(grade_from_segmentation(segmentation), "4d")
+    assert (d["verdict"], d["reason"]) == ("無法判定", "切分未定位")
+
+
+def test_search_window_ignores_the_other_checks_logical_windows(segmentation):
+    # review of 0.53: 5a searches [4, 18]; an unclear 空針包裝 entry's logical window must not widen it
+    _step4_checks(segmentation)
+    seg_step(segmentation, 5).update(start=None, end=None, status="not_visually_determinable",
+                                     evidence="手擋住", logical_window=None)
+    before = criterion(grade_from_segmentation(segmentation), "5a")["window"]
+    package = next(s for s in segmentation["steps"] if s.get("check") == "空針包裝")
+    package.update(start=None, end=None, status="not_visually_determinable", evidence="看不清楚",
+                   logical_window=[1.0, 400.0])
+    assert criterion(grade_from_segmentation(segmentation), "5a")["window"] == before

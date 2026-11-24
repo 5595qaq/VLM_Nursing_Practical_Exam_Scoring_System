@@ -27,7 +27,7 @@ NO_CHANGE = re.compile(r"^\s*[（(]?\s*(無變動|沒有變動|no change)", re.I
 SEPARATOR = re.compile(r"^[\s|:\-]+$")
 LEAD_NUMBER = re.compile(r"(\d+)")
 STEP_PREFIX = re.compile(r"^(步驟|step)\s*(?=\d)", re.IGNORECASE)
-DASHES = re.compile(r"\s*[-–—~～]\s*")
+DASHES = re.compile(r"\s*[-‐－–—~～]\s*")
 
 
 def _key(cell: str) -> str:
