@@ -1,0 +1,64 @@
+[
+ {
+  "turn": 1,
+  "seconds": 63.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 20705,
+  "cached_input_tokens": 0,
+  "output_tokens": 210,
+  "thinking_tokens": 146,
+  "materials": [
+   "ov@166.2-194（hands_box，n=9）#0=02:46.2、#1=02:49.7、#2=02:53.2、#3=02:56.6、#4=03:00.1、#5=03:03.6、#6=03:07.1、#7=03:10.5、#8=03:14.0"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 174.0, \"end\": 194.0, \"fps\": 2, \"reason\": \"查看 02:54–03:14 取出與檢查稀釋液的連續動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 10.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 24508,
+  "cached_input_tokens": 18952,
+  "output_tokens": 510,
+  "thinking_tokens": 426,
+  "materials": [
+   "ov@166.2-194（hands_box，n=9）#0=02:46.2、#1=02:49.7、#2=02:53.2、#3=02:56.6、#4=03:00.1、#5=03:03.6、#6=03:07.1、#7=03:10.5、#8=03:14.0",
+   "clip@174-194（context box，有聲音；片段內 00:00 ＝ 影片 02:54.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [176.5, 187.0, 190.5, 191.0], \"region\": [0.3, 0.4, 0.8, 0.85], \"reason\": \"確認拿起與放回稀釋液瓶並檢視的動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 126.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 25751,
+  "cached_input_tokens": 23690,
+  "output_tokens": 433,
+  "thinking_tokens": 331,
+  "materials": [
+   "ov@166.2-194（hands_box，n=9）#0=02:46.2、#1=02:49.7、#2=02:53.2、#3=02:56.6、#4=03:00.1、#5=03:03.6、#6=03:07.1、#7=03:10.5、#8=03:14.0",
+   "clip@174-194（context box，有聲音；片段內 00:00 ＝ 影片 02:54.0）",
+   "zoom@176.5/187/190.5/191 region=[0.300, 0.400, 0.800, 0.850]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [188.0, 188.5, 189.0, 190.0], \"region\": [0.3, 0.5, 0.75, 0.95], \"reason\": \"確認 03:08.0–03:10.0 拿起稀釋液瓶在檯面下方檢視的動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 4,
+  "seconds": 16.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 27004,
+  "cached_input_tokens": 0,
+  "output_tokens": 594,
+  "thinking_tokens": 366,
+  "materials": [
+   "ov@166.2-194（hands_box，n=9）#0=02:46.2、#1=02:49.7、#2=02:53.2、#3=02:56.6、#4=03:00.1、#5=03:03.6、#6=03:07.1、#7=03:10.5、#8=03:14.0",
+   "clip@174-194（context box，有聲音；片段內 00:00 ＝ 影片 02:54.0）",
+   "zoom@176.5/187/190.5/191 region=[0.300, 0.400, 0.800, 0.850]",
+   "zoom@188/188.5/189/190 region=[0.300, 0.500, 0.750, 0.950]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4d\", \"verdict\": \"正確\", \"explanation\": \"考生於 02:56.0–02:57.0 先取出細長透明塑膠稀釋液瓶放於治療盤上，接著於 03:06.5–03:11.5（clip@174-194 片段內 00:12.5–00:17.5）以右手拿起稀釋液瓶，在身前轉動並低頭檢視瓶身標示與液體後放回盤上，完成稀釋液檢查。\", \"times\": [[186.5, 191.5]], \"evidence\": [\"clip@174-194\", \"zoom@176.5\", \"zoom@187\", \"zoom@190.5\", \"zoom@191\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 8.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 20746,
+  "cached_input_tokens": 0,
+  "output_tokens": 201,
+  "thinking_tokens": 132,
+  "materials": [
+   "ov@147.8-198.2（hands_box，n=9）#0=02:27.8、#1=02:34.1、#2=02:40.4、#3=02:46.7、#4=02:53.0、#5=02:59.3、#6=03:05.6、#7=03:11.9、#8=03:18.2"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 155.0, \"end\": 195.0, \"fps\": 2, \"reason\": \"查看 02:35–03:15 撕開空針包裝前是否有用手指指出包裝進行核對\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 10.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 28269,
+  "cached_input_tokens": 0,
+  "output_tokens": 281,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@147.8-198.2（hands_box，n=9）#0=02:27.8、#1=02:34.1、#2=02:40.4、#3=02:46.7、#4=02:53.0、#5=02:59.3、#6=03:05.6、#7=03:11.9、#8=03:18.2",
+   "clip@155-195（context box，有聲音；片段內 00:00 ＝ 影片 02:35.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [\n  {\n    \"criterion_id\": \"4e\",\n    \"verdict\": \"正確\",\n    \"explanation\": \"02:38.5–02:41.5（clip@155-195 片段內 00:03.5–00:06.5）及 02:54.0–03:00.5（片段內 00:19.0–00:25.5）考生撕開空針包裝前，拿著空針包裝並用右手拇指或食指指出包裝背面標示進行核對。\",\n    \"times\": [[158.5, 161.5], [174.0, 180.5]],\n    \"evidence\": [\"clip@155-195\", \"ov@147.8-198.2 #2\", \"ov@147.8-198.2 #4\", \"ov@147.8-198.2 #5\"],\n    \"confidence\": 0.9,\n    \"reason\": null\n  }\n]}",
+  "errors": []
+ }
+]

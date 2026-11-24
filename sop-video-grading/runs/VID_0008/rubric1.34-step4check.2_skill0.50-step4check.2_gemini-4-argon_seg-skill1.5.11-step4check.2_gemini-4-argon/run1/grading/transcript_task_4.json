@@ -1,0 +1,64 @@
+[
+ {
+  "turn": 1,
+  "seconds": 7.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 20883,
+  "cached_input_tokens": 0,
+  "output_tokens": 62,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@99.4-163（hands_box，n=9）#0=01:39.4、#1=01:47.3、#2=01:55.3、#3=02:03.2、#4=02:11.2、#5=02:19.2、#6=02:27.1、#7=02:35.1、#8=02:43.0"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 100.0, \"end\": 160.0, \"fps\": 2, \"reason\": \"確認步驟 4 持藥瓶查看給藥紀錄單的起訖時間與手指指出動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 9.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 32097,
+  "cached_input_tokens": 0,
+  "output_tokens": 52,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@99.4-163（hands_box，n=9）#0=01:39.4、#1=01:47.3、#2=01:55.3、#3=02:03.2、#4=02:11.2、#5=02:19.2、#6=02:27.1、#7=02:35.1、#8=02:43.0",
+   "clip@100-160（context box，有聲音；片段內 00:00 ＝ 影片 01:40.0）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 159.0, \"end\": 165.0, \"fps\": 2, \"reason\": \"確認第二段查看給藥紀錄單的結束時間\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 11.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 33304,
+  "cached_input_tokens": 0,
+  "output_tokens": 81,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@99.4-163（hands_box，n=9）#0=01:39.4、#1=01:47.3、#2=01:55.3、#3=02:03.2、#4=02:11.2、#5=02:19.2、#6=02:27.1、#7=02:35.1、#8=02:43.0",
+   "clip@100-160（context box，有聲音；片段內 00:00 ＝ 影片 01:40.0）",
+   "clip@159-165（context box，有聲音；片段內 00:00 ＝ 影片 02:39.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [110.0, 156.0], \"region\": [0.25, 0.55, 0.75, 0.9], \"reason\": \"確認檯面最前緣有紅黃標籤的紙張為給藥紀錄單及手指指讀位置\"}",
+  "errors": []
+ },
+ {
+  "turn": 4,
+  "seconds": 24.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 34512,
+  "cached_input_tokens": 0,
+  "output_tokens": 914,
+  "thinking_tokens": 441,
+  "materials": [
+   "ov@99.4-163（hands_box，n=9）#0=01:39.4、#1=01:47.3、#2=01:55.3、#3=02:03.2、#4=02:11.2、#5=02:19.2、#6=02:27.1、#7=02:35.1、#8=02:43.0",
+   "clip@100-160（context box，有聲音；片段內 00:00 ＝ 影片 01:40.0）",
+   "clip@159-165（context box，有聲音；片段內 00:00 ＝ 影片 02:39.0）",
+   "zoom@110/156 region=[0.250, 0.550, 0.750, 0.900]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4a\", \"verdict\": \"正確\", \"explanation\": \"考生於 01:42.5–02:04.0（clip@100-160 片段內 00:02.5–00:24.0，計 21.5 秒）左手持 vial 低頭查看並指讀治療車前緣的給藥紀錄單；後於 02:34.0–02:40.5（clip@100-160 的 00:54.0 至 clip@159-165 的 00:01.5，計 6.5 秒）持稀釋液瓶再次低頭查看並指讀給藥紀錄單，累計查看時間共 28.0 秒，已滿 10 秒。\", \"times\": [[102.5, 124.0], [154.0, 160.5]], \"evidence\": [\"clip@100-160\", \"clip@159-165\", \"zoom@110\", \"zoom@156\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"4b\", \"verdict\": \"正確\", \"explanation\": \"於 01:42.5–02:04.0 及 02:34.0–02:40.5 查看給藥紀錄單時，皆清楚看到考生以右手食指明顯指出治療車前緣的給藥紀錄單進行核對（見 zoom@110 與 zoom@156）。\", \"times\": [[102.5, 124.0], [154.0, 160.5]], \"evidence\": [\"clip@100-160\", \"clip@159-165\", \"zoom@110\", \"zoom@156\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

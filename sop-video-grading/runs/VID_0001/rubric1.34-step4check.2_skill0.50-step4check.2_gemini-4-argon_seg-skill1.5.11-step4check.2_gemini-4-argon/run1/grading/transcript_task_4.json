@@ -1,0 +1,64 @@
+[
+ {
+  "turn": 1,
+  "seconds": 10.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 20865,
+  "cached_input_tokens": 0,
+  "output_tokens": 337,
+  "thinking_tokens": 264,
+  "materials": [
+   "ov@72-185（hands_box，n=9）#0=01:12.0、#1=01:26.1、#2=01:40.2、#3=01:54.4、#4=02:08.5、#5=02:22.6、#6=02:36.8、#7=02:50.9、#8=03:05.0"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 72.0, \"end\": 132.0, \"fps\": 2, \"reason\": \"檢查 01:12.0–02:12.0 期間實際查看給藥紀錄單的起訖時間與指讀動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 12.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 32075,
+  "cached_input_tokens": 0,
+  "output_tokens": 65,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@72-185（hands_box，n=9）#0=01:12.0、#1=01:26.1、#2=01:40.2、#3=01:54.4、#4=02:08.5、#5=02:22.6、#6=02:36.8、#7=02:50.9、#8=03:05.0",
+   "clip@72-132（context box，有聲音；片段內 00:00 ＝ 影片 01:12.0）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 132.0, \"end\": 185.0, \"fps\": 2, \"reason\": \"查看 132-185 秒的連續動作，確認查看給藥紀錄單與指讀的時間\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 20.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 42037,
+  "cached_input_tokens": 0,
+  "output_tokens": 78,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@72-185（hands_box，n=9）#0=01:12.0、#1=01:26.1、#2=01:40.2、#3=01:54.4、#4=02:08.5、#5=02:22.6、#6=02:36.8、#7=02:50.9、#8=03:05.0",
+   "clip@72-132（context box，有聲音；片段內 00:00 ＝ 影片 01:12.0）",
+   "clip@132-185（context box，有聲音；片段內 00:00 ＝ 影片 02:12.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [147.0, 159.0, 173.0], \"region\": [0.25, 0.55, 0.75, 0.92], \"reason\": \"確認給藥紀錄單位置及左手手指指讀動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 4,
+  "seconds": 21.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 43257,
+  "cached_input_tokens": 0,
+  "output_tokens": 907,
+  "thinking_tokens": 470,
+  "materials": [
+   "ov@72-185（hands_box，n=9）#0=01:12.0、#1=01:26.1、#2=01:40.2、#3=01:54.4、#4=02:08.5、#5=02:22.6、#6=02:36.8、#7=02:50.9、#8=03:05.0",
+   "clip@72-132（context box，有聲音；片段內 00:00 ＝ 影片 01:12.0）",
+   "clip@132-185（context box，有聲音；片段內 00:00 ＝ 影片 02:12.0）",
+   "zoom@147/159/173 region=[0.250, 0.550, 0.750, 0.920]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4a\", \"verdict\": \"正確\", \"explanation\": \"考生於 02:26.5–02:42.0（clip@132-185 片段內 00:14.5–00:30.0，共 15.5 秒）及 02:46.0–02:58.5（片段內 00:34.0–00:46.5，共 12.5 秒）右手持 vial 藥瓶與治療車前緣的給藥紀錄單核對，實際查看給藥紀錄單累計共 28.0 秒，已滿 10 秒。\", \"times\": [[146.5, 162.0], [166.0, 178.5]], \"evidence\": [\"clip@132-185\", \"zoom@147\", \"zoom@159\", \"zoom@173\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"4b\", \"verdict\": \"正確\", \"explanation\": \"02:26.5–02:42.0 及 02:46.0–02:58.5 查看給藥紀錄單核對藥瓶時，左手食指明顯指著治療車前緣的給藥紀錄單逐項確認（見 zoom@147、zoom@159、zoom@173）。\", \"times\": [[146.5, 162.0], [166.0, 178.5]], \"evidence\": [\"clip@132-185\", \"zoom@147\", \"zoom@159\", \"zoom@173\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
