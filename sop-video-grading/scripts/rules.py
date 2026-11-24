@@ -57,7 +57,8 @@ def build_step(step: dict, criteria: list[dict], *, segmentation: dict | None = 
     if step["step_id"] == 1:
         criteria = _order_from_contacts(step, criteria)
     texts = {c["id"]: c["text"] for c in step["criteria"]}
-    verdict = aggregate(step, {c["criterion_id"]: c["verdict"] for c in criteria})
+    verdict = aggregate(step, {c["criterion_id"]: c["verdict"] for c in criteria},
+                        reasons={c["criterion_id"]: c.get("reason") for c in criteria})
     scored = [c for c, r in zip(criteria, step["criteria"]) if r["category"] != "not_visible"]
     explanation = "；".join(
         f"{c['criterion_id']}「{texts[c['criterion_id']]}」{c['verdict']}：{c['explanation'].rstrip('。')}"

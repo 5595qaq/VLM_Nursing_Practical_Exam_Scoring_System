@@ -209,6 +209,11 @@ def test_first_and_second_comparison_have_independent_required_thresholds():
     assert aggregate(first, {**first_pass, "2b": WRONG}) == PARTIAL
     assert aggregate(first, {**first_pass, "2a": UNDETERMINED, "2b": WRONG}) == WRONG
     assert aggregate(first, {**first_pass, "2a": UNDETERMINED, "2b": UNDETERMINED}) == WRONG
+    # the record sheet out of frame: the whole step cannot be judged (criteria/02)
+    hidden_sheet = {"2a": "藥單看不見"}
+    assert aggregate(first, {**first_pass, "2a": UNDETERMINED, "2b": WRONG}, reasons=hidden_sheet) == UNDETERMINED
+    assert aggregate(first, {**first_pass, "2a": UNDETERMINED, "2d": WRONG}, reasons=hidden_sheet) == UNDETERMINED
+    assert aggregate(first, {**first_pass, "2a": UNDETERMINED}, reasons={"2a": "切分未定位"}) == WRONG
     assert aggregate(first, {**first_pass, "2a": PENDING}) == PENDING
     assert aggregate(first, {**first_pass, "2d": UNDETERMINED}) == UNDETERMINED
     assert second["criteria"][0]["key"] and second["criteria"][0]["min_seconds"] == 10
@@ -217,6 +222,22 @@ def test_first_and_second_comparison_have_independent_required_thresholds():
     assert aggregate(second, {**passed, "4b": WRONG}) == PARTIAL
     assert aggregate(second, {**passed, "4a": UNDETERMINED, "4b": WRONG}) == UNDETERMINED
     assert aggregate(second, {**passed, "4d": WRONG, "4e": WRONG}) == PARTIAL
+    # the sheet out of frame settles step 4; criteria still pending cannot change that
+    hidden4 = {"4a": "藥單看不見"}
+    assert aggregate(second, {**passed, "4a": UNDETERMINED}, reasons=hidden4) == UNDETERMINED
+    assert aggregate(second, {**passed, "4a": UNDETERMINED, "4e": PENDING}, reasons=hidden4) == UNDETERMINED
+    # only 藥單看不見 settles the step; 畫面被遮擋 (head or gaze hidden) keeps step 2 錯誤
+    assert aggregate(first, {**first_pass, "2a": UNDETERMINED}, reasons={"2a": "畫面被遮擋"}) == WRONG
+
+
+def test_unconfirmed_step_reason_must_be_a_schema_reason():
+    rubric = load_rubric()
+    bad = copy.deepcopy(rubric)
+    bad["steps"][1]["criteria"][0]["unconfirmed_step_reason"] = "藥單看不到"
+    assert any("not a reason the grading agent can give" in e for e in check_rubric(bad))
+    bad["steps"][1]["criteria"][0]["unconfirmed_step_reason"] = "切分未定位"  # only the program sets it
+    assert any("not a reason the grading agent can give" in e for e in check_rubric(bad))
+    assert check_rubric(rubric) == []
 
 
 def test_step29_needs_the_record_sheet():
@@ -229,6 +250,9 @@ def test_step29_needs_the_record_sheet():
     assert aggregate(step29, {**passed, "29d": WRONG}) == WRONG
     assert aggregate(step29, {**passed, "29b": WRONG}) == PARTIAL
     assert aggregate(step29, {**passed, "29a": UNDETERMINED, "29b": WRONG}) == UNDETERMINED
+    assert aggregate(step29, {**passed, "29a": UNDETERMINED, "29d": WRONG}) == WRONG
+    assert aggregate(step29, {**passed, "29a": UNDETERMINED, "29d": WRONG},
+                     reasons={"29a": "藥單看不見"}) == UNDETERMINED
 
 
 def test_step30_is_removed():
