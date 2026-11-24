@@ -24,6 +24,8 @@ async def sdk_client(monkeypatch):
         return factory(**kwargs)
     monkeypatch.setattr(agents.genai, "Client", anonymous)
     monkeypatch.setattr(agents, "_client", None)
+    # One location: the SDK retries 429 itself (failover is tested below).
+    monkeypatch.setattr(agents.settings, "GCP_FALLBACK_LOCATIONS", [])
     client = agents.get_client()
     # Advance virtual SDK sleeps without hitting Google or delaying tests.
     client._api_client._async_retry.sleep = AsyncMock()
@@ -128,3 +130,95 @@ async def test_generate_json_enforces_application_timeout(monkeypatch):
     with pytest.raises(TimeoutError):
         await agents._generate_json(["test"])
     assert started.is_set()
+
+
+def _api_error(code):
+    return errors.ClientError(code, {"error": {"code": code, "message": "simulated", "status": "X"}})
+
+
+class _Location:
+    """A fake client for one location: answers each call from `replies` (an exception code or "ok")."""
+    def __init__(self, name, replies):
+        self.name, self.replies, self.calls = name, list(replies), 0
+        outer = self
+        class Models:
+            async def generate_content(self, **kwargs):
+                outer.calls += 1
+                reply = outer.replies[min(outer.calls, len(outer.replies)) - 1]
+                if reply != "ok":
+                    raise _api_error(reply)
+                return f"answer from {outer.name}"
+        self.aio = type("Aio", (), {"models": Models()})()
+
+
+@pytest.fixture
+def three_locations(monkeypatch):
+    monkeypatch.setattr(agents.settings, "GCP_LOCATION", "global")
+    monkeypatch.setattr(agents.settings, "GCP_FALLBACK_LOCATIONS", ["us", "eu"])
+    monkeypatch.setattr(agents, "_preferred_location", None)
+    sleeps = []
+    async def no_sleep(seconds):
+        sleeps.append(seconds)
+    monkeypatch.setattr(agents.asyncio, "sleep", no_sleep)
+    def use(clients):
+        monkeypatch.setattr(agents, "get_client", lambda location=None: clients[location or "global"])
+    return use, sleeps
+
+
+def test_locations_put_the_configured_one_first_without_repeats(monkeypatch):
+    monkeypatch.setattr(agents.settings, "GCP_LOCATION", "us")
+    monkeypatch.setattr(agents.settings, "GCP_FALLBACK_LOCATIONS", ["us", "eu"])
+    assert agents.locations() == ["us", "eu"]
+
+
+async def test_a_429_moves_to_the_next_location_and_later_calls_start_there(three_locations, caplog):
+    use, sleeps = three_locations
+    clients = {"global": _Location("global", [429]), "us": _Location("us", ["ok"]), "eu": _Location("eu", ["ok"])}
+    use(clients)
+    with caplog.at_level("WARNING", logger="app.gemini"):
+        assert await agents.generate_content(model="m") == "answer from us"
+        assert await agents.generate_content(model="m") == "answer from us"
+    assert (clients["global"].calls, clients["us"].calls, clients["eu"].calls) == (1, 2, 0)
+    assert sleeps == []  # no waiting while another location answers
+    events = [json.loads(r.message)["event"] for r in caplog.records if r.name == "app.gemini"]
+    assert events == ["gemini_location_429", "gemini_location_switch"]
+
+
+async def test_every_location_429_waits_and_tries_all_again(three_locations, monkeypatch):
+    use, sleeps = three_locations
+    monkeypatch.setattr(agents.settings, "GEMINI_RETRY_ATTEMPTS", 3)
+    clients = {name: _Location(name, [429]) for name in ("global", "us", "eu")}
+    use(clients)
+    with pytest.raises(errors.ClientError) as caught:
+        await agents.generate_content(model="m")
+    assert caught.value.code == 429
+    assert [c.calls for c in clients.values()] == [3, 3, 3]
+    assert len(sleeps) == 2 and 1 <= sleeps[0] < 2 and 2 <= sleeps[1] < 3
+
+
+async def test_other_errors_do_not_move_to_another_location(three_locations):
+    use, _ = three_locations
+    clients = {"global": _Location("global", [404]), "us": _Location("us", ["ok"]), "eu": _Location("eu", ["ok"])}
+    use(clients)
+    with pytest.raises(errors.ClientError):
+        await agents.generate_content(model="m")
+    assert clients["us"].calls == 0
+
+
+async def test_with_fallbacks_the_sdk_does_not_retry_429_itself(monkeypatch):
+    factory = genai.Client
+    def anonymous(**kwargs):
+        credentials = AnonymousCredentials()
+        credentials.token = "test-token"
+        kwargs.update(project="test-project", credentials=credentials)
+        return factory(**kwargs)
+    monkeypatch.setattr(agents.genai, "Client", anonymous)
+    monkeypatch.setattr(agents, "_client", None)
+    monkeypatch.setattr(agents.settings, "GCP_FALLBACK_LOCATIONS", ["us", "eu"])
+    try:
+        for location in (None, "us"):
+            retry = agents.get_client(location)._api_client._http_options.retry_options
+            assert retry.http_status_codes == [408, 500, 502, 503, 504]
+        assert agents.get_client("us") is agents.get_client("us") is not agents.get_client()
+    finally:
+        await agents.close_client()

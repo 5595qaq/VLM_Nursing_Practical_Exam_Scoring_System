@@ -28,6 +28,9 @@ def _model_prices() -> dict:
 class Settings:
     GCP_PROJECT_ID = os.getenv("GCP_PROJECT_ID", "")
     GCP_LOCATION = os.getenv("GCP_LOCATION", "global")
+    # Tried in order after GCP_LOCATION when a location answers 429 (Gemini 4 on global was exhausted for
+    # hours on 2026-11-24 while us/eu answered). Empty disables failover: the SDK then retries 429 itself.
+    GCP_FALLBACK_LOCATIONS = [loc.strip() for loc in os.getenv("GCP_FALLBACK_LOCATIONS", "us,eu").split(",") if loc.strip()]
     GCS_BUCKET_NAME = os.getenv("GCS_BUCKET_NAME", "")
     GEMINI_MODEL_NAME = os.getenv("GEMINI_MODEL_NAME", "gemini-3.1-pro-preview")
     MAX_ACTIVE_VIDEOS_PER_EVALUATION = _integer("MAX_ACTIVE_VIDEOS_PER_EVALUATION", 10)

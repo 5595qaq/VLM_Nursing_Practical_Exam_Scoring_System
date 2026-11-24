@@ -44,7 +44,8 @@ Gemini 推論在雲端執行；worker 不需要 GPU。增加 worker 數量不會
 | `MAX_ACTIVE_VIDEOS_PER_EVALUATION` | 10 | 每個評分工作的活動影片窗口 |
 | `GEMINI_GLOBAL_CONCURRENCY` | 5 | 所有 worker 共用的 Gemini 任務上限，包含 SDK 退避期間 |
 | `GEMINI_CALL_STAGGER_MS` | 250 | 同一批切段／四個 Agent 任務的最早執行時間間距 |
-| `GEMINI_RETRY_ATTEMPTS` | 10 | 每次邏輯模型呼叫的 HTTP attempts，包含第一次（退避 1、2、4…最多 60 秒，10 次約等 4 分鐘） |
+| `GEMINI_RETRY_ATTEMPTS` | 10 | 每次邏輯模型呼叫的 HTTP attempts，包含第一次（退避 1、2、4…最多 60 秒，10 次約等 4 分鐘）；有備用地區時是「所有地區都回 429」的輪數 |
+| `GCP_FALLBACK_LOCATIONS` | `us,eu` | `GCP_LOCATION` 回 429 時依序改用的 Vertex AI 地區（逗號分隔）。有備用地區時，429 不在原地區等待，馬上換下一個，並記住成功的地區，之後的呼叫從那裡開始；所有地區都 429 才照上一列退避後再輪一次。設成空字串（`GCP_FALLBACK_LOCATIONS=`）只用 `GCP_LOCATION`，429 由 SDK 原地重試。Gemini 4 只在 `global`、`us`、`eu`（另有 `europe-west2`、`asia-southeast1` 只有 argon）提供，`us-central1` 這類單一區域會回 404 |
 | `GEMINI_CALL_TIMEOUT_SECONDS` | 900 | 單次邏輯模型呼叫的最長等待秒數 |
 | `GEMINI_QUEUE_RETRY_BASE_SECONDS` | 60 | 暫時性模型錯誤後，PgQueuer 第一次重新派送前的等待秒數 |
 | `GEMINI_QUEUE_RETRY_MAX_SECONDS` | 900 | queue 層指數退避的最長等待秒數 |
@@ -114,7 +115,7 @@ python sop-video-skill/scripts/schema_tools.py sop-video-skill/schema.json > out
 | 設定 | 預設 | 意義 |
 | --- | --- | --- |
 | `SOP_SKILL_PROVIDER` | `gemini` | 執行 skill 的模型：`gemini`，或 `claude`（Vertex AI 上的 Claude） |
-| `SOP_SKILL_GEMINI_MODEL` | `gemini-4-argon` | Gemini 模型 ID（region 沿用 `GCP_LOCATION`） |
+| `SOP_SKILL_GEMINI_MODEL` | `gemini-4-argon` | Gemini 模型 ID（region 沿用 `GCP_LOCATION`，429 時改用 `GCP_FALLBACK_LOCATIONS`） |
 | `SOP_SKILL_GEMINI_THINKING_LEVEL` | （空） | 選填：Gemini 的 `thinking_level`（例如 `low`、`high`），空白表示使用模型預設 |
 | `SOP_SKILL_GEMINI_MAX_OUTPUT_TOKENS` | 0 | 選填：單回合輸出上限，0 表示使用模型預設 |
 | `CLAUDE_MODEL_NAME` | `claude-opus-5-5` | `SOP_SKILL_PROVIDER=claude` 時的 Claude 模型 ID |

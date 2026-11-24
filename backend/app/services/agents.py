@@ -1,11 +1,13 @@
 import asyncio
 import json
+import logging
+import random
 import re
 from pathlib import Path
 from typing import Any, Callable
 
 from google import genai
-from google.genai import types
+from google.genai import errors, types
 import httpx
 
 from app.config import settings
@@ -13,6 +15,7 @@ from app.services import usage
 from app.services.model_logging import LoggedTransport, attempt_state
 
 _PROMPTS_DIR = Path(__file__).resolve().parent.parent / "prompts"
+logger = logging.getLogger("app.gemini")
 
 AGENT_PROMPTS = {
     "Agent_A": (_PROMPTS_DIR / "Agent_A.txt").read_text(encoding="utf-8"),
@@ -29,7 +32,9 @@ AGENT_SEGMENT_KEYS = {
 }
 
 TIME_CUTTING_PROMPT = (_PROMPTS_DIR / "Time_cuting.txt").read_text(encoding="utf-8")
-_client = None
+_client = None  # GCP_LOCATION
+_fallback_clients: dict[str, genai.Client] = {}  # GCP_FALLBACK_LOCATIONS, created on first use
+_preferred_location: str | None = None  # the last location that answered; later calls start there
 
 _TIMESTAMP_PATTERN = re.compile(r"^\d{2}:[0-5]\d$")
 _SEGMENT_RESPONSE_SCHEMA = {
@@ -51,33 +56,90 @@ _SEGMENT_RESPONSE_SCHEMA = {
 }
 
 
-def get_client():
-    global _client
-    if _client is None:
-        _client = genai.Client(
-            vertexai=True,
-            project=settings.GCP_PROJECT_ID,
-            location=settings.GCP_LOCATION,
-            http_options=types.HttpOptions(
-                retry_options=types.HttpRetryOptions(
-                    attempts=settings.GEMINI_RETRY_ATTEMPTS,
-                    initial_delay=1, exp_base=2, max_delay=60, jitter=1,
-                    http_status_codes=[408, 429, 500, 502, 503, 504],
-                ),
-                httpx_async_client=httpx.AsyncClient(
-                    transport=LoggedTransport(), timeout=None,
-                ),
+def locations() -> list[str]:
+    """GCP_LOCATION first, then the fallbacks, without repeats."""
+    return list(dict.fromkeys([settings.GCP_LOCATION, *settings.GCP_FALLBACK_LOCATIONS]))
+
+
+def _new_client(location: str) -> genai.Client:
+    # With fallbacks, a 429 goes to the next location at once (generate_content) instead of being
+    # retried here for minutes; other transient errors are still retried by the SDK.
+    codes = [408, 500, 502, 503, 504] if len(locations()) > 1 else [408, 429, 500, 502, 503, 504]
+    return genai.Client(
+        vertexai=True,
+        project=settings.GCP_PROJECT_ID,
+        location=location,
+        http_options=types.HttpOptions(
+            retry_options=types.HttpRetryOptions(
+                attempts=settings.GEMINI_RETRY_ATTEMPTS,
+                initial_delay=1, exp_base=2, max_delay=60, jitter=1,
+                http_status_codes=codes,
             ),
-        )
-    return _client
+            httpx_async_client=httpx.AsyncClient(
+                transport=LoggedTransport(), timeout=None,
+            ),
+        ),
+    )
+
+
+def get_client(location: str | None = None):
+    """The client for `location` (default GCP_LOCATION)."""
+    global _client
+    if location is None or location == settings.GCP_LOCATION:
+        if _client is None:
+            _client = _new_client(settings.GCP_LOCATION)
+        return _client
+    if location not in _fallback_clients:
+        _fallback_clients[location] = _new_client(location)
+    return _fallback_clients[location]
+
+
+async def generate_content(**kwargs):
+    """models.generate_content, moving to the next location when one answers 429.
+
+    Starts at the last location that answered, so after one failover the later calls of the process
+    go straight there (and keep Gemini's implicit cache warm). When every location answers 429, waits
+    as the SDK would (1, 2, 4 ... 60 s) and tries them all again, GEMINI_RETRY_ATTEMPTS rounds in all."""
+    global _preferred_location
+    order = locations()
+    if len(order) == 1:
+        return await get_client().aio.models.generate_content(**kwargs)
+    if _preferred_location in order:
+        i = order.index(_preferred_location)
+        order = order[i:] + order[:i]
+    last: Exception | None = None
+    for round_ in range(settings.GEMINI_RETRY_ATTEMPTS):
+        if round_:
+            await asyncio.sleep(min(60, 2 ** (round_ - 1)) + random.random())
+        for location in order:
+            try:
+                client = get_client() if location == settings.GCP_LOCATION else get_client(location)
+                response = await client.aio.models.generate_content(**kwargs)
+            except errors.ClientError as exc:
+                if exc.code != 429:
+                    raise
+                last = exc
+                logger.warning(json.dumps({"event": "gemini_location_429", "location": location,
+                                           "model": kwargs.get("model"), "round": round_ + 1}))
+                continue
+            if location != _preferred_location:
+                if _preferred_location is not None or location != settings.GCP_LOCATION:
+                    logger.warning(json.dumps({"event": "gemini_location_switch", "location": location,
+                                               "model": kwargs.get("model")}))
+                _preferred_location = location
+            return response
+    raise last
 
 
 async def close_client():
-    global _client
-    if _client is not None:
-        await _client.aio.aclose()
-        _client.close()
-        _client = None
+    global _client, _preferred_location
+    for client in [_client, *_fallback_clients.values()]:
+        if client is not None:
+            await client.aio.aclose()
+            client.close()
+    _client = None
+    _fallback_clients.clear()
+    _preferred_location = None
 
 
 def timestamp_to_seconds(timestamp: str) -> int:
@@ -148,7 +210,7 @@ async def _generate_json(contents, response_json_schema=None, on_progress=None):
             on_progress("queued")
             on_progress("analyzing")
         async with asyncio.timeout(settings.GEMINI_CALL_TIMEOUT_SECONDS):
-            response = await get_client().aio.models.generate_content(
+            response = await generate_content(
                 model=settings.GEMINI_MODEL_NAME,
                 contents=contents,
                 config=types.GenerateContentConfig(**config_kwargs),
