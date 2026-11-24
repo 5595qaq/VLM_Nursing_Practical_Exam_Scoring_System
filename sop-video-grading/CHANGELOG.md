@@ -2,6 +2,12 @@
 
 未發布的修改先寫在 `changelog.d/`（一個分支一個檔，見 `changelog.d/README.md`），合併前改成正式版本時才移到這裡；規則見 `AGENTS.md`「多人協作」。
 
+## 0.50（rubric 1.34）
+
+- **紀錄單未入鏡時整步無法判定**（分支版本 SKILL 0.46-sheetna.1–.2／rubric 1.30-sheetna.1–.2，`experiments/2026-11-23-sheetna.md`；`DECISIONS.md` D-02-06，從 #186 拆出）：2a、4a、29a 判無法判定且原因「藥單看不見」時，步驟 2、4、29 整步無法判定（rubric 新欄位 `unconfirmed_step_reason`，`rubric.aggregate` 依原因判定）。原本 2a 這種情況整步錯誤。紀錄單看得到時規則不變。紀錄單看不見時，即使 2d／29d 已確認錯誤，整步仍無法判定（使用者確認 2026-11-23）。依據是組員既有結果（#192，用新規則重新彙總，非正式驗證）：步驟 2 和標記表一致 25/29（舊規則 4/24）、步驟 29 18/29（舊 14/26）。
+- **紀錄單看不見的原因怎麼選（sheetna.2，#189 review）**：`criteria/02` 寫清楚紀錄單未入鏡或紙張被手、身體、器材擋住一律填「藥單看不見」；「畫面被遮擋」只用在紀錄單看得到、但考生頭部或視線被擋住時，這時 2a 仍讓步驟 2 整步錯誤。2a 的文字補回「紀錄單看得到、其他原因無法確認時，步驟 2 整步錯誤」。`check_rubric` 檢查 `unconfirmed_step_reason` 必須是評分 agent 能給的無法判定原因（actions.schema.json）（打錯字不會默默失效）。
+- **4d 物品辨識**（D-02-07）：`criteria/02-drug-sheet.md` 加上先確認拿的是稀釋液、疑似拿錯才補看的作法。
+
 ## 0.49（rubric 1.33）
 
 - **1c 改看實際接觸物品的時點，容許 1 秒**（`DECISIONS.md` D-01-05，從 #186 拆出）：rubric 1c 從程式判定（`wash_before_later_steps`，比切分的後續步驟起點）改成評分 agent 看畫面（`category: visual`、`clip`、`rule.type: wash_before_contact`、`tolerance_seconds: 1.0`），看的區間從影片開頭開始。1c **自己一個評分任務**（不和 1a、1b 共用，避免洗手任務的區間變長、拿不到 2 fps 片段）。`times` 只填接觸時點 `[[t, t]]`，沒有接觸填 `[]`；沒有看到洗手結束前的接觸時（`[]`，或只列洗手後的接觸），任務裡看過的 clip 要涵蓋影片開頭到最後一次洗手結束（`validate_grading_action`；超過 clip 預算能涵蓋的長度時要判無法判定並轉人工複核）。所有任務做完後，`rules.build_step` 用 1a 量到的洗手結束比較接觸時點並決定 1c 的判定（1a 無法判定時 1c 無法判定），`validate_grading.check_wash_order` 檢查一致。`eval_grading.py` 比時間時不拿 1c 的時間（接觸時點不是洗手時段，說明裡引用的是洗手前整段）。1c 的任務名稱固定是 `1-1c`。`criteria/01-hand-washing.md`、評分 `SKILL.md` 的 final 格式一併更新。舊 rubric 的程式判定路徑保留。

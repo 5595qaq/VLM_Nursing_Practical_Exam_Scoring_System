@@ -14,6 +14,22 @@ STEP_COUNT = 30
 CATEGORIES = {"program", "visual", "not_visible"}
 SOURCE_FOR = {"program": "rule", "visual": "vlm", "not_visible": "fixed"}
 RULE_TYPES = {"detected", "wash_before_later_steps"}
+ACTIONS_SCHEMA_PATH = Path(__file__).resolve().parent.parent / "actions.schema.json"
+
+
+def unconfirmed_reasons() -> set[str]:
+    """The 無法判定 reasons the grading agent can give (the reason enum in actions.schema.json)."""
+    def enums(node):
+        if isinstance(node, dict):
+            if "藥單看不見" in node.get("enum", []):
+                yield set(node["enum"])
+            for value in node.values():
+                yield from enums(value)
+        elif isinstance(node, list):
+            for value in node:
+                yield from enums(value)
+    found = list(enums(json.loads(ACTIONS_SCHEMA_PATH.read_text(encoding="utf-8"))))
+    return set().union(*found)
 
 CORRECT, WRONG, PARTIAL = "正確", "錯誤", "部分正確"
 UNDETERMINED, NOT_APPLICABLE, PENDING = "無法判定", "不適用", "待判定"
@@ -73,6 +89,12 @@ def check_rubric(rubric: dict) -> list[str]:
             if "unconfirmed_is_wrong" in c and (cat != "visual" or not c.get("key")
                                                 or not isinstance(c["unconfirmed_is_wrong"], bool)):
                 errors.append(f"criterion {cid}: unconfirmed_is_wrong needs a key visual criterion and true/false")
+            if "unconfirmed_step_reason" in c:
+                reason = c["unconfirmed_step_reason"]
+                if cat != "visual" or not c.get("key") or not isinstance(reason, str) or not reason.strip():
+                    errors.append(f"criterion {cid}: unconfirmed_step_reason needs a key visual criterion and a reason")
+                elif reason not in unconfirmed_reasons():
+                    errors.append(f"criterion {cid}: unconfirmed_step_reason {reason!r} is not a reason the grading agent can give (actions.schema.json)")
             if "allow_partial" in c and (cat != "visual" or not isinstance(c["allow_partial"], bool)):
                 errors.append(f"criterion {cid}: allow_partial needs a visual criterion and true/false")
             if "clip" in c and (cat != "visual" or not isinstance(c["clip"], bool)):
@@ -131,10 +153,12 @@ def criteria_by_id(rubric: dict) -> dict[str, dict]:
     return {c["id"]: {**c, "step_id": s["step_id"]} for s in rubric["steps"] for c in s["criteria"]}
 
 
-def aggregate(step: dict, verdicts: dict[str, str]) -> str:
-    """Step verdict from its criteria (`verdicts` maps criterion id -> verdict).
+def aggregate(step: dict, verdicts: dict[str, str], *, reasons: dict[str, str | None] | None = None) -> str:
+    """Step verdict from its criteria (`verdicts` maps criterion id -> verdict, `reasons` -> its reason).
 
     not_visible criteria never count. Order of the checks matters:
+      an unconfirmed criterion whose reason is its unconfirmed_step_reason -> 無法判定 (the record sheet
+      was out of frame, so the step cannot be judged, even when another criterion is wrong or pending);
       a key criterion 錯誤 or an unconfirmed required visual criterion with unconfirmed_is_wrong -> 錯誤;
       for steps requiring key confirmation, wait for pending key criteria or return 無法判定 for unseen ones;
       any criterion 部分正確 -> 部分正確;
@@ -146,6 +170,10 @@ def aggregate(step: dict, verdicts: dict[str, str]) -> str:
     scored = [(c, verdicts[c["id"]]) for c in step["criteria"] if c["category"] != "not_visible"]
     values = [v for _, v in scored]
     key_verdicts = {v for c, v in scored if c.get("key")}
+    reasons = reasons or {}
+    if any(v == UNDETERMINED and c.get("unconfirmed_step_reason")
+           and c["unconfirmed_step_reason"] == reasons.get(c["id"]) for c, v in scored):
+        return UNDETERMINED  # final even while other criteria are pending: none of them can change it
     if WRONG in key_verdicts or any(v == UNDETERMINED and c.get("unconfirmed_is_wrong") for c, v in scored):
         return WRONG
     if step.get("require_key_confirmation"):
