@@ -10,6 +10,7 @@
 - step4check.1 → .2（2026-11-24，使用者決定「找時間是切分的工作」）：拿掉 `segment_check_until`（4e 不再延伸到撕開包裝）與「沒標到就退回大範圍搜尋」的作法，改成切分每類都要輸出一筆。.1 的做法 B 驗證（手動補 `check`）在 Gemini 4 的 429 中只跑出 VID_0011 的 4a／4b／4d，4e 的大範圍任務一直失敗，紀錄不採用。
 - step4check.2 的 code review 修正：步驟 4 有 `check` 時，4a、4b 只看「讀單」項目（另外兩類的 not_performed 不會讓 4a 判「步驟 4 未執行」，區間也不會被另外兩類撐大）；4e 用切分找到的那一段時，任務說明與 4e 判錯誤的退回訊息改成「用 clip 看這一段」（撕開包裝可能不在區間內，`criteria/02` 由 #189 修改中，這次不動）；rubric `description` 補上 `segment_check`。
 - 0.53 的 code review 修正：同一類 check 有 `not_performed` 也有 `not_visually_determinable` 時判無法判定（原本判錯誤）；步驟 4 有 `check` 時，所有沒有 `segment_check` 的標準（4a、4b，以及搜尋範圍含步驟 4 的 5a／7a／8a）都只看「讀單」項目，另外兩類看不清楚時的 `logical_window` 不會撐大搜尋區間；同一個任務裡混有沒有 `segment_check` 的標準時，任務說明列出步驟 4 的每一筆（`sop_grading_service._segment_lines`）。
+- **4d 只判要看的區間，不自己往外找稀釋液**（使用者 2026-11-25，`DECISIONS.md` D-02-09）：`criteria/02` 拿掉 D-02-07 的「疑似拿錯時在原搜尋區間補看」「確認拿的是另一藥瓶時，仍在原搜尋區間內找真正稀釋液的檢查」；區間內拿的是別瓶時那段不算 4d，找時間是切分的工作。物品辨認的規則保留。
 
 ## 0.52（rubric 1.35）
 
