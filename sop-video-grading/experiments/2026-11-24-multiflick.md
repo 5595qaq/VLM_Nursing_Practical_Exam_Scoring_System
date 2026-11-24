@@ -15,7 +15,15 @@ issue #138，`DECISIONS.md` D-05-04。老師 2026-11-24：學生抽兩次稀釋�
 - 影片：都在調整組。多輪排氣 3 支（VID_0014 步驟 15、VID_0106 步驟 15、VID_0097 步驟 25），回歸 2 支（VID_0073、VID_0081 步驟 15、25；VID_0081 步驟 25 也是兩輪）。
 - 參考答案：在看這次評分結果之前，抽影格（雙手區域放大、1–3 fps）並對照 `audio_peaks.py` 的聲音峰值判 15b／25b。回歸 2 支沿用 2026-11-10 flick 實驗的原始參考答案（看評分結果之前做的）。
 - 評分：`sop_grading_cli --steps`，commit 9d68df0c（沒有 -dirty），`GEMINI_RETRY_ATTEMPTS=10`，一次跑一支。付費評分已在 issue #138 登記。
-- 切分：5 支都用 2026-11-10 flick 實驗紀錄（`rubric1.25-flick.1_…_seg-skill1.5.6`）的切分（`make_segmentation_bundle.py` → `--segmentation-file`），沒有重新切分，和上次的結果可以直接比較。
+- 切分：5 支都用 2026-11-10 flick 實驗紀錄（`rubric1.25-flick.1_skill0.41-flick.1_gemini-4-argon_seg-skill1.5.6_gemini-4-argon`）的切分（`make_segmentation_bundle.py` → `--segmentation-file`），沒有重新切分，和上次的結果可以直接比較。新紀錄資料夾的切分標記和來源（每支的 `record.json` 的 `segmentation_import.provenance` 也有記）：
+
+  | 影片 | 新紀錄的切分標記 | 來源 |
+  |---|---|---|
+  | VID_0014 | `saved-model-3f80c0c27cc2f8b5` | flick.1 紀錄（seg 1.5.6） |
+  | VID_0073 | `saved-model-e459151d9ca4537d` | 同上 |
+  | VID_0081 | `saved-model-495b219397755d08` | 同上 |
+  | VID_0097 | `saved-model-059040f2d7adaa1e` | 同上 |
+  | VID_0106 | `saved-model-70aa0ce03f9b74e3` | 同上 |
 - 比對：15b／25b 比參考答案的判定與時間（區間重疊或起點差 ≤3 秒）；步驟 15、25 整步用 `eval_grading.py` 比標記表。
 
 ## 執行
@@ -53,6 +61,12 @@ issue #138，`DECISIONS.md` D-05-04。老師 2026-11-24：學生抽兩次稀釋�
 | VID_0097 | 25 | 部分正確 | 錯誤 | 第 1 輪先彈後墊（同上，加 D-05-04） |
 
 VID_0081 15／25、VID_0097 25 在 2026-11-10 flick 實驗已列為照舊規則標的步驟。
+
+## code review 後的修改（multiflick.2，沒有重跑）
+
+review 指出新規則沒寫「那一輪沒墊棉片、也沒彈針」和「墊著棉片但沒彈針」兩種情形。`criteria/05-flick.md` 補上：那一輪沒墊棉片（不論有沒有彈針）→ 錯誤（照 D-05-04 老師「第二次沒有墊酒精棉片 → 錯」）；墊著棉片但沒彈針 → 那一輪不算做錯（由 17a／27a 判）。分支版本改成 0.48-multiflick.2。
+
+沒有用 .2 重跑：這 5 支沒有「沒墊棉片也沒彈針」的一輪；VID_0106 是「墊著棉片、沒看到彈針」，.1 已判正確，和 .2 的文字一致。合併前改正式版本時會照 `AGENTS.md` 重跑。
 
 ## 限制
 
