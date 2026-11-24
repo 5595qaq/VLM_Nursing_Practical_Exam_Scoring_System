@@ -60,6 +60,10 @@ def check_rubric(rubric: dict) -> list[str]:
             if "cumulative_seconds" in c and (not isinstance(c["cumulative_seconds"], bool)
                                               or not c.get("min_seconds")):
                 errors.append(f"criterion {cid}: cumulative_seconds needs min_seconds and true/false")
+            if ("timed_action" in c or c.get("cumulative_seconds")) and (
+                    not c.get("cumulative_seconds") or not isinstance(c.get("timed_action"), str)
+                    or not c["timed_action"]):
+                errors.append(f"criterion {cid}: cumulative_seconds and timed_action (the action timed) go together")
             if "unconfirmed_is_wrong" in c and (cat != "visual" or not c.get("key")
                                                 or not isinstance(c["unconfirmed_is_wrong"], bool)):
                 errors.append(f"criterion {cid}: unconfirmed_is_wrong needs a key visual criterion and true/false")

@@ -1,7 +1,10 @@
 """Tests for validate_grading_action.py (one grading-agent action, checked before it runs)."""
 
+import copy
+
 import pytest
 
+from rubric import load_rubric
 from validate_grading_action import BUDGET, validate
 
 TASK = {"window": [148.0, 180.0], "criteria": [
@@ -243,9 +246,21 @@ WASH = {"window": [38.6, 57.4], "criteria": [{"criterion_id": "1a", "window": [3
                                             {"criterion_id": "1b", "window": [38.6, 57.4]}]}
 
 
-def wash_final(verdict="錯誤", span=(42.0, 51.5), **changes) -> dict:
+def span_rubric() -> dict:
+    """The rubric before 1.32, when 1a was timed with one span (the code path stays for min_seconds
+    without cumulative_seconds)."""
+    rubric = copy.deepcopy(load_rubric())
+    for c in rubric["steps"][0]["criteria"]:
+        if c["id"] == "1a":
+            del c["cumulative_seconds"], c["timed_action"]
+    return rubric
+
+
+def wash_final(verdict="錯誤", times=((42.0, 51.5),), span=None, **changes) -> dict:
     a = {"criterion_id": "1a", "verdict": verdict, "confidence": 0.8, "reason": None, "evidence": ["clip@38.6-57.4"],
          "explanation": "00:42.0 按壓洗手液，00:51.5 雙手分開，共 9.5 秒。"}
+    if times is not None:
+        a["times"] = [list(t) for t in times]
     if span is not None:
         a["span"] = list(span)
     a.update(changes)
@@ -254,12 +269,20 @@ def wash_final(verdict="錯誤", span=(42.0, 51.5), **changes) -> dict:
     return {"action": "final", "criteria": [a, b]}
 
 
-def test_washing_span_decides_the_verdict():
+def test_washing_times_decide_the_verdict():
     assert validate(wash_final(), WASH, FRESH, DURATION) == []
-    assert validate(wash_final("正確", (42.0, 52.0), explanation="00:42 按壓洗手液，00:52 雙手分開，共 10 秒。"),
+    assert validate(wash_final("正確", ((42.0, 52.0),), explanation="00:42 按壓洗手液，00:52 雙手分開，共 10 秒。"),
                     WASH, FRESH, DURATION) == []
     errors = validate(wash_final("正確"), WASH, FRESH, DURATION)
-    assert any("lasts 9.5 s, so the verdict must be 錯誤" in e for e in errors), errors
+    assert any("times total 9.5 s, so the verdict must be 錯誤" in e for e in errors), errors
+
+
+def test_washing_resumed_after_a_new_pump_adds_up():
+    # D-01-01: 6 s, a break (taking off a watch), then 4.5 s after pumping soap again -> 10.5 s
+    parts = ((40.0, 46.0), (52.0, 56.5))
+    assert validate(wash_final("正確", parts), WASH, FRESH, DURATION) == []
+    errors = validate(wash_final("錯誤", parts), WASH, FRESH, DURATION)
+    assert any("times total 10.5 s, so the verdict must be 正確" in e for e in errors), errors
 
 
 def test_missing_washing_motion_cannot_be_partial():
@@ -273,18 +296,36 @@ def test_missing_washing_motion_cannot_be_partial():
 
 
 @pytest.mark.parametrize("changes, expected", [
+    ({"times": None}, "cumulative timing needs times"),
+    ({"times": [[54.2, 42.3]]}, "positive duration"),
+    ({"times": [[40.0, 46.0], [45.0, 50.0]]}, "no overlap"),
+    ({"times": [[10.0, 20.0]]}, "outside the criterion window"),
+    ({"span": [42.0, 51.5]}, "use times, not span"),
+    ({"verdict": "部分正確"}, "not 部分正確"),
+])
+def test_washing_times_errors(changes, expected):
+    action = wash_final()
+    a = action["criteria"][0]
+    a.update({k: v for k, v in changes.items() if v is not None})
+    if "times" in changes and changes["times"] is None:
+        del a["times"]
+    errors = validate(action, WASH, FRESH, DURATION)
+    assert any(expected in e for e in errors), errors
+
+
+@pytest.mark.parametrize("changes, expected", [
     ({"span": None}, "needs span"),
     ({"span": [54.2, 42.3]}, "end must be after start"),
     ({"span": [10.0, 20.0]}, "outside the window"),
-    ({"verdict": "部分正確"}, "not 部分正確"),
+    ({"span": [42.0, 52.0]}, "lasts 10.0 s, so the verdict must be 正確"),
 ])
-def test_washing_span_errors(changes, expected):
-    action = wash_final()
+def test_single_span_timing_errors(changes, expected):
+    action = wash_final(times=None, span=(42.0, 51.5))
     a = action["criteria"][0]
     a.update({k: v for k, v in changes.items() if v is not None})
     if changes.get("span", 0) is None:
         del a["span"]
-    errors = validate(action, WASH, FRESH, DURATION)
+    errors = validate(action, WASH, FRESH, DURATION, rubric=span_rubric())
     assert any(expected in e for e in errors), errors
 
 
@@ -357,12 +398,11 @@ def test_final_times_may_reach_the_slack_and_a_wrapper_span():
     assert validate(action, {**task, "clips": [[28.0, 34.0]]}, {**FRESH, "clip": 1}, DURATION) == []
 
 
-def test_timed_criterion_uses_span_not_times():
-    action = wash_final()
-    action["criteria"][0]["times"] = [[40.0, 50.0]]
-    assert any("use span, not times" in e for e in validate(action, WASH, FRESH, DURATION))
+def test_single_span_timing_uses_span_not_times():
+    action = wash_final(times=((40.0, 50.0),), span=(42.0, 51.5))
+    assert any("use span, not times" in e for e in validate(action, WASH, FRESH, DURATION, rubric=span_rubric()))
 
 
-def test_washing_undetermined_needs_no_span():
-    action = wash_final("無法判定", None, reason="畫面被遮擋", explanation="00:50–00:54 雙手出框，看不到何時分開。")
+def test_washing_undetermined_needs_no_times():
+    action = wash_final("無法判定", (), reason="畫面被遮擋", explanation="00:50–00:54 雙手出框，看不到何時分開。")
     assert validate(action, WASH, FRESH, DURATION) == []

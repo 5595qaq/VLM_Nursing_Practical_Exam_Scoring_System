@@ -102,6 +102,7 @@ def build_tasks(result: dict, rubric: dict, steps: set[int] | None, segmentation
                     "audio": spec.get("audio", False),
                     "min_seconds": spec.get("min_seconds"),
                     "cumulative_seconds": spec.get("cumulative_seconds", False),
+                    "timed_action": spec.get("timed_action"),
                     "dense": spec.get("sample_interval") is not None,
                     "clip": spec.get("clip", False),
                     "search_steps": spec.get("search_steps")}
@@ -295,7 +296,7 @@ def build_task_content(task: dict, video_id: str, duration: float, state: TaskSt
           + ("；要看 clip 的連續動作" if c["clip"] else "")
           + ("；" + load_grading_module("rules").search_note(c["step_id"], c["search_steps"])
              if c["searching"] else "")
-          + (f"；累計計時：final 填 times=[[開始, 結束], ...]，只填實際查看給藥紀錄單的影片秒數，滿 {c['min_seconds']:g} 秒才正確；沒看到查看紀錄單填 []"
+          + (f"；累計計時：final 填 times=[[開始, 結束], ...]，只填{c['timed_action']}的影片秒數，滿 {c['min_seconds']:g} 秒才正確；沒看到{c['timed_action']}填 []"
              if c.get("cumulative_seconds") else
              f"；要計時：final 填 span=[開始, 結束]（影片秒數），滿 {c['min_seconds']:g} 秒才是正確"
              if c.get("min_seconds") else "")

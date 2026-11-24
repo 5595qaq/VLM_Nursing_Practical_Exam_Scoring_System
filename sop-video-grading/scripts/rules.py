@@ -47,10 +47,10 @@ def build_step(step: dict, criteria: list[dict], *, segmentation: dict | None = 
         return {"step_id": step["step_id"], "verdict": NOT_APPLICABLE,
                 "explanation": "評分表已移除此步驟，不評分。", "confidence": 1.0, "criteria": []}
     if segmentation is not None and step["step_id"] == 1:
-        measured = next((c.get("span") for c in criteria if c["criterion_id"] == "1a"), None)
-        if measured is not None:
+        wash_end = next((_wash_end(c) for c in criteria if c["criterion_id"] == "1a"), None)
+        if wash_end is not None:
             later = [e for e in segmentation["steps"] if e["step_id"] >= 2]
-            criteria = [_wash_before_later_steps(measured[1], later) if c["criterion_id"] == "1c" else c
+            criteria = [_wash_before_later_steps(wash_end, later) if c["criterion_id"] == "1c" else c
                         for c in criteria]
     texts = {c["id"]: c["text"] for c in step["criteria"]}
     verdict = aggregate(step, {c["criterion_id"]: c["verdict"] for c in criteria})
@@ -64,6 +64,17 @@ def build_step(step: dict, criteria: list[dict], *, segmentation: dict | None = 
     if any(c.get("needs_review") for c in criteria):
         out["needs_review"] = True
     return out
+
+
+def _wash_end(c: dict) -> float | None:
+    """End of the measured washing: the last of 1a's times (rubric 1.32: one [start, end] per pump of
+    soap, summed), or its span (records before that). None unless 1a is 正確 or 錯誤: a 無法判定 1a may list the
+    parts it saw, whose end is not the end of washing."""
+    if c["verdict"] not in (CORRECT, WRONG):
+        return None
+    if c.get("times"):
+        return max(end for _, end in c["times"])
+    return c["span"][1] if c.get("span") else None
 
 
 def _status(entries: list[dict]) -> str:

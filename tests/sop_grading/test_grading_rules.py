@@ -37,7 +37,7 @@ def test_washing_too_short_makes_step_wrong(segmentation):
     step = result_step(result, 1)
     for c in step["criteria"]:
         if c["criterion_id"] == "1a":
-            c.update(verdict="錯誤", span=[2.0, 11.5], explanation="00:02 按壓洗手液，00:11.5 雙手分開，共 9.5 秒。")
+            c.update(verdict="錯誤", times=[[2.0, 11.5]], explanation="00:02 按壓洗手液，00:11.5 雙手分開，共 9.5 秒。")
     from rubric import load_rubric
     from rules import build_step
     assert build_step(load_rubric()["steps"][0], step["criteria"])["verdict"] == "錯誤"  # key, even with 1b 正確
@@ -63,10 +63,22 @@ def test_wash_order_uses_the_actual_wash_end_and_earliest_step_two_start(segment
 
     spec = load_rubric()["steps"][0]
     step = result_step(result, 1)
+    criterion(result, "1a")["times"] = [[0.0, 21.0]]
+    assert build_step(spec, step["criteria"], segmentation=segmentation)["verdict"] == "錯誤"
+    criterion(result, "1a")["times"] = [[0.0, 20.0]]
+    assert build_step(spec, step["criteria"], segmentation=segmentation)["verdict"] == "正確"
+    # washing resumed after a new pump of soap (D-01-01): the order is checked against the end of the last part
+    criterion(result, "1a")["times"] = [[0.0, 6.0], [15.0, 21.0]]
+    assert build_step(spec, step["criteria"], segmentation=segmentation)["verdict"] == "錯誤"
+    # 1a 無法判定 may list the parts it saw; their end is not the end of washing, so 1c keeps the segmentation verdict
+    criterion(result, "1a").update(verdict="無法判定", times=[[0.0, 6.0]])
+    out = build_step(spec, step["criteria"], segmentation=segmentation)
+    assert next(c for c in out["criteria"] if c["criterion_id"] == "1c") is criterion(result, "1c")
+    criterion(result, "1a")["verdict"] = "正確"
+    # records before rubric 1.32 measured one span
+    del criterion(result, "1a")["times"]
     criterion(result, "1a")["span"] = [0.0, 21.0]
     assert build_step(spec, step["criteria"], segmentation=segmentation)["verdict"] == "錯誤"
-    criterion(result, "1a")["span"] = [0.0, 20.0]
-    assert build_step(spec, step["criteria"], segmentation=segmentation)["verdict"] == "正確"
 
 
 def test_wash_order_detects_any_later_step_even_if_step_two_is_skipped(segmentation):

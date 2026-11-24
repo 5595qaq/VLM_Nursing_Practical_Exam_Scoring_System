@@ -1,0 +1,51 @@
+{
+ "video_id": "VID_0014",
+ "versions": {
+  "rubric": "1.30-washsum.1",
+  "skill": "0.46-washsum.1",
+  "model": "gemini-4-argon",
+  "segmentation": "saved-model-6a38c75488e393bb"
+ },
+ "video_sha256": "a0b4e06f2741029494c628e2feed4860eb66d611bdd87fdf82ac9d6e2f245f05",
+ "runs": [
+  {
+   "run": 1,
+   "by": "5595QAQ",
+   "date": "2026-11-23",
+   "commit": "e98d946760be00945402bf33e4dd4386139aba00",
+   "video_sha256": "a0b4e06f2741029494c628e2feed4860eb66d611bdd87fdf82ac9d6e2f245f05",
+   "steps": [
+    1
+   ],
+   "failed_tasks": [],
+   "segmentation": "saved model segmentation; sha256-tag saved-model-6a38c75488e393bb",
+   "usage": {
+    "input_tokens": 45907,
+    "cached_input_tokens": 0,
+    "output_tokens": 821,
+    "thinking_tokens": 386
+   },
+   "timing": {
+    "started_at": "2026-11-23T13:49:22+00:00",
+    "grading_seconds": 44.4,
+    "total_seconds": 214.1
+   },
+   "segmentation_import": {
+    "kind": "saved_model_segmentation",
+    "sha256": "6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+    "provenance": {
+     "base": {
+      "record": "rubric1.29-separate174.1_skill0.45-separate174.1_gemini-4-argon_seg-saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+      "segmentation": "saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38",
+      "segmentation_sha256": "b06822f4e76951e1ae327e32f4817788d10a1bc303f936f9fce48036c4d3f596",
+      "run": 1,
+      "by": "dakzungberrae",
+      "date": "2026-11-21",
+      "commit": "8b19fceceb76f7b0ff12d817880cf7f1cd32531b",
+      "source": "saved model segmentation; sha256-tag saved-model-6a38c75488e393bb8b9530ecbdfe0021490f7e3956963218dac68c5cc7db0a38"
+     }
+    }
+   }
+  }
+ ]
+}

@@ -73,10 +73,9 @@ def final_for(content, verdict="正確"):
     windows = dict(re.findall(r"(\w+)（步驟.*?window=\[([\d.]+),", text))
     for c in criteria:  # a time inside the criterion's window
         c["times"] = [[float(windows[c["criterion_id"]])] * 2]
-    for c in criteria:  # timed criterion (1a washing): a measured span that matches the verdict
+    for c in criteria:  # timed criteria (cumulative): measured times that match the verdict
         if c["criterion_id"] == "1a":
-            c["span"] = [0.0, 16.0] if verdict == "正確" else [0.0, 10.0]
-            del c["times"]
+            c["times"] = [[0.0, 16.0]] if verdict == "正確" else [[0.0, 9.0]]
         elif c["criterion_id"] in {"2a", "4a", "29a"}:
             start = c["times"][0][0]
             c["times"] = [[start, start + 10.0]] if verdict == "正確" else []
@@ -122,16 +121,18 @@ async def test_grading_grades_every_visual_criterion(video, tmp_path):
     assert (tmp_path / "grading.json").exists() and (tmp_path / "transcript_task_15-16-17.json").exists()
 
 
-async def test_washing_task_asks_for_a_timed_span(video, tmp_path):
-    no_span = {"action": "final", "criteria": [
+async def test_washing_task_asks_for_timed_parts(video, tmp_path):
+    no_times = {"action": "final", "criteria": [
         {"criterion_id": cid, "verdict": "正確", "times": [[5.0, 5.0]], "confidence": 0.7, "reason": None, "evidence": ["clip@0-18"],
          "explanation": "00:01–00:16 看到雙手互搓。"} for cid in ("1a", "1b")]}
-    model = FakeModel({"1a": [no_span]})
+    del no_times["criteria"][0]["times"]
+    model = FakeModel({"1a": [no_times]})
     outcome = await grading.run_grading(video, segmentation(), tmp_path, model, steps={1})
     first, retry = requests_for(model, "1a")
-    assert "要計時：final 填 span" in first[0]["text"] and "needs span" in retry[0]["text"]
+    assert "累計計時：final 填 times=[[開始, 結束], ...]，只填洗手的影片秒數" in first[0]["text"]
+    assert "cumulative timing needs times" in retry[0]["text"]
     wash = next(c for s in outcome["result"]["steps"] for c in s["criteria"] if c["criterion_id"] == "1a")
-    assert wash["verdict"] == "正確" and wash["span"] == [0.0, 16.0] and outcome["failed_tasks"] == []
+    assert wash["verdict"] == "正確" and wash["times"] == [[0.0, 16.0]] and outcome["failed_tasks"] == []
 
 
 async def test_audio_and_washing_tasks_open_with_a_clip(video, tmp_path):
