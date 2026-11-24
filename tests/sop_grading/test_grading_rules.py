@@ -181,9 +181,9 @@ def test_flick_without_pushing_air_out_is_partial(segmentation):
         assert build_step(spec, step["criteria"])["verdict"] == verdict
 
 
-def _set_wrong(result, cid, explanation):
+def _set_wrong(result, cid, explanation, verdict="錯誤"):
     c = criterion(result, cid)
-    c.update(verdict="錯誤", explanation=explanation)
+    c.update(verdict=verdict, explanation=explanation)
     sid = int(cid.rstrip("abcdefghijklmnopqrstuvwxyz"))
     spec = next(s for s in load_rubric()["steps"] if s["step_id"] == sid)
     i = next(i for i, s in enumerate(result["steps"]) if s["step_id"] == sid)
@@ -226,6 +226,12 @@ def test_linked_note_cites_video_times_not_clip_times(segmentation):
     criterion(result, "15b")["times"] = [[508.0, 511.5]]  # structured video seconds win
     c = criterion({"steps": link_wrong(result["steps"], load_rubric())}, "17a")
     assert "（08:28–08:31）" in c["explanation"]
+    # 「片段 00:08」 inside parentheses is clip time too; with no video time left, cite the source's window
+    criterion(result, "15b").pop("times")
+    _set_wrong(result, "15b", "先彈後墊（clip@500-520 片段 00:08.0 及 00:11.5）。")
+    c = criterion({"steps": link_wrong(result["steps"], load_rubric())}, "17a")
+    start, end = criterion(result, "15b")["window"]
+    assert "00:08" not in c["explanation"].split("17a")[-1] and "評分區間" in c["explanation"]
 
 
 def test_a_stale_link_is_rejected(segmentation):
@@ -237,6 +243,20 @@ def test_a_stale_link_is_rejected(segmentation):
     c.update(verdict="正確", explanation="02:30 先墊棉片才彈針。")
     errors = validate_grading(result, final=True)
     assert any("criterion 17a: linked to 15b, which is no longer 錯誤" in e for e in errors)
+
+
+def test_a_stale_link_goes_back_to_the_grading_agent(segmentation):
+    # the source was regraded but the target kept an old link (its task failed): grade the target again
+    result = fill_visual(grade_from_segmentation(segmentation), "正確")
+    _set_wrong(result, "8b", "02:05 空手扭開，02:08 才擦。")
+    result["steps"] = link_wrong(result["steps"], load_rubric())
+    assert criterion(result, "7a")["verdict"] == "錯誤"
+    _set_wrong(result, "8b", "01:19 先擦，02:02 才扭開。", verdict="正確")
+    relinked = {**result, "steps": link_wrong(result["steps"], load_rubric())}
+    c = criterion(relinked, "7a")
+    assert c["verdict"] == "待判定" and c["evidence"] == [] and "times" not in c
+    assert result_step(relinked, 7)["verdict"] == "待判定"
+    assert validate_grading(relinked) == []  # valid before final; the next --steps grades 7a
 
 
 def test_validate_grading_requires_the_linked_criterion_to_fail(segmentation):

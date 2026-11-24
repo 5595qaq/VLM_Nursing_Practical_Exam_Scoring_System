@@ -6,7 +6,7 @@
 
 - D-05-03（老師，組長 2026-11-24 轉述）：先彈後墊時墊棉片與彈針兩步都錯誤。rubric 新欄位 `wrong_with`：15b／25b 錯誤時，程式（`rules.link_wrong`）把 17a／27a 也改判錯誤，步驟 17／27 錯誤。
 - D-00-03（老師 2026-11-08）：先開稀釋液瓶蓋才消毒，步驟 7、8 都錯誤。新增 8b（關鍵，評分 agent 判），8b 錯誤時程式把 7a 改判錯誤。7a、8a、8b 合成一個任務 `7-8`。
-- .2（code review 修正）：`--steps` 只寫相連的一步時另一步一起重評；連動說明引用來源的影片時間（`times`，或說明中「片段內」以外的 mm:ss）；`validate_grading.py` 擋下來源已不是錯誤的連動；共用 `SKILL.md` 開頭加上 8b；rubric 15b 的「待確認」note 改成已確認。
+- .2（兩輪 code review 修正）：`--steps` 寫了 15、25、8 時 17、27、7 一起重評，CLI 的重複檢查與紀錄也記這些步驟（只寫目標步時用紀錄裡的來源判定重新連動）；來源這次任務失敗、目標留著過期的連動時改回待判定；連動說明引用來源的影片時間（`times`，或去掉片段時間後的 mm:ss，都沒有時寫評分區間）；`validate_grading.py` 擋下來源已不是錯誤的連動；共用 `SKILL.md` 開頭加上 8b；rubric 15b 的「待確認」note 改成已確認。
 
 ## 驗證
 
@@ -15,7 +15,7 @@
   - 7a 正確（01:19.0–01:26.0 用棉片包住擦稀釋液瓶頂，01:58.0–02:01.0 再擦）、8a 正確（02:02.0–02:11.8 扭開）、8b 正確（先擦後開），和 0.38 的 7a／8a 判定一致（標記表也是正確）。
   - 只有 1 個任務（`7-8`），input 98,409 tokens（快取 0），評分 62 秒。
   - 標記表沒有步驟 7／8 順序做反的案例，8b 判錯誤的情形還沒有在真實影片驗證到。
-- 測試：`pytest tests/sop_grading`（375）、`backend/tests/test_sop_grading_service.py`（含服務端連動與只重跑步驟 15 時 17a 一起重評）、`test_sop_grading_cli.py`、`test_sop_run_bundle.py`。
+- 測試：`pytest tests/sop_grading`（376）、`backend/tests/test_sop_grading_service.py`（含服務端連動與只重跑步驟 15 時 17a 一起重評）、`test_sop_grading_cli.py`、`test_sop_run_bundle.py`。
 
 ## 限制與待辦
 

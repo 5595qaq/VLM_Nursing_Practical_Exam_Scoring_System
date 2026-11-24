@@ -46,7 +46,8 @@ def grade_from_segmentation(seg: dict, rubric: dict | None = None,
 
 
 _MMSS = re.compile(r"\d{2}:\d{2}(?:\.\d+)?")
-_CLIP_MMSS = re.compile(r"片段內[^\d]{0,3}\d{2}:\d{2}(?:\.\d+)?(?:\s*[–\-~～至到、及和與]\s*\d{2}:\d{2}(?:\.\d+)?)*")
+_CLIP_PAREN = re.compile(r"[（(][^（()）]*(?:片段|clip@)[^（()）]*[）)]")  # 「（clip@a-b 片段內 00:08）」
+_CLIP_MMSS = re.compile(r"片段內?[^\d]{0,3}\d{2}:\d{2}(?:\.\d+)?(?:\s*[–\-~～至到、及和與]\s*\d{2}:\d{2}(?:\.\d+)?)*")
 
 
 def link_wrong(steps: list[dict], rubric: dict, *, segmentation: dict | None = None) -> list[dict]:
@@ -67,6 +68,14 @@ def link_wrong(steps: list[dict], rubric: dict, *, segmentation: dict | None = N
             src = graded.get(links.get(c["criterion_id"], ""))
             if src is not None and src["verdict"] == WRONG and c["verdict"] not in (WRONG, PENDING):
                 c, changed = _linked_wrong(c, src, specs[src["criterion_id"]]), True
+            elif (src is not None and src["verdict"] != WRONG and c["verdict"] == WRONG
+                  and link_note(c["criterion_id"]) in c["explanation"] and c.get("window")):
+                # linked from an old grade of the source (its own task failed this time): grade it again
+                c, changed = {**c, "verdict": PENDING, "reason": None, "evidence": [],
+                              "explanation": f"等待評分 agent 重新判定（{src['criterion_id']} 已不是錯誤，"
+                                             "之前的連動不適用）。"}, True
+                for key in ("times", "span", "needs_review", "review_reason"):
+                    c.pop(key, None)
             criteria.append(c)
         out.append(build_step(by_id[step["step_id"]], criteria, segmentation=segmentation) if changed else step)
     return out
@@ -77,7 +86,11 @@ def _src_times(src: dict) -> str:
     explanation cites outside 「片段內」 (clip-relative)."""
     if src.get("times"):
         return "、".join(fmt_time(a) if a == b else f"{fmt_time(a)}–{fmt_time(b)}" for a, b in src["times"])
-    return "、".join(_MMSS.findall(_CLIP_MMSS.sub("", src["explanation"]))[:3])
+    cited = _MMSS.findall(_CLIP_MMSS.sub("", _CLIP_PAREN.sub("", src["explanation"])))[:3]
+    if cited:
+        return "、".join(cited)
+    window = src.get("window")  # a vlm 錯誤 must cite a time: say where the source was graded
+    return f"評分區間 {fmt_time(window[0])}–{fmt_time(window[1])}" if window else ""
 
 
 def _linked_wrong(c: dict, src: dict, spec: dict) -> dict:

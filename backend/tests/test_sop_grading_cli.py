@@ -184,6 +184,14 @@ def test_frontend_records_of_the_same_version_count_as_graded(tmp_path, video, f
     recorder(video, runs).check({20}, force=False)
 
 
+def test_steps_bring_their_linked_steps(capsys):
+    # 15b 錯誤 makes 17a 錯誤 (rubric wrong_with): --steps 15 regrades and records 17 too
+    assert cli.requested_steps("15") == {15, 17}
+    assert "連同相連的步驟一起評" in capsys.readouterr().out
+    assert cli.requested_steps("17,3") == {3, 17}
+    assert cli.requested_steps(None) is None
+
+
 def test_steps_build_on_the_record_not_on_local_files(tmp_path, video, fake):
     runs = tmp_path / "runs"
     grade(recorder(video, runs), work_folder(tmp_path, "a"), {1}, video)

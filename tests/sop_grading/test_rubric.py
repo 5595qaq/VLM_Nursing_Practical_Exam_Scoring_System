@@ -127,9 +127,11 @@ def test_linked_steps_are_regraded_together():
     from rubric import with_linked_steps
     rubric = load_rubric()
     assert with_linked_steps(None, rubric) is None
+    # the source's step brings the target's; the target alone is linked again from the saved source
     assert with_linked_steps({15}, rubric) == {15, 17}
-    assert with_linked_steps({17, 3}, rubric) == {3, 15, 17}
-    assert with_linked_steps({7}, rubric) == {7, 8}
+    assert with_linked_steps({17, 3}, rubric) == {3, 17}
+    assert with_linked_steps({8}, rubric) == {7, 8}
+    assert with_linked_steps({7}, rubric) == {7}
     assert with_linked_steps({25, 1}, rubric) == {1, 25, 27}
 
 

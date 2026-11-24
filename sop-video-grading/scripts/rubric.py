@@ -156,16 +156,17 @@ def link_note(cid: str) -> str:
 
 
 def with_linked_steps(steps: set[int] | None, rubric: dict) -> set[int] | None:
-    """`steps` plus the steps linked to them by wrong_with, both ways (15 and 17, 7 and 8): regrading one
-    without the other would keep a link made from the old grade. They share a task, so no extra task."""
+    """`steps` plus the steps whose criterion follows a criterion of theirs by wrong_with (15 adds 17, 25
+    adds 27, 8 adds 7): regrading the source alone would keep a link made from its old grade. Regrading
+    only the target needs nothing more: it is linked again from the source's saved grade. Usually the
+    same task (15-16-17, 7-8); a 7a that searches its range (step 7 not found) is a task of its own."""
     if not steps:
         return steps
     specs = criteria_by_id(rubric)
     out = set(steps)
     for cid, src in wrong_with_links(rubric).items():
-        pair = {specs[cid]["step_id"], specs[src]["step_id"]}
-        if pair & out:
-            out |= pair
+        if specs[src]["step_id"] in steps:
+            out.add(specs[cid]["step_id"])
     return out
 
 
