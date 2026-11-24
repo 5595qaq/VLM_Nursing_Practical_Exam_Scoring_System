@@ -48,6 +48,12 @@ def valid_result(video_id="model-guess"):
                  "status": "not_performed", "evidence": "已自評分表移除"}
     for sid in (17, 27):
         steps[sid - 1].update(handoff="flick_detector", merged_with=[sid - 1])
+    # a model final has an entry for each step-4 check (issue #196)
+    steps[3]["check"] = "讀單"
+    steps[4:4] = [{"step_id": 4, "start": 7.4, "end": 7.6, "confidence": 0.6, "status": "detected",
+                   "evidence": "global #4 稀釋液", "check": "稀釋液"},
+                  {"step_id": 4, "start": None, "end": None, "confidence": 0.6, "status": "not_performed",
+                   "evidence": "global #4 未見空針包裝檢查", "check": "空針包裝"}]
     return {
         "video_id": video_id,
         "meta": {"duration": DURATION, "crop": {"box": BOX, "hands_box": HANDS, "rounds": 1, "notes": ""},
@@ -180,7 +186,7 @@ async def test_invalid_final_is_returned_to_model(video, tmp_path):
     # The rejected final comes back verbatim so the model fixes it instead of rewriting it.
     assert "只修改上面列出的錯誤" in retry
     rejected = json.loads(retry.split("```json\n")[-1].split("\n```")[0])
-    assert rejected["action"] == "final" and len(rejected["result"]["steps"]) == 29
+    assert rejected["action"] == "final" and len(rejected["result"]["steps"]) == len(bad["steps"])
     assert rejected["result"]["video_id"] == "VIDEO-2"
     unparsable = texts(model.requests[4][1])
     assert "找不到動作 JSON" in unparsable

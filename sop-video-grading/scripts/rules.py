@@ -19,10 +19,11 @@ import json
 import sys
 from pathlib import Path
 
-from rubric import (CORRECT, NOT_APPLICABLE, PENDING, SOURCE_FOR, STEP_COUNT, UNDETERMINED, WRONG, aggregate,
+from rubric import (CHECK_STEP, CORRECT, NOT_APPLICABLE, PENDING, SOURCE_FOR, STEP_COUNT, UNDETERMINED, WRONG, aggregate,
                     fmt_time, load_rubric, search_range, contact_order, wash_end)
 
 WINDOW_MARGIN = 2.0  # seconds added on both sides of a visual criterion's window
+CHECK_MARGIN = 10.0  # a segment_check entry is a tagged moment that may be a few seconds off: look wider
 
 
 def grade_from_segmentation(seg: dict, rubric: dict | None = None,
@@ -154,6 +155,11 @@ def _wash_before_later_steps(wash_end: float | None, later: list[dict]) -> dict:
 def _grade(c: dict, sid: int, entries: dict[int, list[dict]], duration: float, margin: float,
            search_step: bool = False) -> dict:
     own = entries.get(sid, [])
+    if sid == CHECK_STEP and not c.get("segment_check") and any("check" in e for e in own):
+        # A tagged step 4 (issue #196): 4a/4b are about the 讀單 check only. The diluent and package rows,
+        # including their not_performed, say nothing about reading the sheet (or its window).
+        own = [e for e in own if e.get("check", "讀單") == "讀單"]
+        entries = {**entries, sid: own}
     status = _status(own)
     seg_ref = [f"seg:step {sid}"]
 
@@ -181,6 +187,10 @@ def _grade(c: dict, sid: int, entries: dict[int, list[dict]], duration: float, m
         return _criterion(c, CORRECT, f"切分結果：步驟 {sid} 於 {_spans_text(found)}（{_seg_evidence(found)}）。",
                           evidence=seg_ref, confidence=conf)
 
+    if c.get("segment_check"):
+        checked = _check_result(c, sid, own, duration, margin, seg_ref)
+        if checked:
+            return checked
     search = searched(c, own)
     window_steps = search_range(c) if search else c["window_steps"]
     window = _window(window_steps, entries, duration, margin)
@@ -193,6 +203,33 @@ def _grade(c: dict, sid: int, entries: dict[int, list[dict]], duration: float, m
     where = f"{search_note(sid, window_steps)}；" if search else ""
     return _criterion(c, PENDING, f"等待評分 agent 看畫面判定（{where}區間 {fmt_time(window[0])}–{fmt_time(window[1])}）。",
                       window=window)
+
+
+def _check_result(c: dict, sid: int, own: list[dict], duration: float, margin: float,
+                  seg_ref: list[str]) -> dict | None:
+    """A criterion with `segment_check` (4d, 4e) graded from the step-4 entries the segmentation tagged with
+    that `check` (issue #196): finding the moment is the segmentation's job, the grading agent only looks at it.
+      detected → 待判定, window = those entries ± CHECK_MARGIN;
+      not_performed → 錯誤 (the segmentation looked and saw no such check);
+      not_visually_determinable → 無法判定 (切分未定位).
+    None when no entry carries that check (an older segmentation): the caller falls back to window_steps."""
+    check = c["segment_check"]
+    rows = [e for e in own if e.get("check") == check]
+    if not rows:
+        return None
+    found = _detected(rows)
+    if found:
+        pad = max(margin, CHECK_MARGIN)
+        start, end = min(e["start"] for e in found), max(e["end"] for e in found)
+        window = [round(max(0.0, start - pad), 2), round(min(duration, end + pad), 2)]
+        return _criterion(c, PENDING, f"等待評分 agent 看畫面判定（切分步驟 {sid}「{check}」段，"
+                                      f"區間 {fmt_time(window[0])}–{fmt_time(window[1])}）。", window=window)
+    conf = max(e["confidence"] for e in rows)
+    if any(e["status"] == "not_performed" for e in rows):
+        return _criterion(c, WRONG, f"切分結果：步驟 {sid}「{check}」未執行（{_seg_evidence(rows)}）。",
+                          source="rule", evidence=seg_ref, confidence=conf)
+    return _criterion(c, UNDETERMINED, f"切分結果：步驟 {sid}「{check}」無法定位（{_seg_evidence(rows)}）。",
+                      source="rule", evidence=seg_ref, reason="切分未定位")
 
 
 def _window(step_ids: list[int], entries: dict[int, list[dict]], duration: float,

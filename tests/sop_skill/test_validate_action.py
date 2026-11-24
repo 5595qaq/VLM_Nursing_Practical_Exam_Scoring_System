@@ -67,3 +67,20 @@ def test_final_duration_must_match_the_video():
     assert validate(final(result), state={}, duration=duration)[0] == []
     errors, _ = validate(final(result), state={}, duration=duration - 30)
     assert any("meta.duration" in e for e in errors), errors
+
+
+def test_model_final_names_the_check_of_each_step_4_entry():
+    # issue #196: grading takes 4d/4e's windows from it; schema.json keeps it optional for older results
+    result = make_valid_result()
+    del next(s for s in result["steps"] if s["step_id"] == 4)["check"]
+    errors, _ = validate(final(result), state={})
+    assert any("needs check" in e for e in errors), errors
+
+
+def test_model_final_has_an_entry_for_each_step_4_check():
+    # issue #196 (step4check.2): grading does not search for 4d/4e itself, so an unseen check is written
+    # as not_performed or not_visually_determinable instead of being left out
+    result = make_valid_result()
+    result["steps"] = [s for s in result["steps"] if s.get("check") != "空針包裝"]
+    errors, _ = validate(final(result), state={})
+    assert any("missing 空針包裝" in e for e in errors), errors

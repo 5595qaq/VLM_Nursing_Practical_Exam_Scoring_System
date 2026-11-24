@@ -272,3 +272,25 @@ def test_cumulative_timing_names_the_action_timed():
     assert any(expected in e for e in broken(lambda r: r["steps"][0]["criteria"][1].update(timed_action="洗手")))  # 1b
     assert any(expected in e for e in broken(lambda r: r["steps"][0]["criteria"][0].update(timed_action="")))  # 1a
     assert any(expected in e for e in broken(lambda r: r["steps"][0]["criteria"][0].pop("timed_action")))
+
+
+def test_segment_check_fields_are_checked():
+    rubric = load_rubric()
+    bad = copy.deepcopy(rubric)
+    crit = {c["id"]: c for s in bad["steps"] for c in s["criteria"]}
+    crit["4d"]["segment_check"] = "藥瓶"
+    crit["7a"]["segment_check"] = "稀釋液"  # only step 4 entries carry check
+    errors = check_rubric(bad)
+    assert any("4d: segment_check needs" in e for e in errors)
+    assert any("7a: segment_check needs" in e for e in errors)
+
+
+def test_segment_checks_match_the_segmentation_schema():
+    # rubric.py's SEGMENT_CHECKS and sop-video-skill's `check` enum must name the same kinds
+    import json
+    from pathlib import Path
+    from rubric import SEGMENT_CHECKS
+    schema = json.loads((Path(__file__).resolve().parents[2] / "sop-video-skill" / "schema.json")
+                        .read_text(encoding="utf-8"))
+    entry = schema["properties"]["steps"]["items"]["properties"]["check"]
+    assert set(entry["enum"]) == SEGMENT_CHECKS

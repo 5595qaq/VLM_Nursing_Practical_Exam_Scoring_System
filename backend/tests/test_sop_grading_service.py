@@ -356,6 +356,29 @@ async def test_pointing_wrong_needs_a_clip_near_the_segmented_tearing(video, tmp
     assert c["verdict"] == "錯誤" and outcome["failed_tasks"] == []
 
 
+async def test_tagged_step4_checks_narrow_the_task_and_its_listed_times(video, tmp_path):
+    # issue #196: a 稀釋液-tagged entry gives 4d its window; the prompt lists only that entry, not steps 2-13
+    seg = segmentation()
+    seg["steps"][3]["check"] = "讀單"
+    seg["steps"] += [
+        {"step_id": 4, "start": 40.0, "end": 41.0, "confidence": 0.6, "status": "detected",
+         "evidence": "ov", "check": "稀釋液"},
+        {"step_id": 4, "start": 44.0, "end": 45.0, "confidence": 0.6, "status": "detected",
+         "evidence": "ov", "check": "空針包裝"}]
+    model = FakeModel()
+    outcome = await grading.run_grading(video, seg, tmp_path, model, steps={4})
+    assert outcome["failed_tasks"] == []
+    text = requests_for(model, "4d")[0][0]["text"]
+    assert "區間取自切分步驟 4「稀釋液」那一筆" in text
+    listed = text.split("切分結果")[1].split("動作峰值")[0]
+    assert "步驟 4：00:40.0" in listed and "步驟 13" not in listed and "00:27.0" not in listed
+    four_e = requests_for(model, "4e")[0][0]["text"]
+    # 4e stays around its 空針包裝 entry: no stretch to tearing (step 9 at 00:16.2), no tear_start clip rule
+    assert "延伸到步驟" not in four_e and "步驟 9：" not in four_e.split("切分結果")[1]
+    assert "步驟 4：00:44.0" in four_e.split("切分結果")[1]
+    assert "不必看撕開前幾秒" in four_e  # the tear may be outside the window; clip the package check instead
+
+
 async def test_fixing_the_needle_task_lists_the_wrapper_spans(video, tmp_path):
     # 10b's window is step 10 (00:16–00:21.5); the wrapper span 00:00.5–00:03 is listed and open to actions
     seg = segmentation()
