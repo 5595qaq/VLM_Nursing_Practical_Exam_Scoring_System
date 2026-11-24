@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 9.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 23165,
+  "cached_input_tokens": 0,
+  "output_tokens": 380,
+  "thinking_tokens": 322,
+  "materials": [
+   "clip@49-70（context box，有聲音；片段內 00:00 ＝ 影片 00:49.0）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 39.0, \"end\": 49.0, \"fps\": 2, \"reason\": \"檢查 00:49.0 之前是否已開始查看給藥紀錄單\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 14.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 24938,
+  "cached_input_tokens": 0,
+  "output_tokens": 437,
+  "thinking_tokens": 335,
+  "materials": [
+   "clip@49-70（context box，有聲音；片段內 00:00 ＝ 影片 00:49.0）",
+   "clip@39-49（context box，有聲音；片段內 00:00 ＝ 影片 00:39.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [50.0, 55.5, 61.5, 64.5], \"region\": [0.25, 0.52, 0.85, 0.95], \"reason\": \"確認給藥紀錄單位置、50秒與64.5秒取出的藥瓶，以及55.5秒指讀紀錄單的動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 10.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 26187,
+  "cached_input_tokens": 0,
+  "output_tokens": 549,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@49-70（context box，有聲音；片段內 00:00 ＝ 影片 00:49.0）",
+   "clip@39-49（context box，有聲音；片段內 00:00 ＝ 影片 00:39.0）",
+   "zoom@50/55.5/61.5/64.5 region=[0.250, 0.520, 0.850, 0.950]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"2a\", \"verdict\": \"錯誤\", \"explanation\": \"給藥紀錄單平放於治療車最前緣。00:49.5 已先從藍色藥盒取出一個棕色翻蓋 vial 檢視並於 00:54.0 放回；接著 00:54.5–00:56.0（1.5 秒）及 00:57.5–00:59.0（1.5 秒）低頭並以右手食指指讀給藥紀錄單，隨後於 01:03.5 取出黃色翻蓋 vial。取出前實際查看給藥紀錄單累計僅 3.0 秒，未滿 10 秒。\", \"times\": [[54.5, 56.0], [57.5, 59.0]], \"evidence\": [\"clip@39-49\", \"clip@49-70\", \"zoom@50\", \"zoom@55.5\", \"zoom@64.5\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"2b\", \"verdict\": \"正確\", \"explanation\": \"於 00:54.5–00:56.0 及 00:57.5–00:59.0 查看給藥紀錄單時，有用右手食指指出紀錄單內容進行確認。\", \"times\": [[54.5, 56.0], [57.5, 59.0]], \"evidence\": [\"clip@49-70\", \"zoom@55.5\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"2d\", \"verdict\": \"正確\", \"explanation\": \"查看給藥紀錄單後，於 01:03.5（clip@49-70 片段內 00:14.5）從藍色藥盒中取出黃色翻蓋 vial（另於 00:49.5 曾先取出另一棕色翻蓋 vial 檢視後放回）。\", \"times\": [[63.5, 63.5]], \"evidence\": [\"clip@49-70\", \"zoom@50\", \"zoom@64.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
