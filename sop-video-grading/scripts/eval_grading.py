@@ -31,6 +31,7 @@ when it was built from the label times they say nothing about the grading agent:
 """
 import argparse
 import csv
+import functools
 import json
 import re
 import sys
@@ -92,15 +93,26 @@ def cited_spans(text: str) -> list[tuple[float, float]]:
 
 def agent_spans(step: dict) -> list[tuple[float, float]]:
     """Times of the criteria the grading agent decided: a timed criterion's span, else its times, else the times
-    cited in the explanation (records before skill 0.39, and 無法判定 with empty times)."""
+    cited in the explanation (records before skill 0.39, and 無法判定 with empty times). A contact check (1c,
+    rule wash_before_contact) adds nothing: the label's time for step 1 is the washing, while 1c's times are
+    contact points (a vial pickup next to the washing would count as a match), its explanation cites the whole
+    stretch before washing and a 無法判定 lists what it watched."""
     spans = set()
     for c in step.get("criteria", []):
         if c.get("source") == "vlm" and c["verdict"] != "待判定":
+            if c.get("criterion_id") in contact_checks():
+                continue
             if c.get("span"):
                 spans.add(tuple(c["span"]))
             else:
                 spans.update(map(tuple, c["times"]) if c.get("times") else cited_spans(c["explanation"]))
     return sorted(spans)
+
+
+@functools.cache
+def contact_checks() -> frozenset[str]:
+    return frozenset(c["id"] for s in load_rubric()["steps"] for c in s["criteria"]
+                     if c.get("rule", {}).get("type") == "wash_before_contact")
 
 
 def segmentation_spans(segmentation: dict) -> dict[int, list[tuple[float, float]]]:

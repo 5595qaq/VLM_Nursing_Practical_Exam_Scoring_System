@@ -2,6 +2,15 @@
 
 未發布的修改先寫在 `changelog.d/`（一個分支一個檔，見 `changelog.d/README.md`），合併前改成正式版本時才移到這裡；規則見 `AGENTS.md`「多人協作」。
 
+## 0.49（rubric 1.33）
+
+- **1c 改看實際接觸物品的時點，容許 1 秒**（`DECISIONS.md` D-01-05，從 #186 拆出）：rubric 1c 從程式判定（`wash_before_later_steps`，比切分的後續步驟起點）改成評分 agent 看畫面（`category: visual`、`clip`、`rule.type: wash_before_contact`、`tolerance_seconds: 1.0`），看的區間從影片開頭開始。1c **自己一個評分任務**（不和 1a、1b 共用，避免洗手任務的區間變長、拿不到 2 fps 片段）。`times` 只填接觸時點 `[[t, t]]`，沒有接觸填 `[]`；沒有看到洗手結束前的接觸時（`[]`，或只列洗手後的接觸），任務裡看過的 clip 要涵蓋影片開頭到最後一次洗手結束（`validate_grading_action`；超過 clip 預算能涵蓋的長度時要判無法判定並轉人工複核）。所有任務做完後，`rules.build_step` 用 1a 量到的洗手結束比較接觸時點並決定 1c 的判定（1a 無法判定時 1c 無法判定），`validate_grading.check_wash_order` 檢查一致。`eval_grading.py` 比時間時不拿 1c 的時間（接觸時點不是洗手時段，說明裡引用的是洗手前整段）。1c 的任務名稱固定是 `1-1c`。`criteria/01-hand-washing.md`、評分 `SKILL.md` 的 final 格式一併更新。舊 rubric 的程式判定路徑保留。
+
+## 0.48（rubric 1.32）
+
+- **1a 洗手中途中斷再洗，前後各段相加**（`DECISIONS.md` D-01-01，老師 2026-11-08，issue #135）：rubric 1a 加上 `cumulative_seconds: true`，final 從單一 `span` 改成 `times` 列出每段洗手（每段從按壓洗手液到雙手分開，中斷後重新按壓另起一段），程式加總滿 10 秒才正確，中斷的時間不算。1c（洗手順序）用最後一段的結束比較；舊紀錄的 `span` 照舊讀。1a 判無法判定時不拿它的 times 比較 1c。新增 rubric 欄位 `timed_action`（要計時的動作，`cumulative_seconds` 必填；2a、4a、29a 填「實際查看給藥紀錄單」），任務說明的累計計時提示改由它產生：2a、4a、29a 的結尾從「沒看到查看紀錄單填 []」變成「沒看到實際查看給藥紀錄單填 []」，意思不變。用 `validate_grading.py --final` 檢查 rubric 1.30 以前的紀錄時，1a 會出現「use times, not span」，這是 rubric 版本不符的錯誤，依 AGENTS.md 不算。`criteria/01-hand-washing.md`、評分 `SKILL.md` 的 final 格式一併更新。
+- **Gemini 回 429 時自動改用其他地區**（不改版本）：新設定 `GCP_FALLBACK_LOCATIONS`（預設 `us,eu`）。`GCP_LOCATION` 回 429 時馬上改用下一個地區，不在原地區等約 4 分鐘；記住成功的地區，同一個程序之後的呼叫從那裡開始；所有地區都回 429 才照 `GEMINI_RETRY_ATTEMPTS` 退避後再輪。切分、評分與網頁分析的 Gemini 呼叫都經過這裡（`agents.generate_content`）。2026-11-24 Gemini 4 在 `global` 連續約 12 小時回 429，同時 `us`、`eu` 正常。評分紀錄沒有記錄地區；地區切換會寫在 `app.gemini` 日誌（`gemini_location_429`、`gemini_location_skipped`、`gemini_location_switch`，含工作與影片的 context）。換過地區的模型 15 分鐘內從新地區開始（偏好依模型分開，只在 429 換地區時更新），之後再先試 `GCP_LOCATION`；換過去的地區回 404（模型沒有在那裡提供）就跳過，其他錯誤（例如 400）照常回報。
+
 ## 0.47（rubric 1.31）
 
 - **取消步驟 30**「抽藥後之空針放入空針包裝或放在針架」（老師 2026-11-23 決定，`DECISIONS.md` D-09-03）：抽藥後的空針可以直接丟垃圾桶，考試不需要判斷學生最後怎麼處理空針。30a、30b 移除，步驟 30 比照步驟 11 設為 `removed`（不適用、不評分）；刪除 `criteria/09-disposal.md`（分支版本 SKILL 0.46-drop30.1／rubric 1.30-drop30.1，PR #202）。步驟文字照舊，切分端不改（切分仍標出步驟 30，29a／29b／29d 的區間照舊包含它）。

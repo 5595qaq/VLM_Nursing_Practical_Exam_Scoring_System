@@ -5,6 +5,7 @@ so both use exactly the same aggregation.
 """
 
 import json
+from decimal import Decimal
 from pathlib import Path
 
 RUBRIC_PATH = Path(__file__).resolve().parent.parent / "rubric.json"
@@ -55,11 +56,20 @@ def check_rubric(rubric: dict) -> list[str]:
                 errors.append(f"criterion {cid}: unknown category {cat!r}")
             if cat == "program" and c.get("rule", {}).get("type") not in RULE_TYPES:
                 errors.append(f"criterion {cid}: program criterion needs rule.type in {sorted(RULE_TYPES)}")
+            if c.get("rule", {}).get("type") == "wash_before_contact":
+                tolerance = c["rule"].get("tolerance_seconds")
+                if (cid != "1c" or cat != "visual" or not c.get("clip")
+                        or not isinstance(tolerance, (int, float)) or isinstance(tolerance, bool) or tolerance < 0):
+                    errors.append(f"criterion {cid}: wash_before_contact needs visual 1c, clip and a nonnegative tolerance")
             if "min_seconds" in c and (cat != "visual" or not isinstance(c["min_seconds"], (int, float))):
                 errors.append(f"criterion {cid}: min_seconds needs a visual criterion and a number")
             if "cumulative_seconds" in c and (not isinstance(c["cumulative_seconds"], bool)
                                               or not c.get("min_seconds")):
                 errors.append(f"criterion {cid}: cumulative_seconds needs min_seconds and true/false")
+            if ("timed_action" in c or c.get("cumulative_seconds")) and (
+                    not c.get("cumulative_seconds") or not isinstance(c.get("timed_action"), str)
+                    or not c["timed_action"]):
+                errors.append(f"criterion {cid}: cumulative_seconds and timed_action (the action timed) go together")
             if "unconfirmed_is_wrong" in c and (cat != "visual" or not c.get("key")
                                                 or not isinstance(c["unconfirmed_is_wrong"], bool)):
                 errors.append(f"criterion {cid}: unconfirmed_is_wrong needs a key visual criterion and true/false")
@@ -99,6 +109,22 @@ def _search_range_ok(value, sid: int, category: str, window_steps: list[int]) ->
 def search_range(c: dict) -> list[int]:
     first, last = c["search_steps"]
     return list(range(first, last + 1))
+
+
+def wash_end(c: dict | None) -> float | None:
+    """End of the washing 1a measured (正確 or 錯誤 only): the end of its span, or of its last times part
+    (rubric with cumulative 1a); None when 1a measured nothing."""
+    if not c or c.get("verdict") not in (CORRECT, WRONG):
+        return None
+    if c.get("times"):
+        return max(end for _, end in c["times"])
+    return c["span"][1] if c.get("span") else None
+
+
+def contact_order(times: list[list[float]], end: float, tolerance: float) -> str:
+    """1c: 錯誤 when an object was touched more than `tolerance` seconds before the wash ended."""
+    threshold = Decimal(str(end)) - Decimal(str(tolerance))
+    return WRONG if any(Decimal(str(start)) < threshold for start, _ in times) else CORRECT
 
 
 def criteria_by_id(rubric: dict) -> dict[str, dict]:

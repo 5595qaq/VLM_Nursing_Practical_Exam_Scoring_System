@@ -73,10 +73,11 @@ def final_for(content, verdict="正確"):
     windows = dict(re.findall(r"(\w+)（步驟.*?window=\[([\d.]+),", text))
     for c in criteria:  # a time inside the criterion's window
         c["times"] = [[float(windows[c["criterion_id"]])] * 2]
-    for c in criteria:  # timed criterion (1a washing): a measured span that matches the verdict
+    for c in criteria:  # timed criteria (cumulative): measured times that match the verdict
         if c["criterion_id"] == "1a":
-            c["span"] = [0.0, 16.0] if verdict == "正確" else [0.0, 10.0]
-            del c["times"]
+            c["times"] = [[0.0, 16.0]] if verdict == "正確" else [[0.0, 9.0]]
+        elif c["criterion_id"] == "1c":
+            c["times"] = [] if verdict == "正確" else [[0.0, 0.0]]
         elif c["criterion_id"] in {"2a", "4a", "29a"}:
             start = c["times"][0][0]
             c["times"] = [[start, start + 10.0]] if verdict == "正確" else []
@@ -122,16 +123,56 @@ async def test_grading_grades_every_visual_criterion(video, tmp_path):
     assert (tmp_path / "grading.json").exists() and (tmp_path / "transcript_task_15-16-17.json").exists()
 
 
-async def test_washing_task_asks_for_a_timed_span(video, tmp_path):
-    no_span = {"action": "final", "criteria": [
+async def test_wash_contact_gets_its_own_task_and_ignores_reading_overlap(video, tmp_path):
+    # rubric 1.33: 1c looks from 00:00 in a task of its own, so 1a/1b keep their washing window and its 2 fps clip
+    seg = segmentation(wash_first=True)
+    seg["steps"][1].update(start=2.5, end=13.5)
+    model = FakeModel()
+    outcome = await grading.run_grading(video, seg, tmp_path, model, steps={1})
+    assert outcome["failed_tasks"] == []
+    assert outcome["tasks"] == ["1", "1-1c"]
+    wash = outcome["result"]["steps"][0]
+    assert wash["verdict"] == "正確"
+    assert {c["criterion_id"] for c in wash["criteria"]} == {"1a", "1b", "1c"}
+    contact = next(c for c in wash["criteria"] if c["criterion_id"] == "1c")
+    assert contact["source"] == "vlm" and contact["times"] == []
+    assert {frozenset(CRITERION.findall(r[0]["text"])) for r in model.requests} == {
+        frozenset({"1a", "1b"}), frozenset({"1c"})}
+    first = requests_for(model, "1c")[0][0]["text"]
+    assert "只列實際接觸物品的時點" in first and "clip 要涵蓋 00:00.0–00:16.0（最後一次洗手結束）" in first
+
+
+def test_contact_task_knows_when_the_last_washing_ends():
+    seg = segmentation()
+    seg["steps"][0].update(start=40.0, end=55.0)
+    seg["steps"].append({**seg["steps"][0], "start": 5.0, "end": 9.0})  # an earlier, short wash
+    result = grading.load_grading_module("rules").grade_from_segmentation(seg)
+    tasks = grading.build_tasks(result, grading.load_grading_module("rubric").load_rubric(), {1}, seg)
+    contact = next(t for t in tasks if t["key"] == "1-1c")
+    assert [c["criterion_id"] for c in contact["criteria"]] == ["1c"]
+    assert contact["criteria"][0]["wash_end"] == 55.0 and contact["window"][0] == 0.0
+    wash = next(t for t in tasks if t["key"] == "1")
+    assert wash["window"][0] > 0.0
+    # 1c alone (1a/1b already graded) keeps the name "1-1c", so a resumed run finds its checkpoint
+    for c in result["steps"][0]["criteria"]:
+        if c["criterion_id"] != "1c":
+            c["verdict"] = "正確"
+    tasks = grading.build_tasks(result, grading.load_grading_module("rubric").load_rubric(), {1}, seg)
+    assert [t["key"] for t in tasks] == ["1-1c"]
+
+
+async def test_washing_task_asks_for_timed_parts(video, tmp_path):
+    no_times = {"action": "final", "criteria": [
         {"criterion_id": cid, "verdict": "正確", "times": [[5.0, 5.0]], "confidence": 0.7, "reason": None, "evidence": ["clip@0-18"],
          "explanation": "00:01–00:16 看到雙手互搓。"} for cid in ("1a", "1b")]}
-    model = FakeModel({"1a": [no_span]})
+    del no_times["criteria"][0]["times"]
+    model = FakeModel({"1a": [no_times]})
     outcome = await grading.run_grading(video, segmentation(), tmp_path, model, steps={1})
     first, retry = requests_for(model, "1a")
-    assert "要計時：final 填 span" in first[0]["text"] and "needs span" in retry[0]["text"]
+    assert "累計計時：final 填 times=[[開始, 結束], ...]，只填洗手的影片秒數" in first[0]["text"]
+    assert "cumulative timing needs times" in retry[0]["text"]
     wash = next(c for s in outcome["result"]["steps"] for c in s["criteria"] if c["criterion_id"] == "1a")
-    assert wash["verdict"] == "正確" and wash["span"] == [0.0, 16.0] and outcome["failed_tasks"] == []
+    assert wash["verdict"] == "正確" and wash["times"] == [[0.0, 16.0]] and outcome["failed_tasks"] == []
 
 
 async def test_audio_and_washing_tasks_open_with_a_clip(video, tmp_path):
