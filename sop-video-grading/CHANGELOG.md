@@ -2,6 +2,21 @@
 
 未發布的修改先寫在 `changelog.d/`（一個分支一個檔，見 `changelog.d/README.md`），合併前改成正式版本時才移到這裡；規則見 `AGENTS.md`「多人協作」。
 
+## 0.57（rubric 1.40）
+
+- **步驟 13：移除 13c（issue #137，PR #177，`criteria/04-needle-down-13b.md`、rubric；分支版本 SKILL 0.45-needle13hold.1／rubric 1.29-needle13hold.1，最後一輪 0.55-needle13hold.5／1.38-needle13hold.5）：**
+  - 移除 13c「插針前旋轉針頭與空針的交界」（原本 `not_visible`、固定無法判定、不計分）：老師 2026-11-17 確認旋轉針頭與空針交界歸在步驟 10，不屬於步驟 13（`DECISIONS.md` D-04-03）。`criteria/04-needle-down-13b.md` 刪掉 13c 段落和「之前的判法（暫停用）」；`criteria/README.md`、`README.md` 的 `not_visible` 範例、`tests/sop_grading/test_rubric.py` 同步。步驟 10（`criteria/08-hand-posture.md`）不在這個分支修改，另行通知負責人。
+  - 13b 判法不變（只看插針那一刻，老師 2026-11-24 確認，D-04-05）；`note` 裡「旋轉針頭與空針交界拆成 13c（暫定…）」改成「歸在步驟 10（老師 2026-11-17），13c 已移除」，只改說明。
+  - 13c 原本就不交給評分 agent、不影響整步判定，13b 又和 0.56 相同，不重跑付費評分（比照 #202）。分支中途試過的 13b「看插入後維持的角度」（D-04-04，needle13hold.2–.4）已撤回，不在這個版本；紀錄見 `experiments/2026-11-23-needle13hold4.md`。
+
+## 0.56（rubric 1.39）
+
+- 20a「雙手旋轉 vial」改成老師確認（老師 2026-11-08 回覆 Q14，`experiments/2026-11-08-teacher-reply.md`；`DECISIONS.md` D-07-01；分支版本 SKILL 0.45-rolling20a.1／rubric 1.29-rolling20a.1，PR #173）：**只改文字，判法不變**。
+  - `criteria/07-rolling-20a.md`：只用單手搖晃 vial 判錯誤並加上 `needs_review: true`，拿掉「暫定」「標準待老師確認」。
+  - `rubric.json` 20a 的 `note`：拿掉「暫定（標準文字未經人工核對）」，改成老師確認「雙手掌心夾住 vial 來回搓滾或旋轉、不要求多久；只用單手搖晃判錯誤並轉人工」。`text`、`key`、`category`、`window_steps`、`clip` 都不改。
+  - 判法沒變，不重跑付費評分。
+- `.github/CODEOWNERS`：`criteria/07-rolling-20a.md` 由 @od3w 負責。
+
 ## 0.55（rubric 1.38）
 
 讀單：4d、4e 改關鍵（issue #136，PR #214；分支版本 SKILL 0.53-key4de.1／rubric 1.36-key4de.1）。沒有付費重跑（只改 rubric 的 key 與程式），離線影響見 `experiments/2026-11-25-key4de.md`。
