@@ -1,6 +1,6 @@
 # 2026-11-25 順序做反相關步驟全部錯誤（orderfail.1、.2）
 
-分支 `sop/orderfail`，issue #138、#142。評分 SKILL `0.53-orderfail.1`→`.2`、rubric `1.36-orderfail.1`→`.2`（.2 只改 code review 指出的程式與文字，見下方）。
+分支 `sop/orderfail`，issue #138、#142。評分 SKILL `0.53-orderfail.1`→`.2`、rubric `1.36-orderfail.1`→`.2`（.2 只改 code review 指出的程式與文字，見下方）。合併前 rebase 到 #173 之後的 main，改成正式版本 SKILL 0.57／rubric 1.40。
 
 ## 修改
 
@@ -15,10 +15,10 @@
   - 7a 正確（01:19.0–01:26.0 用棉片包住擦稀釋液瓶頂，01:58.0–02:01.0 再擦）、8a 正確（02:02.0–02:11.8 扭開）、8b 正確（先擦後開），和 0.38 的 7a／8a 判定一致（標記表也是正確）。
   - 只有 1 個任務（`7-8`），input 98,409 tokens（快取 0），評分 62 秒。
   - 標記表沒有步驟 7／8 順序做反的案例，8b 判錯誤的情形還沒有在真實影片驗證到。
-- 測試：`pytest tests/sop_grading`（376）、`backend/tests/test_sop_grading_service.py`（含服務端連動與只重跑步驟 15 時 17a 一起重評）、`test_sop_grading_cli.py`、`test_sop_run_bundle.py`。
+- **正式版本重跑**（0.57／1.40，commit c7d6528）：VID_0081 `--steps 7,8`，同一份模型切分。7a 正確（01:19.0–01:26.0、01:58.0–02:01.0 擦稀釋液瓶頂）、8a 正確（02:02.0–02:11.5 扭開）、8b 正確（先擦後開），和 .1 一致。1 個任務，input 136,278 tokens（快取 0），評分 176 秒。rebase 帶進的 #212、#214、#173 沒有改到 `criteria/05`、`10` 或步驟 7、8 的共用規則，所以只跑這 1 支確認（AGENTS.md「合併前」第 4 點）。
+- 測試（rebase 後）：`pytest tests/sop_grading`（378）、`backend/tests/test_sop_grading_service.py`（含服務端連動與只重跑步驟 15 時 17a 一起重評）、`test_sop_grading_cli.py`、`test_sop_run_bundle.py`。
 
 ## 限制與待辦
 
-- .2 沒有重跑：和 .1 相比，評分 agent 讀到的只多了 SKILL.md 開頭的「（8b）」，合併前用正式版本重跑 VID_0081 步驟 7、8 一次。
 - 切分沒找到步驟 7 時，8b 只看得到步驟 8 前後（DECISIONS D-00-03 限制）。
 - 15b／25b 錯誤的原因包括「那一輪沒墊棉片就彈針」，一樣連動（Claude 的解讀，暫定，列入人工核對）。
