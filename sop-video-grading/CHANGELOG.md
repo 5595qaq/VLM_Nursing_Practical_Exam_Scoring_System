@@ -2,6 +2,14 @@
 
 未發布的修改先寫在 `changelog.d/`（一個分支一個檔，見 `changelog.d/README.md`），合併前改成正式版本時才移到這裡；規則見 `AGENTS.md`「多人協作」。
 
+## 0.55（rubric 1.38）
+
+讀單：4d、4e 改關鍵（issue #136，PR #214；分支版本 SKILL 0.53-key4de.1／rubric 1.36-key4de.1）。沒有付費重跑（只改 rubric 的 key 與程式），離線影響見 `experiments/2026-11-25-key4de.md`。
+
+- 4d（稀釋液檢查）、4e（指出空針包裝）改成關鍵：沒做整步錯誤（老師 2026-11-08，`DECISIONS.md` D-02-03、D-02-04）。原本漏做時整步部分正確；現在只有漏做 4b（指讀）才是部分正確。
+- 4e 不再因為紀錄單看不到而判無法判定，照畫面判；紀錄單看不到時整步照舊由 4a 判無法判定（D-02-06）。
+- 4d／4e 無法判定（被擋住，或切分標看不清楚）而沒有其他錯誤時，步驟 4 整步無法判定（`require_key_confirmation`）。
+
 ## 0.54（rubric 1.37）
 
 洗手：1b 非關鍵、重洗只算最後一次碰物品之後的各段（issue #135，PR #212；分支版本 SKILL 0.53-washlast.1／rubric 1.36-washlast.1）。沒有付費重跑，結果見 `experiments/2026-11-25-washlast.md`。
