@@ -646,7 +646,12 @@ def check_judgment(action, items: list[tuple[dict, TaskState]], duration: float)
         return ["你看不到影片，只能輸出 final 動作"], {}
     validate_action = load_grading_module("validate_grading_action")
     wanted = sorted(c["criterion_id"] for task, _ in items for c in task["criteria"])
-    got = [c.get("criterion_id") for c in action.get("criteria") or [] if isinstance(c, dict)]
+    listed = action.get("criteria")
+    if not isinstance(listed, list) or not all(isinstance(c, dict) and isinstance(c.get("criterion_id"), str)
+                                               for c in listed):
+        # before comparing ids: sorting None with str, or indexing a non-dict, would raise past the retries
+        return ["final.criteria must be a list of objects, each with a string criterion_id"], {}
+    got = [c["criterion_id"] for c in listed]
     if sorted(got) != wanted:
         return [f"final must grade exactly {wanted} once each, got {got}"], {}
     errors, parts = [], {}
@@ -1006,7 +1011,8 @@ SEEN_FACTS = ("peaks", "audio", "opening_clip", "clips")  # what the describing 
 def reusable_descriptions(descriptions: list[dict], rubric: dict, steps: set[int] | None,
                           segmentation: dict) -> list[tuple[dict, dict]]:
     """The describing tasks to judge again (--judge-only), as (task, saved entry): of the descriptions.json
-    of a record's runs, earliest first, the latest of each task key. Each task is built again from the
+    of a record's runs, earliest first, the latest of each task key that described every criterion asked now
+    (with the same window; `steps` may ask only part of a task). Each task is built again from the
     current rubric and the segmentation (build_tasks, limited to `steps`), so the judge gets today's
     standard text and flags; what the describing agent saw (SEEN_FACTS) comes from the saved task.
     Refused (SkillRunError) when, for a description it would use, the describing prompt (build_describe_prompt)
@@ -1014,24 +1020,34 @@ def reusable_descriptions(descriptions: list[dict], rubric: dict, steps: set[int
     the description would not answer what is asked now."""
     rubric_mod = load_grading_module("rubric")
     current, observe = describe_digest(), rubric_mod.observe_digest(rubric)
-    latest: dict[str, tuple[dict, dict]] = {}
+    saved_by_key: dict[str, list[tuple[dict, dict]]] = {}
     for data in descriptions:
         for entry in data["tasks"]:
-            latest[entry["key"]] = (entry, data)
+            saved_by_key.setdefault(entry["key"], []).append((entry, data))
     fresh, _ = _start_result(segmentation, rubric, None, None, False)
     tasks = {t["key"]: t for t in build_tasks(fresh, rubric, steps, segmentation, two_stage=True)
              if t.get("describe")}
     chosen = []
-    for key, (entry, data) in latest.items():
+    for key, saved_entries in saved_by_key.items():
         if key not in tasks:  # another step, or no longer a describing task
             continue
-        task, saved = tasks[key], entry["task"]
+        task = tasks[key]
+        windows = {c["criterion_id"]: c["window"] for c in task["criteria"]}
+
+        def covers(entry: dict) -> bool:  # describes every criterion asked now, with the same window
+            had = {c["criterion_id"]: c["window"] for c in entry["task"]["criteria"]}
+            return all(had.get(cid) == window for cid, window in windows.items())
+
+        # the latest description that covers what is asked: --steps 17 asks only 17a of task 15-16-17-d, and a
+        # later run that described part of a task does not hide an earlier one that described all of it
+        found = next(((e, d) for e, d in reversed(saved_entries) if covers(e)), None)
+        if found is None:
+            raise SkillRunError(f"任務 {key} 的標準或區間和描述當時不同，不能只重跑判定；請用 --two-stage 重新描述")
+        entry, data = found
+        saved = entry["task"]
         if data["describe_digest"] != current:
             raise SkillRunError("描述 agent 的 prompt（DESCRIBE.md、observe/、describe.schema.json、步驟定義或動作格式）"
                                 "和描述當時不同，不能只重跑判定；請用 --two-stage 重新描述")
-        windows = {c["criterion_id"]: c["window"] for c in task["criteria"]}
-        if windows != {c["criterion_id"]: c["window"] for c in saved["criteria"]}:
-            raise SkillRunError(f"任務 {key} 的標準或區間和描述當時不同，不能只重跑判定；請用 --two-stage 重新描述")
         changed = [cid for cid in windows if data["observe"].get(cid) != observe.get(cid)]
         if changed:
             raise SkillRunError(f"{'、'.join(changed)} 的觀察項目（rubric observe）和描述當時不同，"

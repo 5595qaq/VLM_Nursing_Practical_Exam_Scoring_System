@@ -6,6 +6,7 @@ import asyncio
 import csv
 import datetime
 import json
+import sys
 import os
 import shutil
 import time
@@ -581,6 +582,18 @@ def test_judge_only_of_steps_left_partly_pending_records_no_step(tmp_path, video
     rec = judge_recorder(tmp_path)
     asyncio.run(cli.judge_only(source.folder, VID, tmp_path / "j", {17}, rec))
     assert load_record(rec)["runs"][0]["steps"] == []
+
+
+def test_a_refused_judge_only_leaves_no_record_folder(tmp_path, video, fake, monkeypatch):
+    # review of describe207: the target is checked before the Recorder makes the record folder
+    source = two_stage_record(tmp_path, video, fake)
+    fake_judge_only(monkeypatch, [])
+    monkeypatch.setattr(sys, "argv", ["cli", "--video-id", VID, "--out", str(tmp_path / "j"), "--judge-only",
+                                      str(source.folder), "--runs-dir", str(tmp_path / "runs"), "--commit", "ddd4444"])
+    before = sorted(p.name for p in (tmp_path / "runs" / VID).iterdir())
+    with pytest.raises(SystemExit, match="不會覆寫來源紀錄"):  # same rubric and SKILL as the source
+        cli.main()
+    assert sorted(p.name for p in (tmp_path / "runs" / VID).iterdir()) == before
 
 
 def test_judge_only_leaves_the_out_folders_files_alone(tmp_path, video, fake, monkeypatch):

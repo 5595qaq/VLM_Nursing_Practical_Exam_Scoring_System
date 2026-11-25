@@ -1,6 +1,7 @@
 """Tests for validate_grading_action.py (one grading-agent action, checked before it runs)."""
 
 import copy
+import re
 
 import pytest
 
@@ -546,6 +547,17 @@ def test_the_judge_is_told_it_cannot_fetch_the_missing_material():
                                TASK, FRESH, DURATION)
     assert any("You have no video" in e and "無法判定" in e for e in errors)
     assert validate_judgment(final(), TASK, FRESH, DURATION) == []
+
+
+def test_every_material_rule_is_reworded_for_the_judge():
+    # review of describe207: rewording matches the messages' text, so a reworded message must keep a MATERIAL_RULES
+    # phrase, or the judge (no video) would be told to use clip / burst and spend its turns
+    import inspect
+    import validate_grading_action as v
+    # the final's checks the judge goes through (validate); the describing agent's own checks may ask for material
+    source = "".join(inspect.getsource(f) for f in (v._check_final, v._check_flick))
+    asks = [line for line in source.splitlines() if re.search(r"use (clip|burst)|watch a clip", line)]
+    assert asks and all(any(rule in line for rule in v.MATERIAL_RULES) for line in asks), asks
 
 
 def test_describing_the_flick_needs_a_burst_unless_there_is_no_sound():

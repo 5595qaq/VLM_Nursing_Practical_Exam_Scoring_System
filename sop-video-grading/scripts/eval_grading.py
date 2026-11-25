@@ -52,7 +52,7 @@ _CITED = r"(\d{2}):(\d{2}(?:\.\d+)?)"
 _CITED_RE = re.compile(_CITED + r"(?:\s*(?:[–\-~～至到])\s*" + _CITED + r")?")  # a range or a point
 _CLIP_TIME_RE = re.compile(r"片段(?:內[^\d]{0,3}|\s*)" + _CITED_RE.pattern)  # time inside a clip, not the video
 # times after clip@A-B and a short word (「clip@105.5-113.5 的 00:02.5–00:07.9 及 00:09」) are A + t in the video
-_CLIP_AT_RE = re.compile(r"clip@(\d+(?:\.\d+)?)-\d+(?:\.\d+)?[^\d@（()），,。；;]{0,8}?" + _CITED_RE.pattern
+_CLIP_AT_RE = re.compile(r"clip@(?P<a>\d+(?:\.\d+)?)-(?P<b>\d+(?:\.\d+)?)[^\d@（()），,。；;]{0,8}?" + _CITED_RE.pattern
                          + r"(?:\s*[、及和與]\s*" + _CITED_RE.pattern + r")*")
 _CLIP_LIST_RE = re.compile(_CLIP_TIME_RE.pattern + r"(?:\s*[、及和與]\s*" + _CITED_RE.pattern + r")*")
 _PAREN_RE = re.compile(r"[（(][^（()）]*[）)]")  # a list counts only in parentheses: 「（clip@a-b 片段內 A 及 B）」
@@ -81,9 +81,18 @@ def spans_match(model: list[tuple[float, float]], human: list[tuple[float, float
     return any(ms <= he and hs <= me or abs(ms - hs) <= TIME_SLACK for ms, me in model for hs, he in human)
 
 
+def clip_relative(m: re.Match, a: float, b: float, marked: bool) -> bool:
+    """Whether a time cited after clip@a-b is inside the clip (see cited_spans); review_page.py has the same rule."""
+    start = int(m.group(1)) * 60 + float(m.group(2))
+    end = int(m.group(3)) * 60 + float(m.group(4)) if m.group(3) else start
+    return marked or (max(start, end) <= b - a + 0.5 and not a - 1 <= start <= b + 1)
+
+
 def cited_spans(text: str) -> list[tuple[float, float]]:
     """mm:ss ranges (–, -, ~, 至, 到) and points an explanation cites, in text order. Times after clip@A-B
-    (「clip@27-35 片段內 00:02.5–00:05.0 及 00:06」) are relative to that clip and become A + t. Times after 片段內
+    (「clip@27-35 片段內 00:02.5–00:05.0 及 00:06」) are relative to that clip and become A + t when 片段 follows
+    the clip, or when the time fits in the clip's length and is not inside A-B as a video time (「clip@105.5-113.5
+    的 00:02.5」); otherwise it is a video time (「clip@68-100 中：01:08.0」). Times after 片段內
     with no clip@ before it are dropped, with the times listed after them inside a parenthesis. A time with
     seconds >= 60 is a typo and dropped."""
     def blank(m):  # keeps positions, so the spans stay in text order
@@ -101,8 +110,9 @@ def cited_spans(text: str) -> list[tuple[float, float]]:
         head = text.index(at.group(1), at.start()) + len(at.group(1))  # skip the clip's own A-B
         tail = text[head:at.end()]
         skip = len(tail) - len(tail.lstrip("-0123456789."))
+        a, b = float(at.group("a")), float(at.group("b"))
         for m in _CITED_RE.finditer(tail, skip):
-            add(m, head + m.start(), float(at.group(1)))
+            add(m, head + m.start(), a if clip_relative(m, a, b, "片段" in at.group()) else 0.0)
     rest = _CLIP_AT_RE.sub(blank, text)
     rest = _CLIP_TIME_RE.sub(blank, _PAREN_RE.sub(lambda m: _CLIP_LIST_RE.sub(blank, m.group()), rest))
     for m in _CITED_RE.finditer(rest):

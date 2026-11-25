@@ -1056,7 +1056,7 @@ class TwoStageModel(FakeModel):
             if isinstance(action, Exception):
                 raise action
             for c in action.get("criteria", []):
-                if c["criterion_id"] in self.verdicts:
+                if isinstance(c, dict) and c.get("criterion_id") in self.verdicts:
                     c.update(verdict=self.verdicts[c["criterion_id"]],
                              explanation="00:33 看到另一手在針尖入套前扶住針套。")
         else:
@@ -1177,6 +1177,34 @@ async def test_judge_only_keeps_what_its_record_judged_and_refuses_a_changed_win
     task["task"]["criteria"][0]["window"] = [0.0, 5.0]  # described over another window than the rules give now
     with pytest.raises(grading.SkillRunError, match="區間"):
         await grading.run_judge_only(segmentation(), [moved], tmp_path / "d", TwoStageModel(), steps={19})
+
+
+async def test_judge_only_judges_part_of_a_task_and_skips_a_later_partial_description(video, tmp_path):
+    # review of describe207: --steps 17 asks only 17a of task 15-16-17-d, described with 15b
+    await grading.run_grading(video, segmentation(), tmp_path / "a", TwoStageModel(), steps={15}, two_stage=True)
+    full = json.loads((tmp_path / "a" / grading.DESCRIPTIONS).read_text(encoding="utf-8"))
+    flick = next(t for t in full["tasks"] if t["key"] == "15-16-17-d")
+    assert {c["criterion_id"] for c in flick["task"]["criteria"]} >= {"15b", "17a"}
+    model = TwoStageModel()
+    part = await grading.run_judge_only(segmentation(), [full], tmp_path / "b", model, steps={17})
+    assert part["failed_tasks"] == [] and part["judged"] == ["15-16-17-d"]
+    assert "17a" in model.judged[0][0]["text"] and "15b 的觀察項目" not in model.judged[0][0]["text"]
+    # a later run that described only 17a does not hide the earlier description of the whole task
+    later = json.loads(json.dumps(full))
+    task = next(t for t in later["tasks"] if t["key"] == "15-16-17-d")
+    task["task"]["criteria"] = [c for c in task["task"]["criteria"] if c["criterion_id"] == "17a"]
+    model = TwoStageModel()
+    whole = await grading.run_judge_only(segmentation(), [full, later], tmp_path / "c", model, steps={15})
+    assert whole["failed_tasks"] == [] and "15b 的觀察項目" in model.judged[0][0]["text"]
+
+
+async def test_a_judgment_without_criterion_ids_goes_back_to_the_judge(video, tmp_path):
+    # review of describe207: an entry without criterion_id raised TypeError past the retries
+    broken = {"action": "final", "criteria": [{"verdict": "正確"}, "19b"]}
+    model = TwoStageModel(judge_script=[broken])
+    outcome = await grading.run_grading(video, segmentation(), tmp_path, model, steps={19}, two_stage=True)
+    assert outcome["failed_tasks"] == [] and len(model.judged) == 2
+    assert "string criterion_id" in model.judged[1][0]["text"]
 
 
 def test_describe_prompt_has_the_observe_files_and_the_describing_final():

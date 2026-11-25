@@ -498,8 +498,10 @@ def main() -> None:
     # The checkpoints' fingerprint reads settings.GIT_COMMIT; without GIT_COMMIT set, --commit fell back to git.
     settings.GIT_COMMIT = a.commit.strip()
     imported = None
+    judge_source = None
     if a.judge_only:  # checked here, before the Recorder makes its record folder
-        seg_tag = check_judge_source(a.judge_only, a.video_id)["versions"]["segmentation"]
+        judge_source = check_judge_source(a.judge_only, a.video_id)
+        seg_tag = judge_source["versions"]["segmentation"]
     elif a.segmentation_file:
         if a.labels or a.new_segmentation:
             ap.error("--segmentation-file cannot be combined with --labels or --new-segmentation")
@@ -512,6 +514,8 @@ def main() -> None:
     if _rr().VIDEO_ID_RE.fullmatch(a.video_id):
         recorder = Recorder(a.video, a.video_id, a.runs_dir or sop_grading_service.grading_dir() / "runs",
                             a.by.strip(), a.commit.strip(), seg_tag, a.two_stage, bool(a.judge_only))
+        if judge_source:  # before check(), which makes the record folder: a refused run leaves no empty folder
+            check_judge_target(judge_source, a.judge_only, recorder)
         recorder.check(steps, a.force, a.allow_dirty, a.new_segmentation)
     else:
         print(f"{a.video_id} 不是標記表的影片ID（VID_xxxx），不寫評分紀錄", flush=True)
