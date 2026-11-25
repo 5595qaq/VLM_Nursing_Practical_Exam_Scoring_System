@@ -262,8 +262,9 @@ async def test_fixing_the_needle_not_seen_goes_to_a_person(video, tmp_path, pack
     assert outcome["failed_tasks"] == []
 
 
-async def test_sheet_out_of_frame_in_4a_decides_the_package_pointing(video, tmp_path):
-    # 4e has its own task; its agent marked 正確, but without the sheet nothing can be checked against it
+async def test_sheet_out_of_frame_in_4a_decides_step_4_but_keeps_the_package_pointing(video, tmp_path):
+    # 4e is judged from the frames (D-02-04, key4de): the sheet out of frame makes step 4 無法判定 through
+    # 4a's unconfirmed_step_reason, and 4e keeps what its agent saw
     def sheet_final(*ids):
         return {"action": "final", "criteria": [
             {"criterion_id": cid, "verdict": "無法判定", "confidence": 0.7, "reason": "藥單看不見",
@@ -276,7 +277,7 @@ async def test_sheet_out_of_frame_in_4a_decides_the_package_pointing(video, tmp_
     assert outcome["failed_tasks"] == []
     step = next(s for s in outcome["result"]["steps"] if s["step_id"] == 4)
     c = next(c for c in step["criteria"] if c["criterion_id"] == "4e")
-    assert c["verdict"] == "無法判定" and c["reason"] == "藥單看不見" and "原判正確" in c["explanation"]
+    assert c["verdict"] == "正確" and c["reason"] is None and "原判" not in c["explanation"]
     assert step["verdict"] == "無法判定"
 
 
@@ -309,7 +310,7 @@ async def test_sheet_out_of_frame_decides_across_attempts(video, tmp_path):
     later = await grading.run_grading(video, segmentation(), tmp_path / "b", FakeModel({"4e": [pointed]}),
                                       previous=previous_with_pending("4e"), resume=True)
     c, step = point_in(later)
-    assert c["verdict"] == "無法判定" and "原判正確" in c["explanation"] and step["verdict"] == "無法判定"
+    assert c["verdict"] == "正確" and step["verdict"] == "無法判定"
 
     # 4a failed the first time: 4e comes from `previous`, marked 正確 by its agent
     previous = previous_with_pending("4a", "4b")
@@ -318,7 +319,7 @@ async def test_sheet_out_of_frame_decides_across_attempts(video, tmp_path):
     later = await grading.run_grading(video, segmentation(), tmp_path / "c", FakeModel({"4a": [sheet]}),
                                       previous=previous, resume=True)
     c, step = point_in(later)
-    assert c["verdict"] == "無法判定" and "原判正確" in c["explanation"] and step["verdict"] == "無法判定"
+    assert c["verdict"] == "正確" and step["verdict"] == "無法判定"
 
 
 async def test_resumed_steps_send_only_their_pending_tasks(video, tmp_path):
