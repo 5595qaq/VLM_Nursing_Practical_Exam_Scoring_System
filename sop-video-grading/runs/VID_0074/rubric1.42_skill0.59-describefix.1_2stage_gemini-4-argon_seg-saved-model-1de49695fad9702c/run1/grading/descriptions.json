@@ -1,0 +1,133 @@
+{
+ "describe_digest": "d313f35e880c11c5",
+ "observe": {
+  "10b": "7b9f9275d329",
+  "12a": "f99171f3e451",
+  "13a": "aecdba9c86f2",
+  "14a": "48d61a8a1c3d",
+  "15b": "ea95214df2c4",
+  "17a": "6b67168ca2ab",
+  "18b": "d003df9e2855",
+  "18c": "42e931037858",
+  "18d": "0ff864861804",
+  "19b": "d5020f18a8d5",
+  "22b": "d003df9e2855",
+  "22c": "42e931037858",
+  "22d": "0c055c823b5d",
+  "24a": "48d61a8a1c3d",
+  "24c": "76b13c4a9e4f",
+  "25b": "ea95214df2c4",
+  "26b": "a502fefbddf2",
+  "27a": "6b67168ca2ab",
+  "28b": "d5020f18a8d5"
+ },
+ "tasks": [
+  {
+   "key": "12-d",
+   "task": {
+    "key": "12-d",
+    "window_steps": [
+     12
+    ],
+    "criteria": [
+     {
+      "criterion_id": "12a",
+      "step_id": 12,
+      "text": "以左手中指及食指夾住稀釋液瓶（左撇子左右手對調也算正確）",
+      "window": [
+       98.5,
+       105.5
+      ],
+      "window_steps": [
+       12
+      ],
+      "audio": false,
+      "min_seconds": null,
+      "cumulative_seconds": false,
+      "timed_action": null,
+      "dense": false,
+      "clip": false,
+      "search_steps": null,
+      "observe": [
+       "抽稀釋液時夾住稀釋液瓶的是哪隻手、用哪幾根手指夾住",
+       "學生是不是左右手整個對調做（左撇子），對調時寫出實際做這個動作的是哪隻手"
+      ],
+      "searching": false
+     }
+    ],
+    "window": [
+     98.5,
+     105.5
+    ],
+    "needs_clip": false,
+    "describe": true,
+    "peaks": [
+     {
+      "t": 98.57,
+      "e": 0.03075
+     },
+     {
+      "t": 99.9,
+      "e": 0.03748
+     },
+     {
+      "t": 101.3,
+      "e": 0.02981
+     }
+    ]
+   },
+   "used": {
+    "overview": 0,
+    "zoom": 1,
+    "burst": 0,
+    "clip": 0
+   },
+   "log": [
+    "zoom times=[102.0, 102.9, 103.8, 105.0] region=[0.350, 0.250, 0.750, 0.650]"
+   ],
+   "observations": [
+    {
+     "criterion_id": "12a",
+     "item": 1,
+     "occurrence": 1,
+     "finding": "01:42.0–01:45.0（zoom@102、zoom@102.9、zoom@103.8、zoom@105）學生以左手（戴黑色手錶、畫面右側的手）夾住稀釋液塑膠瓶；從拇指往下數，拇指與食指在上方（01:42.0–01:42.9 張開，01:43.8–01:45.0 扶住針筒下段），中指位於稀釋液瓶身前段上方，無名指與小指位於瓶身下方，以中指與無名指、小指夾住稀釋液瓶（並非以食指及中指夾瓶）。",
+     "times": [
+      [
+       102.0,
+       105.0
+      ]
+     ],
+     "visibility": "清楚",
+     "evidence": [
+      "zoom@102",
+      "zoom@102.9",
+      "zoom@103.8",
+      "zoom@105"
+     ],
+     "zoom_confirmed": true
+    },
+    {
+     "criterion_id": "12a",
+     "item": 2,
+     "occurrence": 1,
+     "finding": "01:42.0–01:45.0（ov@98.5-105.5 #4–#8、zoom@102、zoom@103.8、zoom@105）學生並未左右手對調，實際以左手夾住稀釋液瓶並固定針筒，右手持空針插入稀釋液瓶及拉針心。",
+     "times": [
+      [
+       102.0,
+       105.0
+      ]
+     ],
+     "visibility": "清楚",
+     "evidence": [
+      "ov@98.5-105.5 #4",
+      "ov@98.5-105.5 #8",
+      "zoom@102",
+      "zoom@103.8",
+      "zoom@105"
+     ],
+     "zoom_confirmed": true
+    }
+   ]
+  }
+ ]
+}
