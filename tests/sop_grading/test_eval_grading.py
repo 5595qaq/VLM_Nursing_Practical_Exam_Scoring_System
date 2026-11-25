@@ -92,26 +92,32 @@ def test_time_mismatch_counts_as_wrong():
     assert compare(grading, labels, seg)[1]["time_match"] is True  # logical_window when nothing detected
 
 
-def test_cited_spans_drop_clip_relative_times():
+def test_cited_spans_shift_clip_relative_times():
     text = "00:29.5–00:32.0（clip@27-35 片段內 00:02.5–00:05.0）推開翻蓋，00:31.5 脫離；03:00.5-03:05.0 擦拭"
-    assert cited_spans(text) == [(29.5, 32.0), (31.5, 31.5), (180.5, 185.0)]
+    assert cited_spans(text) == [(29.5, 32.0), (29.5, 32.0), (31.5, 31.5), (180.5, 185.0)]  # clip@27 + 00:02.5
     assert cited_spans("沒有時間") == []
 
 
 CLIP_CASES = [
     # 0.38 records: VID_0082 17a cites two clip times after one 片段內, and the second looked like a video time
-    ("02:32–02:39（clip@138-180 片段內 00:05.5–00:11.0 及 00:14.0–00:21.0）", [(152.0, 159.0)]),
+    ("02:32–02:39（clip@138-180 片段內 00:05.5–00:11.0 及 00:14.0–00:21.0）",
+     [(152.0, 159.0), (143.5, 149.0), (152.0, 159.0)]),
     ("（片段內 00:01–00:02、00:03–00:04、00:05，zoom@9）彈擊", []),
-    ("00:40（約 3.5 秒，clip@18-66.8 片段內 00:20 及 00:22）", [(40.0, 40.0)]),
-    ("（clip@1-9 片段內 00:02 及 00:03；clip@30-40 片段內 00:05 及 00:06）", []),
+    ("00:40（約 3.5 秒，clip@18-66.8 片段內 00:20 及 00:22）", [(40.0, 40.0), (38.0, 38.0), (40.0, 40.0)]),
+    ("（clip@1-9 片段內 00:02 及 00:03；clip@30-40 片段內 00:05 及 00:06）", [(3.0, 3.0), (4.0, 4.0), (35.0, 35.0), (36.0, 36.0)]),
     ("04:58（片段 00:07.5）", [(298.0, 298.0)]),
     ("片段內 00:03~00:05 拿起", []),
+    # 0.58 records: VID_0081 10b cites clip times after 「clip@a-b 的」; the page linked them to 00:02.5 and 00:00.0
+    ("01:45.5–01:57.0（clip@105.5-113.5 的 00:02.5–00:07.9 及 clip@113.5-117.2 的 00:00.0–00:00.6）",
+     [(105.5, 117.0), (108.0, 113.4), (113.5, 114.1)]),
+    ("clip@3-9 的 00:02 拿起", [(5.0, 5.0)]),
+    ("clip@27-35 看不清，00:40 拿起", [(40.0, 40.0)]),  # a comma ends the clip's times
     ("片段內第 00:12", []),
     ("片段外 00:07", [(7.0, 7.0)]),
     # video times: before 片段內, after a clip time that a word separates, and after the parenthesis closes
     ("（00:08.6–00:10.1，片段內 00:02.0–00:03.5）", [(8.6, 10.1)]),
     ("（00:08，片段內 00:02；00:20，片段內 00:05）", [(8.0, 8.0), (20.0, 20.0)]),
-    ("（clip@226-286 片段內 00:00.0–00:07.5，並由 zoom@231.9 於 03:51.9 確認）", [(231.9, 231.9)]),
+    ("（clip@226-286 片段內 00:00.0–00:07.5，並由 zoom@231.9 於 03:51.9 確認）", [(226.0, 233.5), (231.9, 231.9)]),
     ("（片段內 00:02–00:03）及 00:25（片段內 00:05）", [(25.0, 25.0)]),
     # without a parenthesis only the time right after 片段內 is known to be a clip time
     ("片段內 00:02–00:03，學生在 00:40 拿起", [(40.0, 40.0)]),
@@ -120,7 +126,7 @@ CLIP_CASES = [
 
 
 @pytest.mark.parametrize("text,spans", CLIP_CASES)
-def test_cited_spans_drop_clip_times_only(text, spans):
+def test_cited_spans_shift_clip_times_and_drop_unknown_clips(text, spans):
     assert cited_spans(text) == spans
 
 
@@ -128,13 +134,13 @@ def test_cited_spans_drop_clip_times_only(text, spans):
 def test_review_page_links_the_times_cited_spans_keeps():
     # the page runs in a browser, so the same rules are written twice; this keeps them the same
     page = Path(review_page.__file__).read_text(encoding="utf-8")
-    code = page[page.index("function clipRanges"):page.index("const pill =")]
-    script = ("const esc = s => s, sec = (m, s) => Number(m) * 60 + Number(s);\n" + code
+    code = page[page.index("const fmt ="):page.index("const pill =")]
+    script = ("const esc = s => s;\n" + code
               + "console.log(JSON.stringify(JSON.parse(process.argv[1]).map(c => "
               + "[...linkTimes(c, 'V').matchAll(/data-t=\"([0-9.]+)\"/g)].map(m => Number(m[1])))));")
     out = subprocess.run(["node", "-e", script, json.dumps([c for c, _ in CLIP_CASES])],
                          capture_output=True, text=True, encoding="utf-8", check=True).stdout
-    assert json.loads(out) == [[start for start, _ in spans] for _, spans in CLIP_CASES]
+    assert json.loads(out) == [[pytest.approx(start) for start, _ in spans] for _, spans in CLIP_CASES]
 def test_agent_spans_prefer_times_and_fall_back_to_the_explanation():
     def step(**c):
         return {"criteria": [{"source": "vlm", "verdict": "正確", "explanation": "02:00 動作，片段內 00:05", **c}]}

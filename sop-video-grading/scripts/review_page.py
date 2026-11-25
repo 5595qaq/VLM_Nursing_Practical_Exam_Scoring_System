@@ -266,9 +266,20 @@ function clipRanges(str) {
   for (const m of str.matchAll(new RegExp(head, "g"))) ranges.push([m.index, m.index + m[0].length]);
   return ranges;
 }
+// Times after clip@A-B (「clip@105.5-113.5 的 00:02.5–00:07.9 及 00:09」) are relative to the clip: they link to A + t
+function clipAtRanges(str) {
+  const t = String.raw`\d{2}:\d{2}(?:\.\d+)?(?:\s*[–\-~～至到]\s*\d{2}:\d{2}(?:\.\d+)?)?`;
+  const re = new RegExp(String.raw`clip@(\d+(?:\.\d+)?)-\d+(?:\.\d+)?[^\d@（()），,。；;]{0,8}?` + t + String.raw`(?:\s*[、及和與]\s*` + t + ")*", "g");
+  return [...str.matchAll(re)].map(m => [m.index, m.index + m[0].length, Number(m[1])]);
+}
 function linkTimes(text, vid) {
-  const safe = esc(text), clips = clipRanges(safe);
+  const safe = esc(text), clips = clipRanges(safe), ats = clipAtRanges(safe);
   return safe.replace(/(\d{1,2}):(\d{2}(?:\.\d+)?)(?:\s*[–-]\s*(\d{1,2}):(\d{2}(?:\.\d+)?))?/g, (all, m1, s1, m2, s2, off) => {
+    const at = ats.find(([a, b]) => off >= a && off < b);
+    if (at) {
+      const t = at[2] + sec(m1, s1);
+      return `<span class="t" data-vid="${vid}" data-t="${t}" title="影片 ${fmt(t)}">${all}</span>`;
+    }
     if (clips.some(([a, b]) => off >= a && off < b)) return all;
     return `<span class="t" data-vid="${vid}" data-t="${sec(m1, s1)}">${all}</span>`;
   });
