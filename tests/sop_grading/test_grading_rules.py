@@ -46,14 +46,29 @@ def test_washing_too_short_makes_step_wrong(segmentation):
 
 
 
-def test_missing_motion_with_enough_time_makes_step_wrong(segmentation):
+def test_missing_motion_with_enough_time_makes_step_partial(segmentation):
+    # teacher 2026-11-08 (DECISIONS D-01-03): washed long enough but not every motion -> 部分正確
     step = result_step(fill_visual(grade_from_segmentation(segmentation), "正確"), 1)
     for c in step["criteria"]:
         if c["criterion_id"] == "1b":
             c["verdict"] = "錯誤"
     from rubric import load_rubric
     from rules import build_step
+    assert build_step(load_rubric()["steps"][0], step["criteria"])["verdict"] == "部分正確"
+    for c in step["criteria"]:  # too short as well: 1a is key
+        if c["criterion_id"] == "1a":
+            c["verdict"] = "錯誤"
     assert build_step(load_rubric()["steps"][0], step["criteria"])["verdict"] == "錯誤"
+
+
+@pytest.mark.parametrize("wash, order", [("正確", "無法判定"), ("無法判定", "無法判定")])
+def test_missing_motion_with_an_unconfirmed_key_is_undetermined(wash, order):
+    # step 1 requires its key criteria confirmed: a 1b miss alone gives neither 部分正確 nor 錯誤 while
+    # 1a or 1c is unseen (code review of washlast.1)
+    from rubric import aggregate, load_rubric
+    step1 = load_rubric()["steps"][0]
+    assert aggregate(step1, {"1a": wash, "1b": "錯誤", "1c": order}) == "無法判定"
+    assert aggregate(step1, {"1a": "錯誤", "1b": "錯誤", "1c": order}) == "錯誤"
 
 
 def test_wash_order_does_not_use_reading_start_as_object_contact(segmentation):

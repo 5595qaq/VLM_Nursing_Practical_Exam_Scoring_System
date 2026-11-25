@@ -17,7 +17,8 @@ def test_rubric_classification_matches_the_plan():
     by_id = criteria_by_id(load_rubric())
     assert by_id["1a"]["category"] == "visual" and by_id["1a"]["min_seconds"] == 10
     assert by_id["1a"]["cumulative_seconds"] is True  # D-01-01: washing resumed after a new pump of soap adds up
-    assert by_id["1a"]["key"] is True and by_id["1b"]["key"] is True
+    # 1b missing a motion is not key: long enough washing makes the step 部分正確 (DECISIONS D-01-03)
+    assert by_id["1a"]["key"] is True and by_id["1b"]["key"] is False
     assert by_id["1b"]["allow_partial"] is False
     assert by_id["1b"]["category"] == "visual" and by_id["1b"]["sample_interval"] == 0.5
     for cid in ("2a", "4a", "29a"):  # gaze >= 10 s is judged from frames
