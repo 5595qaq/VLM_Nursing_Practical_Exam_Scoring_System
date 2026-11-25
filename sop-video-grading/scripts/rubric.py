@@ -125,7 +125,49 @@ def check_rubric(rubric: dict) -> list[str]:
                 errors.append(f"criterion {cid}: not_visible criterion needs a reason and cannot be key")
     errors += [f"task {name} has only one criterion (a task name is shared by the criteria graded together)"
                for name, n in tasks.items() if n < 2]
+    errors += _check_wrong_with(rubric)
     return errors
+
+
+def _check_wrong_with(rubric: dict) -> list[str]:
+    """wrong_with names a key visual criterion of another step (15b for 17a): doing that order backwards
+    fails both steps (DECISIONS D-00-03), so the program marks this one 錯誤 too. Not chained."""
+    specs = criteria_by_id(rubric)
+    errors = []
+    for cid, c in specs.items():
+        if "wrong_with" not in c:
+            continue
+        src = specs.get(c["wrong_with"]) if isinstance(c["wrong_with"], str) else None
+        if (c["category"] != "visual" or not c.get("key") or src is None or src["category"] != "visual"
+                or not src.get("key") or src["step_id"] == c["step_id"] or "wrong_with" in src):
+            errors.append(f"criterion {cid}: wrong_with needs a key visual criterion and the id of a key visual "
+                          f"criterion of another step that has no wrong_with itself")
+    return errors
+
+
+def wrong_with_links(rubric: dict) -> dict[str, str]:
+    """criterion id -> the criterion whose 錯誤 makes it 錯誤 (rubric wrong_with)."""
+    return {cid: c["wrong_with"] for cid, c in criteria_by_id(rubric).items() if "wrong_with" in c}
+
+
+def link_note(cid: str) -> str:
+    """The phrase rules.link_wrong appends to a criterion it marks 錯誤; validate_grading looks for it."""
+    return f"程式把 {cid} 改判錯誤"
+
+
+def with_linked_steps(steps: set[int] | None, rubric: dict) -> set[int] | None:
+    """`steps` plus the steps whose criterion follows a criterion of theirs by wrong_with (15 adds 17, 25
+    adds 27, 8 adds 7): regrading the source alone would keep a link made from its old grade. Regrading
+    only the target needs nothing more: it is linked again from the source's saved grade. Usually the
+    same task (15-16-17, 7-8); a 7a that searches its range (step 7 not found) is a task of its own."""
+    if not steps:
+        return steps
+    specs = criteria_by_id(rubric)
+    out = set(steps)
+    for cid, src in wrong_with_links(rubric).items():
+        if specs[src]["step_id"] in steps:
+            out.add(specs[cid]["step_id"])
+    return out
 
 
 def _search_range_ok(value, sid: int, category: str, window_steps: list[int]) -> bool:
