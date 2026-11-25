@@ -1,0 +1,1 @@
+- 程式：proxy 被截斷時會被發現（issue #216）。`make_proxy` 轉完檢查 proxy 長度，比原影片短超過 2 秒（`PROXY_SHORT_TOLERANCE`）就刪掉並報錯；沿用舊 proxy 前也檢查長度，太短就重做。後端 `load_or_prepare` 沿用 `probe.json` 的 proxy 前同樣檢查，太短就重新 `prepare`，存檔點照樣沿用。起因：#215 同時跑 3 支時記憶體不足，ffmpeg 回傳成功卻只轉出 607.6／648.7 秒，續跑一直沿用壞的 proxy。SKILL.md 與切分結果不變，版本不動。

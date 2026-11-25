@@ -24,6 +24,18 @@ def probe(path):
 
 
 PROXY_FPS, PROXY_WIDTH = 10, 960  # proxy spec: 960 wide, 10 fps, GOP = fps (1 s) H.264, no audio
+# A proxy may end this much before the source's container duration (audio track, last frame
+# duration). Shorter means a truncated transcode, e.g. ffmpeg out of memory but exiting 0 (issue 216).
+PROXY_SHORT_TOLERANCE = 2.0
+
+
+def proxy_complete(proxy, duration, tolerance=None):
+    """True when `proxy` decodes as a video at least `duration` - `tolerance` seconds long."""
+    tolerance = PROXY_SHORT_TOLERANCE if tolerance is None else tolerance
+    try:
+        return probe(proxy)["duration"] >= duration - tolerance
+    except (subprocess.CalledProcessError, OSError, ValueError, KeyError, IndexError):
+        return False
 
 
 def _src_sig(src, fps, width):
@@ -37,17 +49,19 @@ def make_proxy(src, dst, fps=PROXY_FPS, width=PROXY_WIDTH, jobs=None, hwaccel=Fa
 
     Speed: decoding (HEVC 1080p+) dominates, so the source is split into `jobs` time segments that
     are transcoded in parallel and concatenated (GOP = fps keeps every segment start a keyframe).
-    Reused when a sidecar <dst>.json records the same source size/mtime and proxy parameters.
+    Reused when a sidecar <dst>.json records the same source size/mtime and proxy parameters and
+    the proxy is not shorter than the source (proxy_complete); a finished proxy that is shorter is
+    deleted and raises RuntimeError.
     """
     sig = _src_sig(src, fps, width)
     side = dst + ".json"
+    dur = probe(src)["duration"]
     if os.path.exists(dst) and os.path.exists(side):
         try:
-            if json.load(open(side, encoding="utf-8")) == sig:
+            if json.load(open(side, encoding="utf-8")) == sig and proxy_complete(dst, dur):
                 return dst
         except Exception:
             pass
-    dur = probe(src)["duration"]
     jobs = max(1, min(jobs or os.cpu_count() or 1, int(dur // 30) or 1))  # segments >= 30 s
     vf = f"fps={fps},scale={width}:-2:flags=fast_bilinear"
     enc = ["-c:v", "libx264", "-preset", "ultrafast", "-crf", "23", "-g", str(fps),
@@ -78,6 +92,15 @@ def make_proxy(src, dst, fps=PROXY_FPS, width=PROXY_WIDTH, jobs=None, hwaccel=Fa
     for p in os.listdir(tmpdir):
         os.remove(os.path.join(tmpdir, p))
     os.rmdir(tmpdir)
+    if not proxy_complete(dst, dur):
+        try:
+            got = f"{probe(dst)['duration']:.1f}s"
+        except Exception:
+            got = "unreadable"
+        for path in (dst, side):
+            if os.path.exists(path):
+                os.remove(path)
+        raise RuntimeError(f"proxy is truncated: {got} of a {dur:.1f}s source")
     json.dump(sig, open(side, "w", encoding="utf-8"))
     return dst
 

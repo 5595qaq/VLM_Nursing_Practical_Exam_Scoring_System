@@ -411,6 +411,36 @@ async def test_loop_continues_from_the_checkpoint_after_a_quota_error(video, tmp
     assert not (tmp_path / "checkpoint.json").exists()
 
 
+def _duration(path) -> float:
+    out = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of",
+                          "default=nw=1:nk=1", str(path)], capture_output=True, text=True, check=True)
+    return float(out.stdout)
+
+
+async def test_a_truncated_proxy_is_made_again_on_resume(video, tmp_path):
+    """Issue 216: a proxy cut short (ffmpeg out of memory, exit 0) was reused on every resume."""
+    with pytest.raises(Quota):
+        await skill.run_skill_loop(video, "V", tmp_path, ScriptedModel([*HAPPY_PATH[:3], Quota("429")]))
+    proxy = tmp_path / "proxy.mp4"
+    short = tmp_path / "short.mp4"
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(proxy), "-t", "10", "-c", "copy", str(short)],
+                   check=True)
+    short.replace(proxy)  # the sidecar proxy.mp4.json still matches the source
+    assert _duration(proxy) < DURATION - 5
+    again = ScriptedModel(HAPPY_PATH[3:])
+    outcome = await skill.run_skill_loop(video, "V", tmp_path, again)
+    assert len(again.requests) == 3  # the checkpoint still counts; only the proxy was made again
+    assert outcome["turns"] == 6
+    assert _duration(proxy) == pytest.approx(DURATION, abs=1)
+
+
+def test_proxy_complete_checks_the_length(video, tmp_path):
+    assert skill._proxy_complete(str(video), DURATION)
+    assert not skill._proxy_complete(str(video), DURATION + 5)
+    assert not skill._proxy_complete(str(tmp_path / "missing.mp4"), DURATION)
+    assert not skill._proxy_complete(str(video), None)
+
+
 async def test_changed_rules_start_the_segmentation_over(video, tmp_path, monkeypatch):
     with pytest.raises(Quota):
         await skill.run_skill_loop(video, "V", tmp_path, ScriptedModel([*HAPPY_PATH[:3], Quota("429")]))

@@ -145,6 +145,22 @@ def _fmt_box(box) -> str:
     return "[" + ", ".join(f"{v:.3f}" for v in box) + "]"
 
 
+PROXY_SHORT_TOLERANCE = 2.0  # same as sop-video-skill/scripts/_video.py
+
+
+def _proxy_complete(proxy: str, duration) -> bool:
+    """Whether a proxy left by an earlier attempt covers the source's duration (from probe.json).
+    A proxy cut short (ffmpeg out of memory but exiting 0, issue 216) would otherwise be reused on
+    every resume and fail at the first frame past its end."""
+    try:
+        out = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration",
+                              "-of", "default=nw=1:nk=1", proxy],
+                             capture_output=True, text=True, check=True).stdout
+        return float(out.strip()) >= float(duration) - PROXY_SHORT_TOLERANCE
+    except (subprocess.CalledProcessError, OSError, ValueError, TypeError):
+        return False
+
+
 def _fmt_t(t: float) -> str:
     m, s = divmod(float(t), 60)
     return f"{int(m):02d}:{s:04.1f}"
@@ -192,9 +208,10 @@ class ScriptRunner:
         probe = (self.probe_dir or self.workdir) / "probe.json"
         if probe.is_file():
             data = json.loads(probe.read_text(encoding="utf-8"))
-            if Path(data.get("proxy", "")).is_file():
+            if Path(data.get("proxy", "")).is_file() and _proxy_complete(data["proxy"], data.get("duration")):
                 self.probe = data
                 return
+            logger.warning("proxy in %s is missing or truncated; preparing it again", probe)
         self.prepare()
 
     def crop_preview(self, box) -> list[Image]:
