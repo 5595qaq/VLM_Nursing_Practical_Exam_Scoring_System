@@ -1,5 +1,5 @@
 {
-  "version": "1.36-orderfail.2",
+  "version": "1.40",
   "description": "無菌抽藥技術－vial 粉劑 30 步評分標準。category：program＝由切分結果以程式判定；visual＝評分 agent 看畫面（audio=true 時連聲音一起聽）；not_visible＝影片看不到，固定輸出「無法判定」且不影響步驟判定。visual 的 window_steps＝要看的步驟區間；task＝同名的標準共用一個評分任務（兩條都不在搜尋、且區間相距不超過 10 秒時；否則各自一個任務）；search_steps＝[第一步, 最後一步]，切分沒找到該步時，改在這兩步之間（含）所有步驟的區間內找，且該步的切分 not_performed 不直接判錯誤；after_step=true＝動作可以發生在自己的步驟之後，該步的切分 not_performed 也不直接判錯誤。key=true 的標準錯誤時整步判「錯誤」。require_key_confirmation=true 時，關鍵標準須確認達標才可判整步正確或部分正確。cumulative_seconds=true 時，用 times 加總實際動作時間；timed_action＝要計時的動作（累計計時必填，任務說明用）。unconfirmed_step_reason＝這條關鍵標準判無法判定、且原因是這個字串時，整步判無法判定（例：紀錄單未入鏡時填「藥單看不見」）。wrong_with＝另一步的關鍵標準 id：那條判錯誤時，程式把這條也改判錯誤（順序做反，相關步驟全部錯誤，DECISIONS D-00-03）。segment_check（只用於步驟 4）＝切分步驟 4 標同一類 check 的項目決定區間（detected 那段前後 10 秒）或判定（not_performed 錯誤、看不清楚無法判定），沒有這類項目的舊切分才用 window_steps；步驟 4 有 check 時，沒有 segment_check 的標準（4a、4b）只看「讀單」項目。",
   "steps": [
     {"step_id": 1, "text": "洗手。", "require_key_confirmation": true, "criteria": [
