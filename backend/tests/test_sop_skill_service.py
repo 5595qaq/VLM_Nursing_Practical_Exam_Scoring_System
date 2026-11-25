@@ -417,8 +417,9 @@ def _duration(path) -> float:
     return float(out.stdout)
 
 
-async def test_a_truncated_proxy_is_made_again_on_resume(video, tmp_path):
-    """Issue 216: a proxy cut short (ffmpeg out of memory, exit 0) was reused on every resume."""
+async def test_a_truncated_proxy_starts_the_segmentation_over(video, tmp_path):
+    """Issue 216: a proxy cut short (ffmpeg out of memory, exit 0) was reused on every resume. It is
+    made again, and the segmentation starts over: the saved motion energy may miss the tail."""
     with pytest.raises(Quota):
         await skill.run_skill_loop(video, "V", tmp_path, ScriptedModel([*HAPPY_PATH[:3], Quota("429")]))
     proxy = tmp_path / "proxy.mp4"
@@ -427,11 +428,43 @@ async def test_a_truncated_proxy_is_made_again_on_resume(video, tmp_path):
                    check=True)
     short.replace(proxy)  # the sidecar proxy.mp4.json still matches the source
     assert _duration(proxy) < DURATION - 5
+    again = ScriptedModel(HAPPY_PATH)
+    outcome = await skill.run_skill_loop(video, "V", tmp_path, again)
+    assert len(again.requests) == 6 and outcome["turns"] == 6
+    assert _duration(proxy) == pytest.approx(DURATION, abs=1)
+
+
+async def test_a_missing_proxy_is_made_again_and_the_checkpoint_kept(video, tmp_path):
+    """A queue worker gets the checkpoint without the proxy (left out of the archive)."""
+    with pytest.raises(Quota):
+        await skill.run_skill_loop(video, "V", tmp_path, ScriptedModel([*HAPPY_PATH[:3], Quota("429")]))
+    (tmp_path / "proxy.mp4").unlink()
     again = ScriptedModel(HAPPY_PATH[3:])
     outcome = await skill.run_skill_loop(video, "V", tmp_path, again)
-    assert len(again.requests) == 3  # the checkpoint still counts; only the proxy was made again
-    assert outcome["turns"] == 6
-    assert _duration(proxy) == pytest.approx(DURATION, abs=1)
+    assert len(again.requests) == 3 and outcome["turns"] == 6
+
+
+def test_grading_prefers_a_complete_proxy_of_its_own_folder(video, tmp_path):
+    seg, own = tmp_path / "seg", tmp_path / "grading"
+    for folder in (seg, own):
+        folder.mkdir()
+    short = seg / "proxy.mp4"
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(video), "-t", "10", "-c", "copy", str(short)],
+                   check=True)
+    (seg / "probe.json").write_text(json.dumps({"proxy": str(short), "duration": DURATION}), encoding="utf-8")
+    (own / "probe.json").write_text(json.dumps({"proxy": str(video), "duration": DURATION}), encoding="utf-8")
+    runner = skill.ScriptRunner(skill.skill_dir(), own, video)
+    runner.probe_dir = seg
+    assert runner.load_or_prepare() is True and runner.proxy == str(video)
+
+
+def test_backend_and_skill_tolerances_agree():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("_video", skill.skill_dir() / "scripts" / "_video.py")
+    video_mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(video_mod)
+    for duration in (10, 200, 648, 3600):
+        assert skill.proxy_short_tolerance(duration) == video_mod.proxy_short_tolerance(duration)
 
 
 def test_proxy_complete_checks_the_length(video, tmp_path):
