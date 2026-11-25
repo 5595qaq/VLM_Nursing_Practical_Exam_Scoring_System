@@ -345,6 +345,19 @@ def _resume_notice(recorder: Recorder, previous: dict, steps: set[int]) -> bool:
     return True
 
 
+def requested_steps(text: str | None) -> set[int] | None:
+    """--steps as a set, plus the steps run_grading regrades with them (15 brings 17: rubric wrong_with),
+    so the duplicate check and the record name the steps actually graded."""
+    steps = {int(s) for s in text.split(",")} if text else None
+    if not steps:
+        return steps
+    rubric_mod = sop_grading_service.load_grading_module("rubric")
+    linked = rubric_mod.with_linked_steps(steps, rubric_mod.load_rubric())
+    if linked != steps:
+        print(f"--steps {sorted(steps)} 連同相連的步驟一起評：{sorted(linked)}", flush=True)
+    return linked
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("video", type=Path)
@@ -364,7 +377,7 @@ def main() -> None:
                     help="segment again instead of reusing an earlier record's segmentation (version without a record)")
     ap.add_argument("--runs-dir", type=Path, help="run records folder (default sop-video-grading/runs)")
     a = ap.parse_args()
-    steps = {int(s) for s in a.steps.split(",")} if a.steps else None
+    steps = requested_steps(a.steps)
     # The checkpoints' fingerprint reads settings.GIT_COMMIT; without GIT_COMMIT set, --commit fell back to git.
     settings.GIT_COMMIT = a.commit.strip()
     imported = None

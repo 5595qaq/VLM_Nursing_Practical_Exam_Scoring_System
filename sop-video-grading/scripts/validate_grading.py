@@ -21,7 +21,7 @@ from pathlib import Path
 from jsonschema import Draft202012Validator
 
 from rubric import (CORRECT, NOT_APPLICABLE, PARTIAL, PENDING, STEP_COUNT, UNDETERMINED, WRONG,
-                    aggregate, contact_order, load_rubric, wash_end)
+                    aggregate, contact_order, link_note, load_rubric, wash_end, wrong_with_links)
 
 SCHEMA_PATH = Path(__file__).resolve().parent.parent / "schema.json"
 
@@ -69,6 +69,21 @@ def _check_rules(result: dict, rubric: dict, final: bool) -> list[str]:
     for i, step in enumerate(result["steps"]):
         errors.extend(_check_step(f"steps[{i}] (step {step['step_id']})", step,
                                   rubric_steps[step["step_id"]], final))
+    errors.extend(check_wrong_with(result, rubric))
+    return errors
+
+
+def check_wrong_with(result: dict, rubric: dict) -> list[str]:
+    """rubric wrong_with (17a with 15b): when that criterion is 錯誤 this one must be 錯誤 too, unless the
+    grading agent has not graded it yet (rules.link_wrong)."""
+    graded = {c["criterion_id"]: c for s in result["steps"] for c in s["criteria"]}
+    errors = []
+    for cid, src_id in wrong_with_links(rubric).items():
+        c, src = graded.get(cid), graded.get(src_id)
+        if c and src and src["verdict"] == WRONG and c["verdict"] not in (WRONG, PENDING):
+            errors.append(f"criterion {cid}: {src_id} is {WRONG}, so {cid} must be {WRONG} too (wrong_with)")
+        if c and src and src["verdict"] != WRONG and link_note(cid) in c["explanation"]:
+            errors.append(f"criterion {cid}: linked to {src_id}, which is no longer {WRONG}; regrade {cid}")
     return errors
 
 
