@@ -458,6 +458,39 @@ def test_grading_prefers_a_complete_proxy_of_its_own_folder(video, tmp_path):
     assert runner.load_or_prepare() is True and runner.proxy == str(video)
 
 
+async def test_a_failed_proxy_transcode_keeps_the_checkpoint(video, tmp_path, monkeypatch):
+    """Out of memory while making the proxy again is not the model's fault: another attempt resumes."""
+    with pytest.raises(Quota):
+        await skill.run_skill_loop(video, "V", tmp_path, ScriptedModel([*HAPPY_PATH[:3], Quota("429")]))
+    (tmp_path / "proxy.mp4").unlink()
+    real_run = skill.ScriptRunner._run
+
+    def failing_prepare(self, script, *args):
+        if script == "prepare.py":
+            raise SkillRunError("prepare.py failed (1): proxy is truncated")
+        return real_run(self, script, *args)
+
+    monkeypatch.setattr(skill.ScriptRunner, "_run", failing_prepare)
+    with pytest.raises(skill.ProxyError):
+        await skill.run_skill_loop(video, "V", tmp_path, ScriptedModel(HAPPY_PATH[3:]))
+    assert (tmp_path / "checkpoint.json").exists()
+
+
+def test_an_old_probe_json_is_checked_against_the_video_stream(tmp_path):
+    """Before video_duration, probe.json had the container's length, which counts a longer audio track."""
+    src = tmp_path / "src.mp4"
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", "testsrc=size=160x120:rate=10:duration=20",
+                    "-f", "lavfi", "-i", "sine=duration=25", "-c:v", "libx264", "-pix_fmt", "yuv420p",
+                    "-c:a", "aac", str(src)], check=True)
+    proxy = tmp_path / "proxy.mp4"
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(src), "-an", "-c:v", "copy", str(proxy)], check=True)
+    (tmp_path / "probe.json").write_text(json.dumps({"proxy": str(proxy), "original": str(src),
+                                                     "duration": _duration(src)}), encoding="utf-8")
+    assert _duration(src) > 24
+    runner = skill.ScriptRunner(skill.skill_dir(), tmp_path, src)
+    assert runner.load_or_prepare() is True and runner.prepared == []
+
+
 def test_backend_and_skill_tolerances_agree():
     import importlib.util
     spec = importlib.util.spec_from_file_location("_video", skill.skill_dir() / "scripts" / "_video.py")

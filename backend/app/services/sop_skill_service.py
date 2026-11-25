@@ -47,6 +47,11 @@ class SkillRunError(RuntimeError):
     pass
 
 
+class ProxyError(RuntimeError):
+    """prepare.py failed (e.g. the proxy transcode ran out of memory or came out short, issue 216).
+    Not a SkillRunError: the checkpoint is kept, since another attempt can make the proxy."""
+
+
 @dataclass
 class Image:
     path: Path
@@ -150,6 +155,19 @@ def proxy_short_tolerance(duration: float) -> float:
     return max(2.0, 0.01 * duration)
 
 
+def _video_seconds(path) -> float | None:
+    """The video stream's length (a probe.json from before video_duration has only the container's)."""
+    try:
+        out = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries",
+                              "stream=duration:format=duration", "-of", "json", str(path)],
+                             capture_output=True, text=True, check=True).stdout
+        j = json.loads(out)
+        stream = (j.get("streams") or [{}])[0]
+        return float(stream.get("duration") or j["format"]["duration"])
+    except (subprocess.CalledProcessError, OSError, ValueError, KeyError, TypeError):
+        return None
+
+
 def _proxy_complete(proxy: str, duration) -> bool:
     """Whether a proxy left by an earlier attempt covers the source's video (probe.json's
     video_duration). A proxy cut short (ffmpeg out of memory but exiting 0, issue 216) would otherwise
@@ -178,6 +196,7 @@ class ScriptRunner:
         self.video = video
         self.probe: dict = {}
         self.probe_dir: Path | None = None  # load_or_prepare: where an existing probe.json may be
+        self.prepared: list[Image] = []  # the images of load_or_prepare's prepare(), when it ran one
         self.counter = 0
 
     def _run(self, script: str, *args) -> str:
@@ -201,7 +220,10 @@ class ScriptRunner:
         return float(self.probe["duration"])
 
     def prepare(self) -> list[Image]:
-        self._run("prepare.py", self.video, "--out", self.workdir)
+        try:
+            self._run("prepare.py", self.video, "--out", self.workdir)
+        except SkillRunError as exc:
+            raise ProxyError(str(exc)) from exc
         self.probe = json.loads((self.workdir / "probe.json").read_text(encoding="utf-8"))
         return [Image(self.workdir / "grid.jpg", "開場格線圖：6 個時間點的完整畫面，綠線每 0.1 一格")]
 
@@ -212,6 +234,7 @@ class ScriptRunner:
         False when a proxy was found cut short: material made from it (the segmentation's motion
         energy) may miss the video's tail."""
         truncated = False
+        self.prepared = []
         for folder in dict.fromkeys(filter(None, (self.probe_dir, self.workdir))):
             probe = folder / "probe.json"
             if not probe.is_file():
@@ -219,12 +242,13 @@ class ScriptRunner:
             data = json.loads(probe.read_text(encoding="utf-8"))
             if not Path(data.get("proxy", "")).is_file():
                 continue
-            if _proxy_complete(data["proxy"], data.get("video_duration", data.get("duration"))):
+            if _proxy_complete(data["proxy"], data.get("video_duration") or _video_seconds(
+                    data.get("original") or self.video)):
                 self.probe = data
                 return True
             logger.warning("proxy in %s is cut short", probe)
             truncated = True
-        self.prepare()
+        self.prepared = self.prepare()
         return not truncated
 
     def crop_preview(self, box) -> list[Image]:
@@ -461,7 +485,7 @@ async def _skill_turns(video_path, video_id, workdir, model_call, on_progress, m
     rejects = 0
     first_turn = 1
     if saved and not await asyncio.to_thread(runner.load_or_prepare):
-        # The proxy was missing or cut short (issue 216): the saved motion energy may miss the tail.
+        # The proxy was cut short (issue 216): the saved motion energy may miss the tail.
         logger.warning("proxy of %s was made again; segmentation starts over", video_id)
         saved = None
         (workdir / "transcript.json").unlink(missing_ok=True)
@@ -475,7 +499,7 @@ async def _skill_turns(video_path, video_id, workdir, model_call, on_progress, m
         first_turn = saved["turn"] + 1
         logger.warning("segmentation of %s continues from turn %d", video_id, first_turn)
     else:
-        pinned = await asyncio.to_thread(runner.prepare)
+        pinned = runner.prepared or await asyncio.to_thread(runner.prepare)
         state.images_produced += len(pinned)
     duration = runner.duration
     resolution = f"{runner.probe['width']}x{runner.probe['height']}"

@@ -642,7 +642,11 @@ async def run_grading(video_path: Path, segmentation: dict, workdir: Path, model
 
     workdir.mkdir(parents=True, exist_ok=True)
     runner = GradingRunner(workdir, video_path, probe_dir)
-    await asyncio.to_thread(runner.load_or_prepare)
+    if not await asyncio.to_thread(runner.load_or_prepare):
+        # Its proxy was cut short (issue 216). A segmentation usually fails on such a proxy (its global
+        # sheets reach the end), so one that finished on it is worth checking near the video's end.
+        logger.warning("the segmentation's proxy of %s was cut short; check the last steps' times",
+                       segmentation.get("video_id"))
     crop = segmentation["meta"]["crop"]
     boxes = {"context": crop["box"], "hands": crop["hands_box"]}
     system = build_system_prompt()
