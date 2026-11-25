@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 60.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 21933,
+  "cached_input_tokens": 18014,
+  "output_tokens": 1140,
+  "thinking_tokens": 1039,
+  "materials": [
+   "clip@59-67（context box，有聲音；片段內 00:00 ＝ 影片 00:59.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [59.5, 64.0, 65.0, 66.0], \"region\": [0.3, 0.6, 0.72, 0.95], \"reason\": \"放大確認 vial 瓶蓋從有色翻蓋被推開變成銀色鋁圈與橡皮塞，並確認右手取下塑膠翻蓋\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 32.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 23162,
+  "cached_input_tokens": 0,
+  "output_tokens": 1077,
+  "thinking_tokens": 798,
+  "materials": [
+   "clip@59-67（context box，有聲音；片段內 00:00 ＝ 影片 00:59.0）",
+   "zoom@59.5/64/65/66 region=[0.300, 0.600, 0.720, 0.950]"
+  ],
+  "reply": "{\n  \"action\": \"final\",\n  \"criteria\": [\n    {\n      \"criterion_id\": \"5a\",\n      \"verdict\": \"正確\",\n      \"explanation\": \"00:59.5（zoom@59.5）可見 vial 瓶頂覆蓋整片褐色塑膠翻蓋；01:01.0–01:05.0（clip@59-67 片段內 00:02.0–00:06.0、zoom@64、zoom@65）雙手拿起 vial，右手推開並取下褐色塑膠翻蓋；01:06.0（zoom@66）右手將塑膠蓋放在桌面左側，左手放回的 vial 瓶頂已露出銀色鋁圈與橡皮塞，確認已將 vial 瓶口打開。\",\n      \"times\": [[61.0, 65.0]],\n      \"evidence\": [\"clip@59-67\", \"zoom@59.5\", \"zoom@64\", \"zoom@65\", \"zoom@66\"],\n      \"confidence\": 0.95,\n      \"reason\": null\n    }\n  ]\n}",
+  "errors": []
+ }
+]

@@ -1,0 +1,106 @@
+{
+ "video_id": "VID_0081",
+ "versions": {
+  "rubric": "1.38",
+  "skill": "0.55",
+  "model": "gemini-4-hydrogen",
+  "segmentation": "skill1.5.12_gemini-4-hydrogen"
+ },
+ "video_sha256": "6f9235af873da512b612ede7dfc6feeb83ef8a17267ad624e6c2c613d5b2fc24",
+ "runs": [
+  {
+   "run": 1,
+   "by": "5595QAQ",
+   "date": "2026-11-25",
+   "commit": "c48ff8001984f02dfb5c3c7c269439161a2f3ee5",
+   "video_sha256": "6f9235af873da512b612ede7dfc6feeb83ef8a17267ad624e6c2c613d5b2fc24",
+   "steps": [
+    1,
+    2,
+    3,
+    5,
+    6,
+    7,
+    8,
+    9,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30
+   ],
+   "failed_tasks": [
+    {
+     "task": "4",
+     "error": "SkillRunError: task 4: no final action within 8 turns"
+    },
+    {
+     "task": "10",
+     "error": "SkillRunError: task 10: no final action within 8 turns"
+    }
+   ],
+   "segmentation": "sop-video-skill 1.5.12 gemini-4-hydrogen",
+   "usage": {
+    "input_tokens": 3268383,
+    "cached_input_tokens": 756282,
+    "output_tokens": 344850,
+    "thinking_tokens": 322307
+   },
+   "segmentation_usage": {
+    "input_tokens": 995518,
+    "cached_input_tokens": 500135,
+    "output_tokens": 173409,
+    "thinking_tokens": 123879
+   },
+   "timing": {
+    "started_at": "2026-11-25T09:30:48+00:00",
+    "segmentation_seconds": 1394.8,
+    "grading_seconds": 1355.7,
+    "total_seconds": 2750.8
+   }
+  },
+  {
+   "run": 2,
+   "by": "5595QAQ",
+   "date": "2026-11-25",
+   "commit": "c48ff8001984f02dfb5c3c7c269439161a2f3ee5",
+   "video_sha256": "6f9235af873da512b612ede7dfc6feeb83ef8a17267ad624e6c2c613d5b2fc24",
+   "steps": [
+    4
+   ],
+   "failed_tasks": [
+    {
+     "task": "10",
+     "error": "SkillRunError: task 10: no final action within 8 turns"
+    }
+   ],
+   "segmentation": "recorded segmentation.json",
+   "usage": {
+    "input_tokens": 510345,
+    "cached_input_tokens": 118334,
+    "output_tokens": 50991,
+    "thinking_tokens": 48430
+   },
+   "timing": {
+    "started_at": "2026-11-25T11:08:40+00:00",
+    "grading_seconds": 274.4,
+    "total_seconds": 274.4
+   }
+  }
+ ]
+}

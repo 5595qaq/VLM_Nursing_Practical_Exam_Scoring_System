@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 57.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 23427,
+  "cached_input_tokens": 20064,
+  "output_tokens": 77,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@32-47（context box，有聲音；片段內 00:00 ＝ 影片 00:32.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [35.0, 42.5, 44.0], \"region\": [0.3, 0.7, 0.65, 1.0], \"reason\": \"確認桌面上白色紙張是否為給藥紀錄單及手指指讀位置\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 66.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 24616,
+  "cached_input_tokens": 20064,
+  "output_tokens": 345,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@32-47（context box，有聲音；片段內 00:00 ＝ 影片 00:32.0）",
+   "zoom@35/42.5/44 region=[0.300, 0.700, 0.650, 1.000]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4a\", \"verdict\": \"無法判定\", \"explanation\": \"00:34.0–00:39.0 考生雙手持 vial 檢視，00:39.0–00:44.0 拿起稀釋液檢視並於 00:42.0–00:44.5 觸碰治療車前緣的酒精棉片小包裝後撕開；治療車台面、桌面及周圍皆未見給藥紀錄單入鏡（紀錄單應在畫面下緣鏡頭外），無法確認實際查看給藥紀錄單的時間。\", \"times\": [], \"evidence\": [\"clip@32-47\", \"zoom@35\", \"zoom@42.5\", \"zoom@44\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}, {\"criterion_id\": \"4b\", \"verdict\": \"無法判定\", \"explanation\": \"00:32.0–00:47.0 畫面中給藥紀錄單未入鏡（00:42.5–00:44.0 考生手觸碰的是治療車前緣的酒精棉片包裝），無法確認查看紀錄單時是否有用手指指出紀錄單。\", \"times\": [], \"evidence\": [\"clip@32-47\", \"zoom@42.5\", \"zoom@44\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}]}",
+  "errors": []
+ }
+]

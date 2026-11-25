@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 22.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 27057,
+  "cached_input_tokens": 0,
+  "output_tokens": 1831,
+  "thinking_tokens": 1723,
+  "materials": [
+   "clip@0-35.2（context box，有聲音；片段內 00:00 ＝ 影片 00:00.0）"
+  ],
+  "reply": "{\n  \"action\": \"zoom\",\n  \"times\": [2.0, 2.5, 4.0, 33.5],\n  \"region\": [0.4, 0.68, 0.78, 1.0],\n  \"reason\": \"以原始解析度確認洗手前接觸藥瓶與稀釋液瓶的確切時點，以及洗手結束後再次接觸藥瓶的時點。\"\n}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 32.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 28281,
+  "cached_input_tokens": 0,
+  "output_tokens": 3304,
+  "thinking_tokens": 2917,
+  "materials": [
+   "clip@0-35.2（context box，有聲音；片段內 00:00 ＝ 影片 00:00.0）",
+   "zoom@2/2.5/4/33.5 region=[0.400, 0.680, 0.780, 1.000]"
+  ],
+  "reply": "{\n  \"action\": \"final\",\n  \"criteria\": [\n    {\n      \"criterion_id\": \"1c\",\n      \"verdict\": \"錯誤\",\n      \"explanation\": \"00:00.0–00:02.0 雙手懸於治療車上方尚未接觸物品（zoom@2）；但於洗手前，00:02.5 左手即接觸並移動空針包裝（zoom@2.5），00:04.0 左手接觸藥瓶（vial）、右手接觸並移動稀釋液瓶（zoom@4、clip@0-35.2）。考生於 00:05.5–00:06.0 才按壓洗手液開始洗手，至 00:33.0 雙手分開結束洗手，並於 00:34.0 再次接觸藥瓶（clip@0-35.2、zoom@33.5）。實際接觸物品時間（00:02.5、00:04.0）早於洗手結束超過 1 秒，未於接觸物品前完成洗手。\",\n      \"times\": [\n        [2.5, 2.5],\n        [4.0, 4.0],\n        [34.0, 34.0]\n      ],\n      \"evidence\": [\n        \"clip@0-35.2\",\n        \"zoom@2\",\n        \"zoom@2.5\",\n        \"zoom@4\",\n        \"zoom@33.5\"\n      ],\n      \"confidence\": 0.95,\n      \"reason\": null\n    }\n  ]\n}",
+  "errors": []
+ }
+]

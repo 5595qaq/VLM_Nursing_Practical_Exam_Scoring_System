@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 13.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 26134,
+  "cached_input_tokens": 0,
+  "output_tokens": 1153,
+  "thinking_tokens": 1058,
+  "materials": [
+   "clip@216.8-247.5（context box，有聲音；片段內 00:00 ＝ 影片 03:36.8）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [220.3, 226.8, 238.8, 244.8], \"region\": [0.38, 0.42, 0.68, 0.74], \"reason\": \"以原始解析度確認針頭與針筒接合處是否確實墊有白色方形酒精棉片及其起訖狀態\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 25.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 27380,
+  "cached_input_tokens": 0,
+  "output_tokens": 1341,
+  "thinking_tokens": 1011,
+  "materials": [
+   "clip@216.8-247.5（context box，有聲音；片段內 00:00 ＝ 影片 03:36.8）",
+   "zoom@220.3/226.8/238.8/244.8 region=[0.380, 0.420, 0.680, 0.740]"
+  ],
+  "reply": "{\n  \"action\": \"final\",\n  \"criteria\": [\n    {\n      \"criterion_id\": \"15a\",\n      \"verdict\": \"正確\",\n      \"explanation\": \"03:39.8–04:04.8（clip@216.8-247.5 片段內 00:03.0–00:28.0）考生右手自桌面拿起白色方形酒精棉片，於 03:39.8–03:40.3 墊在針頭與針筒交接處，zoom@220.3、zoom@226.8、zoom@238.8 清楚可見白色方形棉片固定於針頭與針筒接合處，直到 04:04.8（zoom@244.8）才將棉片取下。\",\n      \"times\": [\n        [\n          219.8,\n          244.8\n        ]\n      ],\n      \"evidence\": [\n        \"clip@216.8-247.5\",\n        \"zoom@220.3\",\n        \"zoom@226.8\",\n        \"zoom@238.8\",\n        \"zoom@244.8\"\n      ],\n      \"confidence\": 0.95,\n      \"reason\": null\n    }\n  ]\n}",
+  "errors": []
+ }
+]

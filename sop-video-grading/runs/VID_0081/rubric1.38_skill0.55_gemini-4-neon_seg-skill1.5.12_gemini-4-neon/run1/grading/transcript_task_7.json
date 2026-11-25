@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 18.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 22705,
+  "cached_input_tokens": 20064,
+  "output_tokens": 1316,
+  "thinking_tokens": 1226,
+  "materials": [
+   "clip@77.5-89.5（context box，有聲音；片段內 00:00 ＝ 影片 01:17.5）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 67.5, \"end\": 77.5, \"fps\": 2, \"reason\": \"依 7a 規則查看任務區間開始前 10 秒（67.5–77.5s），確認拿起稀釋液瓶與撕棉片過程，以及先前是否已先擦拭過稀釋液瓶口。\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 30.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 24634,
+  "cached_input_tokens": 20064,
+  "output_tokens": 1933,
+  "thinking_tokens": 1849,
+  "materials": [
+   "clip@77.5-89.5（context box，有聲音；片段內 00:00 ＝ 影片 01:17.5）",
+   "clip@67.5-77.5（context box，有聲音；片段內 00:00 ＝ 影片 01:07.5）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [79.5, 80.5, 82.5, 85.0], \"region\": [0.35, 0.48, 0.68, 0.85], \"reason\": \"放大確認學生以白色酒精棉片擦拭細長稀釋液瓶頂端\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 24.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 25875,
+  "cached_input_tokens": 20064,
+  "output_tokens": 2597,
+  "thinking_tokens": 2179,
+  "materials": [
+   "clip@77.5-89.5（context box，有聲音；片段內 00:00 ＝ 影片 01:17.5）",
+   "clip@67.5-77.5（context box，有聲音；片段內 00:00 ＝ 影片 01:07.5）",
+   "zoom@79.5/80.5/82.5/85 region=[0.350, 0.480, 0.680, 0.850]"
+  ],
+  "reply": "{\n  \"action\": \"final\",\n  \"criteria\": [\n    {\n      \"criterion_id\": \"7a\",\n      \"verdict\": \"正確\",\n      \"explanation\": \"已檢視區間前 10 秒 01:07.5–01:17.5（clip@67.5-77.5），考生在撕開酒精棉片包裝，桌上的細長透明稀釋液瓶未被碰觸。01:19.0（clip@77.5-89.5 片段內 00:01.5）左手拿起稀釋液瓶，01:19.5（zoom@79.5）右手持白色酒精棉片靠近瓶頂，01:20.0（片段內 00:02.5）棉片首次接觸稀釋液瓶頂，01:20.0–01:25.5（zoom@80.5、zoom@82.5、zoom@85）右手以酒精棉片在稀釋液瓶頂端來回擦拭旋轉消毒，01:26.0（片段內 00:08.5）移開棉片並將稀釋液瓶放回桌面，符合消毒稀釋液瓶口標準。\",\n      \"times\": [[80.0, 85.5]],\n      \"evidence\": [\n        \"clip@67.5-77.5\",\n        \"clip@77.5-89.5\",\n        \"zoom@79.5\",\n        \"zoom@80.5\",\n        \"zoom@82.5\",\n        \"zoom@85\"\n      ],\n      \"confidence\": 0.95,\n      \"reason\": null\n    }\n  ]\n}",
+  "errors": []
+ }
+]

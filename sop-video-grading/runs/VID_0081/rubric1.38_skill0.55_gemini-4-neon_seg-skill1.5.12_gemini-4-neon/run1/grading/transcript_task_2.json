@@ -1,0 +1,100 @@
+[
+ {
+  "turn": 1,
+  "seconds": 17.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 21460,
+  "cached_input_tokens": 0,
+  "output_tokens": 1710,
+  "thinking_tokens": 1621,
+  "materials": [
+   "clip@31.2-35.8（context box，有聲音；片段內 00:00 ＝ 影片 00:31.2）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 21.2, \"end\": 45.8, \"fps\": 2, \"reason\": \"檢查任務區間前後各10秒（00:21.2–00:45.8），確認取出 vial 前有無查看紀錄單，並由後續核對動作定位給藥紀錄單位置。\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 24.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 26064,
+  "cached_input_tokens": 0,
+  "output_tokens": 2440,
+  "thinking_tokens": 2349,
+  "materials": [
+   "clip@31.2-35.8（context box，有聲音；片段內 00:00 ＝ 影片 00:31.2）",
+   "clip@21.2-45.8（context box，有聲音；片段內 00:00 ＝ 影片 00:21.2）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [33.7, 34.2, 34.7], \"region\": [0.55, 0.3, 1.0, 0.98], \"reason\": \"確認畫面右側牆面／架上與治療車右側紙張是否為給藥紀錄單，並精確確認左手拿起 vial 的時間點。\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 30.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 27278,
+  "cached_input_tokens": 20064,
+  "output_tokens": 3081,
+  "thinking_tokens": 2823,
+  "materials": [
+   "clip@31.2-35.8（context box，有聲音；片段內 00:00 ＝ 影片 00:31.2）",
+   "clip@21.2-45.8（context box，有聲音；片段內 00:00 ＝ 影片 00:21.2）",
+   "zoom@33.7/34.2/34.7 region=[0.550, 0.300, 1.000, 0.980]"
+  ],
+  "reply": "",
+  "errors": [
+   "回覆中找不到動作 JSON 物件"
+  ]
+ },
+ {
+  "turn": 4,
+  "seconds": 30.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 27299,
+  "cached_input_tokens": 20064,
+  "output_tokens": 2971,
+  "thinking_tokens": 2912,
+  "materials": [
+   "clip@31.2-35.8（context box，有聲音；片段內 00:00 ＝ 影片 00:31.2）",
+   "clip@21.2-45.8（context box，有聲音；片段內 00:00 ＝ 影片 00:21.2）",
+   "zoom@33.7/34.2/34.7 region=[0.550, 0.300, 1.000, 0.980]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [32.5], \"region\": [0.0, 0.55, 0.55, 1.0], \"reason\": \"確認畫面左側與治療車前緣是否有給藥紀錄單\"}",
+  "errors": []
+ },
+ {
+  "turn": 5,
+  "seconds": 43.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 28475,
+  "cached_input_tokens": 20064,
+  "output_tokens": 4798,
+  "thinking_tokens": 4713,
+  "materials": [
+   "clip@31.2-35.8（context box，有聲音；片段內 00:00 ＝ 影片 00:31.2）",
+   "clip@21.2-45.8（context box，有聲音；片段內 00:00 ＝ 影片 00:21.2）",
+   "zoom@33.7/34.2/34.7 region=[0.550, 0.300, 1.000, 0.980]",
+   "zoom@32.5 region=[0.000, 0.550, 0.550, 1.000]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [33.2, 34.4, 34.5], \"region\": [0.3, 0.7, 0.8, 1.0], \"reason\": \"確認治療車檯面中央及前緣是否有給藥紀錄單，同時確認左手拿起 vial 離開桌面的確切時間點。\"}",
+  "errors": []
+ },
+ {
+  "turn": 6,
+  "seconds": 108.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 29682,
+  "cached_input_tokens": 20064,
+  "output_tokens": 9807,
+  "thinking_tokens": 8943,
+  "materials": [
+   "clip@31.2-35.8（context box，有聲音；片段內 00:00 ＝ 影片 00:31.2）",
+   "clip@21.2-45.8（context box，有聲音；片段內 00:00 ＝ 影片 00:21.2）",
+   "zoom@33.7/34.2/34.7 region=[0.550, 0.300, 1.000, 0.980]",
+   "zoom@32.5 region=[0.000, 0.550, 0.550, 1.000]",
+   "zoom@33.2/34.4/34.5 region=[0.300, 0.700, 0.800, 1.000]"
+  ],
+  "reply": "{\n  \"action\": \"final\",\n  \"criteria\": [\n    {\n      \"criterion_id\": \"2a\",\n      \"verdict\": \"無法判定\",\n      \"explanation\": \"已以 context 片段及局部放大檢查治療車檯面左側、中央前緣、右側及後方牆面：左側僅有紅色尖銳物收集筒與壓克力瓶盒（zoom@32.5），檯面中央前緣為藍白色酒精棉片包裝、稀釋液瓶與粉劑 vial（zoom@33.2），右側為乾洗手瓶與空針包裝，右後方牆面貼附的紙張為「WT-778 簡易操作」設備說明圖紙而非給藥紀錄單（zoom@33.7）。畫面中未見給藥紀錄單入鏡；在可檢視時段 00:21.2–00:32.2 考生持續洗手，00:32.2 雙手分開後於 00:34.7 拿起 vial，因給藥紀錄單未入鏡，無法確認取出 vial 前實際查看給藥紀錄單之時間。\",\n      \"times\": [],\n      \"evidence\": [\n        \"clip@31.2-35.8\",\n        \"clip@21.2-45.8\",\n        \"zoom@32.5\",\n        \"zoom@33.2\",\n        \"zoom@33.7\"\n      ],\n      \"confidence\": 0.9,\n      \"reason\": \"藥單看不見\"\n    },\n    {\n      \"criterion_id\": \"2b\",\n      \"verdict\": \"無法判定\",\n      \"explanation\": \"畫面中治療車檯面各處與後方牆面均未見給藥紀錄單入鏡（zoom@32.5、zoom@33.2、zoom@33.7）；在可檢視的取出 vial 前時段（00:21.2–00:34.7），考生於 00:21.2–00:32.2 持續洗手，00:32.2 雙手分開後直接伸手並於 00:34.7 拿起 vial，期間未見指讀動作，但因給藥紀錄單未入鏡，無法確認取出 vial 前查看紀錄單時是否曾以手指指出。\",\n      \"times\": [],\n      \"evidence\": [\n        \"clip@31.2-35.8\",\n        \"clip@21.2-45.8\",\n        \"zoom@32.5\",\n        \"zoom@33.2\",\n        \"zoom@33.7\"\n      ],\n      \"confidence\": 0.85,\n      \"reason\": \"藥單看不見\"\n    },\n    {\n      \"criterion_id\": \"2d\",\n      \"verdict\": \"正確\",\n      \"explanation\": \"00:34.2–00:34.5 考生左手伸向並握住治療車檯面上棕色翻蓋的粉劑藥瓶（vial），於 00:34.7 將藥瓶拿起離開檯面，隨後於 00:35.2 以雙手持藥瓶檢視。\",\n      \"times\": [\n        [\n          34.7,\n          34.7\n        ]\n      ],\n      \"evidence\": [\n        \"clip@31.2-35.8\",\n        \"zoom@34.2\",\n        \"zoom@34.4\",\n        \"zoom@34.5\",\n        \"zoom@34.7\"\n      ],\n      \"confidence\": 0.95,\n      \"reason\": null\n    }\n  ]\n}",
+  "errors": []
+ }
+]
