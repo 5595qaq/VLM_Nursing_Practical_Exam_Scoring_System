@@ -14,16 +14,38 @@ import numpy as np
 def probe(path):
     out = subprocess.check_output([
         "ffprobe", "-v", "error", "-select_streams", "v:0",
-        "-show_entries", "stream=width,height,r_frame_rate,codec_name:format=duration",
+        "-show_entries", "stream=width,height,r_frame_rate,codec_name,duration:format=duration",
         "-of", "json", path])
     j = json.loads(out)
     s = j["streams"][0]
     num, den = s["r_frame_rate"].split("/")
+    duration = float(j["format"]["duration"])
+    try:  # the video stream alone; the container may run on with the audio track
+        video_duration = float(s["duration"])
+    except (KeyError, ValueError):
+        video_duration = duration
     return {"width": int(s["width"]), "height": int(s["height"]), "codec": s.get("codec_name", ""),
-            "fps": float(num) / float(den), "duration": float(j["format"]["duration"])}
+            "fps": float(num) / float(den), "duration": duration, "video_duration": video_duration}
 
 
 PROXY_FPS, PROXY_WIDTH = 10, 960  # proxy spec: 960 wide, 10 fps, GOP = fps (1 s) H.264, no audio
+
+
+def proxy_short_tolerance(duration):
+    """How much shorter than the source's video stream a proxy may be: each parallel segment can
+    lose part of a frame at 10 fps. Shorter means a truncated transcode, e.g. ffmpeg out of memory
+    but exiting 0 (issue 216). The backend has the same function (sop_skill_service)."""
+    return max(2.0, 0.01 * duration)
+
+
+def proxy_complete(proxy, video_duration, tolerance=None):
+    """True when `proxy` decodes as a video at most `tolerance` seconds shorter than `video_duration`."""
+    if tolerance is None:
+        tolerance = proxy_short_tolerance(video_duration)
+    try:
+        return probe(proxy)["duration"] >= video_duration - tolerance
+    except (subprocess.CalledProcessError, OSError, ValueError, KeyError, IndexError):
+        return False
 
 
 def _src_sig(src, fps, width):
@@ -37,17 +59,21 @@ def make_proxy(src, dst, fps=PROXY_FPS, width=PROXY_WIDTH, jobs=None, hwaccel=Fa
 
     Speed: decoding (HEVC 1080p+) dominates, so the source is split into `jobs` time segments that
     are transcoded in parallel and concatenated (GOP = fps keeps every segment start a keyframe).
-    Reused when a sidecar <dst>.json records the same source size/mtime and proxy parameters.
+    Reused when a sidecar <dst>.json records the same source size/mtime and proxy parameters and
+    the proxy is not shorter than the source's video (proxy_complete); a finished proxy that is
+    shorter is deleted and raises RuntimeError.
     """
     sig = _src_sig(src, fps, width)
     side = dst + ".json"
     if os.path.exists(dst) and os.path.exists(side):
         try:
-            if json.load(open(side, encoding="utf-8")) == sig:
+            if (json.load(open(side, encoding="utf-8")) == sig
+                    and proxy_complete(dst, probe(src)["video_duration"])):
                 return dst
         except Exception:
             pass
-    dur = probe(src)["duration"]
+    info = probe(src)
+    dur = info["duration"]
     jobs = max(1, min(jobs or os.cpu_count() or 1, int(dur // 30) or 1))  # segments >= 30 s
     vf = f"fps={fps},scale={width}:-2:flags=fast_bilinear"
     enc = ["-c:v", "libx264", "-preset", "ultrafast", "-crf", "23", "-g", str(fps),
@@ -78,6 +104,15 @@ def make_proxy(src, dst, fps=PROXY_FPS, width=PROXY_WIDTH, jobs=None, hwaccel=Fa
     for p in os.listdir(tmpdir):
         os.remove(os.path.join(tmpdir, p))
     os.rmdir(tmpdir)
+    if not proxy_complete(dst, info["video_duration"]):
+        try:
+            got = f"{probe(dst)['duration']:.1f}s"
+        except Exception:
+            got = "unreadable"
+        for path in (dst, side):
+            if os.path.exists(path):
+                os.remove(path)
+        raise RuntimeError(f"proxy is truncated: {got} of a {info['video_duration']:.1f}s source video")
     json.dump(sig, open(side, "w", encoding="utf-8"))
     return dst
 
