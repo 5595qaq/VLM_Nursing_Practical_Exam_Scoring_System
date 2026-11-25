@@ -1,0 +1,53 @@
+{
+ "video_id": "VID_0081",
+ "versions": {
+  "rubric": "1.42",
+  "skill": "0.60",
+  "model": "gemini-4-argon",
+  "segmentation": "saved-model-495b219397755d08",
+  "pipeline": "two-stage"
+ },
+ "video_sha256": "6f9235af873da512b612ede7dfc6feeb83ef8a17267ad624e6c2c613d5b2fc24",
+ "runs": [
+  {
+   "run": 1,
+   "by": "5595QAQ",
+   "date": "2026-11-25",
+   "commit": "89557b92e9c55a02d00bb08338b9a00bfd5e0e17",
+   "video_sha256": "6f9235af873da512b612ede7dfc6feeb83ef8a17267ad624e6c2c613d5b2fc24",
+   "steps": [
+    10,
+    24
+   ],
+   "failed_tasks": [],
+   "segmentation": "saved model segmentation; sha256-tag saved-model-495b219397755d08",
+   "usage": {
+    "input_tokens": 292422,
+    "cached_input_tokens": 0,
+    "output_tokens": 7957,
+    "thinking_tokens": 2669
+   },
+   "timing": {
+    "started_at": "2026-11-25T20:24:00+00:00",
+    "grading_seconds": 126.2,
+    "total_seconds": 293.7
+   },
+   "segmentation_import": {
+    "kind": "saved_model_segmentation",
+    "sha256": "495b219397755d0851b996e509c84f8209b2007afefe4e7e7d0cc2fa7dcd5f7c",
+    "provenance": {
+     "base": {
+      "record": "rubric1.40_skill0.57_gemini-4-argon_seg-saved-model-495b219397755d08",
+      "segmentation": "saved-model-495b219397755d08",
+      "segmentation_sha256": "7e2113711ce1ad33dd67f11ab87084255d7cb8c5298acc5a5c00ecf853fe164c",
+      "run": 1,
+      "by": "5595QAQ",
+      "date": "2026-11-25",
+      "commit": "c7d6528b19d97a5948e040e57e13b09c23331cfc",
+      "source": "saved model segmentation; sha256-tag saved-model-495b219397755d08"
+     }
+    }
+   }
+  }
+ ]
+}
