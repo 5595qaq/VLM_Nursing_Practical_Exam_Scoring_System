@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 9.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 28241,
+  "cached_input_tokens": 18187,
+  "output_tokens": 368,
+  "thinking_tokens": 276,
+  "materials": [
+   "clip@276-326（context box，有聲音；片段內 00:00 ＝ 影片 04:36.0）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 280.0, \"end\": 325.0, \"fps\": 1, \"region\": [0.45, 0.25, 0.8, 0.55], \"reason\": \"從針頭插入稀釋液瓶完成到開始拔針為止，每秒檢視針筒兩端高低方向\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 19.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 32878,
+  "cached_input_tokens": 0,
+  "output_tokens": 342,
+  "thinking_tokens": 167,
+  "materials": [
+   "clip@276-326（context box，有聲音；片段內 00:00 ＝ 影片 04:36.0）",
+   "clip@280-325（region=[0.450, 0.250, 0.800, 0.550]，原始解析度裁切，有聲音；片段內 00:00 ＝ 影片 04:40.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"13b\", \"verdict\": \"正確\", \"explanation\": \"04:41（clip@280-325 的 00:01）針頭插入稀釋液瓶完成，至 05:23（00:43）開始拔針之前，04:41–05:23 逐秒看過，針頭都比針筒尾端低，全程維持針頭朝下。\", \"times\": [[281.0, 323.0]], \"evidence\": [\"clip@276-326\", \"clip@280-325\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

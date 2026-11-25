@@ -2,6 +2,13 @@
 
 未發布的修改先寫在 `changelog.d/`（一個分支一個檔，見 `changelog.d/README.md`），合併前改成正式版本時才移到這裡；規則見 `AGENTS.md`「多人協作」。
 
+## 0.58（rubric 1.41）
+
+- **步驟 13：移除 13c（issue #137，PR #177，`criteria/04-needle-down-13b.md`、rubric；分支版本 SKILL 0.45-needle13hold.1／rubric 1.29-needle13hold.1，最後一輪 0.55-needle13hold.5／1.38-needle13hold.5）：**
+  - 移除 13c「插針前旋轉針頭與空針的交界」（原本 `not_visible`、固定無法判定、不計分）：老師 2026-11-17 確認旋轉針頭與空針交界歸在步驟 10，不屬於步驟 13（`DECISIONS.md` D-04-03）。`criteria/04-needle-down-13b.md` 刪掉 13c 段落和「之前的判法（暫停用）」；`criteria/README.md`、`README.md` 的 `not_visible` 範例、`tests/sop_grading/test_rubric.py` 同步。步驟 10（`criteria/08-hand-posture.md`）不在這個分支修改，另行通知負責人。
+  - 13b 判法不變（只看插針那一刻，老師 2026-11-24 確認，D-04-05）；`note` 裡「旋轉針頭與空針交界拆成 13c（暫定…）」改成「歸在步驟 10（老師 2026-11-17），13c 已移除」，只改說明。
+  - 13c 原本就不交給評分 agent、不影響整步判定，13b 又和 0.56 相同，不重跑付費評分（比照 #202）。分支中途試過的 13b「看插入後維持的角度」（D-04-04，needle13hold.2–.4）已撤回，不在這個版本；紀錄見 `experiments/2026-11-23-needle13hold4.md`。
+
 ## 0.57（rubric 1.40）
 
 順序做反時相關步驟全部錯誤（issue #138、#142，PR #213；分支版本 SKILL 0.53-orderfail.1、.2／rubric 1.36-orderfail.1、.2）。結果見 `experiments/2026-11-25-orderfail.md`。
@@ -13,6 +20,7 @@
 - `--steps` 寫了 15、25、8 時，17、27、7 一起重評並記進紀錄（`rubric.with_linked_steps`），避免留下用舊判定連動的錯誤；目標留著過期的連動時改回待判定；`validate_grading.py` 也擋下來源已不是錯誤的連動。
 - 共用 `SKILL.md` 開頭的「由你看畫面」清單加上 8b。
 - 7a、8a、8b 同一個評分任務（`task: "7-8"`，原本 7a、8a 各自一個任務），各自保留區間；切分未找到步驟時照舊各自搜尋。
+
 
 ## 0.56（rubric 1.39）
 
