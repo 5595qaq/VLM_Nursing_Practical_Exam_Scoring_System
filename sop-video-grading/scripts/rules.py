@@ -16,11 +16,13 @@ usage: python rules.py segmentation.json [-o grading.json]
 
 import argparse
 import json
+import re
 import sys
 from pathlib import Path
 
 from rubric import (CHECK_STEP, CORRECT, NOT_APPLICABLE, PENDING, SOURCE_FOR, STEP_COUNT, UNDETERMINED, WRONG, aggregate,
-                    fmt_time, load_rubric, search_range, contact_order, wash_end)
+                    criteria_by_id, fmt_time, link_note, load_rubric, search_range, contact_order, wash_end,
+                    wrong_with_links)
 
 WINDOW_MARGIN = 2.0  # seconds added on both sides of a visual criterion's window
 CHECK_MARGIN = 10.0  # a segment_check entry is a tagged moment that may be a few seconds off: look wider
@@ -39,7 +41,64 @@ def grade_from_segmentation(seg: dict, rubric: dict | None = None,
         search_step = any(c.get("search_steps") for c in step["criteria"])
         criteria = [_grade(c, step["step_id"], entries, duration, margin, search_step) for c in step["criteria"]]
         steps.append(build_step(step, criteria))
-    return {"video_id": seg["video_id"], "rubric_version": rubric["version"], "steps": steps}
+    return {"video_id": seg["video_id"], "rubric_version": rubric["version"],
+            "steps": link_wrong(steps, rubric)}
+
+
+_MMSS = re.compile(r"\d{2}:\d{2}(?:\.\d+)?")
+_CLIP_PAREN = re.compile(r"[（(][^（()）]*(?:片段|clip@)[^（()）]*[）)]")  # 「（clip@a-b 片段內 00:08）」
+_CLIP_MMSS = re.compile(r"片段內?[^\d]{0,3}\d{2}:\d{2}(?:\.\d+)?(?:\s*[–\-~～至到、及和與]\s*\d{2}:\d{2}(?:\.\d+)?)*")
+
+
+def link_wrong(steps: list[dict], rubric: dict, *, segmentation: dict | None = None) -> list[dict]:
+    """Doing an order backwards fails every related step (DECISIONS D-00-03, D-05-03): a criterion with
+    `wrong_with` (17a with 15b, 27a with 25b, 7a with 8b) becomes 錯誤 when that criterion of another
+    step is 錯誤, and its step is aggregated again. A criterion still 待判定 is left for the grading
+    agent; once graded, the next call links it."""
+    links = wrong_with_links(rubric)
+    if not links:
+        return steps
+    specs = criteria_by_id(rubric)
+    graded = {c["criterion_id"]: c for s in steps for c in s["criteria"]}
+    by_id = {s["step_id"]: s for s in rubric["steps"]}
+    out = []
+    for step in steps:
+        criteria, changed = [], False
+        for c in step["criteria"]:
+            src = graded.get(links.get(c["criterion_id"], ""))
+            if src is not None and src["verdict"] == WRONG and c["verdict"] not in (WRONG, PENDING):
+                c, changed = _linked_wrong(c, src, specs[src["criterion_id"]]), True
+            elif (src is not None and src["verdict"] != WRONG and c["verdict"] == WRONG
+                  and link_note(c["criterion_id"]) in c["explanation"] and c.get("window")):
+                # linked from an old grade of the source (its own task failed this time): grade it again
+                c, changed = {**c, "verdict": PENDING, "reason": None, "evidence": [],
+                              "explanation": f"等待評分 agent 重新判定（{src['criterion_id']} 已不是錯誤，"
+                                             "之前的連動不適用）。"}, True
+                for key in ("times", "span", "needs_review", "review_reason"):
+                    c.pop(key, None)
+            criteria.append(c)
+        out.append(build_step(by_id[step["step_id"]], criteria, segmentation=segmentation) if changed else step)
+    return out
+
+
+def _src_times(src: dict) -> str:
+    """Where the source criterion looked, in video time: its `times` (video seconds), else the mm:ss its
+    explanation cites outside 「片段內」 (clip-relative)."""
+    if src.get("times"):
+        return "、".join(fmt_time(a) if a == b else f"{fmt_time(a)}–{fmt_time(b)}" for a, b in src["times"])
+    cited = _MMSS.findall(_CLIP_MMSS.sub("", _CLIP_PAREN.sub("", src["explanation"])))[:3]
+    if cited:
+        return "、".join(cited)
+    window = src.get("window")  # a vlm 錯誤 must cite a time: say where the source was graded
+    return f"評分區間 {fmt_time(window[0])}–{fmt_time(window[1])}" if window else ""
+
+
+def _linked_wrong(c: dict, src: dict, spec: dict) -> dict:
+    when = _src_times(src)
+    note = (f"{spec['id']}「{spec['text']}」錯誤" + (f"（{when}）" if when else "")
+            + "：依 DECISIONS D-00-03／D-05-03 相關步驟一起錯誤，" + link_note(c["criterion_id"]))
+    return {**c, "verdict": WRONG, "reason": None, "evidence": c["evidence"] or list(src["evidence"]),
+            "explanation": c["explanation"].rstrip("。") + "。" + note + "。"}
 
 
 def build_step(step: dict, criteria: list[dict], *, segmentation: dict | None = None) -> dict:

@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 30.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 21772,
+  "cached_input_tokens": 0,
+  "output_tokens": 99,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@265-276（hands_box，n=9）#0=04:25.0、#1=04:26.4、#2=04:27.8、#3=04:29.1、#4=04:30.5、#5=04:31.9、#6=04:33.2、#7=04:34.6、#8=04:36.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [270.5, 271.9, 273.2, 274.6], \"region\": [0.15, 0.55, 0.85, 0.98], \"reason\": \"確認單手回套時針頭套在針架上、左手位置及右手將針頭插入針套的過程\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 59.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 23015,
+  "cached_input_tokens": 0,
+  "output_tokens": 487,
+  "thinking_tokens": 273,
+  "materials": [
+   "ov@265-276（hands_box，n=9）#0=04:25.0、#1=04:26.4、#2=04:27.8、#3=04:29.1、#4=04:30.5、#5=04:31.9、#6=04:33.2、#7=04:34.6、#8=04:36.0",
+   "zoom@270.5/271.9/273.2/274.6 region=[0.150, 0.550, 0.850, 0.980]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"19b\", \"verdict\": \"正確\", \"explanation\": \"04:30.5–04:34.6 針頭套立在桌面針架上，右手單手持空針將針頭垂直插入針頭套中回套，左手全程停留在桌面另一側，未碰觸針頭套。\", \"times\": [[270.5, 274.6]], \"evidence\": [\"ov@265-276 #4\", \"ov@265-276 #5\", \"ov@265-276 #6\", \"ov@265-276 #7\", \"zoom@270.5\", \"zoom@271.9\", \"zoom@273.2\", \"zoom@274.6\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

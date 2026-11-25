@@ -1,0 +1,66 @@
+{
+ "video_id": "VID_0011",
+ "versions": {
+  "rubric": "1.29-needle13hold.2",
+  "skill": "0.45-needle13hold.2",
+  "model": "gemini-4-argon",
+  "segmentation": "labels-dca0b7ac"
+ },
+ "video_sha256": "426a49f625173b078ec643b6b1761f2e67d67feacf1e7fbf0096ca41e768272d",
+ "runs": [
+  {
+   "run": 1,
+   "by": "od3w",
+   "date": "2026-11-21",
+   "commit": "a862f676b040291399e8415978be0610456a9f38",
+   "video_sha256": "426a49f625173b078ec643b6b1761f2e67d67feacf1e7fbf0096ca41e768272d",
+   "steps": [],
+   "failed_tasks": [
+    {
+     "task": "13",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    },
+    {
+     "task": "13-14",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    }
+   ],
+   "segmentation": "label times",
+   "usage": {
+    "input_tokens": 19290,
+    "cached_input_tokens": 17241,
+    "output_tokens": 271,
+    "thinking_tokens": 178
+   },
+   "timing": {
+    "started_at": "2026-11-21T14:30:08+00:00",
+    "grading_seconds": 342.3,
+    "total_seconds": 471.8
+   }
+  },
+  {
+   "run": 2,
+   "by": "od3w",
+   "date": "2026-11-21",
+   "commit": "a862f676b040291399e8415978be0610456a9f38",
+   "video_sha256": "426a49f625173b078ec643b6b1761f2e67d67feacf1e7fbf0096ca41e768272d",
+   "steps": [
+    13
+   ],
+   "failed_tasks": [],
+   "segmentation": "recorded segmentation.json",
+   "usage": {
+    "input_tokens": 81834,
+    "cached_input_tokens": 0,
+    "output_tokens": 802,
+    "thinking_tokens": 274
+   },
+   "timing": {
+    "started_at": "2026-11-21T17:35:09+00:00",
+    "grading_seconds": 51.1,
+    "total_seconds": 51.1,
+    "checkpoints_found": true
+   }
+  }
+ ]
+}

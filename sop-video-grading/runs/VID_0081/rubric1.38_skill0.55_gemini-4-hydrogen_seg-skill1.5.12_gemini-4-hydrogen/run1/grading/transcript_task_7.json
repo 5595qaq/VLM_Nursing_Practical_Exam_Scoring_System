@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 8.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 22306,
+  "cached_input_tokens": 0,
+  "output_tokens": 1005,
+  "thinking_tokens": 918,
+  "materials": [
+   "clip@79-89（context box，有聲音；片段內 00:00 ＝ 影片 01:19.0）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 69.0, \"end\": 79.0, \"fps\": 2, \"reason\": \"依 7a 規則查看任務區間開始前 10 秒（01:09.0–01:19.0）拿起稀釋液瓶、撕棉片與是否已有擦拭動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 12.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 24219,
+  "cached_input_tokens": 20064,
+  "output_tokens": 1709,
+  "thinking_tokens": 1617,
+  "materials": [
+   "clip@79-89（context box，有聲音；片段內 00:00 ＝ 影片 01:19.0）",
+   "clip@69-79（context box，有聲音；片段內 00:00 ＝ 影片 01:09.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [79.5, 80.5, 81.5, 85.0], \"region\": [0.35, 0.5, 0.7, 0.9], \"reason\": \"確認酒精棉片擦拭或包住稀釋液瓶頂（細長透明瓶）的細節與接觸時間點\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 50.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 25465,
+  "cached_input_tokens": 20064,
+  "output_tokens": 1847,
+  "thinking_tokens": 1547,
+  "materials": [
+   "clip@79-89（context box，有聲音；片段內 00:00 ＝ 影片 01:19.0）",
+   "clip@69-79（context box，有聲音；片段內 00:00 ＝ 影片 01:09.0）",
+   "zoom@79.5/80.5/81.5/85 region=[0.350, 0.500, 0.700, 0.900]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"7a\", \"verdict\": \"正確\", \"explanation\": \"01:13.0–01:17.5（clip@69-79）考生撕開新的酒精棉片包裝，01:18.5–01:19.5 右手拿著酒精棉片、左手拿起細長透明的稀釋液瓶（zoom@79.5 確認為細長稀釋液瓶與白色酒精棉片）。01:20.0（clip@79-89 片段內 00:01.0）酒精棉片第一次碰到稀釋液瓶頂端，隨後於 01:20.0–01:25.5（zoom@80.5、zoom@81.5、zoom@85.0）以酒精棉片來回擦拭瓶頂並包住瓶頂扭開。\", \"times\": [[80.0, 85.5]], \"evidence\": [\"clip@69-79\", \"clip@79-89\", \"zoom@79.5\", \"zoom@80.5\", \"zoom@81.5\", \"zoom@85.0\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

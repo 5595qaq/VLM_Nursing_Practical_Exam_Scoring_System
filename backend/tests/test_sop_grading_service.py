@@ -112,6 +112,35 @@ def requests_for(model, cid):
     return [c for c in model.requests if cid in CRITERION.findall(c[0]["text"])]
 
 
+class PadAfterFlick(FakeModel):
+    """15b 錯誤 (flicked before padding), everything else 正確."""
+
+    async def __call__(self, system, content):
+        self.requests.append(content)
+        action = final_for(content)
+        for c in action["criteria"]:
+            if c["criterion_id"] == "15b":
+                c.update(verdict="錯誤", explanation="00:30 未墊棉片就彈針，00:32 才墊上。")
+        return ModelReply(json.dumps(action, ensure_ascii=False), "end_turn", 100, 10)
+
+
+async def test_reversed_order_fails_the_linked_step_and_a_rerun_regrades_both(video, tmp_path):
+    # DECISIONS D-05-03 (rubric wrong_with): 15b 錯誤 makes 17a 錯誤 once every task is done
+    first = await grading.run_grading(video, segmentation(wash_first=True), tmp_path / "a", PadAfterFlick())
+    assert first["failed_tasks"] == [] and first["validation_errors"] == []
+    steps = {s["step_id"]: s for s in first["result"]["steps"]}
+    flick = next(c for c in steps[17]["criteria"] if c["criterion_id"] == "17a")
+    assert flick["verdict"] == "錯誤" and "程式把 17a 改判錯誤" in flick["explanation"]
+    assert steps[15]["verdict"] == "錯誤" and steps[17]["verdict"] == "錯誤"
+    # rerunning step 15 alone also regrades 17 (same task): the old link does not survive
+    model = FakeModel()
+    later = await grading.run_grading(video, segmentation(wash_first=True), tmp_path / "b", model,
+                                      steps={15}, previous=first["result"])
+    assert requests_for(model, "17a") and later["validation_errors"] == []
+    flick = next(c for s in later["result"]["steps"] for c in s["criteria"] if c["criterion_id"] == "17a")
+    assert flick["verdict"] == "正確" and "改判錯誤" not in flick["explanation"]
+
+
 async def test_grading_grades_every_visual_criterion(video, tmp_path):
     model = FakeModel()
     outcome = await grading.run_grading(video, segmentation(wash_first=True), tmp_path, model)
