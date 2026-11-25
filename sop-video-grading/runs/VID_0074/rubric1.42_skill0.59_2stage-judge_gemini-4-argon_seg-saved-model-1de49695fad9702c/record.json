@@ -1,0 +1,67 @@
+{
+ "video_id": "VID_0074",
+ "versions": {
+  "rubric": "1.42",
+  "skill": "0.59",
+  "model": "gemini-4-argon",
+  "segmentation": "saved-model-1de49695fad9702c",
+  "pipeline": "two-stage-judge"
+ },
+ "video_sha256": "44f35e938c70e7eb7692e42871587e82dea2f153e86cd4f349f2a7fe7b8b21d6",
+ "runs": [
+  {
+   "run": 1,
+   "by": "5595QAQ",
+   "date": "2026-11-25",
+   "commit": "d54fe4177ee90b65d0450fa52cef65cd4df34e91",
+   "video_sha256": "44f35e938c70e7eb7692e42871587e82dea2f153e86cd4f349f2a7fe7b8b21d6",
+   "steps": [
+    10,
+    12,
+    14,
+    18,
+    19,
+    22,
+    24,
+    26,
+    28
+   ],
+   "failed_tasks": [],
+   "segmentation": "segmentation.json of rubric1.41-describe207.1_skill0.58-describe207.1_2stage_gemini-4-argon_seg-saved-model-1de49695fad9702c",
+   "usage": {
+    "input_tokens": 38952,
+    "cached_input_tokens": 0,
+    "output_tokens": 3987,
+    "thinking_tokens": 0
+   },
+   "timing": {
+    "started_at": "2026-11-25T19:14:01+00:00",
+    "grading_seconds": 50.4,
+    "total_seconds": 50.4
+   },
+   "judge_only": true,
+   "descriptions_from": {
+    "record": "rubric1.41-describe207.1_skill0.58-describe207.1_2stage_gemini-4-argon_seg-saved-model-1de49695fad9702c",
+    "runs": [
+     1,
+     2
+    ]
+   }
+  }
+ ],
+ "segmentation_from": {
+  "record": "rubric1.41-describe207.1_skill0.58-describe207.1_2stage_gemini-4-argon_seg-saved-model-1de49695fad9702c",
+  "run": 1,
+  "date": "2026-11-25",
+  "by": "5595QAQ",
+  "commit": "45a4ea8a30a5a423197f39e3f2c35dc1b3f20d30",
+  "segmentation": "saved model segmentation; sha256-tag saved-model-1de49695fad9702c"
+ },
+ "descriptions_from": {
+  "record": "rubric1.41-describe207.1_skill0.58-describe207.1_2stage_gemini-4-argon_seg-saved-model-1de49695fad9702c",
+  "runs": [
+   1,
+   2
+  ]
+ }
+}
