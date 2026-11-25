@@ -25,6 +25,14 @@ also when the only contacts listed come after it.
 The task does not know when 1a measured the end of washing: rules.build_step compares the points with it.
 A clip above 5 fps may last at most 8 s.
 
+Two-stage grading (issue #207, experiment): validate_describe checks the describing agent's actions. Its
+final (describe.schema.json) carries observations instead of verdicts: every observe item of every task
+criterion at least once, mm:ss in each finding, times within the same ranges, evidence from the materials.
+The material rules above that a 錯誤 triggers are asked of every description that says it saw clearly
+(visibility 清楚), since the verdict comes later: a 10b description needs a clip on a wrapper span, a flick
+one a burst (when the audio is usable), a clip criterion a clip. A description whose items are all 看不到 or
+部分遮擋 needs none, as a one-stage 無法判定 needs none; so a task whose clips are spent can still finish. The judging agent's final is then checked with validate as usual.
+
 A rejected action is NOT executed and does NOT consume budget.
 """
 import json
@@ -33,9 +41,11 @@ from pathlib import Path
 from jsonschema import Draft202012Validator
 
 from rubric import CORRECT, WRONG, criteria_by_id, load_rubric
-from validate_grading import WRAPPER, check_contact_times, check_criterion, check_vial_cutoff
+from validate_grading import (EVIDENCE_PREFIXES, TIMESTAMP, WRAPPER, check_contact_times, check_criterion,
+                              check_vial_cutoff)
 
 SCHEMA_PATH = Path(__file__).resolve().parent.parent / "actions.schema.json"
+DESCRIBE_SCHEMA_PATH = Path(__file__).resolve().parent.parent / "describe.schema.json"
 
 BUDGET = {"overview": 3, "zoom": 3, "burst": 3, "clip": 2}
 WINDOW_SLACK = 10.0  # seconds the agent may look outside the task window
@@ -232,11 +242,95 @@ def _check_contact_coverage(cid: str, c: dict, task: dict) -> list[str]:
 
 
 def _check_flick(cid: str, c: dict, audio: dict | None, used: dict) -> list[str]:
-    no_sound = audio is not None and (not audio["has_audio"] or audio["silent"])
-    if no_sound and (c["verdict"] != "無法判定" or c["reason"] != "無音軌"):
+    if no_usable_audio(audio) and (c["verdict"] != "無法判定" or c["reason"] != "無音軌"):
         return [f"criterion {cid}: the video has no usable audio, so {cid} must be 無法判定 with reason 無音軌; "
                 "say in the explanation whether the fingers were seen flicking"]
     if c["verdict"] == "錯誤" and used.get("burst", 0) == 0:
         return [f"criterion {cid}: before marking 錯誤, use burst near the sound runs / motion peaks to check "
                 "whether the fingers flick (a 2 fps clip can miss a flick)"]
     return []
+
+
+# what validate asks for before a verdict, which the judging agent cannot do (it has no video)
+MATERIAL_RULES = ("before marking 錯誤, use", "watch a clip of the window before grading")
+
+
+def validate_judgment(action, task: dict, used: dict, duration: float, rubric: dict | None = None) -> list[str]:
+    """The judging agent's final (two-stage): validate with the describing agent's materials (`used`, the
+    task's clips). A rule that asks for material the describing agent did not use is reworded: the judge
+    cannot look again, so it must grade without that verdict (無法判定 when the observations cannot carry it)."""
+    return [f"{e}. You have no video: the describing agent did not use that material, so this verdict is not "
+            "allowed; grade from what the observations show, or 無法判定 (資訊不足) when they cannot support another"
+            if any(rule in e for rule in MATERIAL_RULES) else e
+            for e in validate(action, task, used, duration, rubric)]
+
+
+def validate_describe(action, task: dict, used: dict, duration: float, rubric: dict | None = None) -> list[str]:
+    """An action of the describing agent (two-stage grading): overview / zoom / burst / clip as validate,
+    a final with observations (describe.schema.json) instead of verdicts."""
+    if not (isinstance(action, dict) and action.get("action") == "final"):
+        return validate(action, task, used, duration, rubric)
+    schema = json.loads(DESCRIBE_SCHEMA_PATH.read_text(encoding="utf-8"))
+    errors = [f"schema: {'/'.join(map(str, e.path)) or '(root)'}: {e.message}"
+              for e in Draft202012Validator(schema).iter_errors(action)]
+    return errors or _check_observations(action, task, used, rubric or load_rubric(), duration)
+
+
+def no_usable_audio(audio: dict | None) -> bool:
+    return audio is not None and (not audio["has_audio"] or audio["silent"])
+
+
+def _check_observations(action: dict, task: dict, used: dict, rubric: dict, duration: float) -> list[str]:
+    errors = []
+    ranges = allowed_ranges(task, duration)
+    specs = criteria_by_id(rubric)
+    wanted = [c["criterion_id"] for c in task["criteria"]]
+    observations = action["observations"]
+    extra = sorted({o["criterion_id"] for o in observations} - set(wanted))
+    if extra:
+        errors.append(f"observations are only for {sorted(wanted)}; remove {extra}")
+    seen = set()
+    for o in observations:
+        cid = o["criterion_id"]
+        if cid not in wanted:
+            continue
+        where = f"observation {cid} item {o['item']} occurrence {o['occurrence']}"
+        key = (cid, o["item"], o["occurrence"])
+        if key in seen:
+            errors.append(f"{where}: listed twice; one entry per item and occurrence")
+        seen.add(key)
+        if o["item"] > len(specs[cid]["observe"]):
+            errors.append(f"{where}: {cid} has {len(specs[cid]['observe'])} observation items")
+        if not TIMESTAMP.search(o["finding"]):
+            errors.append(f"{where}: finding needs the video time (mm:ss)")
+        if not o["times"] and o["visibility"] != "看不到":
+            errors.append(f"{where}: times needs the video seconds this finding rests on (the part you watched "
+                          "when the action did not happen); [] only with visibility 看不到")
+        for start, end in o["times"]:
+            if end < start:
+                errors.append(f"{where}: times {start:g}-{end:g} must end at or after the start")
+            elif not _inside(ranges, start, end):
+                errors.append(f"{where}: times {start:g}-{end:g} must stay within {_ranges_text(ranges)}; times are "
+                              "video seconds, so add the clip's start to a time read inside a clip")
+        bad = [e for e in o["evidence"] if not e.startswith(EVIDENCE_PREFIXES)]
+        if bad:
+            errors.append(f"{where}: evidence {bad} must cite materials (ov@a-b #k, zoom@t, burst@a-b #k, clip@a-b)")
+    unseen = "; or, if it cannot be seen, give those items visibility 看不到 or 部分遮擋 and say why"
+    for cid in wanted:
+        for i, text in enumerate(specs[cid]["observe"], 1):
+            if not any(o["criterion_id"] == cid and o["item"] == i for o in observations):
+                errors.append(f"criterion {cid}: observation item {i}（{text}）is missing")
+        # the material rules _check_final asks of a 錯誤, asked of a description that says it saw clearly: the
+        # judge may grade from it. Items not seen clearly can only lead to 無法判定, as without the material.
+        clear = any(o["criterion_id"] == cid and o["visibility"] == "清楚" for o in observations)
+        if specs[cid].get("clip") and not task.get("opening_clip") and used.get("clip", 0) == 0 and clear:
+            errors.append(f"criterion {cid}: watch a clip of the window before describing {cid}; overview "
+                          "frames 2–4 s apart cannot show whether the hands keep moving" + unseen)
+        if cid in WRAPPER and clear and not _clipped_wrapper(task, cid):
+            errors.append(f"criterion {cid}: use clip with a region on both hands and the syringe (fps up to 10, "
+                          "≤ 8 s) on a listed wrapper span (where it comes out) and after it: a twist lasts a "
+                          "second or two and frames 2–4 s apart miss it" + unseen)
+        if cid in FLICK and clear and not no_usable_audio(task.get("audio")) and used.get("burst", 0) == 0:
+            errors.append(f"criterion {cid}: use burst near the sound runs / motion peaks to see whether the "
+                          "fingers flick (a 2 fps clip can miss a flick)" + unseen)
+    return errors

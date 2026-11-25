@@ -996,3 +996,188 @@ def test_a_task_mixing_checked_and_unchecked_criteria_lists_every_step4_entry():
     lines = "\n".join(grading._segment_lines(task, seg))
     read = seg["steps"][3]
     assert f"步驟 4：{grading._fmt_t(read['start'])}" in lines and "步驟 4：00:40.0" in lines
+
+
+# --- two-stage grading (issue #207): a describing agent, then a text-only judging agent ---
+
+JUDGE_MARK = "你是判定 agent"
+DESCRIBE_MARK = "描述 agent（兩段式評分的第一段"
+
+
+def observe_counts(text):
+    """{criterion id: number of observe items} of a describing request."""
+    counts, current = {}, None
+    for line in text.splitlines():
+        head = CRITERION.match(line)
+        if head:
+            current = head.group(1)
+            counts[current] = 0
+        elif current and re.match(r"^\s+\d+\. ", line):
+            counts[current] += 1
+        elif not line.startswith(" "):
+            current = None
+    return counts
+
+
+def describe_final(content):
+    text = content[0]["text"]
+    ref = re.search(r"(clip@[\d.]+-[\d.]+|ov@[\d.]+-[\d.]+)", "\n".join(b.get("text", "") for b in content)).group(1)
+    windows = dict(re.findall(r"(\w+)（步驟.*?window=\[([\d.]+),", text))
+    return {"action": "final", "observations": [
+        {"criterion_id": cid, "item": i, "occurrence": 1, "finding": f"00:3{i} 看到第 {i} 項的情形。",
+         "times": [[float(windows[cid])] * 2], "visibility": "清楚", "evidence": [ref], "zoom_confirmed": True}
+        for cid, n in observe_counts(text).items() for i in range(1, n + 1)]}
+
+
+class TwoStageModel(FakeModel):
+    """Plays the describing agent (describe_final), the judging agent (final_for, with `verdicts` by
+    criterion id) and the one-stage agent; `judge_script` replies come before the judging final."""
+
+    def __init__(self, verdicts=None, judge_script=None):
+        super().__init__()
+        self.verdicts = verdicts or {}
+        self.judge_script = list(judge_script or [])
+        self.described, self.judged = [], []
+
+    async def __call__(self, system, content):
+        if DESCRIBE_MARK in system:
+            self.described.append(content)
+            text = content[0]["text"]
+            flick = re.search(r"(?:17a|27a)（步驟.*?window=\[([\d.]+),", text)
+            if flick and "burst 已完成" not in text:  # a clear flick description needs a burst first
+                start = float(flick.group(1))
+                action = {"action": "burst", "start": start, "end": start + 1.0, "n": 3,
+                          "region": [0.2, 0.2, 0.6, 0.6], "reason": "看彈針"}
+            else:
+                action = describe_final(content)
+        elif JUDGE_MARK in system:
+            self.judged.append(content)
+            action = self.judge_script.pop(0) if self.judge_script else final_for(content)
+            if isinstance(action, Exception):
+                raise action
+            for c in action.get("criteria", []):
+                if c["criterion_id"] in self.verdicts:
+                    c.update(verdict=self.verdicts[c["criterion_id"]],
+                             explanation="00:33 看到另一手在針尖入套前扶住針套。")
+        else:
+            return await super().__call__(system, content)
+        self.requests.append(content)
+        return ModelReply(json.dumps(action, ensure_ascii=False), "end_turn", 100, 10)
+
+
+async def test_two_stage_describes_without_the_standard_and_judges_with_it(video, tmp_path):
+    model = TwoStageModel()
+    outcome = await grading.run_grading(video, segmentation(), tmp_path, model, steps={18, 19}, two_stage=True)
+    assert outcome["failed_tasks"] == []
+    # only the other steps are left 待判定
+    assert [e for e in outcome["validation_errors"] if "(step 18)" in e or "(step 19)" in e] == []
+    assert sorted(outcome["described"]) == ["18-d", "19-d"]
+    describing = "\n".join(c[0]["text"] for c in model.described)
+    assert "觀察項目" in describing and "單手套回" not in describing  # 19b's standard stays with the judge
+    judging = "\n".join(c[0]["text"] for c in model.judged)
+    assert "單手套回" in judging and '"criterion_id": "19b"' in judging and "描述 agent 用過的動作" in judging
+    graded = {c["criterion_id"]: c for s in outcome["result"]["steps"] for c in s["criteria"]}
+    assert graded["19b"]["verdict"] == "正確" and graded["19b"]["source"] == "vlm"
+    data = json.loads((tmp_path / grading.DESCRIPTIONS).read_text(encoding="utf-8"))
+    assert {t["key"] for t in data["tasks"]} == {"18-d", "19-d"}
+    assert data["describe_digest"] == grading.describe_digest() and set(data["observe"]) >= {"18b", "19b"}
+    assert (tmp_path / "transcript_judge_19-d.json").exists() and (tmp_path / "transcript_task_19-d.json").exists()
+
+
+async def test_the_judge_gets_the_sound_without_advice_to_look_again(video, tmp_path):
+    # review of describe207: the text-only judge must not be told to use burst
+    model = TwoStageModel()
+    outcome = await grading.run_grading(video, segmentation(), tmp_path, model, steps={15}, two_stage=True)
+    assert outcome["failed_tasks"] == []
+    describing = model.described[0][0]["text"]
+    judging = model.judged[0][0]["text"]
+    assert "連續響聲" in judging and "用 burst" not in judging
+    assert "聲音峰值" in describing
+
+
+async def test_one_stage_grading_ignores_observe(video, tmp_path):
+    model = TwoStageModel()
+    outcome = await grading.run_grading(video, segmentation(), tmp_path, model, steps={19})
+    assert outcome["tasks"] == ["19"] and outcome["described"] == []
+    assert model.described == [] and model.judged == [] and not (tmp_path / grading.DESCRIPTIONS).exists()
+
+
+async def test_a_rejected_judgment_goes_back_with_the_errors(video, tmp_path):
+    model = TwoStageModel(judge_script=[{"action": "zoom", "times": [33.0], "region": [0, 0, .5, .5], "reason": "x"}])
+    outcome = await grading.run_grading(video, segmentation(), tmp_path, model, steps={19}, two_stage=True)
+    assert outcome["failed_tasks"] == []
+    assert len(model.judged) == 2 and "只能輸出 final" in model.judged[1][0]["text"]
+
+
+async def test_judging_continues_from_the_saved_observations(video, tmp_path):
+    first = await grading.run_grading(video, segmentation(), tmp_path, TwoStageModel(judge_script=[Quota("429")]),
+                                      steps={19}, two_stage=True)
+    assert [f["task"] for f in first["failed_tasks"]] == ["19-d"]
+    model = TwoStageModel()
+    second = await grading.run_grading(video, segmentation(), tmp_path, model, steps={19}, two_stage=True)
+    assert second["failed_tasks"] == [] and model.described == [] and len(model.judged) == 1
+    assert second["usage"]["input_tokens"] == 100  # the first run already reported the describing turn
+    assert json.loads((tmp_path / grading.DESCRIPTIONS).read_text(encoding="utf-8"))["tasks"][0]["key"] == "19-d"
+
+
+async def test_judge_only_judges_saved_descriptions_under_the_current_standard(video, tmp_path):
+    await grading.run_grading(video, segmentation(), tmp_path / "a", TwoStageModel(), steps={18, 19}, two_stage=True)
+    saved = json.loads((tmp_path / "a" / grading.DESCRIPTIONS).read_text(encoding="utf-8"))
+    model = TwoStageModel(verdicts={"19b": "錯誤"})
+    outcome = await grading.run_judge_only(segmentation(), [saved], tmp_path / "b", model, steps={19})
+    assert model.described == [] and len(model.judged) == 1  # only step 19's task, and no video
+    assert outcome["judged"] == ["19-d"] and outcome["failed_tasks"] == [] and outcome["validation_errors"] == []
+    steps = {s["step_id"]: s for s in outcome["result"]["steps"]}
+    assert steps[19]["verdict"] == "錯誤"
+    assert all(c["verdict"] == "待判定" for c in steps[18]["criteria"] if c["source"] == "vlm")  # not judged
+    assert (tmp_path / "b" / "transcript_judge_19-d.json").exists()
+    assert json.loads((tmp_path / "b" / grading.DESCRIPTIONS).read_text(encoding="utf-8"))["tasks"][0]["key"] == "19-d"
+
+
+async def test_judge_only_refuses_descriptions_of_other_observations(video, tmp_path):
+    await grading.run_grading(video, segmentation(), tmp_path, TwoStageModel(), steps={19}, two_stage=True)
+    saved = json.loads((tmp_path / grading.DESCRIPTIONS).read_text(encoding="utf-8"))
+    with pytest.raises(grading.SkillRunError, match="觀察項目"):
+        await grading.run_judge_only(segmentation(), [{**saved, "observe": {"19b": "changed"}}], tmp_path / "b",
+                                     TwoStageModel())
+    with pytest.raises(grading.SkillRunError, match="DESCRIBE.md"):
+        await grading.run_judge_only(segmentation(), [{**saved, "describe_digest": "old"}], tmp_path / "b",
+                                     TwoStageModel())
+    with pytest.raises(grading.SkillRunError, match="沒有這些步驟"):
+        await grading.run_judge_only(segmentation(), [saved], tmp_path / "b", TwoStageModel(), steps={12})
+
+
+async def test_a_judgment_that_cannot_finish_keeps_the_observations(video, tmp_path):
+    # review of describe207: a SkillRunError from judging must not throw away the paid description
+    rejected = {"action": "zoom", "times": [33.0], "region": [0, 0, .5, .5], "reason": "x"}
+    first = await grading.run_grading(video, segmentation(), tmp_path,
+                                      TwoStageModel(judge_script=[rejected] * grading.MAX_JUDGE_TURNS),
+                                      steps={19}, two_stage=True)
+    assert [f["task"] for f in first["failed_tasks"]] == ["19-d"] and "judge" in first["failed_tasks"][0]["error"]
+    model = TwoStageModel()
+    second = await grading.run_grading(video, segmentation(), tmp_path, model, steps={19}, two_stage=True)
+    assert second["failed_tasks"] == [] and model.described == [] and len(model.judged) == 1
+
+
+async def test_judge_only_keeps_what_its_record_judged_and_refuses_a_changed_window(video, tmp_path):
+    await grading.run_grading(video, segmentation(), tmp_path / "a", TwoStageModel(), steps={18, 19}, two_stage=True)
+    saved = json.loads((tmp_path / "a" / grading.DESCRIPTIONS).read_text(encoding="utf-8"))
+    earlier = await grading.run_judge_only(segmentation(), [saved], tmp_path / "b", TwoStageModel(), steps={18})
+    later = await grading.run_judge_only(segmentation(), [saved], tmp_path / "c", TwoStageModel(), steps={19},
+                                         previous=earlier["result"])
+    assert later["judged_steps"] == [19]
+    graded = {c["criterion_id"]: c for s in later["result"]["steps"] for c in s["criteria"]}
+    assert graded["18b"]["verdict"] == "正確" and graded["19b"]["verdict"] == "正確"  # 18b kept from the record
+    moved = json.loads(json.dumps(saved))
+    task = next(t for t in moved["tasks"] if t["key"] == "19-d")
+    task["task"]["criteria"][0]["window"] = [0.0, 5.0]  # described over another window than the rules give now
+    with pytest.raises(grading.SkillRunError, match="區間"):
+        await grading.run_judge_only(segmentation(), [moved], tmp_path / "d", TwoStageModel(), steps={19})
+
+
+def test_describe_prompt_has_the_observe_files_and_the_describing_final():
+    prompt = grading.build_describe_prompt()
+    assert DESCRIBE_MARK in prompt and "### 手部姿勢" in prompt and "observations" in prompt
+    assert prompt.count('"const": "final"') == 1  # the describing final only
+    judge = grading.build_judge_prompt()
+    assert judge.startswith(grading.build_system_prompt()) and JUDGE_MARK in judge

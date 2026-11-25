@@ -69,6 +69,18 @@ def test_run_cost_counts_cached_tokens_of_a_copied_segmentation(tmp_path):
     assert (cost["input"], cost["cached_input"], cost["seconds"]) == (150, 50, 3.0)
 
 
+def test_run_cost_counts_the_judging_agents_time(tmp_path):
+    # two-stage grading (issue #207): describing and judging transcripts both count
+    base = tmp_path / "VID_0001" / "two"
+    write_record(base, [{"usage": {"input_tokens": 100, "output_tokens": 5}}])
+    grading = base / "run1" / "grading"
+    grading.mkdir(parents=True)
+    for name, seconds in (("transcript_task_19-d.json", 4.0), ("transcript_judge_19-d.json", 1.5)):
+        (grading / name).write_text(json.dumps([{"input_tokens": 1, "output_tokens": 1, "seconds": seconds}]),
+                                    encoding="utf-8")
+    assert ca.run_cost(tmp_path, "two", "VID_0001")["seconds"] == 5.5
+
+
 def test_arm_runs_reads_each_runs_grading(tmp_path):
     base = tmp_path / "VID_0001" / "v"
     write_record(base, [{}, {}])

@@ -4,6 +4,7 @@ Shared by rules.py (builds a grading result) and validate_grading.py (checks one
 so both use exactly the same aggregation.
 """
 
+import hashlib
 import json
 from decimal import Decimal
 from pathlib import Path
@@ -116,6 +117,9 @@ def check_rubric(rubric: dict) -> list[str]:
                 errors.append(f"criterion {cid}: task needs a visual criterion and a name")
             elif "task" in c:
                 tasks[c["task"]] = tasks.get(c["task"], 0) + 1
+            if "observe" in c and not _observe_ok(c):
+                errors.append(f"criterion {cid}: observe needs a visual criterion without min_seconds or a rule, "
+                              "and a list of non-empty observation items")
             if cat == "visual" and not c.get("window_steps"):
                 errors.append(f"criterion {cid}: visual criterion needs window_steps")
             if "search_steps" in c and not _search_range_ok(c["search_steps"], sid, cat, c.get("window_steps") or []):
@@ -127,6 +131,22 @@ def check_rubric(rubric: dict) -> list[str]:
                for name, n in tasks.items() if n < 2]
     errors += _check_wrong_with(rubric)
     return errors
+
+
+def _observe_ok(c: dict) -> bool:
+    """observe (issue #207): what the describing agent reports for a two-stage criterion, without the
+    threshold. Timed criteria (1a, 2a) and rule criteria (1c) stay out: their final carries times the
+    program measures, which a description does not."""
+    items = c["observe"]
+    return (c["category"] == "visual" and not c.get("min_seconds") and "rule" not in c
+            and isinstance(items, list) and bool(items)
+            and all(isinstance(i, str) and i.strip() for i in items))
+
+
+def observe_digest(rubric: dict) -> dict[str, str]:
+    """Each two-stage criterion's observe items, hashed: a description is reused only while they stay."""
+    return {cid: hashlib.sha256(json.dumps(c["observe"], ensure_ascii=False).encode("utf-8")).hexdigest()[:12]
+            for cid, c in criteria_by_id(rubric).items() if c.get("observe")}
 
 
 def _check_wrong_with(rubric: dict) -> list[str]:

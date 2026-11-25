@@ -31,16 +31,24 @@ def fake(monkeypatch):
     """Fake grading. Tasks in `fail` fail before their first reply: no transcript, listed in failed_tasks."""
     state = {"calls": [], "fail": set()}
 
-    async def run_grading(source, segmentation, work, probe_dir=None, steps=None, previous=None, resume=False):
-        state["calls"].append({"steps": steps, "previous": previous, "segmentation": segmentation, "resume": resume})
+    async def run_grading(source, segmentation, work, probe_dir=None, steps=None, previous=None, resume=False,
+                          two_stage=False):
+        state["calls"].append({"steps": steps, "previous": previous, "segmentation": segmentation, "resume": resume,
+                               "two_stage": two_stage})
         tasks = [str(s) for s in sorted(steps)] if steps else ["1", "15-16-17"]
-        for key in tasks:
+        described = ["15-16-17-d"] if two_stage else []
+        for key in tasks + described:
             if key not in state["fail"]:
                 (work / f"transcript_task_{key}.json").write_text("[]", encoding="utf-8")
+        for key in described:  # two-stage: the judging agent's transcript and the observations
+            (work / f"transcript_judge_{key}.json").write_text("[]", encoding="utf-8")
+            (work / sop_grading_service.DESCRIPTIONS).write_text(
+                json.dumps({"describe_digest": "d", "observe": {}, "tasks": [{"key": key}]}), encoding="utf-8")
         (work / "probe.json").write_text("{}", encoding="utf-8")
         return {"result": {"video_id": segmentation["video_id"], "steps": [], "run": len(state["calls"])},
-                "tasks": tasks, "failed_tasks": [{"task": k, "error": "429"} for k in tasks if k in state["fail"]],
-                "validation_errors": [], "usage": {"input_tokens": 10, "output_tokens": 1}}
+                "tasks": tasks + described,
+                "failed_tasks": [{"task": k, "error": "429"} for k in tasks if k in state["fail"]],
+                "validation_errors": [], "usage": {"input_tokens": 10, "output_tokens": 1}, "described": described}
 
     monkeypatch.setattr(video_service, "normalize_source", lambda src, dst: shutil.copyfile(src, dst))
     monkeypatch.setattr(sop_grading_service, "run_grading", run_grading)
@@ -306,7 +314,7 @@ def test_segmentation_tag_names_the_segmentation_model(monkeypatch):
 def new_rubric(monkeypatch):
     """Switch the grading version (as after a rubric change) for the recorders made from now on."""
     versions = cli.versions
-    monkeypatch.setattr(cli, "versions", lambda tag: {**versions(tag), "rubric": "9.9"})
+    monkeypatch.setattr(cli, "versions", lambda tag, *pipeline: {**versions(tag, *pipeline), "rubric": "9.9"})
 
 
 def test_a_run_that_segments_records_its_segmentation_time(tmp_path, video, fake):
@@ -486,3 +494,137 @@ def test_resume_notice_lists_the_kept_criteria(tmp_path, video, capsys):
     assert cli._resume_notice(rec, previous, {4}) is True
     out = capsys.readouterr().out
     assert "沿用紀錄已判定的標準：4a" in out and "4e" not in out
+
+
+def two_stage_record(tmp_path, video, fake):
+    """A two-stage run of steps 15-17: its record, after the run."""
+    rec = cli.Recorder(video, VID, tmp_path / "runs", "5595QAQ", "ce021ed", skill_tag(), two_stage=True)
+    rec.check({15}, force=False)
+    asyncio.run(cli.run(video, VID, work_folder(tmp_path, "a"), {15}, None, rec, skill_tag(), two_stage=True))
+    return rec
+
+
+def test_two_stage_is_a_version_of_its_own_and_keeps_the_descriptions(tmp_path, video, fake):
+    rec = two_stage_record(tmp_path, video, fake)
+    assert fake["calls"][0]["two_stage"] is True
+    assert "_2stage_" in rec.folder.name and load_record(rec)["versions"]["pipeline"] == "two-stage"
+    run = rec.folder / "run1" / "grading"
+    assert (run / "descriptions.json").exists() and (run / "transcript_judge_15-16-17-d.json").exists()
+    assert (run / "transcript_task_15-16-17-d.json").exists()
+    # the one-stage version of the same steps is another record: not refused as already graded
+    recorder(video, tmp_path / "runs").check({15}, force=False)
+
+
+def fake_judge_only(monkeypatch, calls, judged_steps=(15, 17)):
+    """run_judge_only replaced: 15b and 17a judged, 17b (no observe) left 待判定."""
+    async def run_judge_only(segmentation, descriptions, work, model_call=None, steps=None, previous=None):
+        calls.append({"descriptions": descriptions, "steps": steps, "segmentation": segmentation,
+                      "previous": previous})
+        (work / "transcript_judge_15-16-17-d.json").write_text("[]", encoding="utf-8")
+        (work / sop_grading_service.DESCRIPTIONS).write_text(
+            json.dumps({"describe_digest": "d", "observe": {}, "tasks": [{"key": "15-16-17-d"}]}), encoding="utf-8")
+        result = {"video_id": VID, "steps": [
+            {"step_id": 15, "criteria": [{"criterion_id": "15b", "source": "vlm", "verdict": "正確"}]},
+            {"step_id": 17, "criteria": [{"criterion_id": "17a", "source": "vlm", "verdict": "錯誤"},
+                                         {"criterion_id": "17b", "source": "vlm", "verdict": "待判定"}]},
+            {"step_id": 18, "criteria": [{"criterion_id": "18a", "source": "rule", "verdict": "正確"}]}]}
+        return {"result": result, "tasks": ["15-16-17-d"], "failed_tasks": [], "validation_errors": [],
+                "usage": {"input_tokens": 3, "output_tokens": 1}, "described": [], "judged": ["15-16-17-d"],
+                "judged_steps": list(judged_steps)}
+
+    monkeypatch.setattr(sop_grading_service, "run_judge_only", run_judge_only)
+
+
+def judge_recorder(tmp_path, rubric="9.9"):
+    """The recorder of a --judge-only run after a change to a standard (a version of its own)."""
+    rec = cli.Recorder(None, VID, tmp_path / "runs", "5595QAQ", "ddd4444", skill_tag(), judge_only=True)
+    rec.versions["rubric"] = rubric
+    rec.folder = rec.rr.record_dir(tmp_path / "runs", VID, rec.versions)
+    rec.record = rec.rr.load(rec.folder)
+    return rec
+
+
+def test_judge_only_judges_a_two_stage_record_again_without_the_video(tmp_path, video, fake, monkeypatch):
+    source = two_stage_record(tmp_path, video, fake)
+    calls = []
+    fake_judge_only(monkeypatch, calls)
+    rec = judge_recorder(tmp_path)
+    rec.check(None, force=False)
+    asyncio.run(cli.judge_only(source.folder, VID, tmp_path / "j", None, rec))
+
+    assert calls[0]["descriptions"] == [{"describe_digest": "d", "observe": {}, "tasks": [{"key": "15-16-17-d"}]}]
+    assert calls[0]["segmentation"] == json.loads((source.folder / "segmentation.json").read_text(encoding="utf-8"))
+    assert calls[0]["previous"] is None  # a new record: nothing judged before
+    # a folder of its own: never mixed with records that described the video
+    assert "_2stage-judge_" in rec.folder.name and rec.folder != source.folder
+    record = load_record(rec)
+    assert record["versions"]["pipeline"] == "two-stage-judge"
+    origin = {"record": source.folder.name, "runs": [1]}
+    assert record["descriptions_from"] == origin
+    assert record["segmentation_from"]["record"] == source.folder.name
+    run = record["runs"][0]
+    assert run["judge_only"] is True and run["descriptions_from"] == origin
+    # the judged steps only, and not step 17: its 17b has no observe, nothing described it
+    assert run["steps"] == [15]
+    assert run["video_sha256"] == load_record(source)["video_sha256"]
+    assert (rec.folder / "run1" / "grading" / "transcript_judge_15-16-17-d.json").exists()
+
+    # a second judge-only run into the same record builds on its grading
+    asyncio.run(cli.judge_only(source.folder, VID, tmp_path / "j2", {15}, judge_recorder(tmp_path)))
+    assert calls[1]["previous"]["steps"][0]["criteria"][0]["criterion_id"] == "15b"
+
+
+def test_judge_only_of_steps_left_partly_pending_records_no_step(tmp_path, video, fake, monkeypatch):
+    # review of describe207: an empty set of steps must not be read as every step
+    source = two_stage_record(tmp_path, video, fake)
+    fake_judge_only(monkeypatch, [], judged_steps=(17,))
+    rec = judge_recorder(tmp_path)
+    asyncio.run(cli.judge_only(source.folder, VID, tmp_path / "j", {17}, rec))
+    assert load_record(rec)["runs"][0]["steps"] == []
+
+
+def test_judge_only_leaves_the_out_folders_files_alone(tmp_path, video, fake, monkeypatch):
+    # review of describe207: --out may hold a paid segmentation not recorded yet
+    source = two_stage_record(tmp_path, video, fake)
+    fake_judge_only(monkeypatch, [])
+    out = work_folder(tmp_path, "mine")
+    before = (out / "segmentation.json").read_bytes(), (out / cli.SOURCE_MARK).read_bytes()
+    rec = judge_recorder(tmp_path)
+    asyncio.run(cli.judge_only(source.folder, VID, out, None, rec))
+    assert ((out / "segmentation.json").read_bytes(), (out / cli.SOURCE_MARK).read_bytes()) == before
+    assert not (out / "grading.json").exists() and (out / "judge" / "segmentation.json").exists()
+    assert json.loads((rec.folder / "segmentation.json").read_text(encoding="utf-8")) == json.loads(
+        (source.folder / "segmentation.json").read_text(encoding="utf-8"))
+
+
+def test_judge_only_refuses_another_model_or_a_second_source(tmp_path, video, fake, monkeypatch):
+    source = two_stage_record(tmp_path, video, fake)
+    fake_judge_only(monkeypatch, [])
+    rec = judge_recorder(tmp_path)
+    rec.versions["model"] = "gemini-4-hydrogen"
+    with pytest.raises(SystemExit, match="判定要用同一個模型"):
+        asyncio.run(cli.judge_only(source.folder, VID, tmp_path / "j", None, rec))
+    asyncio.run(cli.judge_only(source.folder, VID, tmp_path / "j", None, judge_recorder(tmp_path)))
+    other = tmp_path / "runs" / VID / "other_2stage"
+    shutil.copytree(source.folder, other)
+    with pytest.raises(SystemExit, match="不能再加入"):
+        asyncio.run(cli.judge_only(other, VID, tmp_path / "j2", None, judge_recorder(tmp_path)))
+
+
+def test_judge_only_never_writes_over_its_source(tmp_path, video, fake, monkeypatch):
+    # a judge-only record is a source too; judging it again at the same version would write over it
+    source = two_stage_record(tmp_path, video, fake)
+    fake_judge_only(monkeypatch, [])
+    first = judge_recorder(tmp_path)
+    asyncio.run(cli.judge_only(source.folder, VID, tmp_path / "j", None, first))
+    with pytest.raises(SystemExit, match="不會覆寫來源紀錄"):
+        asyncio.run(cli.judge_only(first.folder, VID, tmp_path / "j2", None, judge_recorder(tmp_path)))
+
+
+def test_judge_only_needs_a_two_stage_record(tmp_path, video, fake):
+    rec = recorder(video, tmp_path / "runs")
+    grade(rec, work_folder(tmp_path, "a"), {15}, video)
+    with pytest.raises(SystemExit, match="兩段式"):
+        asyncio.run(cli.judge_only(rec.folder, VID, tmp_path / "j", None, None))
+    with pytest.raises(SystemExit, match="兩段式"):  # main checks it before a Recorder makes a record folder
+        cli.check_judge_source(rec.folder, VID)

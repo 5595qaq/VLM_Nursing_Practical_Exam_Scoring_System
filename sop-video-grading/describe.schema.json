@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "兩段式評分（issue #207）描述 agent 的 final；其他動作（overview、zoom、burst、clip）同 actions.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["action", "observations"],
+  "properties": {
+    "action": {"const": "final"},
+    "observations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["criterion_id", "item", "occurrence", "finding", "times", "visibility", "evidence", "zoom_confirmed"],
+        "properties": {
+          "criterion_id": {"type": "string"},
+          "item": {"type": "integer", "minimum": 1, "description": "觀察項目的編號（rubric observe 的第幾項，從 1 開始）"},
+          "occurrence": {"type": "integer", "minimum": 1, "description": "第幾次做這個動作（從 1 開始）"},
+          "finding": {"type": "string", "minLength": 8},
+          "times": {"type": "array", "items": {"type": "array", "items": {"type": "number", "minimum": 0}, "minItems": 2, "maxItems": 2}, "description": "依據的影片時間（秒），[[開始, 結束], ...]"},
+          "visibility": {"enum": ["清楚", "部分遮擋", "看不到"]},
+          "evidence": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+          "zoom_confirmed": {"type": "boolean"}
+        }
+      }
+    }
+  }
+}

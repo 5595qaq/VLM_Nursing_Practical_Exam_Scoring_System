@@ -5,7 +5,7 @@ import copy
 import pytest
 
 from rubric import (CORRECT, NOT_APPLICABLE, PARTIAL, PENDING, UNDETERMINED, WRONG, aggregate,
-                    check_rubric, criteria_by_id, fmt_time, load_rubric)
+                    check_rubric, criteria_by_id, fmt_time, load_rubric, observe_digest)
 
 
 def test_rubric_json_is_valid():
@@ -102,6 +102,32 @@ def broken(mutate) -> list[str]:
     rubric = copy.deepcopy(load_rubric())
     mutate(rubric)
     return check_rubric(rubric)
+
+
+@pytest.mark.parametrize("cid, observe", [
+    ("19b", []),  # empty
+    ("19b", ["看針套", " "]),  # a blank item
+    ("19b", "看針套"),  # not a list
+    ("1a", ["每段洗手的起訖"]),  # timed: its final carries measured times
+    ("1c", ["接觸物品的時點"]),  # a rule criterion
+])
+def test_observe_needs_items_on_an_untimed_visual_criterion(cid, observe):
+    def mutate(r):
+        next(c for s in r["steps"] for c in s["criteria"] if c["id"] == cid)["observe"] = observe
+    assert any("observe needs" in e for e in broken(mutate))
+
+
+def test_observe_digest_changes_with_the_items_only():
+    rubric = load_rubric()
+    before = observe_digest(rubric)
+    assert {"10b", "17a", "19b", "28b"} <= set(before) and "17b" not in before  # the pilot groups 08 and 05
+    changed = copy.deepcopy(rubric)
+    spec = next(c for s in changed["steps"] for c in s["criteria"] if c["id"] == "19b")
+    spec["text"] += "（改了門檻）"
+    assert observe_digest(changed) == before
+    spec["observe"] = spec["observe"] + ["另一個觀察"]
+    after = observe_digest(changed)
+    assert after["19b"] != before["19b"] and after["28b"] == before["28b"]
 
 
 def test_duplicate_criterion_id_is_rejected():

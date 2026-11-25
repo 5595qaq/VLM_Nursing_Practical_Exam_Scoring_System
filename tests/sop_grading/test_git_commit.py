@@ -35,6 +35,24 @@ def test_untracked_criteria_make_the_commit_dirty(tmp_path, monkeypatch):
     assert git_commit.commit() == head + "-dirty"
 
 
+@pytest.mark.parametrize("path", ["observe/08-hand-posture.md", "DESCRIBE.md", "JUDGE.md", "describe.schema.json"])
+def test_untracked_two_stage_prompts_make_the_commit_dirty(tmp_path, monkeypatch, path):
+    # two-stage grading (issue #207): these go into the describing or judging prompt too
+    (tmp_path / "sop-video-grading").mkdir()
+    (tmp_path / "sop-video-grading" / "rubric.json").write_text("{}\n", encoding="utf-8")
+    run(tmp_path, "init", "-q")
+    run(tmp_path, "config", "user.email", "t@example.com")
+    run(tmp_path, "config", "user.name", "t")
+    run(tmp_path, "add", ".")
+    run(tmp_path, "commit", "-q", "-m", "x")
+    head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=tmp_path, text=True).strip()
+    monkeypatch.chdir(tmp_path)
+    target = tmp_path / "sop-video-grading" / path
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text("new\n", encoding="utf-8")
+    assert git_commit.commit() == head + "-dirty"
+
+
 def test_no_repository_gives_nothing(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("GIT_CEILING_DIRECTORIES", str(tmp_path.parent))

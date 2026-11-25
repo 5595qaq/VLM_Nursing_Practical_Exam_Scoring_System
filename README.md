@@ -163,8 +163,10 @@ Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499、連線中斷，或 Claude 回�
 | `scripts/validate_grading.py` | 驗證評分結果；`--final` 另外拒絕還在待判定的標準 |
 | `SKILL.md` | 評分 agent 的 system prompt 中所有任務共用的部分（輸入、動作、final 格式、說明怎麼寫、不要做的事），版本號也在這裡 |
 | `criteria/` | 各組看畫面標準怎麼判，一組一個檔（清單見 `criteria/README.md`）；組 prompt 時依檔名順序放進 `SKILL.md` 的標記行 |
-| `scripts/git_commit.py` | 印出要記錄的 `GIT_COMMIT`：HEAD，有未 commit 的修改或還沒加入 Git 的 `criteria/*.md` 時加 `-dirty` |
-| `scripts/skill_doc.py` | 組出完整的評分 SKILL.md（`SKILL.md` + `criteria/`）：system prompt、`rules_SKILL.md` 與 `check_versions.py` 都用它；直接執行會印出全文 |
+| `scripts/git_commit.py` | 印出要記錄的 `GIT_COMMIT`：HEAD，有未 commit 的修改，或還沒加入 Git 的 `criteria/*.md`、`observe/*.md`、`DESCRIBE.md`、`JUDGE.md`、`describe.schema.json`（都會放進 prompt）時加 `-dirty` |
+| `scripts/skill_doc.py` | 組出完整的評分 SKILL.md（`SKILL.md` + `criteria/`）：system prompt、`rules_SKILL.md` 與 `check_versions.py` 都用它；直接執行會印出全文，`--describe` 印出兩段式評分描述 agent 的 `DESCRIBE.md` + `observe/` |
+| `DESCRIBE.md`、`observe/`、`describe.schema.json` | 兩段式評分（實驗，issue #207）的描述 agent：看影片、逐項寫觀察、不判定對錯；`observe/` 一組標準一個檔，只寫怎麼看（清單見 `observe/README.md`），final 格式見 `describe.schema.json` |
+| `JUDGE.md` | 兩段式評分的判定 agent：接在完整的評分 SKILL.md 之後，只讀描述 agent 的觀察、不看影片，照同一份標準判定 |
 | `actions.schema.json` | 評分 agent 的動作格式（`overview`、`zoom`、`burst`、`clip`、`final`），由 `scripts/validate_grading_action.py` 檢查 |
 | `scripts/clip.py` | 從原檔剪出帶聲音的片段（裁到 context box，或用 `--rel-to-crop` 只裁其中一塊，例如雙手），給彈針、洗手七個動作與旋緊針頭用 |
 | `scripts/motion_peaks.py` | 以每秒 15 格分析任務區間內 hands_box 的畫面變化，找出手有明顯動作的時間點（不呼叫模型） |
@@ -174,7 +176,7 @@ Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499、連線中斷，或 Claude 回�
 | `scripts/compare_arms.py` | 在同一批影片上比較多份評分紀錄（不同規則、模型或做法）：一致率、成對差異（McNemar）、重跑翻轉、token 與時間，列出各組判定不同的步驟；可排除步驟（`--exclude-steps`）或讓指定步驟的錯誤＝部分正確（`--merge-faults-steps`），不呼叫模型 |
 | `scripts/labels_to_segmentation.py` | 用人工標註表的開始／結束秒數組出切分結果，調整評分 agent 時可跳過切分 skill |
 | `scripts/make_segmentation_bundle.py` | 從既有紀錄的切分做出 `--segmentation-file` 用的 bundle（可把某一步換成另一份切分的片段），記下來源 |
-| `scripts/check_versions.py` | 合併前的版本檢查（CI 對每個 PR 執行）：版本必須是正式版本（不能是分支版本 `0.29-10b.1`）；PR 改了規則（評分 SKILL.md 以加上 `criteria/` 的全文比對）時版本要比目標分支大，`CHANGELOG.md` 要有新版本的標題，`changelog.d/` 的片段要全部移走 |
+| `scripts/check_versions.py` | 合併前的版本檢查（CI 對每個 PR 執行）：版本必須是正式版本（不能是分支版本 `0.29-10b.1`）；PR 改了規則（評分 SKILL.md 以加上 `criteria/` 的全文比對，兩段式評分的 `DESCRIBE.md`、`JUDGE.md`、`describe.schema.json`、`observe/` 也算）時版本要比目標分支大，`CHANGELOG.md` 要有新版本的標題，`changelog.d/` 的片段要全部移走 |
 | `CHANGELOG.md` | 各版本的修改紀錄 |
 | `changelog.d/` | 還沒進正式版本的修改，一個分支一個檔，合併前移進 `CHANGELOG.md` |
 | `DECISIONS.md` | 老師、組長、使用者對標準的決定：原本、改成、理由、落實到哪個版本；還沒決定的事（待老師確認）也在這裡 |
@@ -334,6 +336,24 @@ docker compose run --rm ... worker python -m app.sop_grading_cli /data/影片.mp
 - 這份切分不是用目前的 sop-video-skill 切的：比較結果時要看 `provenance`。
 
 用 `--labels` 時只取標註表的時間，不複製判定與說明（評分 agent 會看到切分依據，不能讓它看到答案）；沒有時間的步驟給前後步驟之間的區間，由評分 agent 自己判斷有沒有做。裁切框不在標註表裡，預設為整個畫面。此時「有沒有做」這類程式判定的標準等於照抄標註時間，所以評估評分 agent 時要看 `eval_grading.py` 的「看畫面的步驟（V）」那一行。
+
+**兩段式評分（實驗，issue #207）**：加 `--two-stage` 時，rubric 有 `observe`（觀察項目）的標準（目前是 08 手部姿勢與 05 彈針）拆成兩段，其他標準照舊：
+
+1. **描述 agent**（`DESCRIBE.md` + `observe/`）用同樣的動作看影片（預算相同），final 只寫觀察（`describe.schema.json`）：每條標準、每個觀察項目、每一次動作一筆，含 `finding`（mm:ss）、`times`、`visibility`（清楚／部分遮擋／看不到）、`evidence`、`zoom_confirmed`。它看不到標準文字，只看到觀察項目。原本判錯誤前才要求的素材（10b 包裝時段的 clip、彈針的 burst），描述寫「清楚」時就要；都寫看不到或部分遮擋時不要求（判定只能是無法判定，和現行流程判無法判定一樣）。
+2. **判定 agent**（完整的評分 SKILL.md + `JUDGE.md`，純文字）讀觀察與描述 agent 用過的素材，照現有的 `criteria/` 與 rubric 判定，final 和現行評分 agent 相同（被退回最多重送 3 次）。判錯誤前要用過的素材（彈針的 burst、10b 的 clip）看描述 agent 有沒有用過；沒有用過時不能判錯誤，退回訊息會說明它沒辦法補看（`validate_judgment`）。
+
+```bash
+docker compose run --rm ... worker python -m app.sop_grading_cli /data/影片.mp4 --video-id VID_0081 --out /work/VID_0081 \
+  --two-stage --steps 10,12,13,14,15,17,18,19,22,24,25,26,27,28
+# 只改標準門檻（criteria/、rubric 的 text）之後：沿用描述、只重跑判定，不需要影片
+docker compose run --rm ... worker python -m app.sop_grading_cli --video-id VID_0081 --out /work/VID_0081-judge \
+  --judge-only /sop-video-grading/runs/VID_0081/<兩段式紀錄資料夾> [--steps 19,28]
+```
+
+- 紀錄資料夾在 SKILL 版本之後加 `_2stage`（`record.json` 的 `versions.pipeline: "two-stage"`），和現行流程的紀錄分開；每次執行另存 `grading/descriptions.json`（觀察、任務區間、聲音、用過的素材，以及 `describe_digest`、各標準 `observe` 的雜湊）與 `grading/transcript_judge_*.json`。描述任務的名稱以 `-d` 結尾（例如 `15-16-17-d`）。
+- 判定中斷時存檔點留著觀察，重跑只重做判定。
+- `--judge-only` 讀來源紀錄每次執行的 `descriptions.json`（同一個任務以最後一次為準），用目前的 rubric、criteria 與 `JUDGE.md` 判定（任務依目前的 rubric 與切分重建），寫成自己的紀錄資料夾（SKILL 版本之後加 `_2stage-judge`，`versions.pipeline: "two-stage-judge"`，不會和真的描述過影片的紀錄混在一起；`descriptions_from` 記在紀錄與每次執行上，沿用來源的切分）。同一份 judge-only 紀錄再跑會以它的 `grading.json` 為基底。紀錄的步驟只有整步都判定過的步驟：同一步還有沒有 `observe` 的看畫面標準（13b、15a、17b、25a、27b）時，那些標準仍是待判定，這一步不記為評過。描述 agent 的完整 prompt（`DESCRIBE.md`、`observe/`、`describe.schema.json`、動作格式、sop-video-skill 的 `sop_steps.md`，以及程式組的任務說明，`DESCRIBE_CONTENT_VERSION`）、標準的 `observe` 或任務的標準與區間改過時拒絕：描述要用 `--two-stage` 重做。也拒絕：rubric 與 SKILL 版本都和來源相同（沒有要重新判定的，也不會覆寫來源紀錄）、模型和做描述的不同（`SOP_SKILL_GEMINI_MODEL`，紀錄的模型才正確）、同一份 judge-only 紀錄加入另一份來源的描述。指定的步驟沒有可沿用的描述時會印出來。檔案都寫在 `--out` 的 `judge/` 底下，不動 `--out` 原有的 `segmentation.json`、`grading.json`。
+- `grading.json` 格式不變，`eval_grading.py`、`compare_arms.py`、`validate_grading.py` 照常使用。
 
 程式判定與驗證也可以單獨執行：
 
@@ -681,6 +701,9 @@ my-awesome-project/
 ├── sop-video-grading/
 │   ├── SKILL.md
 │   ├── criteria/        # 各組標準怎麼判，一組一個檔
+│   ├── DESCRIBE.md      # 兩段式評分（實驗）的描述 agent；observe/ 是各組怎麼看
+│   ├── JUDGE.md         # 兩段式評分的判定 agent（接在 SKILL.md 之後）
+│   ├── observe/
 │   ├── CHANGELOG.md
 │   ├── changelog.d/     # 未發布的修改，一個分支一個檔
 │   ├── DECISIONS.md     # 標準決策紀錄與待老師確認
@@ -689,6 +712,7 @@ my-awesome-project/
 │   ├── rubric.json
 │   ├── schema.json
 │   ├── actions.schema.json
+│   ├── describe.schema.json  # 兩段式評分描述 agent 的 final
 │   ├── runs/            # sop_grading_cli 的評分紀錄（commit 共用）
 │   ├── review/          # review_page.py 產生的本機人工核對頁面（gitignored）
 │   └── scripts/

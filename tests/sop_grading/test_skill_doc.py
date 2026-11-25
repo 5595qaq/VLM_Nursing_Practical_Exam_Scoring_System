@@ -50,6 +50,21 @@ def test_main_writes_the_assembled_text(tmp_path):
     assert out.read_bytes().decode("utf-8") == skill_doc.assemble_dir()
 
 
+def test_the_describing_prompt_has_every_observe_criterion(tmp_path):
+    # two-stage grading (issue #207): DESCRIBE.md with observe/*.md, a heading for each criterion with observe
+    text = skill_doc.assemble_dir(skill_doc.ROOT, *skill_doc.DESCRIBE)
+    assert skill_doc.MARKER not in text and "observations" in text
+    rubric = json.loads((skill_doc.ROOT / "rubric.json").read_text(encoding="utf-8"))
+    observed = [c["id"] for step in rubric["steps"] for c in step["criteria"] if c.get("observe")]
+    files = skill_doc.criteria_files(skill_doc.ROOT, skill_doc.DESCRIBE[1])
+    headings = [line for path in files for line in path.read_text(encoding="utf-8").splitlines()
+                if line.startswith("### ")]
+    assert observed and [c for c in observed if not any(c in h for h in headings)] == []
+    out = tmp_path / "DESCRIBE.full.md"
+    assert skill_doc.main(["-o", str(out), "--describe"]) == 0
+    assert out.read_bytes().decode("utf-8") == text
+
+
 def test_other_markdown_in_criteria_is_an_error(tmp_path):
     (tmp_path / "criteria").mkdir()
     (tmp_path / "SKILL.md").write_text(SKILL, encoding="utf-8")

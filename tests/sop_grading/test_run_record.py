@@ -189,6 +189,24 @@ def test_timing_is_kept_when_given():
     assert "timing" not in add(record)["runs"][1]  # older callers (no timing) write no key
 
 
+def test_an_empty_set_of_steps_is_no_step_not_every_step():
+    # a --judge-only run that graded no step in full: None (no --steps) is every step, an empty set is none
+    record = rr.add_run(None, "VID_0083", VERSIONS, "abc", steps=set(), failed_tasks=[], by="x", date="d",
+                        commit="c", segmentation="s", usage={})
+    assert record["runs"][0]["steps"] == [] and rr.graded_steps(record) == set()
+
+
+def test_two_stage_and_judge_only_records_have_folders_of_their_own(tmp_path):
+    names = {pipeline: rr.record_dir(tmp_path, "VID_0083", {**VERSIONS, "pipeline": pipeline}).name
+             for pipeline in (None, rr.TWO_STAGE, rr.JUDGE_ONLY)}
+    assert "_2stage_" in names[rr.TWO_STAGE] and "_2stage-judge_" in names[rr.JUDGE_ONLY]
+    assert len(set(names.values())) == 3
+    assert names[None] == rr.record_dir(tmp_path, "VID_0083", VERSIONS).name  # one-stage names unchanged
+    record = {**add(None), "versions": {**VERSIONS, "pipeline": rr.JUDGE_ONLY},
+              "descriptions_from": {"record": "src", "runs": [1]}}
+    assert "兩段式（只重跑判定）" in rr.summary(record) and "描述沿用 src" in rr.summary(record)
+
+
 def test_save_keeps_each_runs_grading(tmp_path):
     folder = tmp_path / "VID_0083" / "v"
     record = add(None)
