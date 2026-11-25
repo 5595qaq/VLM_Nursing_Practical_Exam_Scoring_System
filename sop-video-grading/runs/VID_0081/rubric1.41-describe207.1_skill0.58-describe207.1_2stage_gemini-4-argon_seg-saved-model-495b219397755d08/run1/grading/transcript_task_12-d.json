@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 11.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 13218,
+  "cached_input_tokens": 0,
+  "output_tokens": 392,
+  "thinking_tokens": 301,
+  "materials": [
+   "ov@144-152（hands_box，n=9）#0=02:24.0、#1=02:25.0、#2=02:26.0、#3=02:27.0、#4=02:28.0、#5=02:29.0、#6=02:30.0、#7=02:31.0、#8=02:32.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [148.5, 150.0, 151.0, 152.0], \"region\": [0.3, 0.35, 0.75, 0.75], \"reason\": \"放大確認左手夾住稀釋液瓶的手指位置以及右手持空針的動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 13.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 14449,
+  "cached_input_tokens": 0,
+  "output_tokens": 533,
+  "thinking_tokens": 432,
+  "materials": [
+   "ov@144-152（hands_box，n=9）#0=02:24.0、#1=02:25.0、#2=02:26.0、#3=02:27.0、#4=02:28.0、#5=02:29.0、#6=02:30.0、#7=02:31.0、#8=02:32.0",
+   "zoom@148.5/150/151/152 region=[0.300, 0.350, 0.750, 0.750]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [147.0, 153.0, 155.0, 157.0], \"region\": [0.3, 0.35, 0.75, 0.75], \"reason\": \"確認147秒及153-157秒抽稀釋液過程中左手夾住稀釋液瓶的手指位置\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 11.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 15690,
+  "cached_input_tokens": 0,
+  "output_tokens": 428,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@144-152（hands_box，n=9）#0=02:24.0、#1=02:25.0、#2=02:26.0、#3=02:27.0、#4=02:28.0、#5=02:29.0、#6=02:30.0、#7=02:31.0、#8=02:32.0",
+   "zoom@148.5/150/151/152 region=[0.300, 0.350, 0.750, 0.750]",
+   "zoom@147/153/155/157 region=[0.300, 0.350, 0.750, 0.750]"
+  ],
+  "reply": "{\"action\": \"final\", \"observations\": [{\"criterion_id\": \"12a\", \"item\": 1, \"occurrence\": 1, \"finding\": \"02:30.0–02:37.0（zoom@150、zoom@151、zoom@152、zoom@153、zoom@155、zoom@157）學生用左手持稀釋液瓶，以左手食指及中指夾住稀釋液瓶身（02:30.0–02:31.0 將瓶身夾入食指與中指之間，02:32.0–02:37.0 插入針頭並抽稀釋液時持續以左手食指與中指夾住稀釋液瓶，左手拇指與無名指、小指輔助握持固定）。\", \"times\": [[150.0, 157.0]], \"visibility\": \"清楚\", \"evidence\": [\"zoom@150\", \"zoom@151\", \"zoom@152\", \"zoom@153\", \"zoom@155\", \"zoom@157\"], \"zoom_confirmed\": true}, {\"criterion_id\": \"12a\", \"item\": 2, \"occurrence\": 1, \"finding\": \"02:27.0–02:37.0（zoom@147、zoom@150、zoom@153、zoom@157）學生沒有左右手對調，實際以左手夾住稀釋液瓶、右手持空針插入及拉針心抽液。\", \"times\": [[147.0, 157.0]], \"visibility\": \"清楚\", \"evidence\": [\"zoom@147\", \"zoom@150\", \"zoom@153\", \"zoom@157\"], \"zoom_confirmed\": true}]}",
+  "errors": []
+ }
+]

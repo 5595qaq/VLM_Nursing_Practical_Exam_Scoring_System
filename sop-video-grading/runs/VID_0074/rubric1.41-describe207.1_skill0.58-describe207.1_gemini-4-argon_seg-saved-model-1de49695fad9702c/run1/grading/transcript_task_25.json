@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 8.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 25247,
+  "cached_input_tokens": 0,
+  "output_tokens": 76,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@272-299.5（context box，有聲音；片段內 00:00 ＝ 影片 04:32.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [274.5, 280.0, 290.0], \"region\": [0.35, 0.2, 0.6, 0.5], \"reason\": \"確認針頭與針筒接合處是否有墊酒精棉片\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 16.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 26469,
+  "cached_input_tokens": 0,
+  "output_tokens": 415,
+  "thinking_tokens": 211,
+  "materials": [
+   "clip@272-299.5（context box，有聲音；片段內 00:00 ＝ 影片 04:32.0）",
+   "zoom@274.5/280/290 region=[0.350, 0.200, 0.600, 0.500]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"25a\", \"verdict\": \"正確\", \"explanation\": \"04:34.5–04:56.5（clip@272-299.5 片段內 00:02.5–00:24.5）左手拿白色方形酒精棉片墊在針頭與針筒接合處（針柄）進行彈針與排氣，zoom@274.5、zoom@280、zoom@290 可清楚看到白色棉片。\", \"times\": [[274.5, 296.5]], \"evidence\": [\"clip@272-299.5\", \"zoom@274.5\", \"zoom@280\", \"zoom@290\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
