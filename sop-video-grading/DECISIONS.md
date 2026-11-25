@@ -381,7 +381,7 @@ D-00-07～09 是已關閉、未合併的 PR #180、#181 用過的提案編號，
 - 狀態：已落實
 - 決定：老師 2026-11-08（Q14）
 - 改成：雙手掌心夾住 vial 來回搓滾或旋轉，不要求多久；只用單手搖晃判錯誤並轉人工。
-- 落實：0.53／rubric 1.36，`criteria/07-rolling-20a.md`、`rubric.json` 20a 的 `note`
+- 落實：0.56／rubric 1.39（PR #173），`criteria/07-rolling-20a.md`、`rubric.json` 20a 的 `note`
 
 ---
 
