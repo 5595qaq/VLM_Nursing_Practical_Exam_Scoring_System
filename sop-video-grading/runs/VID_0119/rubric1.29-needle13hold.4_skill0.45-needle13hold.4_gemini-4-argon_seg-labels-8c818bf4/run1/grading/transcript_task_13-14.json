@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 4.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 20997,
+  "cached_input_tokens": 0,
+  "output_tokens": 95,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@128-140（context box，有聲音；片段內 00:00 ＝ 影片 02:08.0）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 131.5, \"end\": 141.0, \"fps\": 1, \"region\": [0.3, 0.4, 0.65, 0.75], \"reason\": \"逐秒確認插入稀釋液瓶完成後到開始拔針之間，針筒兩端的高低方向，並確認拔針時間\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 12.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 22217,
+  "cached_input_tokens": 0,
+  "output_tokens": 710,
+  "thinking_tokens": 500,
+  "materials": [
+   "clip@128-140（context box，有聲音；片段內 00:00 ＝ 影片 02:08.0）",
+   "clip@131.5-141（region=[0.300, 0.400, 0.650, 0.750]，原始解析度裁切，有聲音；片段內 00:00 ＝ 影片 02:11.5）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"13b\", \"verdict\": \"正確\", \"explanation\": \"最後一次（唯一一次）於 02:13.5 插入稀釋液瓶完成，至 02:19.0 開始拔針（抽取結束）。02:13.5–02:19.0 逐秒看過（clip@131.5-141 的 00:02–00:07），針筒尾端皆位於左上方、藍色針座端位於右下方，針頭都比針筒尾端低，全程維持針頭朝下。\", \"times\": [[133.5, 139.0]], \"evidence\": [\"clip@128-140\", \"clip@131.5-141\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

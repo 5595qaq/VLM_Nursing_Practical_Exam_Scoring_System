@@ -34,13 +34,17 @@ def test_rubric_classification_matches_the_plan():
     # the teacher dropped pulling the plunger back (16a, 26a) and drawing air after uncapping (21a) (rubric 1.25)
     assert not {"16a", "21a", "26a"} & by_id.keys()
     assert by_id["26b"]["window_steps"] == [26] and by_id["26b"]["key"] is False
-    # turning the needle at the hub cannot be told from the video yet: not graded until confirmed (rubric 1.27)
-    assert by_id["13c"]["category"] == "not_visible" and by_id["13c"]["reason"] == "資訊不足"
+    # turning the needle at the hub belongs to step 10, so 13c is gone (teacher 2026-11-17)
+    assert "13c" not in by_id
     step13 = next(s for s in load_rubric()["steps"] if s["step_id"] == 13)
-    assert [c["id"] for c in step13["criteria"]] == ["13a", "13b", "13c"]
-    # 13c (always undetermined) must not drag step 13 down
-    assert aggregate(step13, {"13a": CORRECT, "13b": CORRECT, "13c": UNDETERMINED}) == CORRECT
-    assert aggregate(step13, {"13a": CORRECT, "13b": WRONG, "13c": UNDETERMINED}) == PARTIAL
+    assert [c["id"] for c in step13["criteria"]] == ["13a", "13b"]
+    assert aggregate(step13, {"13a": CORRECT, "13b": CORRECT}) == CORRECT
+    assert aggregate(step13, {"13a": CORRECT, "13b": WRONG}) == PARTIAL
+    # a not_visible criterion (always undetermined) must not drag its step down
+    step14 = next(s for s in load_rubric()["steps"] if s["step_id"] == 14)
+    assert by_id["14b"]["category"] == "not_visible"
+    assert aggregate(step14, {"14a": CORRECT, "14b": UNDETERMINED}) == CORRECT
+    assert aggregate(step14, {"14a": WRONG, "14b": UNDETERMINED}) == WRONG
     # rolling the vial is watched on a clip, not inferred from the step being located (rubric 1.8)
     assert by_id["20a"]["category"] == "visual" and by_id["20a"]["key"] is True
     assert by_id["20a"]["window_steps"] == [20] and by_id["20a"]["clip"] is True
@@ -62,10 +66,15 @@ def test_rubric_classification_matches_the_plan():
     assert by_id["4e"]["window_steps"] == [4, 5, 6, 7, 8, 9] and by_id["4e"]["after_step"] is True
     assert by_id["4d"]["window_steps"] == [2, 4, 5, 13] and by_id["4d"]["after_step"]
     assert "9b" not in by_id and by_id["9a"]["category"] == "program"
-    # 5a and 6a share one task but keep their own windows; 7a and 8a stay apart (rubric 1.18)
+    # 5a and 6a share one task but keep their own windows (rubric 1.18); so do 7a, 8a and 8b, the order of
+    # disinfecting and opening the diluent (DECISIONS D-00-03)
     assert by_id["5a"]["task"] == by_id["6a"]["task"] == "5-6"
     assert by_id["5a"]["window_steps"] == [5] and by_id["6a"]["window_steps"] == [6]
-    assert "task" not in by_id["7a"] and "task" not in by_id["8a"]
+    assert by_id["7a"]["task"] == by_id["8a"]["task"] == by_id["8b"]["task"] == "7-8"
+    assert by_id["8b"]["key"] is True and by_id["8b"]["window_steps"] == [7, 8]
+    # doing an order backwards fails every related step (DECISIONS D-00-03, D-05-03)
+    assert {cid: c["wrong_with"] for cid, c in by_id.items() if "wrong_with" in c} == {
+        "7a": "8b", "17a": "15b", "27a": "25b"}
     # pushing the air out is its own non-key criterion, in the same task as the flick (rubric 1.7)
     for flick, expel in (("17a", "17b"), ("27a", "27b")):
         assert by_id[flick]["key"] is True and by_id[expel]["key"] is False
@@ -100,6 +109,34 @@ def test_duplicate_criterion_id_is_rejected():
         r["steps"][5]["criteria"][0]["id"] = "6a"
         r["steps"][5]["criteria"].append(dict(r["steps"][5]["criteria"][0]))
     assert any("duplicate id" in e for e in broken(mutate))
+
+
+@pytest.mark.parametrize("target, source", [
+    ("17a", "99z"),  # no such criterion
+    ("17a", "17b"),  # same step
+    ("17a", "13b"),  # not key
+    ("17b", "15b"),  # the linked criterion itself is not key
+    ("15b", "17a"),  # chained: 17a already follows 15b
+])
+def test_wrong_with_must_name_a_key_visual_criterion_of_another_step(target, source):
+    def mutate(r):
+        for step in r["steps"]:
+            for c in step["criteria"]:
+                if c["id"] == target:
+                    c["wrong_with"] = source
+    assert any(f"criterion {target}: wrong_with" in e for e in broken(mutate))
+
+
+def test_linked_steps_are_regraded_together():
+    from rubric import with_linked_steps
+    rubric = load_rubric()
+    assert with_linked_steps(None, rubric) is None
+    # the source's step brings the target's; the target alone is linked again from the saved source
+    assert with_linked_steps({15}, rubric) == {15, 17}
+    assert with_linked_steps({17, 3}, rubric) == {3, 17}
+    assert with_linked_steps({8}, rubric) == {7, 8}
+    assert with_linked_steps({7}, rubric) == {7}
+    assert with_linked_steps({25, 1}, rubric) == {1, 25, 27}
 
 
 def test_criterion_id_must_match_step():

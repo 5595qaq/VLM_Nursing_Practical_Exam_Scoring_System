@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 9.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 25957,
+  "cached_input_tokens": 0,
+  "output_tokens": 106,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@98-136（context box，有聲音；片段內 00:00 ＝ 影片 01:38.0）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 113.0, \"end\": 134.0, \"fps\": 1, \"region\": [0.35, 0.25, 0.65, 0.65], \"reason\": \"逐秒確認最後一次插入稀釋液瓶完成後到開始拔針前（113.0–134.0s），針筒兩端的高低方向\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 9.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 28281,
+  "cached_input_tokens": 0,
+  "output_tokens": 213,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@98-136（context box，有聲音；片段內 00:00 ＝ 影片 01:38.0）",
+   "clip@113-134（region=[0.350, 0.250, 0.650, 0.650]，原始解析度裁切，有聲音；片段內 00:00 ＝ 影片 01:53.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"13b\", \"verdict\": \"正確\", \"explanation\": \"考生於 01:46.5 第一次插針後於 01:48.5 拔出，並於 01:53.0 最後一次將針頭插入稀釋液瓶完成，至 02:13.0 開始拔針；以最後一次插入後判定（左右手對調，右手夾瓶、左手拉針心）。01:53.0–02:13.0 逐秒看過，針頭都比針筒尾端低，全程維持針頭朝下。\", \"times\": [[113.0, 133.0]], \"evidence\": [\"clip@98-136\", \"clip@113-134\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
