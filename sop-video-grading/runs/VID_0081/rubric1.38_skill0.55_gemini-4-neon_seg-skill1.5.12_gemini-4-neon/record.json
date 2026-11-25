@@ -1,0 +1,113 @@
+{
+ "video_id": "VID_0081",
+ "versions": {
+  "rubric": "1.38",
+  "skill": "0.55",
+  "model": "gemini-4-neon",
+  "segmentation": "skill1.5.12_gemini-4-neon"
+ },
+ "video_sha256": "6f9235af873da512b612ede7dfc6feeb83ef8a17267ad624e6c2c613d5b2fc24",
+ "runs": [
+  {
+   "run": 1,
+   "by": "5595QAQ",
+   "date": "2026-11-25",
+   "commit": "c48ff8001984f02dfb5c3c7c269439161a2f3ee5",
+   "video_sha256": "6f9235af873da512b612ede7dfc6feeb83ef8a17267ad624e6c2c613d5b2fc24",
+   "steps": [
+    1,
+    2,
+    3,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30
+   ],
+   "failed_tasks": [
+    {
+     "task": "4",
+     "error": "SkillRunError: task 4: no final action within 8 turns"
+    },
+    {
+     "task": "12",
+     "error": "SkillRunError: task 12: no final action within 8 turns"
+    },
+    {
+     "task": "22",
+     "error": "SkillRunError: task 22: no final action within 8 turns"
+    }
+   ],
+   "segmentation": "sop-video-skill 1.5.12 gemini-4-neon",
+   "usage": {
+    "input_tokens": 3753449,
+    "cached_input_tokens": 1795074,
+    "output_tokens": 592212,
+    "thinking_tokens": 563468
+   },
+   "segmentation_usage": {
+    "input_tokens": 1481438,
+    "cached_input_tokens": 694885,
+    "output_tokens": 441913,
+    "thinking_tokens": 366419
+   },
+   "timing": {
+    "started_at": "2026-11-25T09:34:38+00:00",
+    "segmentation_seconds": 4702.3,
+    "grading_seconds": 2375.2,
+    "total_seconds": 7077.7
+   }
+  },
+  {
+   "run": 2,
+   "by": "5595QAQ",
+   "date": "2026-11-25",
+   "commit": "c48ff8001984f02dfb5c3c7c269439161a2f3ee5",
+   "video_sha256": "6f9235af873da512b612ede7dfc6feeb83ef8a17267ad624e6c2c613d5b2fc24",
+   "steps": [
+    12
+   ],
+   "failed_tasks": [
+    {
+     "task": "4",
+     "error": "SkillRunError: task 4: no final action within 8 turns"
+    },
+    {
+     "task": "22",
+     "error": "SkillRunError: task 22: no final action within 8 turns"
+    }
+   ],
+   "segmentation": "recorded segmentation.json",
+   "usage": {
+    "input_tokens": 620630,
+    "cached_input_tokens": 358852,
+    "output_tokens": 127541,
+    "thinking_tokens": 115081
+   },
+   "timing": {
+    "started_at": "2026-11-25T11:32:53+00:00",
+    "grading_seconds": 781.6,
+    "total_seconds": 781.6
+   }
+  }
+ ]
+}

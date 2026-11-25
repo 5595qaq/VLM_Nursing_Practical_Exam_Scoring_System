@@ -1,0 +1,99 @@
+{
+ "video_id": "VID_0081",
+ "versions": {
+  "rubric": "1.38",
+  "skill": "0.55",
+  "model": "gemini-4-argon",
+  "segmentation": "skill1.5.12_gemini-4-argon"
+ },
+ "video_sha256": "6f9235af873da512b612ede7dfc6feeb83ef8a17267ad624e6c2c613d5b2fc24",
+ "runs": [
+  {
+   "run": 1,
+   "by": "5595QAQ",
+   "date": "2026-11-25",
+   "commit": "c48ff8001984f02dfb5c3c7c269439161a2f3ee5",
+   "video_sha256": "6f9235af873da512b612ede7dfc6feeb83ef8a17267ad624e6c2c613d5b2fc24",
+   "steps": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30
+   ],
+   "failed_tasks": [
+    {
+     "task": "22",
+     "error": "TimeoutError: "
+    }
+   ],
+   "segmentation": "sop-video-skill 1.5.12 gemini-4-argon",
+   "usage": {
+    "input_tokens": 1943069,
+    "cached_input_tokens": 231862,
+    "output_tokens": 22026,
+    "thinking_tokens": 9021
+   },
+   "segmentation_usage": {
+    "input_tokens": 706354,
+    "cached_input_tokens": 474058,
+    "output_tokens": 32355,
+    "thinking_tokens": 0
+   },
+   "timing": {
+    "started_at": "2026-11-25T09:30:21+00:00",
+    "segmentation_seconds": 1958.7,
+    "grading_seconds": 1850.8,
+    "total_seconds": 3809.5
+   }
+  },
+  {
+   "run": 2,
+   "by": "5595QAQ",
+   "date": "2026-11-25",
+   "commit": "c48ff8001984f02dfb5c3c7c269439161a2f3ee5",
+   "video_sha256": "6f9235af873da512b612ede7dfc6feeb83ef8a17267ad624e6c2c613d5b2fc24",
+   "steps": [
+    22
+   ],
+   "failed_tasks": [],
+   "segmentation": "recorded segmentation.json",
+   "usage": {
+    "input_tokens": 151111,
+    "cached_input_tokens": 20064,
+    "output_tokens": 1453,
+    "thinking_tokens": 139
+   },
+   "timing": {
+    "started_at": "2026-11-25T11:08:40+00:00",
+    "grading_seconds": 186.8,
+    "total_seconds": 186.8,
+    "checkpoints_found": true
+   }
+  }
+ ]
+}

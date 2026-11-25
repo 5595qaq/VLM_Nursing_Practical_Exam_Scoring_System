@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 20.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 21715,
+  "cached_input_tokens": 0,
+  "output_tokens": 1354,
+  "thinking_tokens": 1300,
+  "materials": [
+   "ov@31.8-41.4（hands_box，n=9）#0=00:31.8、#1=00:33.0、#2=00:34.2、#3=00:35.4、#4=00:36.6、#5=00:37.8、#6=00:39.0、#7=00:40.2、#8=00:41.4"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 33.5, \"end\": 39.5, \"fps\": 2, \"reason\": \"確認學生拿起 vial 檢視與轉動瓶身的連續動作及起訖時間\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 18.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 22910,
+  "cached_input_tokens": 0,
+  "output_tokens": 1492,
+  "thinking_tokens": 1263,
+  "materials": [
+   "ov@31.8-41.4（hands_box，n=9）#0=00:31.8、#1=00:33.0、#2=00:34.2、#3=00:35.4、#4=00:36.6、#5=00:37.8、#6=00:39.0、#7=00:40.2、#8=00:41.4",
+   "clip@33.5-39.5（context box，有聲音；片段內 00:00 ＝ 影片 00:33.5）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"3a\", \"verdict\": \"正確\", \"explanation\": \"00:34.5–00:38.5（clip@33.5-39.5 片段內 00:01.0–00:05.0）學生從桌面拿起 vial 藥瓶，以雙手橫向舉至胸前並低頭注視，過程中以手指轉動藥瓶檢視標籤與瓶身，隨後於 00:39.0 放回桌面。影片限制，無法得知檢查內容是否正確。\", \"times\": [[34.5, 38.5]], \"evidence\": [\"clip@33.5-39.5\", \"ov@31.8-41.4 #3\", \"ov@31.8-41.4 #4\", \"ov@31.8-41.4 #5\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

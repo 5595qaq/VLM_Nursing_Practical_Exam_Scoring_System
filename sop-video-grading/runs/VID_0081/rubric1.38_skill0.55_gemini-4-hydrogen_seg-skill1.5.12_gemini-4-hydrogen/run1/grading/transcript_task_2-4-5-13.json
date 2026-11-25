@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 6.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 21784,
+  "cached_input_tokens": 0,
+  "output_tokens": 733,
+  "thinking_tokens": 664,
+  "materials": [
+   "ov@29.4-52（hands_box，n=9）#0=00:29.4、#1=00:32.2、#2=00:35.0、#3=00:37.9、#4=00:40.7、#5=00:43.5、#6=00:46.4、#7=00:49.2、#8=00:52.0"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 37.5, \"end\": 44.5, \"fps\": 4, \"reason\": \"查看 00:37.5–00:44.5 考生拿起並檢視稀釋液瓶的連續動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 10.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 24211,
+  "cached_input_tokens": 20064,
+  "output_tokens": 1442,
+  "thinking_tokens": 1346,
+  "materials": [
+   "ov@29.4-52（hands_box，n=9）#0=00:29.4、#1=00:32.2、#2=00:35.0、#3=00:37.9、#4=00:40.7、#5=00:43.5、#6=00:46.4、#7=00:49.2、#8=00:52.0",
+   "clip@37.5-44.5（context box，有聲音；片段內 00:00 ＝ 影片 00:37.5）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [39.8, 40.5, 41.2], \"region\": [0.35, 0.35, 0.65, 0.65], \"reason\": \"放大確認 00:39.8–00:41.2 手中拿取與轉動檢視的為稀釋液瓶\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 11.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 25432,
+  "cached_input_tokens": 0,
+  "output_tokens": 1552,
+  "thinking_tokens": 1274,
+  "materials": [
+   "ov@29.4-52（hands_box，n=9）#0=00:29.4、#1=00:32.2、#2=00:35.0、#3=00:37.9、#4=00:40.7、#5=00:43.5、#6=00:46.4、#7=00:49.2、#8=00:52.0",
+   "clip@37.5-44.5（context box，有聲音；片段內 00:00 ＝ 影片 00:37.5）",
+   "zoom@39.8/40.5/41.2 region=[0.350, 0.350, 0.650, 0.650]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4d\", \"verdict\": \"正確\", \"explanation\": \"00:39.3（clip@37.5-44.5 片段內 00:01.75）考生從桌面拿起細長透明塑膠瓶身、帶綠色標籤的稀釋液瓶，00:39.5–00:41.5（片段內 00:02.00–00:04.00）雙手拿在胸前水平轉動並低頭檢視瓶身與標籤（zoom@39.8、zoom@40.5、zoom@41.2 可清楚確認手中為稀釋液瓶且正在翻轉檢視），隨後於 00:41.8 放回桌面，完成抽藥前拿起稀釋液檢查效期與有無異物的動作。\", \"times\": [[39.3, 41.8]], \"evidence\": [\"clip@37.5-44.5\", \"zoom@39.8\", \"zoom@40.5\", \"zoom@41.2\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

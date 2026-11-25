@@ -1,0 +1,82 @@
+[
+ {
+  "turn": 1,
+  "seconds": 12.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 27286,
+  "cached_input_tokens": 0,
+  "output_tokens": 1522,
+  "thinking_tokens": 1294,
+  "materials": [
+   "clip@0-36（context box，有聲音；片段內 00:00 ＝ 影片 00:00.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [0.0, 2.5, 33.5, 34.5], \"region\": [0.25, 0.55, 0.85, 1.0], \"reason\": \"確認檯面上的紙張是否為給藥紀錄單，以及 00:02.5 與 00:33.5–00:34.5 拿取 vial 的細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 15.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 28491,
+  "cached_input_tokens": 0,
+  "output_tokens": 2086,
+  "thinking_tokens": 2017,
+  "materials": [
+   "clip@0-36（context box，有聲音；片段內 00:00 ＝ 影片 00:00.0）",
+   "zoom@0/2.5/33.5/34.5 region=[0.250, 0.550, 0.850, 1.000]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [0.0, 10.0], \"region\": [0.65, 0.15, 0.95, 0.5], \"reason\": \"確認畫面右上方牆上的紙張是否為給藥紀錄單\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 46.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 29694,
+  "cached_input_tokens": 20064,
+  "output_tokens": 5611,
+  "thinking_tokens": 5519,
+  "materials": [
+   "clip@0-36（context box，有聲音；片段內 00:00 ＝ 影片 00:00.0）",
+   "zoom@0/2.5/33.5/34.5 region=[0.250, 0.550, 0.850, 1.000]",
+   "zoom@0/10 region=[0.650, 0.150, 0.950, 0.500]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [1.5, 3.0, 35.0, 35.5], \"region\": [0.28, 0.72, 0.68, 1.0], \"reason\": \"確認治療車前緣物品是否為給藥紀錄單，並確認00:35前後拿起vial的動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 4,
+  "seconds": 33.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 30920,
+  "cached_input_tokens": 0,
+  "output_tokens": 4424,
+  "thinking_tokens": 4346,
+  "materials": [
+   "clip@0-36（context box，有聲音；片段內 00:00 ＝ 影片 00:00.0）",
+   "zoom@0/2.5/33.5/34.5 region=[0.250, 0.550, 0.850, 1.000]",
+   "zoom@0/10 region=[0.650, 0.150, 0.950, 0.500]",
+   "zoom@1.5/3/35/35.5 region=[0.280, 0.720, 0.680, 1.000]"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 34.0, \"end\": 46.0, \"fps\": 2, \"reason\": \"查看 00:34–00:46 考生拿起藥瓶後的動作，確認給藥紀錄單位置以及是否為步驟 4 核對的紀錄單\"}",
+  "errors": []
+ },
+ {
+  "turn": 5,
+  "seconds": 92.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 33217,
+  "cached_input_tokens": 20064,
+  "output_tokens": 14385,
+  "thinking_tokens": 13559,
+  "materials": [
+   "clip@0-36（context box，有聲音；片段內 00:00 ＝ 影片 00:00.0）",
+   "zoom@0/2.5/33.5/34.5 region=[0.250, 0.550, 0.850, 1.000]",
+   "zoom@0/10 region=[0.650, 0.150, 0.950, 0.500]",
+   "zoom@1.5/3/35/35.5 region=[0.280, 0.720, 0.680, 1.000]",
+   "clip@34-46（context box，有聲音；片段內 00:00 ＝ 影片 00:34.0）"
+  ],
+  "reply": "{\n  \"action\": \"final\",\n  \"criteria\": [\n    {\n      \"criterion_id\": \"2a\",\n      \"verdict\": \"無法判定\",\n      \"explanation\": \"已檢查 00:00.0–00:46.0 全段 context 畫面及治療車檯面、右側牆面局部放大（zoom@0、zoom@2.5、zoom@10、zoom@1.5、zoom@3）：檯面上僅有紅色尖銳物收集筒、透明針筒盒、酒精棉片、空針包裝、vial、稀釋液瓶與乾洗手液瓶，右側牆面為擺設圖示而非給藥紀錄單；給藥紀錄單未入鏡，無法確認取出 vial 前查看紀錄單的時間。\",\n      \"times\": [],\n      \"evidence\": [\"clip@0-36\", \"clip@34-46\", \"zoom@0\", \"zoom@2.5\", \"zoom@10\", \"zoom@1.5\", \"zoom@3\"],\n      \"confidence\": 0.9,\n      \"reason\": \"藥單看不見\"\n    },\n    {\n      \"criterion_id\": \"2b\",\n      \"verdict\": \"無法判定\",\n      \"explanation\": \"00:00.0–00:35.5 治療車檯面及右側牆面均未見給藥紀錄單（藥單未入鏡）；雖 00:00.5–00:35.0 雙手在檯面上整理物品、按壓乾洗手搓手並伸手拿取 vial，但因給藥紀錄單未入鏡，無法確認取出前是否有指讀紀錄單。\",\n      \"times\": [],\n      \"evidence\": [\"clip@0-36\", \"zoom@0\", \"zoom@2.5\", \"zoom@10\", \"zoom@1.5\", \"zoom@3\"],\n      \"confidence\": 0.85,\n      \"reason\": \"藥單看不見\"\n    },\n    {\n      \"criterion_id\": \"2d\",\n      \"verdict\": \"無法判定\",\n      \"explanation\": \"00:00.0 影片開始時（clip@0-36、zoom@0）vial 已放置於治療車檯面上，畫面內未見藥盒或抽屜；00:02.5–00:03.5 右手僅在檯面上移動調整 vial 位置，00:05.5–00:33.0 洗手，00:34.5–00:35.0 才雙手將 vial 從檯面拿起並隨即於 00:35.5–00:38.5 開蓋（步驟 5）。因無法確認 vial 是否於開錄前已取出或考場預先擺放於檯面，故無法判定。\",\n      \"times\": [[34.5, 35.0]],\n      \"evidence\": [\"clip@0-36\", \"clip@34-46\", \"zoom@0\", \"zoom@3\", \"zoom@33.5\", \"zoom@34.5\", \"zoom@35\"],\n      \"confidence\": 0.7,\n      \"reason\": \"資訊不足\",\n      \"needs_review\": true,\n      \"review_reason\": \"影片 00:00.0 開始時 vial 已在檯面上，未見從藥盒或抽屜取出的動作，00:34.5–00:35.0 才從檯面拿起開蓋\"\n    }\n  ]\n}",
+  "errors": []
+ }
+]
