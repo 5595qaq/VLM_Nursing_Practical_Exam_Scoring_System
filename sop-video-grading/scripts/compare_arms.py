@@ -78,7 +78,9 @@ def run_cost(runs_dir: Path, folder: str, video_id: str) -> dict:
     run = record["runs"][0]
     grading_in, grading_out = run["usage"]["input_tokens"], run["usage"]["output_tokens"]
     cached = run["usage"].get("cached_input_tokens")  # None: the record predates cached-token accounting
-    *_, grading_secs = _transcript_cost(sorted((base / "run1" / "grading").glob("transcript_task_*.json")))
+    # transcript_judge*.json: the judging agent of a two-stage grading (issue #207)
+    *_, grading_secs = _transcript_cost(sorted((base / "run1" / "grading").glob("transcript_task_*.json"))
+                                        + sorted((base / "run1" / "grading").glob("transcript_judge*.json")))
     seg = base / "run1" / "seg" / "transcript.json"
     source = record.get("segmentation_from")
     while not seg.exists() and source:  # copied: count the record that paid for it

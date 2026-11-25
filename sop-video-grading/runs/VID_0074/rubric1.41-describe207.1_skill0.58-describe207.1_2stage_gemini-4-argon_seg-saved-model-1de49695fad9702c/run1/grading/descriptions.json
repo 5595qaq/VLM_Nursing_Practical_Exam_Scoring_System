@@ -1,0 +1,2403 @@
+{
+ "describe_digest": "7a2ec62d26d67def",
+ "observe": {
+  "10b": "7b9f9275d329",
+  "12a": "f99171f3e451",
+  "13a": "aecdba9c86f2",
+  "14a": "48d61a8a1c3d",
+  "15b": "ea95214df2c4",
+  "17a": "6b67168ca2ab",
+  "18b": "d003df9e2855",
+  "18c": "42e931037858",
+  "18d": "0ff864861804",
+  "19b": "d5020f18a8d5",
+  "22b": "d003df9e2855",
+  "22c": "42e931037858",
+  "22d": "0c055c823b5d",
+  "24a": "48d61a8a1c3d",
+  "24c": "76b13c4a9e4f",
+  "25b": "ea95214df2c4",
+  "26b": "a502fefbddf2",
+  "27a": "6b67168ca2ab",
+  "28b": "d5020f18a8d5"
+ },
+ "tasks": [
+  {
+   "key": "10-d",
+   "task": {
+    "key": "10-d",
+    "window_steps": [
+     10
+    ],
+    "criteria": [
+     {
+      "criterion_id": "10b",
+      "step_id": 10,
+      "text": "固定針頭與針心：空針完全離開包裝之後，一手握住針頭蓋與針筒接合處、另一手握針筒或針心固定（常見為旋緊針頭）；只有取出後的固定才算，隔著包裝或在包裝裡旋轉不算。評分 agent 會拿到切分標出的手拿空針包裝時段（第一次使用空針之前），用來找出空針離開包裝的時間，只看取出後到第一次使用之前；看到固定 → 正確，看清楚而沒有固定 → 錯誤，看不清楚 → 無法判定，錯誤與無法判定都轉人工",
+      "window": [
+       58.0,
+       77.6
+      ],
+      "window_steps": [
+       10
+      ],
+      "audio": false,
+      "min_seconds": null,
+      "cumulative_seconds": false,
+      "timed_action": null,
+      "dense": false,
+      "clip": false,
+      "search_steps": null,
+      "observe": [
+       "空針完全離開包裝的時間點；離開之前在包裝裡做了什麼（撕開、推出、在包裝裡旋轉等）",
+       "空針離開包裝之後、到第一次使用（拔針頭蓋、抽空氣）或放下之前，兩手各握在哪裡、有沒有旋轉針頭與針筒接合處（每一次的起訖時間）",
+       "這段時間裡看過與沒看清楚的時段（雙手或針頭端被擋住、出框）"
+      ],
+      "first_use": 96.0,
+      "package_spans": [
+       [
+        41.0,
+        62.5
+       ]
+      ],
+      "searching": false
+     }
+    ],
+    "window": [
+     58.0,
+     77.6
+    ],
+    "needs_clip": false,
+    "describe": true,
+    "peaks": [
+     {
+      "t": 58.2,
+      "e": 0.02222
+     },
+     {
+      "t": 58.87,
+      "e": 0.0266
+     },
+     {
+      "t": 62.6,
+      "e": 0.02563
+     },
+     {
+      "t": 63.6,
+      "e": 0.03123
+     },
+     {
+      "t": 64.33,
+      "e": 0.02854
+     },
+     {
+      "t": 74.0,
+      "e": 0.02437
+     },
+     {
+      "t": 75.6,
+      "e": 0.03493
+     },
+     {
+      "t": 77.07,
+      "e": 0.02449
+     }
+    ],
+    "clips": [
+     [
+      58.0,
+      66.0
+     ],
+     [
+      66.0,
+      74.0
+     ]
+    ]
+   },
+   "used": {
+    "overview": 0,
+    "zoom": 1,
+    "burst": 0,
+    "clip": 2
+   },
+   "log": [
+    "clip 58-66 fps=10 region=[0.250, 0.250, 0.750, 0.650]",
+    "clip 66-74 fps=10 region=[0.250, 0.250, 0.750, 0.650]",
+    "zoom times=[61.8, 64.5, 68.1, 71.5] region=[0.250, 0.250, 0.750, 0.650]"
+   ],
+   "observations": [
+    {
+     "criterion_id": "10b",
+     "item": 1,
+     "occurrence": 1,
+     "finding": "00:58.0–01:01.3（clip@58-66）雙手撕開空針包裝；01:01.4–01:02.1（clip@58-66、zoom@61.8）右手握住針筒將空針從包裝中抽出，於 01:02.1 空針完全離開包裝；離開之前在包裝裡沒有旋轉針頭或操作針心的動作。",
+     "times": [
+      [
+       58.0,
+       62.1
+      ]
+     ],
+     "visibility": "清楚",
+     "evidence": [
+      "clip@58-66",
+      "zoom@61.8"
+     ],
+     "zoom_confirmed": true
+    },
+    {
+     "criterion_id": "10b",
+     "item": 2,
+     "occurrence": 1,
+     "finding": "空針於 01:02.1 離開包裝後：01:02.1–01:03.6 左手將空針包裝袋放到桌上，右手單手握針筒；01:03.8–01:07.1（clip@58-66、clip@66-74、zoom@64.5）右手握住針筒與針心尾端，左手手指捏住針頭套與針座接合處，連續旋轉旋緊針頭；01:07.3–01:09.6（clip@66-74、zoom@68.1）左手握針筒與針頭接合處，右手握針心尾端往後拉再往前推到底（抽推測試活塞）；01:09.8–01:14.0（clip@66-74、zoom@71.5）右手握針筒，左手捏住針頭套與針座接合處再次連續旋轉旋緊針頭；01:15.1–01:17.6（ov@58-77.6 #7-#8）將空針放到桌上。",
+     "times": [
+      [
+       63.8,
+       67.1
+      ],
+      [
+       67.3,
+       69.6
+      ],
+      [
+       69.8,
+       74.0
+      ]
+     ],
+     "visibility": "清楚",
+     "evidence": [
+      "clip@58-66",
+      "clip@66-74",
+      "zoom@64.5",
+      "zoom@68.1",
+      "zoom@71.5",
+      "ov@58-77.6 #7",
+      "ov@58-77.6 #8"
+     ],
+     "zoom_confirmed": true
+    },
+    {
+     "criterion_id": "10b",
+     "item": 3,
+     "occurrence": 1,
+     "finding": "已看過 00:58.0–01:14.0 的連續裁切片段（clip@58-66、clip@66-74）及 00:58.0–01:17.6 的全景（ov@58-77.6），全程雙手與空針、針頭套及針筒接合處皆在畫面中央且清楚可見，無被遮擋或出框的時段。",
+     "times": [
+      [
+       58.0,
+       77.6
+      ]
+     ],
+     "visibility": "清楚",
+     "evidence": [
+      "ov@58-77.6 #0",
+      "clip@58-66",
+      "clip@66-74"
+     ],
+     "zoom_confirmed": true
+    }
+   ]
+  },
+  {
+   "key": "12-d",
+   "task": {
+    "key": "12-d",
+    "window_steps": [
+     12
+    ],
+    "criteria": [
+     {
+      "criterion_id": "12a",
+      "step_id": 12,
+      "text": "以左手中指及食指夾住稀釋液瓶（左撇子左右手對調也算正確）",
+      "window": [
+       98.5,
+       105.5
+      ],
+      "window_steps": [
+       12
+      ],
+      "audio": false,
+      "min_seconds": null,
+      "cumulative_seconds": false,
+      "timed_action": null,
+      "dense": false,
+      "clip": false,
+      "search_steps": null,
+      "observe": [
+       "抽稀釋液時夾住稀釋液瓶的是哪隻手、用哪幾根手指夾住",
+       "學生是不是左右手整個對調做（左撇子），對調時寫出實際做這個動作的是哪隻手"
+      ],
+      "searching": false
+     }
+    ],
+    "window": [
+     98.5,
+     105.5
+    ],
+    "needs_clip": false,
+    "describe": true,
+    "peaks": [
+     {
+      "t": 98.57,
+      "e": 0.03075
+     },
+     {
+      "t": 99.9,
+      "e": 0.03748
+     },
+     {
+      "t": 101.3,
+      "e": 0.02981
+     }
+    ]
+   },
+   "used": {
+    "overview": 0,
+    "zoom": 1,
+    "burst": 0,
+    "clip": 0
+   },
+   "log": [
+    "zoom times=[102.0, 102.9, 103.8, 104.6] region=[0.300, 0.300, 0.700, 0.650]"
+   ],
+   "observations": [
+    {
+     "criterion_id": "12a",
+     "item": 1,
+     "occurrence": 1,
+     "finding": "01:42.0–01:44.6（zoom@102、zoom@102.9、zoom@103.8、zoom@104.6）學生以左手（戴黑色手錶的手）的中指與無名指夾住稀釋液瓶身，食指與拇指朝上伸展並在 01:43.8–01:44.6 輔助固定針筒前端。",
+     "times": [
+      [
+       102.0,
+       104.6
+      ]
+     ],
+     "visibility": "清楚",
+     "evidence": [
+      "zoom@102",
+      "zoom@102.9",
+      "zoom@103.8",
+      "zoom@104.6"
+     ],
+     "zoom_confirmed": true
+    },
+    {
+     "criterion_id": "12a",
+     "item": 2,
+     "occurrence": 1,
+     "finding": "01:42.0–01:45.5（ov@98.5-105.5 #4–#8、zoom@102–104.6）學生並未左右手對調，實際以左手夾住稀釋液瓶，右手持空針將針頭插入瓶中並拉針心。",
+     "times": [
+      [
+       102.0,
+       105.5
+      ]
+     ],
+     "visibility": "清楚",
+     "evidence": [
+      "ov@98.5-105.5 #4",
+      "ov@98.5-105.5 #8",
+      "zoom@102",
+      "zoom@103.8"
+     ],
+     "zoom_confirmed": true
+    }
+   ]
+  },
+  {
+   "key": "13-d",
+   "task": {
+    "key": "13-d",
+    "window_steps": [
+     13
+    ],
+    "criteria": [
+     {
+      "criterion_id": "13a",
+      "step_id": 13,
+      "text": "右手將針頭插入稀釋液瓶，左手其餘手指固定針筒（左撇子左右手對調也算正確）",
+      "window": [
+       94.0,
+       107.5
+      ],
+      "window_steps": [
+       13
+      ],
+      "audio": false,
+      "min_seconds": null,
+      "cumulative_seconds": false,
+      "timed_action": null,
+      "dense": false,
+      "clip": false,
+      "search_steps": null,
+      "observe": [
+       "針頭插入稀釋液瓶時，拿針筒插針的是哪隻手",
+       "另一隻手的手指在做什麼：有沒有固定針筒、碰在哪裡",
+       "學生是不是左右手整個對調做（左撇子），對調時寫出實際做這個動作的是哪隻手"
+      ],
+      "searching": false
+     }
+    ],
+    "window": [
+     94.0,
+     107.5
+    ],
+    "needs_clip": false,
+    "describe": true,
+    "peaks": [
+     {
+      "t": 94.6,
+      "e": 0.01297
+     },
+     {
+      "t": 95.4,
+      "e": 0.02426
+     },
+     {
+      "t": 97.13,
+      "e": 0.02932
+     },
+     {
+      "t": 98.33,
+      "e": 0.03814
+     },
+     {
+      "t": 99.93,
+      "e": 0.03739
+     },
+     {
+      "t": 101.27,
+      "e": 0.02826
+     },
+     {
+      "t": 106.27,
+      "e": 0.02012
+     }
+    ]
+   },
+   "used": {
+    "overview": 0,
+    "zoom": 1,
+    "burst": 0,
+    "clip": 0
+   },
+   "log": [
+    "zoom times=[102.4, 103.5, 104.5, 105.8] region=[0.300, 0.250, 0.750, 0.650]"
+   ],
+   "observations": [
+    {
+     "criterion_id": "13a",
+     "item": 1,
+     "occurrence": 1,
+     "finding": "01:42.4–01:44.5（zoom@102.4、zoom@103.5、zoom@104.5）拿針筒將針頭插入稀釋液瓶的是右手。",
+     "times": [
+      [
+       102.4,
+       104.5
+      ]
+     ],
+     "visibility": "清楚",
+     "evidence": [
+      "zoom@102.4",
+      "zoom@103.5",
+      "zoom@104.5"
+     ],
+     "zoom_confirmed": true
+    },
+    {
+     "criterion_id": "13a",
+     "item": 2,
+     "occurrence": 1,
+     "finding": "01:42.4–01:43.5（zoom@102.4、zoom@103.5）針頭剛接近並進入稀釋液瓶口時，左手中指與無名指夾住稀釋液瓶，大拇指與食指張開尚未碰到針筒；01:44.5–01:45.8（zoom@104.5、zoom@105.8）針頭插入瓶內及右手準備拉針心時，左手大拇指與食指捏住針筒前端與針座交接處固定針筒。",
+     "times": [
+      [
+       102.4,
+       105.8
+      ]
+     ],
+     "visibility": "清楚",
+     "evidence": [
+      "zoom@102.4",
+      "zoom@103.5",
+      "zoom@104.5",
+      "zoom@105.8"
+     ],
+     "zoom_confirmed": true
+    },
+    {
+     "criterion_id": "13a",
+     "item": 3,
+     "occurrence": 1,
+     "finding": "01:42.4–01:45.8（zoom@102.4、zoom@103.5、zoom@104.5、zoom@105.8）學生未左右手對調，實際以左手夾持稀釋液瓶並固定針筒、右手持空針插針及拉針心。",
+     "times": [
+      [
+       102.4,
+       105.8
+      ]
+     ],
+     "visibility": "清楚",
+     "evidence": [
+      "zoom@102.4",
+      "zoom@103.5",
+      "zoom@104.5",
+      "zoom@105.8"
+     ],
+     "zoom_confirmed": true
+    }
+   ]
+  },
+  {
+   "key": "14-d",
+   "task": {
+    "key": "14-d",
+    "window_steps": [
+     14
+    ],
+    "criteria": [
+     {
+      "criterion_id": "14a",
+      "step_id": 14,
+      "text": "右手持針心尾端環狀處，未碰觸外露的針心推桿（手指在外筒或翼緣上不算碰觸）（左撇子左右手對調也算正確）",
+      "window": [
+       103.5,
+       130.0
+      ],
+      "window_steps": [
+       14
+      ],
+      "audio": false,
+      "min_seconds": null,
+      "cumulative_seconds": false,
+      "timed_action": null,
+      "dense": false,
+      "clip": false,
+      "search_steps": null,
+      "observe": [
+       "拉針心時，拉的是哪隻手、手指握在哪裡（尾端圓盤、外露的推桿、外筒或翼緣）",
+       "指尖有沒有捏住或碰到外露的推桿，碰了多久、清不清楚",
+       "學生是不是左右手整個對調做（左撇子），對調時寫出實際做這個動作的是哪隻手"
+      ],
+      "searching": false
+     }
+    ],
+    "window": [
+     103.5,
+     130.0
+    ],
+    "needs_clip": false,
+    "describe": true,
+    "peaks": [
+     {
+      "t": 103.97,
+      "e": 0.00396
+     },
+     {
+      "t": 104.83,
+      "e": 0.0089
+     },
+     {
+      "t": 106.37,
+      "e": 0.02152
+     },
+     {
+      "t": 108.03,
+      "e": 0.00398
+     },
+     {
+      "t": 110.77,
+      "e": 0.01239
+     },
+     {
+      "t": 113.63,
+      "e": 0.00404
+     },
+     {
+      "t": 127.43,
+      "e": 0.0119
+     },
+     {
+      "t": 129.17,
+      "e": 0.02338
+     }
+    ]
+   },
+   "used": {
+    "overview": 0,
+    "zoom": 2,
+    "burst": 0,
+    "clip": 0
+   },
+   "log": [
+    "zoom times=[108.0, 113.4, 120.1, 125.0] region=[0.250, 0.200, 0.750, 0.650]",
+    "zoom times=[110.1, 116.8, 122.0, 126.7] region=[0.320, 0.300, 0.620, 0.550]"
+   ],
+   "observations": [
+    {
+     "criterion_id": "14a",
+     "item": 1,
+     "occurrence": 1,
+     "finding": "在 01:48.0 至 02:06.7 抽稀釋液拉針心的過程中，學生以右手（畫面左側的手）拉針心。右手食指、中指及無名指扣握在針心尾端圓盤處往後拉，右手大拇指往前伸直頂住針筒外筒尾端的翼緣處。",
+     "times": [
+      [
+       108.0,
+       126.7
+      ]
+     ],
+     "visibility": "清楚",
+     "evidence": [
+      "zoom@108",
+      "zoom@110.1",
+      "zoom@113.4",
+      "zoom@116.8",
+      "zoom@120.1",
+      "zoom@122",
+      "zoom@125",
+      "zoom@126.7"
+     ],
+     "zoom_confirmed": true
+    },
+    {
+     "criterion_id": "14a",
+     "item": 2,
+     "occurrence": 1,
+     "finding": "在 01:50.1 至 02:06.7 針心被拉出外露期間，右手大拇指沿著推桿下方往前伸直頂在外筒翼緣，從畫面可見右手大拇指內側緊貼在外露的針心推桿下方（01:53.4 至 02:06.7 持續接觸約 13 秒），而右手食指、中指等指尖則始終握在尾端圓盤上，沒有捏住外露的推桿主體。手部與推桿位置清楚可見。",
+     "times": [
+      [
+       110.1,
+       126.7
+      ]
+     ],
+     "visibility": "清楚",
+     "evidence": [
+      "zoom@110.1",
+      "zoom@113.4",
+      "zoom@116.8",
+      "zoom@120.1",
+      "zoom@122",
+      "zoom@125",
+      "zoom@126.7"
+     ],
+     "zoom_confirmed": true
+    },
+    {
+     "criterion_id": "14a",
+     "item": 3,
+     "occurrence": 1,
+     "finding": "01:46.8 至 02:06.7 期間，學生並未左右手對調，實際以左手夾持稀釋液瓶並固定針筒前端，以右手拉針心。",
+     "times": [
+      [
+       106.8,
+       126.7
+      ]
+     ],
+     "visibility": "清楚",
+     "evidence": [
+      "ov@103.5-130 #1",
+      "zoom@108",
+      "zoom@120.1"
+     ],
+     "zoom_confirmed": true
+    }
+   ]
+  },
+  {
+   "key": "15-16-17-d",
+   "task": {
+    "key": "15-16-17-d",
+    "window_steps": [
+     15,
+     16,
+     17
+    ],
+    "criteria": [
+     {
+      "criterion_id": "15b",
+      "step_id": 15,
+      "text": "先墊酒精棉片才彈針",
+      "window": [
+       129.0,
+       148.0
+      ],
+      "window_steps": [
+       15,
+       16,
+       17
+      ],
+      "audio": true,
+      "min_seconds": null,
+      "cumulative_seconds": false,
+      "timed_action": null,
+      "dense": false,
+      "clip": false,
+      "search_steps": null,
+      "observe": [
+       "排了幾輪空氣，每一輪的起訖時間",
+       "每一輪酒精棉片墊上針頭與針筒接合處的時間點，以及 zoom 是否確實看到白色方形棉片",
+       "每一輪墊棉片之前與之後，手指彈針筒的每一下的時間點，以及那時有沒有對應的響聲"
+      ],
+      "searching": false
+     },
+     {
+      "criterion_id": "17a",
+      "step_id": 17,
+      "text": "手指輕彈空針（聽到彈擊聲且看到手指彈針筒）",
+      "window": [
+       129.0,
+       148.0
+      ],
+      "window_steps": [
+       15,
+       16,
+       17
+      ],
+      "audio": true,
+      "min_seconds": null,
+      "cumulative_seconds": false,
+      "timed_action": null,
+      "dense": false,
+      "clip": false,
+      "search_steps": null,
+      "observe": [
+       "手指彈針筒的時間點與次數（畫面上看到的動作）",
+       "連續彈擊聲的時間點與聲數（聽到的聲音），以及聲音和手指動作的時間是否對得上"
+      ],
+      "searching": false
+     }
+    ],
+    "window": [
+     129.0,
+     148.0
+    ],
+    "needs_clip": true,
+    "describe": true,
+    "peaks": [
+     {
+      "t": 129.2,
+      "e": 0.02353
+     },
+     {
+      "t": 134.6,
+      "e": 0.02665
+     },
+     {
+      "t": 138.33,
+      "e": 0.03989
+     },
+     {
+      "t": 139.53,
+      "e": 0.04047
+     },
+     {
+      "t": 140.87,
+      "e": 0.02624
+     },
+     {
+      "t": 141.6,
+      "e": 0.02609
+     },
+     {
+      "t": 145.8,
+      "e": 0.03692
+     },
+     {
+      "t": 146.73,
+      "e": 0.02095
+     }
+    ],
+    "audio": {
+     "has_audio": true,
+     "silent": false,
+     "max_db": -30.5,
+     "floor_db": -61.3,
+     "peaks": [
+      {
+       "t": 130.29,
+       "db": -50.5
+      },
+      {
+       "t": 130.94,
+       "db": -50.2
+      },
+      {
+       "t": 133.94,
+       "db": -49.9
+      },
+      {
+       "t": 134.27,
+       "db": -43.3
+      },
+      {
+       "t": 135.71,
+       "db": -43.5
+      },
+      {
+       "t": 136.05,
+       "db": -43.8
+      },
+      {
+       "t": 136.39,
+       "db": -44.7
+      },
+      {
+       "t": 137.07,
+       "db": -30.5
+      },
+      {
+       "t": 137.67,
+       "db": -36.7
+      },
+      {
+       "t": 138.08,
+       "db": -41.6
+      },
+      {
+       "t": 138.78,
+       "db": -41.6
+      },
+      {
+       "t": 140.88,
+       "db": -31.4
+      },
+      {
+       "t": 141.52,
+       "db": -36.1
+      },
+      {
+       "t": 142.14,
+       "db": -39.8
+      },
+      {
+       "t": 142.92,
+       "db": -48.6
+      },
+      {
+       "t": 147.05,
+       "db": -51.2
+      }
+     ],
+     "runs": [
+      {
+       "start": 135.71,
+       "end": 138.78,
+       "n": 7
+      },
+      {
+       "start": 140.88,
+       "end": 142.92,
+       "n": 4
+      }
+     ],
+     "start": 129.0,
+     "end": 148.0
+    },
+    "opening_clip": true
+   },
+   "used": {
+    "overview": 0,
+    "zoom": 0,
+    "burst": 2,
+    "clip": 0
+   },
+   "log": [
+    "burst 134.5-137.5 n=12 region=[0.300, 0.300, 0.650, 0.650]",
+    "burst 139.5-142.5 n=12 region=[0.300, 0.300, 0.650, 0.650]"
+   ],
+   "observations": [
+    {
+     "criterion_id": "15b",
+     "item": 1,
+     "occurrence": 1,
+     "finding": "共排了1輪空氣（中間去拿酒精棉片再繼續彈針排氣），從02:11.0（clip@129-148 00:02.0）針頭朝上回抽針心開始，至02:25.5（clip@129-148 00:16.5）推完針心並拿開酒精棉片結束。",
+     "times": [
+      [
+       131.0,
+       145.5
+      ]
+     ],
+     "visibility": "清楚",
+     "evidence": [
+      "clip@129-148"
+     ],
+     "zoom_confirmed": true
+    },
+    {
+     "criterion_id": "15b",
+     "item": 2,
+     "occurrence": 1,
+     "finding": "02:14.5–02:17.5（burst@134.5-137.5 #0-#11）左手直接握持針筒與針座，針頭與針筒接合處沒有墊酒精棉片；02:18.5（clip@129-148 00:09.5）左手伸向檯面拿取酒精棉片，於02:19.8–02:20.0（burst@139.5-142.5 #1-#2）將白色方形酒精棉片墊在針頭與針筒接合處，原始解析度畫面中清楚看到白色方形棉片包覆接合處，持續墊著直到02:25.5（clip@129-148 00:16.5）拿開。",
+     "times": [
+      [
+       139.8,
+       145.5
+      ]
+     ],
+     "visibility": "清楚",
+     "evidence": [
+      "burst@134.5-137.5 #0",
+      "burst@139.5-142.5 #1",
+      "burst@139.5-142.5 #2",
+      "clip@129-148"
+     ],
+     "zoom_confirmed": true
+    },
+    {
+     "criterion_id": "15b",
+     "item": 3,
+     "occurrence": 1,
+     "finding": "墊棉片之前（02:13.5–02:18.0）：左手握針筒、接合處無棉片，右手食指與中指於02:14.0–02:18.0（clip@129-148 00:05.0–00:09.0，以及burst@134.5-137.5 #0-#11）連續彈擊針筒，對應02:13.9、02:14.3、02:15.7、02:16.1、02:16.4、02:17.1、02:17.7、02:18.1的多聲清脆彈擊響聲（02:18.8的響聲為手伸向桌面拿棉片時發出）。墊棉片之後（02:20.0–02:25.5）：於02:20.9–02:22.2（burst@139.5-142.5 #5-#10）右手食指連續彈擊針筒4下，對應02:20.9、02:21.5、02:22.1、02:22.9的4聲彈擊響聲，隨後於02:22.5–02:25.0（burst@139.5-142.5 #11及clip@129-148 00:13.5–00:16.0）推針心排氣。",
+     "times": [
+      [
+       133.9,
+       138.1
+      ],
+      [
+       140.9,
+       142.9
+      ]
+     ],
+     "visibility": "清楚",
+     "evidence": [
+      "clip@129-148",
+      "burst@134.5-137.5 #4",
+      "burst@134.5-137.5 #7",
+      "burst@139.5-142.5 #5",
+      "burst@139.5-142.5 #8"
+     ],
+     "zoom_confirmed": true
+    },
+    {
+     "criterion_id": "17a",
+     "item": 1,
+     "occurrence": 1,
+     "finding": "手指彈針筒分兩段：第一段（未墊棉片）在02:14.0–02:18.0（burst@134.5-137.5 #0-#11、clip@129-148 00:05.0–00:09.0），左手握針筒，右手食指與中指連續屈伸彈擊針筒約8次；第二段（墊棉片後）在02:20.9–02:22.2（burst@139.5-142.5 #5-#10），左手捏住棉片與針筒上端，右手食指連續彈擊針筒4次。",
+     "times": [
+      [
+       134.0,
+       138.0
+      ],
+      [
+       140.9,
+       142.2
+      ]
+     ],
+     "visibility": "清楚",
+     "evidence": [
+      "burst@134.5-137.5 #4",
+      "burst@134.5-137.5 #7",
+      "burst@139.5-142.5 #5",
+      "burst@139.5-142.5 #10",
+      "clip@129-148"
+     ],
+     "zoom_confirmed": true
+    },
+    {
+     "criterion_id": "17a",
+     "item": 2,
+     "occurrence": 1,
+     "finding": "聽到的連續彈擊聲分兩段：第一段於02:13.9、02:14.3及02:15.7、02:16.1、02:16.4、02:17.1、02:17.7、02:18.1共有8聲短促彈擊聲（02:18.8則為放下手拿棉片時之聲響），與第一段右手彈針筒動作時間吻合；第二段於02:20.9、02:21.5、02:22.1、02:22.9共有4聲連續彈擊聲，與第二段（02:20.9–02:22.2）右手食指彈針筒4次的動作時間完全對得上。",
+     "times": [
+      [
+       133.9,
+       138.1
+      ],
+      [
+       140.9,
+       142.9
+      ]
+     ],
+     "visibility": "清楚",
+     "evidence": [
+      "clip@129-148",
+      "burst@134.5-137.5 #5",
+      "burst@139.5-142.5 #6"
+     ],
+     "zoom_confirmed": true
+    }
+   ]
+  },
+  {
+   "key": "18-d",
+   "task": {
+    "key": "18-d",
+    "window_steps": [
+     18
+    ],
+    "criteria": [
+     {
+      "criterion_id": "18b",
+      "step_id": 18,
+      "text": "以持毛筆方式持針：拇指與食指、中指握住針筒外管，針筒一定要垂直向下插入，手指不碰觸針頭、針座及活塞柄內側（只判插針那一刻）",
+      "window": [
+       148.8,
+       169.0
+      ],
+      "window_steps": [
+       18
+      ],
+      "audio": false,
+      "min_seconds": null,
+      "cumulative_seconds": false,
+      "timed_action": null,
+      "dense": false,
+      "clip": false,
+      "search_steps": null,
+      "observe": [
+       "針頭刺入 vial 橡皮塞那一刻，握針筒的手指在哪裡：拇指、食指、中指各在外管的什麼位置，有沒有碰到針頭、針座（針頭與針筒接合處）或活塞柄",
+       "針頭刺入那一刻針筒的角度（垂直向下、傾斜、水平）與 vial 的方向（直立、橫拿）"
+      ],
+      "searching": false
+     },
+     {
+      "criterion_id": "18c",
+      "step_id": 18,
+      "text": "針頭插入 vial 中心",
+      "window": [
+       148.8,
+       169.0
+      ],
+      "window_steps": [
+       18
+      ],
+      "audio": false,
+      "min_seconds": null,
+      "cumulative_seconds": false,
+      "timed_action": null,
+      "dense": false,
+      "clip": false,
+      "search_steps": null,
+      "observe": [
+       "針頭刺在 vial 橡皮塞的什麼位置（中央或邊緣）"
+      ],
+      "searching": false
+     },
+     {
+      "criterion_id": "18d",
+      "step_id": 18,
+      "text": "vial 放在桌面上，持針筒垂直刺入（不要求另一手扶 vial；刺穿瓶塞時 vial 拿離桌面不正確，刺穿後拿起可以）",
+      "window": [
+       148.8,
+       169.0
+      ],
+      "window_steps": [
+       18
+      ],
+      "audio": false,
+      "min_seconds": null,
+      "cumulative_seconds": false,
+      "timed_action": null,
+      "dense": false,
+      "clip": false,
+      "search_steps": null,
+      "observe": [
+       "針頭刺穿瓶塞那一刻 vial 底部是否在桌面上",
+       "vial 離開桌面的時間點（沒有離開就寫沒有），以及那時針頭是否已經刺穿瓶塞"
+      ],
+      "searching": false
+     }
+    ],
+    "window": [
+     148.8,
+     169.0
+    ],
+    "needs_clip": false,
+    "describe": true,
+    "peaks": [
+     {
+      "t": 148.87,
+      "e": 0.01391
+     },
+     {
+      "t": 151.13,
+      "e": 0.03419
+     },
+     {
+      "t": 153.33,
+      "e": 0.01706
+     },
+     {
+      "t": 154.6,
+      "e": 0.0223
+     },
+     {
+      "t": 157.4,
+      "e": 0.03784
+     },
+     {
+      "t": 161.8,
+      "e": 0.02569
+     },
+     {
+      "t": 163.6,
+      "e": 0.01415
+     },
+     {
+      "t": 165.6,
+      "e": 0.01583
+     }
+    ]
+   },
+   "used": {
+    "overview": 1,
+    "zoom": 1,
+    "burst": 0,
+    "clip": 0
+   },
+   "log": [
+    "overview 150-158 n=9 box=hands",
+    "zoom times=[151.5, 152.0, 153.0, 154.0] region=[0.350, 0.250, 0.750, 0.700]"
+   ],
+   "observations": [
+    {
+     "criterion_id": "18b",
+     "item": 1,
+     "occurrence": 1,
+     "finding": "02:32.0–02:34.0（zoom@152、zoom@153、zoom@154）針頭刺入 vial 橡皮塞時，右手握住空針外管中段，拇指與食指捏在外管中上方（黑色活塞附近），中指、無名指與小指彎曲托在外管中下方，手指皆在外管上，沒有碰到針頭、針座或活塞柄。之後在 02:35.0–02:43.9（ov@150-158 #5–#8、ov@148.8-169 #4–#6）打入稀釋液時，右手拇指與食指移到活塞柄尾端推針心。",
+     "times": [
+      [
+       152.0,
+       154.0
+      ]
+     ],
+     "visibility": "清楚",
+     "evidence": [
+      "zoom@152",
+      "zoom@153",
+      "zoom@154",
+      "ov@150-158 #5"
+     ],
+     "zoom_confirmed": true
+    },
+    {
+     "criterion_id": "18b",
+     "item": 2,
+     "occurrence": 1,
+     "finding": "02:32.0–02:34.0（zoom@152、zoom@153、zoom@154）針頭刺入那一刻，左手將 vial 拿在胸前呈略微傾斜（接近直立、瓶口朝上偏左），右手持針筒由左上方往右下方傾斜刺入，針筒與 vial 瓶身軸線大致對齊。",
+     "times": [
+      [
+       152.0,
+       154.0
+      ]
+     ],
+     "visibility": "清楚",
+     "evidence": [
+      "zoom@152",
+      "zoom@153",
+      "zoom@154"
+     ],
+     "zoom_confirmed": true
+    },
+    {
+     "criterion_id": "18c",
+     "item": 1,
+     "occurrence": 1,
+     "finding": "02:32.0–02:34.0（zoom@152、zoom@153、zoom@154）針頭刺在 vial 瓶口橡皮塞的中央位置。",
+     "times": [
+      [
+       152.0,
+       154.0
+      ]
+     ],
+     "visibility": "清楚",
+     "evidence": [
+      "zoom@152",
+      "zoom@153",
+      "zoom@154"
+     ],
+     "zoom_confirmed": true
+    },
+    {
+     "criterion_id": "18d",
+     "item": 1,
+     "occurrence": 1,
+     "finding": "02:32.0–02:34.0（zoom@152、zoom@153、zoom@154、ov@150-158 #2–#4）針頭刺穿瓶塞那一刻，vial 由左手拿在胸前懸空，底部不在桌面上。",
+     "times": [
+      [
+       152.0,
+       154.0
+      ]
+     ],
+     "visibility": "清楚",
+     "evidence": [
+      "zoom@152",
+      "zoom@153",
+      "zoom@154",
+      "ov@150-158 #2"
+     ],
+     "zoom_confirmed": true
+    },
+    {
+     "criterion_id": "18d",
+     "item": 2,
+     "occurrence": 1,
+     "finding": "02:30.0（ov@150-158 #0）左手已經將 vial 從桌面拿起懸空於腹部前方，此時右手剛拔除針頭套，針頭尚未接近或刺穿瓶塞；02:32.0–02:34.0（zoom@152–154）在空中刺穿瓶塞後，02:35.0–02:37.0（ov@150-158 #5–#7）曾短暫將 vial 放回桌面推針心，02:38.0–02:41.4（ov@150-158 #8、ov@148.8-169 #4–#5）又再次拿起離開桌面繼續推針心。",
+     "times": [
+      [
+       150.0,
+       154.0
+      ],
+      [
+       158.0,
+       161.4
+      ]
+     ],
+     "visibility": "清楚",
+     "evidence": [
+      "ov@150-158 #0",
+      "zoom@152",
+      "ov@150-158 #5",
+      "ov@150-158 #8"
+     ],
+     "zoom_confirmed": true
+    }
+   ]
+  },
+  {
+   "key": "19-d",
+   "task": {
+    "key": "19-d",
+    "window_steps": [
+     19
+    ],
+    "criteria": [
+     {
+      "criterion_id": "19b",
+      "step_id": 19,
+      "text": "單手套回：針頭套放在桌上或針架上（不可拿在手上），針尖進入針頭套之前另一手沒有碰針頭套；針尖入套後可用另一手扶住、壓緊，套子歪了用另一手壓正也可以，但針尖不可刺出套子",
+      "window": [
+       165.0,
+       172.4
+      ],
+      "window_steps": [
+       19
+      ],
+      "audio": false,
+      "min_seconds": null,
+      "cumulative_seconds": false,
+      "timed_action": null,
+      "dense": false,
+      "clip": false,
+      "search_steps": null,
+      "observe": [
+       "回套做了幾次，每一次的時間",
+       "每一次回套時針頭套放在哪裡（桌上、針架上、拿在手上）",
+       "每一次另一隻手第一次碰到針頭套的時間點，以及那一刻針尖和斜面在套內還是套外（另一手一直沒碰就寫沒碰）",
+       "另一手扶正或壓緊針頭套時，針尖有沒有刺出套壁或滑出套外"
+      ],
+      "searching": false
+     }
+    ],
+    "window": [
+     165.0,
+     172.4
+    ],
+    "needs_clip": false,
+    "describe": true,
+    "peaks": [
+     {
+      "t": 165.6,
+      "e": 0.01583
+     },
+     {
+      "t": 167.2,
+      "e": 0.01309
+     },
+     {
+      "t": 170.27,
+      "e": 0.02804
+     },
+     {
+      "t": 171.6,
+      "e": 0.01432
+     }
+    ]
+   },
+   "used": {
+    "overview": 0,
+    "zoom": 1,
+    "burst": 1,
+    "clip": 0
+   },
+   "log": [
+    "burst 167-170 n=9 region=[0.100, 0.500, 0.700, 0.950]",
+    "zoom times=[167.8, 168.5, 169.2, 170.0] region=[0.150, 0.600, 0.650, 1.000]"
+   ],
+   "observations": [
+    {
+     "criterion_id": "19b",
+     "item": 1,
+     "occurrence": 1,
+     "finding": "回套共做 1 次，時間為 02:47.0–02:50.0：02:46.8 右手將空針自 vial 拔出後，於 02:47.0–02:47.8 移至畫面左側的透明針架上方，02:48.1–02:49.6 將針頭插入針頭套並往下壓緊，02:50.0 右手放開空針。",
+     "times": [
+      [
+       167.0,
+       170.0
+      ]
+     ],
+     "visibility": "清楚",
+     "evidence": [
+      "ov@165-172.4 #2",
+      "burst@167-170 #0",
+      "burst@167-170 #2",
+      "burst@167-170 #3",
+      "burst@167-170 #7",
+      "burst@167-170 #8",
+      "zoom@167.8",
+      "zoom@168.5",
+      "zoom@169.2",
+      "zoom@170"
+     ],
+     "zoom_confirmed": true
+    },
+    {
+     "criterion_id": "19b",
+     "item": 2,
+     "occurrence": 1,
+     "finding": "02:47.8–02:50.0 回套時，針頭套直立放置在桌面左側的透明壓克力針架孔洞內。",
+     "times": [
+      [
+       167.8,
+       170.0
+      ]
+     ],
+     "visibility": "清楚",
+     "evidence": [
+      "zoom@167.8",
+      "zoom@168.5",
+      "zoom@169.2",
+      "zoom@170"
+     ],
+     "zoom_confirmed": true
+    },
+    {
+     "criterion_id": "19b",
+     "item": 3,
+     "occurrence": 1,
+     "finding": "02:47.0–02:50.0 整個回套過程中，右手單手握針筒將針頭插入針架上的針頭套並下壓固定，左手一直扶著桌上的 vial，完全沒有碰到針頭套或空針。",
+     "times": [
+      [
+       167.0,
+       170.0
+      ]
+     ],
+     "visibility": "清楚",
+     "evidence": [
+      "burst@167-170 #0",
+      "burst@167-170 #4",
+      "burst@167-170 #8",
+      "zoom@167.8",
+      "zoom@168.5",
+      "zoom@169.2",
+      "zoom@170"
+     ],
+     "zoom_confirmed": true
+    },
+    {
+     "criterion_id": "19b",
+     "item": 4,
+     "occurrence": 1,
+     "finding": "02:47.8–02:50.0 另一手（左手）全程未碰觸、扶正或壓緊針頭套；右手單手將空針下壓套緊於針架上的針頭套時，針尖在套內，未見刺出套壁或滑出套外。",
+     "times": [
+      [
+       167.8,
+       170.0
+      ]
+     ],
+     "visibility": "清楚",
+     "evidence": [
+      "zoom@167.8",
+      "zoom@168.5",
+      "zoom@169.2",
+      "zoom@170"
+     ],
+     "zoom_confirmed": true
+    }
+   ]
+  },
+  {
+   "key": "22-d",
+   "task": {
+    "key": "22-d",
+    "window_steps": [
+     22
+    ],
+    "criteria": [
+     {
+      "criterion_id": "22b",
+      "step_id": 22,
+      "text": "以持毛筆方式持針：拇指與食指、中指握住針筒外管，針筒一定要垂直向下插入，手指不碰觸針頭、針座及活塞柄內側（只判插針那一刻）",
+      "window": [
+       215.5,
+       225.5
+      ],
+      "window_steps": [
+       22
+      ],
+      "audio": false,
+      "min_seconds": null,
+      "cumulative_seconds": false,
+      "timed_action": null,
+      "dense": false,
+      "clip": false,
+      "search_steps": null,
+      "observe": [
+       "針頭刺入 vial 橡皮塞那一刻，握針筒的手指在哪裡：拇指、食指、中指各在外管的什麼位置，有沒有碰到針頭、針座（針頭與針筒接合處）或活塞柄",
+       "針頭刺入那一刻針筒的角度（垂直向下、傾斜、水平）與 vial 的方向（直立、橫拿）"
+      ],
+      "searching": false
+     },
+     {
+      "criterion_id": "22c",
+      "step_id": 22,
+      "text": "針頭插入 vial 中心",
+      "window": [
+       215.5,
+       225.5
+      ],
+      "window_steps": [
+       22
+      ],
+      "audio": false,
+      "min_seconds": null,
+      "cumulative_seconds": false,
+      "timed_action": null,
+      "dense": false,
+      "clip": false,
+      "search_steps": null,
+      "observe": [
+       "針頭刺在 vial 橡皮塞的什麼位置（中央或邊緣）"
+      ],
+      "searching": false
+     },
+     {
+      "criterion_id": "22d",
+      "step_id": 22,
+      "text": "vial 放在桌面上，持針筒垂直刺入並打入空氣（不要求另一手扶 vial）；刺入或打入空氣時 vial 拿離桌面不正確（打完空氣後舉起倒置屬步驟 23）",
+      "window": [
+       215.5,
+       225.5
+      ],
+      "window_steps": [
+       22
+      ],
+      "audio": false,
+      "min_seconds": null,
+      "cumulative_seconds": false,
+      "timed_action": null,
+      "dense": false,
+      "clip": false,
+      "search_steps": null,
+      "observe": [
+       "從針頭刺入到空氣打完（針心推到底）這段，vial 底部是否一直在桌面上",
+       "vial 離開桌面的時間點（沒有離開就寫沒有），以及那時針心是否已經推到底"
+      ],
+      "searching": false
+     }
+    ],
+    "window": [
+     215.5,
+     225.5
+    ],
+    "needs_clip": false,
+    "describe": true,
+    "peaks": [
+     {
+      "t": 216.37,
+      "e": 0.02784
+     },
+     {
+      "t": 221.23,
+      "e": 0.01934
+     },
+     {
+      "t": 222.3,
+      "e": 0.00939
+     },
+     {
+      "t": 223.97,
+      "e": 0.03841
+     }
+    ]
+   },
+   "used": {
+    "overview": 0,
+    "zoom": 2,
+    "burst": 0,
+    "clip": 0
+   },
+   "log": [
+    "zoom times=[217.5, 218.5, 219.5, 220.5] region=[0.300, 0.500, 0.650, 0.950]",
+    "zoom times=[221.5, 222.5, 223.2, 223.8] region=[0.300, 0.500, 0.650, 0.950]"
+   ],
+   "observations": [
+    {
+     "criterion_id": "22b",
+     "item": 1,
+     "occurrence": 1,
+     "finding": "03:37.5–03:39.5（zoom@217.5、zoom@218.5、zoom@219.5）針頭接近並刺入 vial 橡皮塞時，右手以握筆姿勢持針筒外管中段，拇指在針筒外管右側中段，食指與中指在針筒外管左側中段，無名指與小指自然彎曲在下方；手指皆在外管上，沒有碰到針頭、針座（針頭與針筒接合處）或活塞柄。之後在 03:40.5–03:42.5（zoom@220.5、zoom@221.5、zoom@222.5）打入空氣時，右手改以拇指與中指扶住針筒外管上端翼緣下方，食指移至針心尾端圓盤向下推到底。",
+     "times": [
+      [
+       217.5,
+       219.5
+      ]
+     ],
+     "visibility": "清楚",
+     "evidence": [
+      "zoom@217.5",
+      "zoom@218.5",
+      "zoom@219.5",
+      "zoom@220.5",
+      "zoom@221.5",
+      "zoom@222.5"
+     ],
+     "zoom_confirmed": true
+    },
+    {
+     "criterion_id": "22b",
+     "item": 2,
+     "occurrence": 1,
+     "finding": "03:38.5–03:39.5（zoom@218.5、zoom@219.5）針頭刺入那一刻，vial 直立於桌面上，左手拇指與食指扶住 vial 瓶身上半部；針筒呈微傾斜（上端略偏受試者右側，與垂直線夾角約 15–20 度）由上往下刺入橡皮塞，至 03:40.5（zoom@220.5）完全刺入後針筒轉為接近垂直向下。",
+     "times": [
+      [
+       218.5,
+       220.5
+      ]
+     ],
+     "visibility": "清楚",
+     "evidence": [
+      "zoom@218.5",
+      "zoom@219.5",
+      "zoom@220.5"
+     ],
+     "zoom_confirmed": true
+    },
+    {
+     "criterion_id": "22c",
+     "item": 1,
+     "occurrence": 1,
+     "finding": "03:38.5–03:40.5（zoom@218.5、zoom@219.5、zoom@220.5）針頭刺在 vial 瓶口鋁圈內橡皮塞的中央位置。",
+     "times": [
+      [
+       218.5,
+       220.5
+      ]
+     ],
+     "visibility": "清楚",
+     "evidence": [
+      "zoom@218.5",
+      "zoom@219.5",
+      "zoom@220.5"
+     ],
+     "zoom_confirmed": true
+    },
+    {
+     "criterion_id": "22d",
+     "item": 1,
+     "occurrence": 1,
+     "finding": "03:38.5–03:42.5（zoom@218.5、zoom@219.5、zoom@220.5、zoom@221.5、zoom@222.5）從針頭刺入橡皮塞到右手食指將針心完全推到底（黑色活塞到達針筒最前端）的整段期間，vial 底部一直平放在桌面上，沒有離開桌面。",
+     "times": [
+      [
+       218.5,
+       222.5
+      ]
+     ],
+     "visibility": "清楚",
+     "evidence": [
+      "zoom@218.5",
+      "zoom@219.5",
+      "zoom@220.5",
+      "zoom@221.5",
+      "zoom@222.5"
+     ],
+     "zoom_confirmed": true
+    },
+    {
+     "criterion_id": "22d",
+     "item": 2,
+     "occurrence": 1,
+     "finding": "03:42.5（zoom@222.5）時針心已經推到底，03:43.2（zoom@223.2）vial 底部仍在桌面上且針心維持在最底端；直到 03:43.2–03:43.8（zoom@223.2、zoom@223.8）進入步驟 23 時，雙手才將 vial 連同空針一起拿起離開桌面並翻轉倒置，拿起時針心已經推到底。",
+     "times": [
+      [
+       222.5,
+       223.8
+      ]
+     ],
+     "visibility": "清楚",
+     "evidence": [
+      "zoom@222.5",
+      "zoom@223.2",
+      "zoom@223.8"
+     ],
+     "zoom_confirmed": true
+    }
+   ]
+  },
+  {
+   "key": "24-d",
+   "task": {
+    "key": "24-d",
+    "window_steps": [
+     24
+    ],
+    "criteria": [
+     {
+      "criterion_id": "24a",
+      "step_id": 24,
+      "text": "右手持針心尾端環狀處，未碰觸外露的針心推桿（手指在外筒或翼緣上不算碰觸）（左撇子左右手對調也算正確）",
+      "window": [
+       223.0,
+       268.2
+      ],
+      "window_steps": [
+       24
+      ],
+      "audio": false,
+      "min_seconds": null,
+      "cumulative_seconds": false,
+      "timed_action": null,
+      "dense": false,
+      "clip": false,
+      "search_steps": null,
+      "observe": [
+       "拉針心時，拉的是哪隻手、手指握在哪裡（尾端圓盤、外露的推桿、外筒或翼緣）",
+       "指尖有沒有捏住或碰到外露的推桿，碰了多久、清不清楚",
+       "學生是不是左右手整個對調做（左撇子），對調時寫出實際做這個動作的是哪隻手"
+      ],
+      "searching": false
+     }
+    ],
+    "window": [
+     223.0,
+     268.2
+    ],
+    "needs_clip": false,
+    "describe": true,
+    "peaks": [
+     {
+      "t": 224.0,
+      "e": 0.03818
+     },
+     {
+      "t": 226.2,
+      "e": 0.01765
+     },
+     {
+      "t": 236.73,
+      "e": 0.01843
+     },
+     {
+      "t": 257.8,
+      "e": 0.01562
+     },
+     {
+      "t": 259.8,
+      "e": 0.00711
+     },
+     {
+      "t": 264.6,
+      "e": 0.0205
+     },
+     {
+      "t": 266.13,
+      "e": 0.03558
+     },
+     {
+      "t": 267.93,
+      "e": 0.04533
+     }
+    ]
+   },
+   "used": {
+    "overview": 0,
+    "zoom": 2,
+    "burst": 0,
+    "clip": 0
+   },
+   "log": [
+    "zoom times=[234.3, 245.6, 251.2, 256.9] region=[0.350, 0.050, 0.700, 0.450]",
+    "zoom times=[228.7, 239.9, 260.0, 262.6] region=[0.350, 0.050, 0.700, 0.450]"
+   ],
+   "observations": [
+    {
+     "criterion_id": "24a",
+     "item": 1,
+     "occurrence": 1,
+     "finding": "03:48.7–03:54.3（zoom@228.7、zoom@234.3）拉針心初期，右手拇指與食指、中指捏在針心尾端圓盤及針筒尾端翼緣處往下拉；03:59.9–04:22.6（zoom@239.9、zoom@245.6、zoom@251.2、zoom@256.9、zoom@260、zoom@262.6）針心拉出一段後，右手小指與無名指抵在針心尾端圓盤下方，右手食指與中指往上伸直貼在針筒外筒與翼緣上，拇指在後側輔助固定。",
+     "times": [
+      [
+       228.7,
+       262.6
+      ]
+     ],
+     "visibility": "清楚",
+     "evidence": [
+      "zoom@228.7",
+      "zoom@234.3",
+      "zoom@239.9",
+      "zoom@245.6",
+      "zoom@251.2",
+      "zoom@256.9",
+      "zoom@260",
+      "zoom@262.6"
+     ],
+     "zoom_confirmed": true
+    },
+    {
+     "criterion_id": "24a",
+     "item": 2,
+     "occurrence": 1,
+     "finding": "03:48.7–03:54.3（zoom@228.7、zoom@234.3）推桿剛拉出極短距離，右手手指捏在尾端圓盤與翼緣處；03:59.9–04:22.6（zoom@239.9、zoom@245.6、zoom@251.2、zoom@256.9、zoom@260、zoom@262.6）推桿外露期間，右手小指與無名指在尾端圓盤處，食指與中指跨過外露推桿貼在針筒外筒上，與外露推桿之間留有空隙，指尖沒有捏住或碰到外露的推桿，畫面清楚。",
+     "times": [
+      [
+       228.7,
+       262.6
+      ]
+     ],
+     "visibility": "清楚",
+     "evidence": [
+      "zoom@228.7",
+      "zoom@234.3",
+      "zoom@239.9",
+      "zoom@245.6",
+      "zoom@251.2",
+      "zoom@256.9",
+      "zoom@260",
+      "zoom@262.6"
+     ],
+     "zoom_confirmed": true
+    },
+    {
+     "criterion_id": "24a",
+     "item": 3,
+     "occurrence": 1,
+     "finding": "03:48.7–04:22.6（ov@223-268.2 #1–#7、zoom@228.7、zoom@245.6）學生沒有左右手對調，以左手（戴手錶）食指與中指夾住倒置的 vial 並以大拇指與無名指固定針筒上半部，實際操作拉針心動作的是右手。",
+     "times": [
+      [
+       228.7,
+       262.6
+      ]
+     ],
+     "visibility": "清楚",
+     "evidence": [
+      "ov@223-268.2 #1",
+      "ov@223-268.2 #4",
+      "zoom@228.7",
+      "zoom@245.6"
+     ],
+     "zoom_confirmed": true
+    }
+   ]
+  },
+  {
+   "key": "23-24-d",
+   "task": {
+    "key": "23-24-d",
+    "window_steps": [
+     23,
+     24
+    ],
+    "criteria": [
+     {
+      "criterion_id": "24c",
+      "step_id": 24,
+      "text": "垂直抽藥：抽藥液時空針保持垂直，不可低於 90 度",
+      "window": [
+       221.5,
+       269.0
+      ],
+      "window_steps": [
+       23,
+       24
+      ],
+      "audio": false,
+      "min_seconds": null,
+      "cumulative_seconds": false,
+      "timed_action": null,
+      "dense": false,
+      "clip": false,
+      "search_steps": null,
+      "observe": [
+       "vial 倒置、空針在下方抽藥液時（步驟 23 舉起倒置到步驟 24 抽完），空針的角度（垂直或傾斜，傾斜大約幾度），在哪些時間點看到"
+      ],
+      "searching": false
+     }
+    ],
+    "window": [
+     221.5,
+     269.0
+    ],
+    "needs_clip": false,
+    "describe": true,
+    "peaks": [
+     {
+      "t": 221.57,
+      "e": 0.01973
+     },
+     {
+      "t": 223.97,
+      "e": 0.03841
+     },
+     {
+      "t": 226.1,
+      "e": 0.01727
+     },
+     {
+      "t": 240.57,
+      "e": 0.0185
+     },
+     {
+      "t": 257.77,
+      "e": 0.0146
+     },
+     {
+      "t": 266.1,
+      "e": 0.03573
+     },
+     {
+      "t": 267.9,
+      "e": 0.04572
+     },
+     {
+      "t": 268.83,
+      "e": 0.0282
+     }
+    ]
+   },
+   "used": {
+    "overview": 1,
+    "zoom": 1,
+    "burst": 0,
+    "clip": 0
+   },
+   "log": [
+    "overview 223.5-267 n=9 box=context",
+    "zoom times=[228.9, 239.8, 250.7, 261.6] region=[0.350, 0.000, 0.650, 0.450]"
+   ],
+   "observations": [
+    {
+     "criterion_id": "24c",
+     "item": 1,
+     "occurrence": 1,
+     "finding": "vial 倒置舉至眼前、空針在下方抽藥液期間（約 03:45–04:26）：在 03:48.9（zoom@228.9）與 03:59.8（zoom@239.8）空針大致呈垂直（針頭朝上刺入倒置 vial，偏離垂直小於 5 度）；在 04:10.7（zoom@250.7）與 04:11.2（ov@221.5-269 #5）vial 保持直立倒置，但空針明顯傾斜，針筒下端（針心端）往畫面左側（學生右側）偏斜，與垂直線夾角約 15–20 度；在 04:16.1（ov@223.5-267 #6）與 04:21.6（zoom@261.6）空針與 vial 接近垂直（針筒下端往畫面左側微傾約 5–10 度）。",
+     "times": [
+      [
+       228.9,
+       228.9
+      ],
+      [
+       239.8,
+       239.8
+      ],
+      [
+       250.7,
+       251.2
+      ],
+      [
+       256.1,
+       261.6
+      ]
+     ],
+     "visibility": "清楚",
+     "evidence": [
+      "zoom@228.9",
+      "zoom@239.8",
+      "zoom@250.7",
+      "zoom@261.6",
+      "ov@221.5-269 #5",
+      "ov@223.5-267 #6"
+     ],
+     "zoom_confirmed": true
+    }
+   ]
+  },
+  {
+   "key": "25-26-27-d",
+   "task": {
+    "key": "25-26-27-d",
+    "window_steps": [
+     25,
+     26,
+     27
+    ],
+    "criteria": [
+     {
+      "criterion_id": "25b",
+      "step_id": 25,
+      "text": "先墊酒精棉片才彈針",
+      "window": [
+       265.0,
+       299.5
+      ],
+      "window_steps": [
+       25,
+       26,
+       27
+      ],
+      "audio": true,
+      "min_seconds": null,
+      "cumulative_seconds": false,
+      "timed_action": null,
+      "dense": false,
+      "clip": false,
+      "search_steps": null,
+      "observe": [
+       "排了幾輪空氣，每一輪的起訖時間",
+       "每一輪酒精棉片墊上針頭與針筒接合處的時間點，以及 zoom 是否確實看到白色方形棉片",
+       "每一輪墊棉片之前與之後，手指彈針筒的每一下的時間點，以及那時有沒有對應的響聲"
+      ],
+      "searching": false
+     },
+     {
+      "criterion_id": "27a",
+      "step_id": 27,
+      "text": "手指輕彈空針（聽到彈擊聲且看到手指彈針筒）",
+      "window": [
+       265.0,
+       299.5
+      ],
+      "window_steps": [
+       25,
+       26,
+       27
+      ],
+      "audio": true,
+      "min_seconds": null,
+      "cumulative_seconds": false,
+      "timed_action": null,
+      "dense": false,
+      "clip": false,
+      "search_steps": null,
+      "observe": [
+       "手指彈針筒的時間點與次數（畫面上看到的動作）",
+       "連續彈擊聲的時間點與聲數（聽到的聲音），以及聲音和手指動作的時間是否對得上"
+      ],
+      "searching": false
+     }
+    ],
+    "window": [
+     265.0,
+     299.5
+    ],
+    "needs_clip": true,
+    "describe": true,
+    "peaks": [
+     {
+      "t": 266.13,
+      "e": 0.03558
+     },
+     {
+      "t": 267.93,
+      "e": 0.04533
+     },
+     {
+      "t": 273.33,
+      "e": 0.05561
+     },
+     {
+      "t": 274.2,
+      "e": 0.0521
+     },
+     {
+      "t": 277.53,
+      "e": 0.02671
+     },
+     {
+      "t": 279.6,
+      "e": 0.0242
+     },
+     {
+      "t": 283.07,
+      "e": 0.02424
+     },
+     {
+      "t": 297.27,
+      "e": 0.04421
+     }
+    ],
+    "audio": {
+     "has_audio": true,
+     "silent": false,
+     "max_db": -32.9,
+     "floor_db": -59.5,
+     "peaks": [
+      {
+       "t": 266.96,
+       "db": -34.5
+      },
+      {
+       "t": 277.82,
+       "db": -36.2
+      },
+      {
+       "t": 278.22,
+       "db": -33.4
+      },
+      {
+       "t": 278.92,
+       "db": -33.7
+      },
+      {
+       "t": 279.93,
+       "db": -32.9
+      },
+      {
+       "t": 280.92,
+       "db": -35.1
+      },
+      {
+       "t": 281.71,
+       "db": -37.2
+      },
+      {
+       "t": 282.65,
+       "db": -38.2
+      },
+      {
+       "t": 283.11,
+       "db": -33.7
+      },
+      {
+       "t": 283.72,
+       "db": -35.9
+      },
+      {
+       "t": 284.33,
+       "db": -37.4
+      },
+      {
+       "t": 288.59,
+       "db": -37.7
+      },
+      {
+       "t": 289.44,
+       "db": -39.1
+      },
+      {
+       "t": 289.73,
+       "db": -38.9
+      },
+      {
+       "t": 289.98,
+       "db": -36.1
+      },
+      {
+       "t": 298.76,
+       "db": -38.1
+      }
+     ],
+     "runs": [
+      {
+       "start": 277.82,
+       "end": 278.92,
+       "n": 3
+      },
+      {
+       "start": 282.65,
+       "end": 284.33,
+       "n": 4
+      },
+      {
+       "start": 289.44,
+       "end": 289.98,
+       "n": 3
+      }
+     ],
+     "start": 265.0,
+     "end": 299.5
+    },
+    "opening_clip": true
+   },
+   "used": {
+    "overview": 0,
+    "zoom": 0,
+    "burst": 3,
+    "clip": 0
+   },
+   "log": [
+    "burst 276-279 n=12 region=[0.300, 0.150, 0.650, 0.550]",
+    "burst 270-273 n=12 region=[0.300, 0.150, 0.650, 0.550]",
+    "burst 282-285 n=12 region=[0.300, 0.150, 0.650, 0.550]"
+   ],
+   "observations": [
+    {
+     "criterion_id": "25b",
+     "item": 1,
+     "occurrence": 1,
+     "finding": "共排了1輪空氣。從 04:25.5（clip@265-299.5 的 00:00.5）拔出針頭後，於 04:27.5（00:02.5）將針筒垂直拿起開始排氣，至 04:57.0（00:32.0）拿開酒精棉片並放下針筒結束。",
+     "times": [
+      [
+       267.5,
+       297.0
+      ]
+     ],
+     "visibility": "清楚",
+     "evidence": [
+      "clip@265-299.5"
+     ],
+     "zoom_confirmed": true
+    },
+    {
+     "criterion_id": "25b",
+     "item": 2,
+     "occurrence": 1,
+     "finding": "在 04:30.0–04:33.0（burst@270-273 #0-#11）針頭與針筒接合處沒有墊酒精棉片；於 04:33.5（clip@265-299.5 的 00:08.5）右手伸向治療車拿起白色酒精棉片，04:34.5（00:09.5）將棉片墊在針頭與針筒接合處。在 burst@276-279 #0-#11（04:36.0–04:39.0）及 burst@282-285 #0-#11（04:42.0–04:45.0）清楚看到左手食指與拇指捏著白色方形酒精棉片包覆在針頭與針筒接合處，直到 04:57.0（clip 00:32.0）才將棉片拿開。",
+     "times": [
+      [
+       274.5,
+       297.0
+      ]
+     ],
+     "visibility": "清楚",
+     "evidence": [
+      "clip@265-299.5",
+      "burst@270-273 #0",
+      "burst@276-279 #0",
+      "burst@282-285 #0"
+     ],
+     "zoom_confirmed": true
+    },
+    {
+     "criterion_id": "25b",
+     "item": 3,
+     "occurrence": 1,
+     "finding": "墊酒精棉片之前：在 04:31.1–04:32.7（burst@270-273 #4-#10，對應 clip 00:06.0–00:07.5）未墊棉片時，右手食指與中指連續彈擊針筒約 4 下（#4 04:31.1、#6 04:31.6、#7 04:31.9、#9 04:32.5），此時可聽到輕微的彈擊聲（未達高頻峰值門檻）。墊酒精棉片之後：右手食指與中指多次彈擊針筒，包含 04:36.3–04:39.0（burst@276-279 #1-#11）連續彈擊約 6 下，其中 04:37.8、04:38.2、04:38.9 有清楚的對應彈擊響聲；04:39.5–04:41.7（clip 00:14.5–00:16.7）持續彈擊，在 04:39.9、04:40.9、04:41.7 有對應響聲；04:42.0–04:45.0（burst@282-285 #0-#11）連續彈擊約 6 下，其中 04:42.6、04:43.1、04:43.7、04:44.3 有清楚的對應彈擊響聲。",
+     "times": [
+      [
+       271.1,
+       272.7
+      ],
+      [
+       276.3,
+       285.0
+      ]
+     ],
+     "visibility": "清楚",
+     "evidence": [
+      "clip@265-299.5",
+      "burst@270-273 #4",
+      "burst@270-273 #6",
+      "burst@276-279 #6",
+      "burst@276-279 #8",
+      "burst@282-285 #2",
+      "burst@282-285 #4"
+     ],
+     "zoom_confirmed": true
+    },
+    {
+     "criterion_id": "27a",
+     "item": 1,
+     "occurrence": 1,
+     "finding": "畫面上看到右手手指彈擊針筒分為兩段：第一段在 04:31.1–04:32.7（burst@270-273 #4-#10，未墊棉片），右手食指與中指彈擊針筒約 4 次；第二段在 04:36.3–04:45.0（墊上棉片後，burst@276-279 #1-#11、clip 00:14.5–00:16.7、burst@282-285 #0-#11），右手食指與中指持續彈擊針筒共約 15 次以上。04:46.0–04:55.0（clip 00:21.0–00:30.0）右手改為握住針心尾端往上推排氣，此期間手指沒有彈針筒。",
+     "times": [
+      [
+       271.1,
+       272.7
+      ],
+      [
+       276.3,
+       285.0
+      ]
+     ],
+     "visibility": "清楚",
+     "evidence": [
+      "clip@265-299.5",
+      "burst@270-273 #5",
+      "burst@276-279 #7",
+      "burst@282-285 #5"
+     ],
+     "zoom_confirmed": true
+    },
+    {
+     "criterion_id": "27a",
+     "item": 2,
+     "occurrence": 1,
+     "finding": "在 04:37.8–04:44.3 之間聽到一連串清楚的彈擊聲，包含 04:37.8、04:38.2、04:38.9（連續 3 聲），04:39.9、04:40.9、04:41.7（3 聲），以及 04:42.6、04:43.1、04:43.7、04:44.3（連續 4 聲），共 10 聲明顯峰值，皆與 burst@276-279、clip 及 burst@282-285 中右手手指彈擊針筒的動作時間完全吻合。至於 04:48.6、04:49.4、04:49.7、04:50.0 的響聲，當時（clip 00:23.5–00:25.0）學生右手正握住針心尾端推針心排氣、並未彈針，聲音來自背景環境雜音。",
+     "times": [
+      [
+       277.8,
+       284.3
+      ]
+     ],
+     "visibility": "清楚",
+     "evidence": [
+      "clip@265-299.5",
+      "burst@276-279 #7",
+      "burst@276-279 #8",
+      "burst@282-285 #2",
+      "burst@282-285 #4"
+     ],
+     "zoom_confirmed": true
+    }
+   ]
+  },
+  {
+   "key": "26-d",
+   "task": {
+    "key": "26-d",
+    "window_steps": [
+     26
+    ],
+    "criteria": [
+     {
+      "criterion_id": "26b",
+      "step_id": 26,
+      "text": "針筒垂直、針頭向上",
+      "window": [
+       265.0,
+       299.5
+      ],
+      "window_steps": [
+       26
+      ],
+      "audio": false,
+      "min_seconds": null,
+      "cumulative_seconds": false,
+      "timed_action": null,
+      "dense": false,
+      "clip": false,
+      "search_steps": null,
+      "observe": [
+       "排氣時針筒的角度（垂直或傾斜）與針頭朝向（上、下、斜），在哪些時間點看到"
+      ],
+      "searching": false
+     }
+    ],
+    "window": [
+     265.0,
+     299.5
+    ],
+    "needs_clip": false,
+    "describe": true,
+    "peaks": [
+     {
+      "t": 266.13,
+      "e": 0.03558
+     },
+     {
+      "t": 267.93,
+      "e": 0.04533
+     },
+     {
+      "t": 273.33,
+      "e": 0.05561
+     },
+     {
+      "t": 274.2,
+      "e": 0.0521
+     },
+     {
+      "t": 277.53,
+      "e": 0.02671
+     },
+     {
+      "t": 279.6,
+      "e": 0.0242
+     },
+     {
+      "t": 283.07,
+      "e": 0.02424
+     },
+     {
+      "t": 297.27,
+      "e": 0.04421
+     }
+    ]
+   },
+   "used": {
+    "overview": 0,
+    "zoom": 1,
+    "burst": 0,
+    "clip": 0
+   },
+   "log": [
+    "zoom times=[269.3, 277.9, 282.2, 290.9] region=[0.250, 0.050, 0.750, 0.550]"
+   ],
+   "observations": [
+    {
+     "criterion_id": "26b",
+     "item": 1,
+     "occurrence": 1,
+     "finding": "排氣期間（04:29.3–04:55.2）針筒保持垂直拿起、針頭朝正上方：在 04:29.3（zoom@269.3）左手握持針筒、右手在針心尾端往後抽時，針筒呈垂直狀態、針頭朝上；在 04:37.9（zoom@277.9）與 04:42.2（zoom@282.2）左手搭配酒精棉片握住針頭與針筒交接處、右手輕彈針筒時，針筒維持垂直、針頭朝上；在 04:50.9（zoom@290.9）與 04:55.2（ov@265-299.5 #7）右手往上推針心排氣時，針筒亦保持垂直、針頭朝正上方。",
+     "times": [
+      [
+       269.3,
+       295.2
+      ]
+     ],
+     "visibility": "清楚",
+     "evidence": [
+      "ov@265-299.5 #1",
+      "ov@265-299.5 #3",
+      "ov@265-299.5 #4",
+      "ov@265-299.5 #6",
+      "ov@265-299.5 #7",
+      "zoom@269.3",
+      "zoom@277.9",
+      "zoom@282.2",
+      "zoom@290.9"
+     ],
+     "zoom_confirmed": true
+    }
+   ]
+  },
+  {
+   "key": "28-d",
+   "task": {
+    "key": "28-d",
+    "window_steps": [
+     28
+    ],
+    "criteria": [
+     {
+      "criterion_id": "28b",
+      "step_id": 28,
+      "text": "單手套回：針頭套放在桌上或針架上（不可拿在手上），針尖進入針頭套之前另一手沒有碰針頭套；針尖入套後可用另一手扶住、壓緊，套子歪了用另一手壓正也可以，但針尖不可刺出套子",
+      "window": [
+       305.0,
+       314.5
+      ],
+      "window_steps": [
+       28
+      ],
+      "audio": false,
+      "min_seconds": null,
+      "cumulative_seconds": false,
+      "timed_action": null,
+      "dense": false,
+      "clip": false,
+      "search_steps": null,
+      "observe": [
+       "回套做了幾次，每一次的時間",
+       "每一次回套時針頭套放在哪裡（桌上、針架上、拿在手上）",
+       "每一次另一隻手第一次碰到針頭套的時間點，以及那一刻針尖和斜面在套內還是套外（另一手一直沒碰就寫沒碰）",
+       "另一手扶正或壓緊針頭套時，針尖有沒有刺出套壁或滑出套外"
+      ],
+      "searching": false
+     }
+    ],
+    "window": [
+     305.0,
+     314.5
+    ],
+    "needs_clip": false,
+    "describe": true,
+    "peaks": [
+     {
+      "t": 305.53,
+      "e": 0.038
+     },
+     {
+      "t": 306.4,
+      "e": 0.02248
+     },
+     {
+      "t": 307.8,
+      "e": 0.03012
+     },
+     {
+      "t": 308.6,
+      "e": 0.03119
+     },
+     {
+      "t": 313.87,
+      "e": 0.0381
+     }
+    ]
+   },
+   "used": {
+    "overview": 0,
+    "zoom": 0,
+    "burst": 2,
+    "clip": 0
+   },
+   "log": [
+    "burst 308.5-311.5 n=12 region=[0.250, 0.350, 0.750, 0.850]",
+    "burst 311.5-313.5 n=9 region=[0.250, 0.350, 0.750, 0.850]"
+   ],
+   "observations": [
+    {
+     "criterion_id": "28b",
+     "item": 1,
+     "occurrence": 1,
+     "finding": "回套共做了 1 次，時間為 05:08.5 至 05:13.2（burst@308.5-311.5 #0 至 burst@311.5-313.5 #7）：05:08.5 左手從桌上拿起針頭套，05:09.3 針尖接近針頭套口，05:09.6 針尖進入針頭套，至 05:13.2 壓緊完成並於 05:13.5 左手放開。",
+     "times": [
+      [
+       308.5,
+       313.2
+      ]
+     ],
+     "visibility": "清楚",
+     "evidence": [
+      "ov@305-314.5 #3",
+      "burst@308.5-311.5 #0",
+      "burst@308.5-311.5 #3",
+      "burst@308.5-311.5 #4",
+      "burst@311.5-313.5 #7",
+      "burst@311.5-313.5 #8"
+     ],
+     "zoom_confirmed": true
+    },
+    {
+     "criterion_id": "28b",
+     "item": 2,
+     "occurrence": 1,
+     "finding": "回套時針頭套是直接拿在左手上（05:08.5 左手從檯面上拿起針頭套後，在胸前以左手手指捏著針頭套將其套上右手持握的空針針頭）。",
+     "times": [
+      [
+       308.5,
+       313.2
+      ]
+     ],
+     "visibility": "清楚",
+     "evidence": [
+      "ov@305-314.5 #3",
+      "ov@305-314.5 #4",
+      "burst@308.5-311.5 #0",
+      "burst@308.5-311.5 #3",
+      "burst@308.5-311.5 #4"
+     ],
+     "zoom_confirmed": true
+    },
+    {
+     "criterion_id": "28b",
+     "item": 3,
+     "occurrence": 1,
+     "finding": "05:08.5（burst@308.5-311.5 #0）左手從桌上拿起針頭套，05:08.8–05:09.3（burst@308.5-311.5 #1–#3）左手一直握著針頭套移向針頭，此時針頭完全在針頭套外，針尖與斜面皆露在套外；05:09.6（burst@308.5-311.5 #4）針尖才進入左手拿著的針頭套開口。",
+     "times": [
+      [
+       308.5,
+       309.6
+      ]
+     ],
+     "visibility": "清楚",
+     "evidence": [
+      "burst@308.5-311.5 #0",
+      "burst@308.5-311.5 #1",
+      "burst@308.5-311.5 #2",
+      "burst@308.5-311.5 #3",
+      "burst@308.5-311.5 #4"
+     ],
+     "zoom_confirmed": true
+    },
+    {
+     "criterion_id": "28b",
+     "item": 4,
+     "occurrence": 1,
+     "finding": "05:09.6 至 05:13.2（burst@308.5-311.5 #4 至 burst@311.5-313.5 #7）左手將針頭套往針座方向推入並壓緊的過程中，針尖持續在針頭套內，沒有刺出套壁或滑出套外。",
+     "times": [
+      [
+       309.6,
+       313.2
+      ]
+     ],
+     "visibility": "清楚",
+     "evidence": [
+      "burst@308.5-311.5 #4",
+      "burst@308.5-311.5 #8",
+      "burst@308.5-311.5 #11",
+      "burst@311.5-313.5 #3",
+      "burst@311.5-313.5 #7"
+     ],
+     "zoom_confirmed": true
+    }
+   ]
+  }
+ ]
+}

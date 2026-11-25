@@ -266,9 +266,24 @@ function clipRanges(str) {
   for (const m of str.matchAll(new RegExp(head, "g"))) ranges.push([m.index, m.index + m[0].length]);
   return ranges;
 }
+// Times after clip@A-B (「clip@105.5-113.5 的 00:02.5–00:07.9 及 00:09」) are relative to the clip and link to A + t
+// when 片段 follows the clip, or when they fit in the clip's length and are not inside A-B as video times
+// (「clip@68-100 中：01:08.0」 is a video time): clip_relative in eval_grading.py
+function clipAtRanges(str) {
+  const t = String.raw`\d{2}:\d{2}(?:\.\d+)?(?:\s*[–\-~～至到]\s*\d{2}:\d{2}(?:\.\d+)?)?`;
+  const re = new RegExp(String.raw`clip@(\d+(?:\.\d+)?)-(\d+(?:\.\d+)?)[^\d@（()），,。；;]{0,8}?` + t + String.raw`(?:\s*[、及和與]\s*` + t + ")*", "g");
+  return [...str.matchAll(re)].map(m => [m.index, m.index + m[0].length, Number(m[1]), Number(m[2]), m[0].includes("片段")]);
+}
 function linkTimes(text, vid) {
-  const safe = esc(text), clips = clipRanges(safe);
+  const safe = esc(text), clips = clipRanges(safe), ats = clipAtRanges(safe);
   return safe.replace(/(\d{1,2}):(\d{2}(?:\.\d+)?)(?:\s*[–-]\s*(\d{1,2}):(\d{2}(?:\.\d+)?))?/g, (all, m1, s1, m2, s2, off) => {
+    const at = ats.find(([a, b]) => off >= a && off < b);
+    const start = sec(m1, s1), end = m2 ? sec(m2, s2) : start;
+    if (at && (at[4] || (Math.max(start, end) <= at[3] - at[2] + 0.5 && !(at[2] - 1 <= start && start <= at[3] + 1)))) {
+      const t = at[2] + start;
+      return `<span class="t" data-vid="${vid}" data-t="${t}" title="影片 ${fmt(t)}">${all}</span>`;
+    }
+    if (at) return `<span class="t" data-vid="${vid}" data-t="${start}">${all}</span>`;
     if (clips.some(([a, b]) => off >= a && off < b)) return all;
     return `<span class="t" data-vid="${vid}" data-t="${sec(m1, s1)}">${all}</span>`;
   });

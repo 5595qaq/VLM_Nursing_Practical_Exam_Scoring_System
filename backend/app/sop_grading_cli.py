@@ -1,7 +1,8 @@
 """Run segmentation + grading on one local video (development and prompt tuning, no queue/GCS).
 
 usage: python -m app.sop_grading_cli VIDEO --video-id VID_0083 --out WORK/VID_0083 [--labels LABELS.csv] [--steps 1,17]
-           [--by NAME] [--commit SHA] [--force] [--allow-dirty] [--new-segmentation]
+           [--by NAME] [--commit SHA] [--force] [--allow-dirty] [--new-segmentation] [--two-stage]
+       python -m app.sop_grading_cli --judge-only RECORD --video-id VID_0083 --out WORK/VID_0083 [--steps 18,19]
 
   WORK/VID_0083/source.mp4         normalized like an upload (video_service.normalize_source)
   WORK/VID_0083/segmentation.json  sop-video-skill result (reused when present)
@@ -37,6 +38,16 @@ differs from the recorded one (--force), uncommitted code (commit ends in -dirty
 missing runner or commit, or a record folder it cannot write.
 --by (or SOP_RUN_BY) names who ran it; --commit (or GIT_COMMIT, else git) is the code version, needed to
 make the images again from the transcripts.
+--two-stage (issue #207, experiment): criteria with rubric `observe` are described by one agent (DESCRIBE.md,
+observe/) and judged by a text-only agent (JUDGE.md after the usual grading prompt); the others are graded as
+usual. The record is a version of its own (run_record.py: "_2stage"); its runs keep grading/descriptions.json.
+--judge-only RECORD judges the descriptions of that two-stage record (a folder under runs/) again under the
+current rubric, criteria and JUDGE.md, without the video or the describing agent: the cheap check of a
+change to a standard. It refuses when DESCRIBE.md, observe/ or a criterion's observe items changed since the
+descriptions were made, and when the current version is the source's own. Its record is a folder of its own
+("_2stage-judge": never mixed with records that described the video), has descriptions_from (also on each
+run) and the source's segmentation, builds on its own grading.json, and lists only the steps judged in full
+(a step that also has a visual criterion without observe, such as 17b, stays 待判定 and is left out).
 Each recorded run keeps its wall-clock time in record.json's timing (started_at, segmentation_seconds when
 it segmented, grading_seconds, total_seconds). A run continued from checkpoints counts only this invocation
 and has checkpoints_found (its usage still counts the earlier tokens).
@@ -89,26 +100,30 @@ def segmentation_tag(video_id: str, labels: Path | None) -> str:
     return rr.skill_tag(rr.skill_version(Path(settings.SOP_SKILL_DIR) / "SKILL.md"), sop_skill_service.model_name())
 
 
-def versions(seg_tag: str) -> dict:
+def versions(seg_tag: str, two_stage: bool = False, judge_only: bool = False) -> dict:
     rubric = sop_grading_service.load_grading_module("rubric").load_rubric()
-    return {"rubric": rubric["version"],
-            "skill": _rr().skill_version(sop_grading_service.grading_dir() / "SKILL.md"),
-            "model": settings.SOP_SKILL_GEMINI_MODEL, "segmentation": seg_tag}
+    found = {"rubric": rubric["version"],
+             "skill": _rr().skill_version(sop_grading_service.grading_dir() / "SKILL.md"),
+             "model": settings.SOP_SKILL_GEMINI_MODEL, "segmentation": seg_tag}
+    pipeline = _rr().JUDGE_ONLY if judge_only else _rr().TWO_STAGE if two_stage else None
+    return {**found, "pipeline": pipeline} if pipeline else found
 
 
 class Recorder:
     """The run record of one video and version (see run_record.py); checks run before any model call."""
 
-    def __init__(self, video: Path, video_id: str, runs_dir: Path, by: str, commit: str, seg_tag: str):
+    def __init__(self, video: Path | None, video_id: str, runs_dir: Path, by: str, commit: str, seg_tag: str,
+                 two_stage: bool = False, judge_only: bool = False):
         self.rr = _rr()
         self.video, self.video_id, self.by, self.commit = video, video_id, by, commit
-        self.versions = versions(seg_tag)
+        self.versions = versions(seg_tag, two_stage, judge_only)
         self.folder = self.rr.record_dir(runs_dir, video_id, self.versions)
         self.record = self.rr.load(self.folder)
         self.video_sha256 = ""
         self.segmentation_from: dict | None = None  # set by prepare when it copies another record's
         self.kept_local = False  # prepare kept a segmentation made here that no record has yet
         self.imported_segmentation: dict | None = None  # --segmentation-file: where the saved segmentation came from
+        self.descriptions_from: dict | None = None  # --judge-only: the two-stage record whose descriptions it judged
 
     def check(self, steps: set[int] | None, force: bool, allow_dirty: bool = False,
               new_segmentation: bool = False) -> None:
@@ -138,6 +153,8 @@ class Recorder:
             probe.unlink()
         except OSError as e:
             raise SystemExit(f"無法寫入評分紀錄 {self.folder}：{e}") from e
+        if self.video is None:  # --judge-only: judge_only takes the source record's video hash
+            return
         print("hashing", self.video, flush=True)  # last: the cheap checks above should not wait for it
         self.video_sha256 = self.rr.file_sha256(self.video)
         if self.record and self.record["video_sha256"] != self.video_sha256 and not force:
@@ -194,11 +211,14 @@ class Recorder:
         return json.loads(path.read_text(encoding="utf-8")) if self.record and path.exists() else None
 
     def save(self, out: Path, outcome: dict, steps: set[int] | None, segmentation: str, started: float,
-             segmentation_usage: dict | None = None) -> Path:
+             segmentation_usage: dict | None = None, segmentation_file: Path | None = None) -> Path:
         fresh = lambda p: p.exists() and p.stat().st_mtime >= started  # noqa: E731 - written by this run
-        files = {f"grading/transcript_task_{key}.json": out / "grading" / f"transcript_task_{key}.json"
+        work = out / ("judge" if outcome.get("judged") else "grading")
+        files = {f"grading/transcript_task_{key}.json": work / f"transcript_task_{key}.json"
                  for key in outcome["tasks"]}
-        files["grading/probe.json"] = out / "grading" / "probe.json"
+        files[f"grading/{sop_grading_service.JUDGE_TRANSCRIPT}"] = work / sop_grading_service.JUDGE_TRANSCRIPT
+        files["grading/" + sop_grading_service.DESCRIPTIONS] = work / sop_grading_service.DESCRIPTIONS
+        files["grading/probe.json"] = work / "probe.json"
         seg_files = {f"seg/{name}": out / "seg" / name for name in SEG_FILES}
         self.record = self.rr.add_run(
             self.record, self.video_id, self.versions, self.video_sha256, steps=steps,
@@ -208,7 +228,10 @@ class Recorder:
             timing=outcome.get("timing"))
         if self.imported_segmentation:
             self.record["runs"][-1]["segmentation_import"] = self.imported_segmentation
-        seg = json.loads((out / "segmentation.json").read_text(encoding="utf-8"))
+        if self.descriptions_from:  # each judge-only run names its source; the record keeps the first one
+            self.record.setdefault("descriptions_from", self.descriptions_from)
+            self.record["runs"][-1].update(judge_only=True, descriptions_from=self.descriptions_from)
+        seg = json.loads((segmentation_file or out / "segmentation.json").read_text(encoding="utf-8"))
         files = {k: v for k, v in files.items() if fresh(v)}
         # a kept local segmentation was paid for by an earlier, unrecorded run: keep its transcript too
         files.update({k: v for k, v in seg_files.items() if (v.exists() if self.kept_local else fresh(v))})
@@ -235,9 +258,94 @@ def reuse_notice(source: dict) -> str:
             + "=" * 72)
 
 
+def source_descriptions(source: Path) -> list[dict]:
+    """descriptions.json of each run of a two-stage record, earliest run first."""
+    runs = sorted((p for p in source.glob("run*") if p.name[3:].isdigit()), key=lambda p: int(p.name[3:]))
+    return [json.loads(path.read_text(encoding="utf-8")) for run in runs
+            if (path := run / "grading" / sop_grading_service.DESCRIPTIONS).exists()]
+
+
+def judged_steps(outcome: dict) -> set[int]:
+    """The steps a --judge-only run graded in full (its record's steps): a step that also has a visual
+    criterion without observe (13b, 17b) keeps it 待判定, since nothing described it, and is left out."""
+    pending = {s["step_id"]: [c["criterion_id"] for c in s["criteria"] if c["verdict"] == "待判定"]
+               for s in outcome["result"]["steps"]}
+    partly = {s: pending[s] for s in outcome["judged_steps"] if pending.get(s)}
+    for sid, ids in sorted(partly.items()):
+        print(f"步驟 {sid} 的 {'、'.join(ids)} 沒有描述（沒有 observe），仍是待判定：這一步不記為評過", flush=True)
+    return set(outcome["judged_steps"]) - set(partly)
+
+
+def check_judge_source(source: Path, video_id: str) -> dict:
+    """The --judge-only source: a two-stage record of this video with descriptions (checked before any
+    record folder is made)."""
+    record = _rr().load(source)
+    pipelines = (_rr().TWO_STAGE, _rr().JUDGE_ONLY)
+    if not record or record["video_id"] != video_id or record["versions"].get("pipeline") not in pipelines:
+        raise SystemExit(f"{source} 不是 {video_id} 的兩段式（--two-stage）評分紀錄")
+    if not source_descriptions(source):
+        raise SystemExit(f"{source} 沒有 descriptions.json")
+    return record
+
+
+def check_judge_target(record: dict, source: Path, recorder: Recorder) -> None:
+    """A --judge-only record judges again what changed since the source: refused when the grading rules'
+    versions are the source's (nothing to judge again; and judging a judge-only record at its own version
+    would write over it), when the model is not the one that described (the record would name the wrong
+    describing model), or when the record already holds judgments of another source's descriptions."""
+    src, now = record["versions"], recorder.versions
+    if (src["rubric"], src["skill"]) == (now["rubric"], now["skill"]):
+        raise SystemExit(f"目前的評分規則版本（rubric {now['rubric']}、SKILL {now['skill']}）和來源 {source.name} 相同："
+                         "--judge-only 是改了標準、遞增版本之後才用，不會覆寫來源紀錄")
+    if src["model"] != now["model"]:
+        raise SystemExit(f"來源的描述是 {src['model']} 做的，目前的模型是 {now['model']}：判定要用同一個模型"
+                         "（SOP_SKILL_GEMINI_MODEL），紀錄的模型才正確")
+    earlier = (recorder.record or {}).get("descriptions_from", {}).get("record")
+    if earlier and earlier != source.name:
+        raise SystemExit(f"{recorder.folder.name} 的判定用的是 {earlier} 的描述，不能再加入 {source.name} 的")
+
+
+async def judge_only(source: Path, video_id: str, out: Path, steps: set[int] | None,
+                     recorder: Recorder | None) -> dict:
+    """--judge-only: judge the source record's descriptions again under the current rules (no video)."""
+    record = check_judge_source(source, video_id)
+    descriptions = source_descriptions(source)
+    if recorder:
+        check_judge_target(record, source, recorder)
+    started = time.time() - 1
+    clock = time.monotonic()
+    timing = {"started_at": datetime.datetime.now().astimezone().isoformat(timespec="seconds")}
+    # everything goes into out/judge/: the --out folder's own segmentation.json and grading.json stay as they are
+    work = out / "judge"
+    work.mkdir(parents=True, exist_ok=True)
+    seg_file = work / "segmentation.json"
+    shutil.copyfile(source / "segmentation.json", seg_file)
+    segmentation = json.loads(seg_file.read_text(encoding="utf-8"))
+    print("judging the descriptions of", source.name, "steps", sorted(steps) if steps else "all", flush=True)
+    try:
+        outcome = await sop_grading_service.run_judge_only(segmentation, descriptions, work, steps=steps,
+                                                           previous=recorder.previous() if recorder else None)
+    except sop_skill_service.SkillRunError as e:
+        raise SystemExit(str(e)) from e
+    timing["grading_seconds"] = timing["total_seconds"] = round(time.monotonic() - clock, 1)
+    outcome["timing"] = timing
+    if outcome.get("skipped_steps"):
+        print(f"步驟 {','.join(map(str, outcome['skipped_steps']))} 沒有可沿用的描述，沒有判定", flush=True)
+    if recorder:
+        recorder.video_sha256 = record["video_sha256"]
+        recorder.descriptions_from = {"record": source.name, "runs": [r["run"] for r in record["runs"]]}
+        if not recorder.record:
+            recorder.segmentation_from = {"record": source.name, **{k: record["runs"][0].get(k) for k in (
+                "run", "date", "by", "commit", "segmentation")}}
+        print("recorded", recorder.save(out, outcome, judged_steps(outcome), f"segmentation.json of {source.name}",
+                                        started, segmentation_file=seg_file), flush=True)
+    return outcome
+
+
 async def run(video: Path, video_id: str, out: Path, steps: set[int] | None,
               labels: Path | None = None, recorder: Recorder | None = None, seg_tag: str | None = None,
-              new_segmentation: bool = False, force: bool = False, imported: dict | None = None) -> dict:
+              new_segmentation: bool = False, force: bool = False, imported: dict | None = None,
+              two_stage: bool = False) -> dict:
     out.mkdir(parents=True, exist_ok=True)
     started = time.time() - 1  # files written from now on belong to this run (mtime resolution margin)
     clock = time.monotonic()
@@ -312,7 +420,8 @@ async def run(video: Path, video_id: str, out: Path, steps: set[int] | None,
     grading_clock = time.monotonic()
     resume = recorder is not None and previous is not None and not force and _resume_notice(recorder, previous, steps)
     outcome = await sop_grading_service.run_grading(source, segmentation, work, probe_dir=seg_dir,
-                                                    steps=steps, previous=previous, resume=resume)
+                                                    steps=steps, previous=previous, resume=resume,
+                                                    two_stage=two_stage)
     timing["grading_seconds"] = round(time.monotonic() - grading_clock, 1)
     timing["total_seconds"] = round(time.monotonic() - clock, 1)
     if resumed:
@@ -360,7 +469,7 @@ def requested_steps(text: str | None) -> set[int] | None:
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("video", type=Path)
+    ap.add_argument("video", type=Path, nargs="?", help="the video (not with --judge-only)")
     ap.add_argument("--video-id", required=True)
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--labels", type=Path, help="label sheet CSV: use its times instead of sop-video-skill")
@@ -376,12 +485,24 @@ def main() -> None:
     ap.add_argument("--new-segmentation", action="store_true",
                     help="segment again instead of reusing an earlier record's segmentation (version without a record)")
     ap.add_argument("--runs-dir", type=Path, help="run records folder (default sop-video-grading/runs)")
+    ap.add_argument("--two-stage", action="store_true",
+                    help="criteria with rubric observe: a describing agent, then a text-only judging agent (issue #207)")
+    ap.add_argument("--judge-only", type=Path, metavar="RECORD",
+                    help="judge that two-stage record's descriptions again under the current rules, no video")
     a = ap.parse_args()
+    if a.judge_only and (a.video or a.labels or a.segmentation_file or a.new_segmentation or a.two_stage):
+        ap.error("--judge-only takes no video, --labels, --segmentation-file, --new-segmentation or --two-stage")
+    if not a.judge_only and not a.video:
+        ap.error("the video is required (except with --judge-only)")
     steps = requested_steps(a.steps)
     # The checkpoints' fingerprint reads settings.GIT_COMMIT; without GIT_COMMIT set, --commit fell back to git.
     settings.GIT_COMMIT = a.commit.strip()
     imported = None
-    if a.segmentation_file:
+    judge_source = None
+    if a.judge_only:  # checked here, before the Recorder makes its record folder
+        judge_source = check_judge_source(a.judge_only, a.video_id)
+        seg_tag = judge_source["versions"]["segmentation"]
+    elif a.segmentation_file:
         if a.labels or a.new_segmentation:
             ap.error("--segmentation-file cannot be combined with --labels or --new-segmentation")
         from app.services.sop_segmentation_import import load_bundle
@@ -392,12 +513,17 @@ def main() -> None:
     recorder = None
     if _rr().VIDEO_ID_RE.fullmatch(a.video_id):
         recorder = Recorder(a.video, a.video_id, a.runs_dir or sop_grading_service.grading_dir() / "runs",
-                            a.by.strip(), a.commit.strip(), seg_tag)
+                            a.by.strip(), a.commit.strip(), seg_tag, a.two_stage, bool(a.judge_only))
+        if judge_source:  # before check(), which makes the record folder: a refused run leaves no empty folder
+            check_judge_target(judge_source, a.judge_only, recorder)
         recorder.check(steps, a.force, a.allow_dirty, a.new_segmentation)
     else:
         print(f"{a.video_id} 不是標記表的影片ID（VID_xxxx），不寫評分紀錄", flush=True)
-    outcome = asyncio.run(run(a.video, a.video_id, a.out, steps, a.labels, recorder, seg_tag, a.new_segmentation,
-                              a.force, imported))
+    if a.judge_only:
+        outcome = asyncio.run(judge_only(a.judge_only, a.video_id, a.out, steps, recorder))
+    else:
+        outcome = asyncio.run(run(a.video, a.video_id, a.out, steps, a.labels, recorder, seg_tag,
+                                  a.new_segmentation, a.force, imported, a.two_stage))
     print(json.dumps({k: outcome[k] for k in ("tasks", "failed_tasks", "validation_errors", "usage", "timing")},
                      ensure_ascii=False, indent=1))
 

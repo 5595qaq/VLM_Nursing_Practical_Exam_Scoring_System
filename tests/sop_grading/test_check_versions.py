@@ -102,6 +102,19 @@ def test_moving_text_into_criteria_is_no_rule_change(repo):
     assert len(errors) == 1 and "not greater than 0.29" in errors[0]
 
 
+@pytest.mark.parametrize("path", ["DESCRIBE.md", "JUDGE.md", "describe.schema.json", "observe/08-hand-posture.md"])
+def test_two_stage_prompts_count_as_the_grading_skill(repo, path):
+    split(repo, {"01-a.md": "rules\n"}, cv.skill_doc.MARKER + " -->\n")
+    (repo / "sop-video-grading" / "observe").mkdir()
+    (repo / "sop-video-grading" / "observe" / "README.md").write_text("how to\n", encoding="utf-8")
+    run(repo, "add", ".")
+    run(repo, "commit", "-q", "-m", "split")
+    run(repo, "checkout", "-q", "-b", "next")
+    assert cv.check(repo, "topic") == []  # observe/README.md is not a rule
+    (repo / "sop-video-grading" / path).write_text("two-stage\n", encoding="utf-8")
+    assert "not greater than 0.29" in cv.check(repo, "topic")[0]
+
+
 def test_a_new_criteria_file_is_a_rule_change(repo):
     split(repo, {"01-a.md": "rules\n"}, cv.skill_doc.MARKER + " -->\n")
     run(repo, "add", ".")

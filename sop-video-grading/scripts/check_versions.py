@@ -5,7 +5,8 @@ usage: python check_versions.py [--base REF]
 - Every version is a release number (digits and dots). A branch version such as 0.29-10b.1 must be
   changed to the next release number before the PR is merged.
 - With --base (the PR's target, e.g. origin/main): a rule this branch changed (the working tree
-  against the merge-base with REF; the grading SKILL.md is compared with criteria/ put in, so moving
+  against the merge-base with REF; the grading SKILL.md is compared with criteria/ put in (and the two-stage
+  prompts DESCRIBE.md, JUDGE.md, describe.schema.json and observe/ appended), so moving
   text between the files is no change) needs a version greater than REF's, its CHANGELOG needs a heading
   for that version, and that package's changelog.d/ must be empty (README.md aside): the release takes
   every pending entry.
@@ -22,6 +23,8 @@ import skill_doc
 
 ROOT = Path(__file__).resolve().parents[2]
 RELEASE_RE = re.compile(r"\d+(\.\d+)*")
+# the two-stage grading's prompts (issue #207), versioned with the grading SKILL.md like criteria/ and observe/
+TWO_STAGE_FILES = ("DESCRIBE.md", "JUDGE.md", "describe.schema.json")
 
 
 def frontmatter_version(text: str) -> str:
@@ -46,15 +49,22 @@ def grading_skill_text(root: Path, rev: str | None) -> str | None:
         out = git(root, "show", f"{rev}:{path}")
         return out.stdout if out.returncode == 0 else None
 
+    def names(sub: str) -> list[str]:
+        if rev is None:
+            return [p.name for p in skill_doc.criteria_files(root / folder, sub)] if (root / folder / sub).is_dir() else []
+        listed = git(root, "ls-tree", "--name-only", f"{rev}:{folder}/{sub}").stdout.split()
+        return sorted(n for n in listed if skill_doc.is_criteria(n))
+
     skill = show(f"{folder}/SKILL.md")
     if skill is None or skill_doc.MARKER not in skill:  # before criteria/ existed
         return skill
-    if rev is None:
-        names = [p.name for p in skill_doc.criteria_files(root / folder)]
-    else:
-        listed = git(root, "ls-tree", "--name-only", f"{rev}:{folder}/{skill_doc.CRITERIA_DIR}").stdout.split()
-        names = sorted(n for n in listed if skill_doc.is_criteria(n))
-    return skill_doc.assemble(skill, [(n, show(f"{folder}/{skill_doc.CRITERIA_DIR}/{n}") or "") for n in names])
+    text = skill_doc.assemble(skill, [(n, show(f"{folder}/{skill_doc.CRITERIA_DIR}/{n}") or "")
+                                      for n in names(skill_doc.CRITERIA_DIR)])
+    # two-stage grading (issue #207): its prompts count as the grading SKILL too
+    observe = skill_doc.DESCRIBE[1]
+    extra = [show(f"{folder}/{name}") or "" for name in TWO_STAGE_FILES]
+    extra += [show(f"{folder}/{observe}/{n}") or "" for n in names(observe)]
+    return text + "".join("\n\0" + part for part in extra if part)
 
 
 # name, file holding the version, how to read it, files whose change needs a new version,

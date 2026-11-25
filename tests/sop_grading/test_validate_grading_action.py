@@ -1,11 +1,12 @@
 """Tests for validate_grading_action.py (one grading-agent action, checked before it runs)."""
 
 import copy
+import re
 
 import pytest
 
 from rubric import load_rubric
-from validate_grading_action import BUDGET, validate
+from validate_grading_action import BUDGET, validate, validate_describe, validate_judgment
 
 TASK = {"window": [148.0, 180.0], "criteria": [
     {"criterion_id": "15b", "window": [148.0, 180.0]},
@@ -470,3 +471,101 @@ def test_single_span_timing_uses_span_not_times():
 def test_washing_undetermined_needs_no_times():
     action = wash_final("無法判定", (), reason="畫面被遮擋", explanation="00:50–00:54 雙手出框，看不到何時分開。")
     assert validate(action, WASH, FRESH, DURATION) == []
+
+
+# --- two-stage grading (issue #207): the describing agent's final ---
+
+RECAP = {"window": [300.0, 310.0], "criteria": [{"criterion_id": "28b", "window": [300.0, 310.0]}]}
+
+
+def observations(cid="28b", items=None, **changes) -> dict:
+    n = len(load_rubric_cached()[cid]["observe"])
+    rows = [{"criterion_id": cid, "item": i, "occurrence": 1, "finding": f"05:0{i} 看到第 {i} 項。",
+             "times": [[300.0 + i, 300.0 + i]], "visibility": "清楚", "evidence": [f"zoom@{300 + i}"],
+             "zoom_confirmed": True} for i in (items or range(1, n + 1))]
+    rows[0].update(changes)
+    return {"action": "final", "observations": rows}
+
+
+def load_rubric_cached():
+    from rubric import criteria_by_id
+    return criteria_by_id(load_rubric())
+
+
+def test_a_full_description_passes_and_material_actions_still_work():
+    assert validate_describe(observations(), RECAP, FRESH, DURATION) == []
+    zoom = {"action": "zoom", "times": [305.0], "region": [0.2, 0.3, 0.6, 0.7], "reason": "看針套"}
+    assert validate_describe(zoom, RECAP, FRESH, DURATION) == []
+
+
+@pytest.mark.parametrize("action, expected", [
+    (observations(items=[1, 2, 3]), "item 4"),  # an observe item left out
+    (observations(finding="看到另一手扶針套。"), "mm:ss"),
+    (observations(times=[[200.0, 200.0]]), "must stay within"),
+    (observations(times=[]), "[] only with visibility 看不到"),
+    (observations(evidence=["我記得"]), "must cite materials"),
+    (observations(item=9), "observation items"),
+    (observations(criterion_id="19b"), "only for ['28b']"),
+    ({"action": "final", "criteria": []}, "schema"),  # a grading final is not a description
+    (observations(verdict="正確"), "schema"),
+])
+def test_a_description_is_checked(action, expected):
+    errors = validate_describe(action, RECAP, FRESH, DURATION)
+    assert any(expected in e for e in errors), f"expected {expected!r} in {errors}"
+
+
+def test_an_unseen_item_may_have_no_times():
+    action = observations(times=[], visibility="看不到", finding="05:01–05:03 另一手被乾洗手液瓶擋住。")
+    assert validate_describe(action, RECAP, FRESH, DURATION) == []
+
+
+def test_a_repeated_action_is_one_entry_per_occurrence():
+    action = observations()
+    action["observations"].append({**action["observations"][0]})
+    assert any("listed twice" in e for e in validate_describe(action, RECAP, FRESH, DURATION))
+    action["observations"][-1]["occurrence"] = 2
+    assert validate_describe(action, RECAP, FRESH, DURATION) == []
+
+
+def test_describing_the_needle_fixing_needs_a_clip_on_the_wrapper():
+    task = {"window": [74.0, 81.0], "criteria": [
+        {"criterion_id": "10b", "window": [74.0, 81.0], "package_spans": [[66.0, 74.0]]}]}
+    action = observations("10b", times=[[75.0, 75.0]])
+    for row in action["observations"]:
+        row["times"] = [[75.0, 75.0]]
+    assert any("use clip" in e for e in validate_describe(action, task, FRESH, DURATION))
+    assert validate_describe(action, {**task, "clips": [[70.0, 76.0]]}, FRESH, DURATION) == []
+    # nothing seen clearly can only become 無法判定: no clip needed, so a task whose clips are spent can finish
+    for row in action["observations"]:
+        row.update(visibility="部分遮擋", finding="01:15 雙手被包裝擋住，看不清楚有沒有轉。")
+    assert validate_describe(action, task, {**FRESH, "clip": 2}, DURATION) == []
+
+
+def test_the_judge_is_told_it_cannot_fetch_the_missing_material():
+    # two-stage: a judgment 錯誤 the describing agent's materials do not allow is reworded, not "use burst"
+    errors = validate_judgment(final(verdict="錯誤", explanation="02:31–02:35 沒有看到手指彈針筒，也沒有響聲。"),
+                               TASK, FRESH, DURATION)
+    assert any("You have no video" in e and "無法判定" in e for e in errors)
+    assert validate_judgment(final(), TASK, FRESH, DURATION) == []
+
+
+def test_every_material_rule_is_reworded_for_the_judge():
+    # review of describe207: rewording matches the messages' text, so a reworded message must keep a MATERIAL_RULES
+    # phrase, or the judge (no video) would be told to use clip / burst and spend its turns
+    import inspect
+    import validate_grading_action as v
+    # the final's checks the judge goes through (validate); the describing agent's own checks may ask for material
+    source = "".join(inspect.getsource(f) for f in (v._check_final, v._check_flick))
+    asks = [line for line in source.splitlines() if re.search(r"use (clip|burst)|watch a clip", line)]
+    assert asks and all(any(rule in line for rule in v.MATERIAL_RULES) for line in asks), asks
+
+
+def test_describing_the_flick_needs_a_burst_unless_there_is_no_sound():
+    task = {"window": [148.0, 180.0], "criteria": [{"criterion_id": "17a", "window": [148.0, 180.0]}]}
+    action = observations("17a")
+    for row in action["observations"]:
+        row["times"] = [[150.0, 151.0]]
+    assert any("use burst" in e for e in validate_describe(action, task, FRESH, DURATION))
+    assert validate_describe(action, task, {**FRESH, "burst": 1}, DURATION) == []
+    silent = {**task, "audio": {"has_audio": False, "silent": True}}
+    assert validate_describe(action, silent, FRESH, DURATION) == []

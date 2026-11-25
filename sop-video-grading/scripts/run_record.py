@@ -11,6 +11,11 @@ sop_grading_cli writes one folder per video and version, committed to Git:
     run1/ run2/ ...    that run's grading.json (the result after that run; records before 2026-10-25 lack
                        it), model conversations: grading/transcript_task_*.json, probe.json,
                        and seg/transcript.json, motion.json when the run also segmented the video
+A two-stage grading (sop_grading_cli --two-stage, issue #207) has versions["pipeline"] "two-stage" and
+"_2stage" after the SKILL version in the folder name; its runs keep grading/descriptions.json (the
+describing agent's observations) and grading/transcript_judge_*.json. A --judge-only record is a folder of
+its own ("two-stage-judge", "_2stage-judge"): it judged the descriptions of another record again
+(descriptions_from, on the record and on each run) instead of describing anything itself.
 The version is rubric.json's version + SKILL.md's version + the grading model + the segmentation source:
 seg-skill<sop-video-skill version>_<segmentation model>, or seg-labels-<hash of the label sheet's times
 for the video>, so editing the label times starts a new record.
@@ -66,9 +71,15 @@ def labels_tag(rows: list) -> str:
     return "labels-" + hashlib.sha256(text.encode("utf-8")).hexdigest()[:8]
 
 
+TWO_STAGE = "two-stage"  # versions["pipeline"] of a two-stage grading (issue #207): describing + judging agents
+JUDGE_ONLY = "two-stage-judge"  # a --judge-only record: earlier descriptions judged again, nothing described
+PIPELINE_SUFFIX = {TWO_STAGE: "_2stage", JUDGE_ONLY: "_2stage-judge"}
+
+
 def record_dir(runs_dir: Path, video_id: str, versions: dict) -> Path:
     model = _safe(versions["model"])
-    return runs_dir / video_id / (f"rubric{versions['rubric']}_skill{versions['skill']}_{model}"
+    pipeline = PIPELINE_SUFFIX.get(versions.get("pipeline"), "")
+    return runs_dir / video_id / (f"rubric{versions['rubric']}_skill{versions['skill']}{pipeline}_{model}"
                                   f"_seg-{versions['segmentation']}")
 
 
@@ -150,7 +161,7 @@ def add_run(record: dict | None, video_id: str, versions: dict, video_sha256: st
         record = {"video_id": video_id, "versions": versions, "video_sha256": video_sha256, "runs": []}
         if segmentation_from:
             record["segmentation_from"] = segmentation_from
-    ran = (set(steps) if steps else set(ALL_STEPS)) - failed_steps(failed_tasks)
+    ran = (set(ALL_STEPS) if steps is None else set(steps)) - failed_steps(failed_tasks)  # an empty set: none
     record["runs"].append({"run": len(record["runs"]) + 1, "by": by, "date": date, "commit": commit,
                            "video_sha256": video_sha256, "steps": sorted(ran), "failed_tasks": failed_tasks,
                            "segmentation": segmentation, "usage": usage})
@@ -203,7 +214,10 @@ def summary(record: dict) -> str:
     who = "、".join(f"{r['by']} {r['date']}" for r in record["runs"])
     reused = record.get("segmentation_from")
     origin = f"（沿用 {reused['record']} 的切分，未重新切分）" if reused else ""
-    return (f"{record['video_id']}  rubric {v['rubric']}  SKILL {v['skill']}  {v['model']}  "
+    if record.get("descriptions_from"):
+        origin += f"（只重跑判定，描述沿用 {record['descriptions_from']['record']}）"
+    pipeline = {TWO_STAGE: "  兩段式", JUDGE_ONLY: "  兩段式（只重跑判定）"}.get(v.get("pipeline"), "")
+    return (f"{record['video_id']}  rubric {v['rubric']}  SKILL {v['skill']}{pipeline}  {v['model']}  "
             f"切分 {v['segmentation']}{origin}  步驟 {covered}  （{who}）")
 
 
