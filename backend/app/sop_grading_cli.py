@@ -216,8 +216,7 @@ class Recorder:
         work = out / ("judge" if outcome.get("judged") else "grading")
         files = {f"grading/transcript_task_{key}.json": work / f"transcript_task_{key}.json"
                  for key in outcome["tasks"]}
-        files.update({f"grading/transcript_judge_{key}.json": work / f"transcript_judge_{key}.json"
-                      for key in [*outcome.get("described", []), *outcome.get("judged", [])]})
+        files[f"grading/{sop_grading_service.JUDGE_TRANSCRIPT}"] = work / sop_grading_service.JUDGE_TRANSCRIPT
         files["grading/" + sop_grading_service.DESCRIPTIONS] = work / sop_grading_service.DESCRIPTIONS
         files["grading/probe.json"] = work / "probe.json"
         seg_files = {f"seg/{name}": out / "seg" / name for name in SEG_FILES}

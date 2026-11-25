@@ -9,6 +9,7 @@ description: 兩段式評分（issue #207，實驗）的判定 agent：不看影
 
 ## 你會收到什麼
 
+- 一支影片所有描述過的任務**一次**交給你，每個任務一節（`## 任務 …`），各有：
 - **任務說明**：要判定的標準（`criterion_id`、標準文字、區間），相關步驟在切分結果中的時間，以及聲音的情況（沒有音軌時照上面的規則判）。
 - **描述 agent 用過的素材**：它執行過的動作（overview、zoom、burst、clip 各幾次、在哪裡），開場有沒有給它整段 clip。上面「判錯誤前要用過 burst／clip」這類規則，看的是它有沒有用過。
 - **觀察**：每條標準、每個觀察項目、每一次動作各一筆：`finding`（看到／聽到什麼、mm:ss）、`times`（影片秒數）、`visibility`（清楚／部分遮擋／看不到）、`evidence`（它用過的素材）、`zoom_confirmed`（細節有沒有在 zoom 或 burst 上確認）。
@@ -28,4 +29,4 @@ description: 兩段式評分（issue #207，實驗）的判定 agent：不看影
 - **只輸出一個 `final` 動作**，格式照上面第 3 節（`criterion_id`、`verdict`、`explanation`、`times`、`evidence`、`confidence`、`reason`，需要時加 `needs_review`／`review_reason`）。不要輸出 overview、zoom、burst、clip：你沒有影片可以看。
 - `explanation` 依觀察寫出判定依據：哪個時間點（mm:ss）看到什麼、符合或不符合標準的哪個部分。
 - `times` 用觀察裡的影片秒數；`evidence` 引用觀察裡列出的素材（`burst@317.5-319.5 #5` 等），不要自己編新的素材。
-- 必須剛好包含任務裡的每一條標準各一次。
+- 一個 final 包含**所有任務**的每一條標準各一次（任務說明開頭列出全部編號）。每條標準只用它自己那個任務的觀察和素材判定，不要拿別的任務的觀察來補。

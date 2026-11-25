@@ -1,3 +1,4 @@
+- **判定 agent 整支影片只呼叫一次（describe207.2）**：所有描述任務做完後，一次判定全部任務（使用者 2026-11-25 提議），長的 system prompt 只送一次；對話紀錄改成一個 `transcript_judge.json`。describe207.1 是每個任務各判定一次。
 - **兩段式評分（實驗，issue #207）**：`sop_grading_cli --two-stage` 把有 `observe` 的標準拆成兩段：描述 agent（`DESCRIBE.md` 加上 `observe/*.md`）看影片，逐項寫出觀察、不判定對錯；判定 agent 是純文字（完整的評分 SKILL.md 之後接 `JUDGE.md`），只讀觀察，照現有的 `criteria/` 與 rubric 判定，final 和現行流程相同。其他標準照現行評分 agent。現行流程不變（不加 `--two-stage` 時和之前完全相同）。
   - 試點範圍：08 手部姿勢（10b、12a、13a、14a、18b–d、19b、22b–d、24a、24c、26b、28b）與 05 彈針（15b、25b、17a、27a）。rubric 這些標準新增 `observe`（觀察項目，不寫門檻），標準文字不變。
   - 描述的 final 格式見 `describe.schema.json`：每條標準、每個觀察項目、每一次動作一筆（`finding`、`times`、`visibility`、`evidence`、`zoom_confirmed`）。`validate_grading_action.validate_describe` 檢查每個觀察項目都有寫；原本判錯誤前才要求的素材（10b 的包裝時段 clip、彈針的 burst），描述寫「清楚」時就要，都寫看不到或部分遮擋時不要求。

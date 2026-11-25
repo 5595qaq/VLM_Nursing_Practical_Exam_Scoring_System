@@ -575,7 +575,8 @@ def _package_review(c: dict, segmentation: dict) -> dict:
             "review_reason": f"評分 agent {what}，要人工看（{where}）：{times}{after}{agent}"}
 
 
-MAX_JUDGE_TURNS = 3  # a judging agent's final rejected this often fails its task
+MAX_JUDGE_TURNS = 3  # a judging agent's final rejected this often fails the judging
+JUDGE_TRANSCRIPT = "transcript_judge.json"  # one judging conversation per run
 TASK_FACTS = ("key", "window_steps", "criteria", "window", "needs_clip", "describe", "peaks", "audio",
               "opening_clip", "clips")
 
@@ -597,17 +598,16 @@ def _observation_lines(task: dict, observations: list[dict]) -> list[str]:
     return lines
 
 
-def build_judge_content(task: dict, video_id: str, duration: float, state: TaskState, observations: list[dict],
-                        feedback: str, segmentation: dict) -> list[dict]:
-    """The judging agent's request: the standards as the one-stage agent gets them, the materials the
-    describing agent used (rules such as "a flick 錯誤 needs a burst" look at them) and its observations."""
+def _judge_task_lines(task: dict, state: TaskState, segmentation: dict) -> list[str]:
+    """One described task in the judging request: the standards as the one-stage agent gets them, the
+    materials the describing agent used (rules such as "a flick 錯誤 needs a burst" look at them) and its
+    observations."""
     a, b = task["window"]
     opening = (f"整個任務區間的帶聲音片段 clip@{a:g}-{b:g}" if task.get("opening_clip")
                else "任務區間 9 張等距影格（ov@…）")
-    lines = [
-        "【判定任務】你看不到影片，只讀下面描述 agent 的觀察，依標準判定。",
-        f"video_id：{video_id}；影片長度 {duration:.1f} s；任務區間 {a:g}–{b:g} s（{_fmt_t(a)}–{_fmt_t(b)}）",
-        "要判定的標準（final 必須剛好包含這幾條）：",
+    return [
+        f"## 任務 {task['key']}（區間 {a:g}–{b:g} s，{_fmt_t(a)}–{_fmt_t(b)}）",
+        "要判定的標準：",
         *map(_criterion_line, task["criteria"]),
         "切分結果（相關步驟的時間）：",
         *_segment_lines(task, segmentation),
@@ -615,57 +615,86 @@ def build_judge_content(task: dict, video_id: str, duration: float, state: TaskS
         f"描述 agent 的開場素材：{opening}",
         "描述 agent 用過的動作：" + ("；".join(state.log) if state.log else "（無）")
         + "（" + "、".join(f"{k} {v} 次" for k, v in state.used.items()) + "）",
-        "",
         "觀察（描述 agent 的 final；item 是觀察項目的編號，occurrence 是第幾次動作）：",
-        *_observation_lines(task, observations),
+        *_observation_lines(task, state.observations),
         "",
+    ]
+
+
+def build_judge_content(items: list[tuple[dict, TaskState]], video_id: str, duration: float, feedback: str,
+                        segmentation: dict) -> list[dict]:
+    """The judging agent's one request for a video: every described task, text only (issue #207)."""
+    ids = [c["criterion_id"] for task, _ in items for c in task["criteria"]]
+    lines = [
+        "【判定任務】你看不到影片，只讀下面描述 agent 的觀察，依標準判定。",
+        f"video_id：{video_id}；影片長度 {duration:.1f} s；共 {len(items)} 個任務",
+        f"final 必須剛好包含下列所有任務的每一條標準各一次：{'、'.join(ids)}",
+        "",
+        *(line for task, state in items for line in _judge_task_lines(task, state, segmentation)),
         feedback,
         "",
-        "請輸出 final（只能一個 JSON 物件）。",
+        "請輸出一個 final（只能一個 JSON 物件），包含上面所有任務的標準。",
     ]
     return [{"type": "text", "text": "\n".join(lines)}]
 
 
-async def judge_task(task: dict, observations: list[dict], state: TaskState, model_call: ModelCall, system: str,
-                     workdir: Path, duration: float, segmentation: dict, video_id: str) -> list[dict]:
-    """The judging agent of a describing task (two-stage grading): text only, one final checked like the
-    one-stage agent's (validate_grading_action.validate with the describing agent's materials); a rejected
-    final goes back with the errors, up to MAX_JUDGE_TURNS. Its tokens add to state.usage."""
+def check_judgment(action, items: list[tuple[dict, TaskState]], duration: float) -> tuple[list[str], dict]:
+    """The judging final: exactly the described tasks' criteria, and each task's part checked like the
+    one-stage agent's final with that task's materials (validate_grading_action.validate_judgment).
+    Returns (errors, {task key: its criteria})."""
+    if not isinstance(action, dict) or action.get("action") != "final":
+        return ["你看不到影片，只能輸出 final 動作"], {}
     validate_action = load_grading_module("validate_grading_action")
-    log_path = workdir / f"transcript_judge_{task['key']}.json"
+    wanted = sorted(c["criterion_id"] for task, _ in items for c in task["criteria"])
+    got = [c.get("criterion_id") for c in action.get("criteria") or [] if isinstance(c, dict)]
+    if sorted(got) != wanted:
+        return [f"final must grade exactly {wanted} once each, got {got}"], {}
+    errors, parts = [], {}
+    for task, state in items:
+        ids = {c["criterion_id"] for c in task["criteria"]}
+        part = {"action": "final", "criteria": [c for c in action["criteria"] if c["criterion_id"] in ids]}
+        errors += validate_action.validate_judgment(part, task, state.used, duration)
+        parts[task["key"]] = part["criteria"]
+    return errors, parts
+
+
+async def judge_tasks(items: list[tuple[dict, TaskState]], judge: TaskState, model_call: ModelCall, system: str,
+                      workdir: Path, duration: float, segmentation: dict, video_id: str) -> dict[str, list[dict]]:
+    """The judging agent (two-stage grading): one text-only conversation for every described task of the
+    video, so the long system prompt is sent once, not once per task. A rejected final goes back with the
+    errors, up to MAX_JUDGE_TURNS. Its tokens add to `judge`.usage. Returns each task's criteria."""
+    log_path = workdir / JUDGE_TRANSCRIPT
     transcript: list[dict] = []
     feedback = ""
     for turn in range(1, MAX_JUDGE_TURNS + 1):
-        content = build_judge_content(task, video_id, duration, state, observations, feedback, segmentation)
+        content = build_judge_content(items, video_id, duration, feedback, segmentation)
         started = time.monotonic()
         reply = await model_call(system, content)
-        add_usage(state.usage, reply)
+        add_usage(judge.usage, reply)
         entry = {"turn": turn, "seconds": round(time.monotonic() - started, 1), "stop_reason": reply.stop_reason,
-                 **{k: getattr(reply, k, 0) for k in USAGE_KEYS}, "materials": [], "reply": reply.text}
+                 **{k: getattr(reply, k, 0) for k in USAGE_KEYS}, "tasks": [t["key"] for t, _ in items],
+                 "materials": [], "reply": reply.text}
         if getattr(reply, "refusal_detail", ""):
             entry["refusal_detail"] = reply.refusal_detail
         transcript.append(entry)
         log_path.write_text(json.dumps(transcript, ensure_ascii=False, indent=1), encoding="utf-8")
         if reply.stop_reason == "refusal":
-            raise SkillRunError(f"task {task['key']} (judge): {refusal_error(reply)}")
+            raise SkillRunError(f"judge: {refusal_error(reply)}")
         try:
             if reply.stop_reason == "max_tokens":
                 raise ValueError("回覆超過 max_tokens 被截斷；請精簡 explanation 後重送")
             action = parse_action(reply.text)
-            if not isinstance(action, dict) or action.get("action") != "final":
-                errors = ["你看不到影片，只能輸出 final 動作"]
-            else:
-                errors = validate_action.validate_judgment(action, task, state.used, duration)
+            errors, parts = check_judgment(action, items, duration)
         except ValueError as exc:
-            action, errors = None, [str(exc)]
+            action, errors, parts = None, [str(exc)], {}
         entry["errors"] = errors
         log_path.write_text(json.dumps(transcript, ensure_ascii=False, indent=1), encoding="utf-8")
         if not errors:
-            return action["criteria"]
+            return parts
         feedback = ("上一個 final 被退回，只修改下列錯誤後重送：\n" + "\n".join(f"- {e}" for e in errors)
                     + ("\n被退回的動作原文：\n```json\n" + json.dumps(action, ensure_ascii=False) + "\n```"
                        if isinstance(action, dict) else ""))
-    raise SkillRunError(f"task {task['key']} (judge): no valid final within {MAX_JUDGE_TURNS} turns")
+    raise SkillRunError(f"judge: no valid final within {MAX_JUDGE_TURNS} turns")
 
 
 def _graded(task: dict, criteria: list[dict], segmentation: dict) -> list[dict]:
@@ -675,31 +704,17 @@ def _graded(task: dict, criteria: list[dict], segmentation: dict) -> list[dict]:
             for c in criteria]
 
 
-async def _judge_and_save(task: dict, state: TaskState, model_call: ModelCall, judge_system: str, workdir: Path,
-                          duration: float, segmentation: dict, video_id: str, checkpoint_path: Path, mark: str,
-                          on_checkpoint: Callable[[], Awaitable[None]] | None) -> tuple[list[dict], TaskState]:
-    raw = await judge_task(task, state.observations, state, model_call, judge_system, workdir, duration,
-                           segmentation, video_id)
-    criteria = _graded(task, raw, segmentation)
-    sop_checkpoint.save(checkpoint_path, {"fingerprint": mark, "criteria": criteria, "usage": state.usage,
-                                          "observations": state.observations, "used": state.used,
-                                          "log": state.log, "task": task_facts(task)})
-    if on_checkpoint:
-        await on_checkpoint()
-    return criteria, state
-
-
 async def run_task(task: dict, video_id: str, runner: GradingRunner, boxes: dict, segmentation: dict,
                    model_call: ModelCall, system: str, workdir: Path,
                    state: TaskState | None = None, rule_digest: str = "",
-                   on_checkpoint: Callable[[], Awaitable[None]] | None = None,
-                   judge_system: str | None = None) -> tuple[list[dict], TaskState]:
+                   on_checkpoint: Callable[[], Awaitable[None]] | None = None) -> tuple[list[dict], TaskState]:
     """One task's conversation. A checkpoint left by an earlier attempt continues it, or, when the task
     had finished, returns its criteria without calling the model. run_grading removes the checkpoints of
     the tasks it no longer needs at the end of the run.
     A describing task (task["describe"], two-stage grading) runs the describing agent (`system` is its
-    prompt) and then judge_task (`judge_system`); its checkpoint keeps the observations, so an attempt that
-    stopped while judging only judges again."""
+    prompt) and returns no criteria, with its observations in state.observations; run_grading judges every
+    described task in one call afterwards (judge_tasks). Its checkpoint keeps the observations, so an attempt
+    that stopped before or while judging only judges again."""
     validate_action = load_grading_module("validate_grading_action")
     check = validate_action.validate_describe if task.get("describe") else validate_action.validate
     duration = runner.duration
@@ -713,19 +728,11 @@ async def run_task(task: dict, video_id: str, runner: GradingRunner, boxes: dict
     if saved and "observations" in saved:  # a describing task: its observations, and the facts they rest on
         state.observations, state.used, state.log = saved["observations"], saved["used"], saved["log"]
         task.update(saved["task"])
-    if saved and "criteria" in saved:
-        state.usage = saved["usage"]
-        for path in (log_path, workdir / f"transcript_judge_{task['key']}.json"):
-            if path.exists():
-                path.touch()  # sop_grading_cli records the transcripts this run wrote
-        return saved["criteria"], state
-    if saved and "observations" in saved:  # described; judging had not finished
+    if saved and ("criteria" in saved or "observations" in saved):  # graded, or described and to be judged
         state.usage = saved["usage"]
         if log_path.exists():
-            log_path.touch()
-        logger.warning("task %s of %s: judging its saved observations again", task["key"], video_id)
-        return await _judge_and_save(task, state, model_call, judge_system, workdir, duration, segmentation,
-                                     video_id, checkpoint_path, mark, on_checkpoint)
+            log_path.touch()  # sop_grading_cli records the transcripts this run wrote
+        return saved.get("criteria", []), state
     if saved and not sop_checkpoint.files_exist(workdir, [m[0] for m in saved["materials"]]):
         saved = None
     transcript: list[dict] = []
@@ -781,8 +788,7 @@ async def run_task(task: dict, video_id: str, runner: GradingRunner, boxes: dict
                                                   "task": task_facts(task)})
             if on_checkpoint:
                 await on_checkpoint()
-            return await _judge_and_save(task, state, model_call, judge_system, workdir, duration, segmentation,
-                                         video_id, checkpoint_path, mark, on_checkpoint)
+            return [], state
         if not errors and action["action"] == "final":
             criteria = _graded(task, action["criteria"], segmentation)
             # A worker killed now loses the other tasks, not this one: the next attempt reads it from here.
@@ -857,6 +863,27 @@ def _finish_result(result: dict, graded: dict, old: dict, rubric: dict, segmenta
 DESCRIPTIONS = "descriptions.json"
 
 
+async def _judge_outcomes(outcomes: list[tuple], judge: TaskState, model_call: ModelCall, workdir: Path,
+                          duration: float, segmentation: dict) -> list[tuple]:
+    """Judge every described task that has no criteria yet in one call (judge_tasks) and put the criteria
+    into its outcome; when judging fails, each of them fails with that error (its checkpoint keeps the
+    observations: run_grading keeps it, and the next attempt only judges)."""
+    todo = [(t, s) for t, criteria, s, exc in outcomes
+            if exc is None and t.get("describe") and not criteria and s is not None and s.observations is not None]
+    if not todo:
+        return outcomes
+    try:
+        parts = await judge_tasks(todo, judge, model_call, build_judge_prompt(), workdir, duration,
+                                  segmentation, segmentation["video_id"])
+        judged, error = {k: _graded(t, parts[k], segmentation) for t, _ in todo for k in [t["key"]]}, None
+    except Exception as exc:  # noqa: BLE001 - every described task fails with it, as a task failure would
+        judged, error = {}, exc
+    keys = {t["key"] for t, _ in todo}
+    return [(t, judged[t["key"]], s, None) if t["key"] in judged
+            else (t, [], s, error) if t["key"] in keys else (t, criteria, s, exc)
+            for t, criteria, s, exc in outcomes]
+
+
 def _write_descriptions(workdir: Path, rubric: dict, described: list[tuple[dict, TaskState]]) -> None:
     """The describing tasks' observations and the facts judging them needs (task_facts, the materials
     used), with the digests that tell whether --judge-only may judge them again under later rules."""
@@ -882,9 +909,10 @@ async def run_grading(video_path: Path, segmentation: dict, workdir: Path, model
     usage_reported: the caller records this run's usage even when tasks failed (sop_grading_cli), so a failed
     task's checkpoint stops carrying its tokens; the queue discards a failed attempt's usage, so there the
     next attempt reports them.
-    two_stage (issue #207, experiment): criteria with rubric `observe` are described by one agent and judged
-    by another (run_task); their observations go to descriptions.json in workdir, and the result's
-    `described` lists those tasks."""
+    two_stage (issue #207, experiment): criteria with rubric `observe` are described by one agent per task
+    (run_task) and then judged by another agent in one call for all of them (judge_tasks); their
+    observations go to descriptions.json in workdir, and the result's `described` lists those tasks. A failed
+    judging fails every described task (failed_tasks), whose checkpoints keep the observations."""
     rubric_mod = load_grading_module("rubric")
     rubric = rubric_mod.load_rubric()
     model_call = model_call or gemini_call
@@ -904,7 +932,6 @@ async def run_grading(video_path: Path, segmentation: dict, workdir: Path, model
     system = build_system_prompt()
     describing = any(t.get("describe") for t in tasks)
     describe_system = build_describe_prompt() if describing else None
-    judge_system = build_judge_prompt() if describing else None
     semaphore = asyncio.Semaphore(GRADING_CONCURRENCY)
     grading_rules = await asyncio.to_thread(sop_skill_service.tree_digest, grading_dir())
     skill_rules = await asyncio.to_thread(sop_skill_service.tree_digest, skill_dir())
@@ -919,7 +946,7 @@ async def run_grading(video_path: Path, segmentation: dict, workdir: Path, model
             try:
                 criteria, _ = await run_task(task, segmentation["video_id"], runner, boxes, segmentation,
                                              model_call, describe_system if task.get("describe") else system,
-                                             workdir, state, rule_digest, on_checkpoint, judge_system)
+                                             workdir, state, rule_digest, on_checkpoint)
                 return task, criteria, state, None
             except Exception as exc:  # noqa: BLE001 - see comment above
                 return task, [], state, exc
@@ -942,11 +969,15 @@ async def run_grading(video_path: Path, segmentation: dict, workdir: Path, model
         await asyncio.gather(*pending, return_exceptions=True)
     outcomes = [item.result() if not item.cancelled() else (task, [], None, asyncio.CancelledError())
                 for item, task in zip(pending, tasks)]
-    for task, _, state, exc in outcomes:
-        # a describing task whose judging failed keeps its observations: judging again may succeed, and
-        # describing again would pay for the video once more
+    judge = TaskState()  # the judging call's tokens
+    if stop is None:
+        outcomes = await _judge_outcomes(outcomes, judge, model_call, workdir, runner.duration, segmentation)
+    for task, criteria, state, exc in outcomes:
+        # a describing task whose judging failed, or never ran (the run was stopped), keeps its observations:
+        # judging again may succeed, and describing again would pay for the video once more
         described = state is not None and state.observations is not None
-        if exc is None or (isinstance(exc, SkillRunError) and not described):  # graded; or resuming would repeat it
+        graded = exc is None and (bool(criteria) or not described)
+        if graded or (isinstance(exc, SkillRunError) and not described):  # or resuming would repeat it
             _task_checkpoint(workdir, task).unlink(missing_ok=True)
         elif state is not None and usage_reported:  # kept for the next attempt; the caller records this run's usage
             sop_checkpoint.mark_reported(_task_checkpoint(workdir, task))
@@ -957,7 +988,7 @@ async def run_grading(video_path: Path, segmentation: dict, workdir: Path, model
     if described:
         _write_descriptions(workdir, rubric, described)
     usage = dict.fromkeys(USAGE_KEYS, 0)
-    for _, _, s, _ in outcomes:
+    for s in [judge, *(s for _, _, s, _ in outcomes)]:
         for key, value in (s.usage if s else {}).items():
             usage[key] = usage.get(key, 0) + value
     (workdir / "grading.json").write_text(json.dumps(result, ensure_ascii=False, indent=1), encoding="utf-8")
@@ -1032,30 +1063,23 @@ async def run_judge_only(segmentation: dict, descriptions: list[dict], workdir: 
     result, old = _start_result(segmentation, rubric, previous, None, previous is not None)
     duration = segmentation["meta"]["duration"]
     system = build_judge_prompt()
-    semaphore = asyncio.Semaphore(GRADING_CONCURRENCY)
     workdir.mkdir(parents=True, exist_ok=True)
 
-    async def one(item):
-        task, entry = item
-        state = TaskState(used=dict(entry["used"]), log=list(entry["log"]), observations=entry["observations"])
-        async with semaphore:
-            try:
-                raw = await judge_task(task, state.observations, state, model_call, system, workdir, duration,
-                                       segmentation, segmentation["video_id"])
-                return task, _graded(task, raw, segmentation), state, None
-            except Exception as exc:  # noqa: BLE001 - reported per task, as in run_grading
-                return task, [], state, exc
-
-    outcomes = await asyncio.gather(*(one(e) for e in entries))
+    items = [(task, TaskState(used=dict(entry["used"]), log=list(entry["log"]),
+                              observations=entry["observations"])) for task, entry in entries]
+    judge = TaskState()
+    try:
+        parts = await judge_tasks(items, judge, model_call, system, workdir, duration, segmentation,
+                                  segmentation["video_id"])
+        outcomes = [(t, _graded(t, parts[t["key"]], segmentation), s, None) for t, s in items]
+    except Exception as exc:  # noqa: BLE001 - every task fails with the one judging call
+        outcomes = [(t, [], s, exc) for t, s in items]
     graded = {c["criterion_id"]: c for _, criteria, _, _ in outcomes for c in criteria}
     failed = [{"task": t["key"], "error": f"{type(exc).__name__}: {exc}"[:500]} for t, _, _, exc in outcomes if exc]
     # not final: the steps not judged here keep their 待判定 visual criteria
     errors = _finish_result(result, graded, old, rubric, segmentation, final=False)
     _write_descriptions(workdir, rubric, [(t, s) for t, _, s, _ in outcomes])
-    usage = dict.fromkeys(USAGE_KEYS, 0)
-    for _, _, s, _ in outcomes:
-        for key, value in s.usage.items():
-            usage[key] = usage.get(key, 0) + value
+    usage = {**dict.fromkeys(USAGE_KEYS, 0), **judge.usage}
     (workdir / "grading.json").write_text(json.dumps(result, ensure_ascii=False, indent=1), encoding="utf-8")
     keys = [t["key"] for t, _, _, _ in outcomes]
     return {"result": result, "tasks": keys, "failed_tasks": failed, "validation_errors": errors,

@@ -41,7 +41,7 @@ def fake(monkeypatch):
             if key not in state["fail"]:
                 (work / f"transcript_task_{key}.json").write_text("[]", encoding="utf-8")
         for key in described:  # two-stage: the judging agent's transcript and the observations
-            (work / f"transcript_judge_{key}.json").write_text("[]", encoding="utf-8")
+            (work / "transcript_judge.json").write_text("[]", encoding="utf-8")
             (work / sop_grading_service.DESCRIPTIONS).write_text(
                 json.dumps({"describe_digest": "d", "observe": {}, "tasks": [{"key": key}]}), encoding="utf-8")
         (work / "probe.json").write_text("{}", encoding="utf-8")
@@ -509,7 +509,7 @@ def test_two_stage_is_a_version_of_its_own_and_keeps_the_descriptions(tmp_path, 
     assert fake["calls"][0]["two_stage"] is True
     assert "_2stage_" in rec.folder.name and load_record(rec)["versions"]["pipeline"] == "two-stage"
     run = rec.folder / "run1" / "grading"
-    assert (run / "descriptions.json").exists() and (run / "transcript_judge_15-16-17-d.json").exists()
+    assert (run / "descriptions.json").exists() and (run / "transcript_judge.json").exists()
     assert (run / "transcript_task_15-16-17-d.json").exists()
     # the one-stage version of the same steps is another record: not refused as already graded
     recorder(video, tmp_path / "runs").check({15}, force=False)
@@ -520,7 +520,7 @@ def fake_judge_only(monkeypatch, calls, judged_steps=(15, 17)):
     async def run_judge_only(segmentation, descriptions, work, model_call=None, steps=None, previous=None):
         calls.append({"descriptions": descriptions, "steps": steps, "segmentation": segmentation,
                       "previous": previous})
-        (work / "transcript_judge_15-16-17-d.json").write_text("[]", encoding="utf-8")
+        (work / "transcript_judge.json").write_text("[]", encoding="utf-8")
         (work / sop_grading_service.DESCRIPTIONS).write_text(
             json.dumps({"describe_digest": "d", "observe": {}, "tasks": [{"key": "15-16-17-d"}]}), encoding="utf-8")
         result = {"video_id": VID, "steps": [
@@ -567,7 +567,7 @@ def test_judge_only_judges_a_two_stage_record_again_without_the_video(tmp_path, 
     # the judged steps only, and not step 17: its 17b has no observe, nothing described it
     assert run["steps"] == [15]
     assert run["video_sha256"] == load_record(source)["video_sha256"]
-    assert (rec.folder / "run1" / "grading" / "transcript_judge_15-16-17-d.json").exists()
+    assert (rec.folder / "run1" / "grading" / "transcript_judge.json").exists()
 
     # a second judge-only run into the same record builds on its grading
     asyncio.run(cli.judge_only(source.folder, VID, tmp_path / "j2", {15}, judge_recorder(tmp_path)))

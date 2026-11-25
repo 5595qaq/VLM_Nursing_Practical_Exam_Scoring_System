@@ -340,7 +340,7 @@ docker compose run --rm ... worker python -m app.sop_grading_cli /data/影片.mp
 **兩段式評分（實驗，issue #207）**：加 `--two-stage` 時，rubric 有 `observe`（觀察項目）的標準（目前是 08 手部姿勢與 05 彈針）拆成兩段，其他標準照舊：
 
 1. **描述 agent**（`DESCRIBE.md` + `observe/`）用同樣的動作看影片（預算相同），final 只寫觀察（`describe.schema.json`）：每條標準、每個觀察項目、每一次動作一筆，含 `finding`（mm:ss）、`times`、`visibility`（清楚／部分遮擋／看不到）、`evidence`、`zoom_confirmed`。它看不到標準文字，只看到觀察項目。原本判錯誤前才要求的素材（10b 包裝時段的 clip、彈針的 burst），描述寫「清楚」時就要；都寫看不到或部分遮擋時不要求（判定只能是無法判定，和現行流程判無法判定一樣）。
-2. **判定 agent**（完整的評分 SKILL.md + `JUDGE.md`，純文字）讀觀察與描述 agent 用過的素材，照現有的 `criteria/` 與 rubric 判定，final 和現行評分 agent 相同（被退回最多重送 3 次）。判錯誤前要用過的素材（彈針的 burst、10b 的 clip）看描述 agent 有沒有用過；沒有用過時不能判錯誤，退回訊息會說明它沒辦法補看（`validate_judgment`）。
+2. **判定 agent**（完整的評分 SKILL.md + `JUDGE.md`，純文字）在所有描述任務做完後，**整支影片只呼叫一次**：一次讀所有任務的觀察與描述 agent 用過的素材，照現有的 `criteria/` 與 rubric 判定，final 和現行評分 agent 相同、包含所有任務的標準（被退回最多重送 3 次）。長的 system prompt 只送一次，不是每個任務送一次。判定失敗時所有描述任務都列為失敗，存檔點留著觀察，重跑只重做判定。判錯誤前要用過的素材（彈針的 burst、10b 的 clip）看描述 agent 有沒有用過；沒有用過時不能判錯誤，退回訊息會說明它沒辦法補看（`validate_judgment`）。
 
 ```bash
 docker compose run --rm ... worker python -m app.sop_grading_cli /data/影片.mp4 --video-id VID_0081 --out /work/VID_0081 \
@@ -350,7 +350,7 @@ docker compose run --rm ... worker python -m app.sop_grading_cli --video-id VID_
   --judge-only /sop-video-grading/runs/VID_0081/<兩段式紀錄資料夾> [--steps 19,28]
 ```
 
-- 紀錄資料夾在 SKILL 版本之後加 `_2stage`（`record.json` 的 `versions.pipeline: "two-stage"`），和現行流程的紀錄分開；每次執行另存 `grading/descriptions.json`（觀察、任務區間、聲音、用過的素材，以及 `describe_digest`、各標準 `observe` 的雜湊）與 `grading/transcript_judge_*.json`。描述任務的名稱以 `-d` 結尾（例如 `15-16-17-d`）。
+- 紀錄資料夾在 SKILL 版本之後加 `_2stage`（`record.json` 的 `versions.pipeline: "two-stage"`），和現行流程的紀錄分開；每次執行另存 `grading/descriptions.json`（觀察、任務區間、聲音、用過的素材，以及 `describe_digest`、各標準 `observe` 的雜湊）與判定的對話紀錄 `grading/transcript_judge.json`（describe207.1 的紀錄是每個任務一個 `transcript_judge_<任務>.json`）。描述任務的名稱以 `-d` 結尾（例如 `15-16-17-d`）。
 - 判定中斷時存檔點留著觀察，重跑只重做判定。
 - `--judge-only` 讀來源紀錄每次執行的 `descriptions.json`（同一個任務以最後一次為準），用目前的 rubric、criteria 與 `JUDGE.md` 判定（任務依目前的 rubric 與切分重建），寫成自己的紀錄資料夾（SKILL 版本之後加 `_2stage-judge`，`versions.pipeline: "two-stage-judge"`，不會和真的描述過影片的紀錄混在一起；`descriptions_from` 記在紀錄與每次執行上，沿用來源的切分）。同一份 judge-only 紀錄再跑會以它的 `grading.json` 為基底。紀錄的步驟只有整步都判定過的步驟：同一步還有沒有 `observe` 的看畫面標準（13b、15a、17b、25a、27b）時，那些標準仍是待判定，這一步不記為評過。描述 agent 的完整 prompt（`DESCRIBE.md`、`observe/`、`describe.schema.json`、動作格式、sop-video-skill 的 `sop_steps.md`，以及程式組的任務說明，`DESCRIBE_CONTENT_VERSION`）、標準的 `observe` 或任務的標準與區間改過時拒絕：描述要用 `--two-stage` 重做。也拒絕：rubric 與 SKILL 版本都和來源相同（沒有要重新判定的，也不會覆寫來源紀錄）、模型和做描述的不同（`SOP_SKILL_GEMINI_MODEL`，紀錄的模型才正確）、同一份 judge-only 紀錄加入另一份來源的描述。指定的步驟沒有可沿用的描述時會印出來。檔案都寫在 `--out` 的 `judge/` 底下，不動 `--out` 原有的 `segmentation.json`、`grading.json`。
 - `grading.json` 格式不變，`eval_grading.py`、`compare_arms.py`、`validate_grading.py` 照常使用。

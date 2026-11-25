@@ -1072,6 +1072,10 @@ async def test_two_stage_describes_without_the_standard_and_judges_with_it(video
     # only the other steps are left 待判定
     assert [e for e in outcome["validation_errors"] if "(step 18)" in e or "(step 19)" in e] == []
     assert sorted(outcome["described"]) == ["18-d", "19-d"]
+    # one judging call for both described tasks: the long system prompt is sent once
+    assert len(model.described) == 2 and len(model.judged) == 1
+    assert "## 任務 18-d" in model.judged[0][0]["text"] and "## 任務 19-d" in model.judged[0][0]["text"]
+    assert outcome["usage"]["input_tokens"] == 300  # two describing turns and one judging turn
     describing = "\n".join(c[0]["text"] for c in model.described)
     assert "觀察項目" in describing and "單手套回" not in describing  # 19b's standard stays with the judge
     judging = "\n".join(c[0]["text"] for c in model.judged)
@@ -1081,7 +1085,7 @@ async def test_two_stage_describes_without_the_standard_and_judges_with_it(video
     data = json.loads((tmp_path / grading.DESCRIPTIONS).read_text(encoding="utf-8"))
     assert {t["key"] for t in data["tasks"]} == {"18-d", "19-d"}
     assert data["describe_digest"] == grading.describe_digest() and set(data["observe"]) >= {"18b", "19b"}
-    assert (tmp_path / "transcript_judge_19-d.json").exists() and (tmp_path / "transcript_task_19-d.json").exists()
+    assert (tmp_path / grading.JUDGE_TRANSCRIPT).exists() and (tmp_path / "transcript_task_19-d.json").exists()
 
 
 async def test_the_judge_gets_the_sound_without_advice_to_look_again(video, tmp_path):
@@ -1130,7 +1134,7 @@ async def test_judge_only_judges_saved_descriptions_under_the_current_standard(v
     steps = {s["step_id"]: s for s in outcome["result"]["steps"]}
     assert steps[19]["verdict"] == "錯誤"
     assert all(c["verdict"] == "待判定" for c in steps[18]["criteria"] if c["source"] == "vlm")  # not judged
-    assert (tmp_path / "b" / "transcript_judge_19-d.json").exists()
+    assert (tmp_path / "b" / grading.JUDGE_TRANSCRIPT).exists()
     assert json.loads((tmp_path / "b" / grading.DESCRIPTIONS).read_text(encoding="utf-8"))["tasks"][0]["key"] == "19-d"
 
 
