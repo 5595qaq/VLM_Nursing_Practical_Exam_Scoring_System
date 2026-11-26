@@ -25,7 +25,7 @@ GRADING = HERE.parent.parent
 sys.path.insert(0, str(GRADING / "scripts"))
 import rules  # noqa: E402
 from eval_grading import DEFAULT_EXCLUDE, FAULTS, compare, find_segmentation, load_labels  # noqa: E402
-from rubric import PENDING, load_rubric  # noqa: E402
+from rubric import PENDING, load_rubric, wrong_with_links  # noqa: E402
 
 TUNING = {f"VID_{n}" for n in (
     "0001 0008 0010 0011 0014 0018 0020 0030 0072 0073 0074 0076 0081 0083 0087 0089 0091 0095 0096 0097 "
@@ -56,7 +56,11 @@ def group(vid: str) -> str:
 
 def full_run(folder: Path) -> bool:
     """A whole-video run: at least 25 steps graded (a run with most tasks failed is left out)."""
-    record = json.loads((folder / "record.json").read_text(encoding="utf-8"))
+    path = folder / "record.json"
+    if not path.exists():
+        print(f"略過 {folder}（沒有 record.json）", file=sys.stderr)
+        return False
+    record = json.loads(path.read_text(encoding="utf-8"))
     return len({s for run in record["runs"] for s in run.get("steps") or []}) >= 25
 
 
@@ -89,9 +93,11 @@ def derive(old: dict, rubric: dict, vid: str, rejudge: dict) -> dict:
                     ok = False
                     break
                 c = copy.deepcopy(oc[cid])
-                c["verdict"] = verdict
-                if verdict == "正確":
+                if verdict != c["verdict"]:  # the old reason and text no longer describe the verdict
                     c["reason"] = None
+                    c["explanation"] = (f"Claude 依舊說明照現行標準重判為{verdict}（暫定；舊判定{c['verdict']}）。"
+                                        f"舊說明：{c['explanation']}")
+                c["verdict"] = verdict
                 crit.append(c)
             elif cid in CARRY and cid in oc:
                 crit.append(copy.deepcopy(oc[cid]))
@@ -104,6 +110,14 @@ def derive(old: dict, rubric: dict, vid: str, rejudge: dict) -> dict:
             steps.append({"step_id": sid, "verdict": PENDING, "explanation": "", "confidence": 0.0,
                           "criteria": [{"criterion_id": cid, "verdict": PENDING, "explanation": "", "confidence": 0.0,
                                         "evidence": [], "reason": None} for cid in need]})
+    # a criterion linked to another step's criterion (17a←15b, 27a←25b, 7a←8b) can only stand when that source
+    # was carried over: otherwise the link (D-05-03) may be missing, so its step is not carried either
+    pending_src = {c["criterion_id"] for s in steps for c in s["criteria"] if c["verdict"] == PENDING}
+    links = wrong_with_links(rubric)
+    for i, step in enumerate(steps):
+        if step["verdict"] != PENDING and any(links.get(c["criterion_id"]) in pending_src for c in step["criteria"]):
+            steps[i] = {"step_id": step["step_id"], "verdict": PENDING, "explanation": "", "confidence": 0.0,
+                        "criteria": [{**c, "verdict": PENDING} for c in step["criteria"]]}
     return {"video_id": vid, "steps": rules.link_wrong(steps, rubric)}
 
 
@@ -159,8 +173,9 @@ def main(argv: list[str]) -> int:
     rejudge = {k: v for k, v in json.loads((HERE / "rejudge.json").read_text(encoding="utf-8")).items()
                if not k.startswith("_")}
 
-    new_rows, new_verdicts = {}, {}
+    new_rows, new_verdicts, method = {}, {}, {}
     for vid, path in new_gradings(args.runs_dir).items():
+        method[vid] = "兩段式" if path.parent.name == NEW_TWO else "一段式"
         grading = json.loads(path.read_text(encoding="utf-8"))
         new_verdicts[vid] = {int(s["step_id"]): s["verdict"] for s in grading["steps"]}
         if vid not in labels:
@@ -180,8 +195,20 @@ def main(argv: list[str]) -> int:
             old_rows[vid] = [r for r in compare(derived[vid], labels[vid]) if usable(vid, r)]
 
     print("### SKILL 0.60（rubric 1.42，切分 1.5.12）\n")
-    print("影片：" + "、".join(sorted(new_rows)) + "\n")
-    print(table("全部步驟", collect(new_rows), strict=True))
+    for m in ("兩段式", "一段式"):
+        print(f"{m}：" + "、".join(v for v in sorted(new_rows) if method[v] == m) + "\n")
+    print(table("全部步驟（兩段式與一段式合計）", collect(new_rows), strict=True))
+    for m in ("兩段式", "一段式"):
+        print(table(f"{m}", collect({v: r for v, r in new_rows.items() if method[v] == m}), strict=True))
+
+    print("#### 學生影片的步驟 2、3、4、29（0.60，和標記表比）\n")
+    print("| 步驟 | 影片 | 標記表 | 評分 | 一致（只比判定） |\n|---|---|---|---|---|")
+    for sid in (2, 3, 4, 29):
+        rows = [r for v, rs in new_rows.items() if int(v[4:]) < 70 for r in rs if r["step_id"] == sid]
+        count = lambda key: "、".join(f"{k} {n}" for k, n in sorted(  # noqa: E731
+            {x: sum(r[key] == x for r in rows) for x in {r[key] for r in rows}}.items(), key=lambda kv: -kv[1]))
+        print(f"| {sid} | {len(rows)} | {count('human')} | {count('model')} | {pct(sum(r['match'] for r in rows), len(rows))} |")
+    print()
 
     print("### SKILL 0.38／0.39 紀錄沿用到 rubric 1.42（Claude 重判，暫定）\n")
     n39 = sum(old_version[v] == "0.39" for v in old_rows)
