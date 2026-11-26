@@ -1,0 +1,50 @@
+[
+ {
+  "turn": 1,
+  "seconds": 8.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 22701,
+  "cached_input_tokens": 0,
+  "output_tokens": 87,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@776-786.59（context box，有聲音；片段內 00:00 ＝ 影片 12:56.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [784.0, 785.0, 786.0], \"region\": [0.15, 0.55, 0.65, 0.98], \"reason\": \"確認治療車前緣是否有給藥紀錄單以及手指指讀與桌面上vial的狀態\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 35.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 23897,
+  "cached_input_tokens": 0,
+  "output_tokens": 1910,
+  "thinking_tokens": 1256,
+  "materials": [
+   "clip@776-786.59（context box，有聲音；片段內 00:00 ＝ 影片 12:56.0）",
+   "zoom@784/785/786 region=[0.150, 0.550, 0.650, 0.980]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"29a\", \"verdict\": \"錯誤\", \"explanation\": \"給藥紀錄單位於治療車前緣檯面上（zoom@785、zoom@786 可見表格文字）。考生於 12:58.5–13:03.5（clip@776-786.59 片段內 00:02.5–00:07.5）將空針放入包裝袋並置於治療盤後，僅於 13:04.0–13:06.6（片段內 00:08.0–00:10.6，至影片結束）低頭查看並以右手食指指讀給藥紀錄單，實際查看時間累計僅約 2.6 秒，未滿 10 秒。\", \"times\": [[784.0, 786.59]], \"evidence\": [\"clip@776-786.59\", \"zoom@784\", \"zoom@785\", \"zoom@786\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"29b\", \"verdict\": \"正確\", \"explanation\": \"13:04.5–13:06.6（clip@776-786.59 片段內 00:08.5–00:10.6）考生查看給藥紀錄單時，清楚可見右手食指指出紀錄單進行核對（zoom@785、zoom@786）。\", \"times\": [[784.5, 786.59]], \"evidence\": [\"clip@776-786.59\", \"zoom@785\", \"zoom@786\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"29d\", \"verdict\": \"錯誤\", \"explanation\": \"考生於 12:58.5–13:03.5（clip@776-786.59 片段內 00:02.5–00:07.5）將空針放入包裝袋並放妥後，於 13:04.0–13:06.6 查看及指讀給藥紀錄單時，並未拿起 vial 核對，vial 全程仍置於治療盤上（zoom@784、zoom@785、zoom@786）。\", \"times\": [[784.0, 786.59]], \"evidence\": [\"clip@776-786.59\", \"zoom@784\", \"zoom@785\", \"zoom@786\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": [
+   "criterion 29a: times 784-786.59 must stay within 766-786.586s; times are video seconds, so add the clip's start to a time read inside a clip",
+   "criterion 29b: times 784.5-786.59 must stay within 766-786.586s; times are video seconds, so add the clip's start to a time read inside a clip",
+   "criterion 29d: times 784-786.59 must stay within 766-786.586s; times are video seconds, so add the clip's start to a time read inside a clip"
+  ]
+ },
+ {
+  "turn": 3,
+  "seconds": 15.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 24742,
+  "cached_input_tokens": 0,
+  "output_tokens": 713,
+  "thinking_tokens": 62,
+  "materials": [
+   "clip@776-786.59（context box，有聲音；片段內 00:00 ＝ 影片 12:56.0）",
+   "zoom@784/785/786 region=[0.150, 0.550, 0.650, 0.980]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"29a\", \"verdict\": \"錯誤\", \"explanation\": \"給藥紀錄單位於治療車前緣檯面上（zoom@785、zoom@786 可見表格文字）。考生於 12:58.5–13:03.5（clip@776-786.59 片段內 00:02.5–00:07.5）將空針放入包裝袋並置於治療盤後，僅於 13:04.0–13:06.5（片段內 00:08.0–00:10.5，至影片結束）低頭查看並以右手食指指讀給藥紀錄單，實際查看時間累計僅約 2.5 秒，未滿 10 秒。\", \"times\": [[784.0, 786.5]], \"evidence\": [\"clip@776-786.59\", \"zoom@784\", \"zoom@785\", \"zoom@786\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"29b\", \"verdict\": \"正確\", \"explanation\": \"13:04.5–13:06.5（clip@776-786.59 片段內 00:08.5–00:10.5）考生查看給藥紀錄單時，清楚可見右手食指指出紀錄單進行核對（zoom@785、zoom@786）。\", \"times\": [[784.5, 786.5]], \"evidence\": [\"clip@776-786.59\", \"zoom@785\", \"zoom@786\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"29d\", \"verdict\": \"錯誤\", \"explanation\": \"考生於 12:58.5–13:03.5（clip@776-786.59 片段內 00:02.5–00:07.5）將空針放入包裝袋並放妥後，於 13:04.0–13:06.5 查看及指讀給藥紀錄單時，並未拿起 vial 核對，vial 全程仍置於治療盤上（zoom@784、zoom@785、zoom@786）。\", \"times\": [[784.0, 786.5]], \"evidence\": [\"clip@776-786.59\", \"zoom@784\", \"zoom@785\", \"zoom@786\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
