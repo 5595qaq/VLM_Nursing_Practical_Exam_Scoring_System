@@ -1,0 +1,168 @@
+{
+ "video_id": "VID_0085",
+ "versions": {
+  "rubric": "1.42",
+  "skill": "0.60",
+  "model": "gemini-4-argon",
+  "segmentation": "skill1.5.12_gemini-4-argon"
+ },
+ "video_sha256": "3f01569daa23f1dca566ae6abb6627ac6909dbca2ef774c948c14ec6d2b285ac",
+ "runs": [
+  {
+   "run": 1,
+   "by": "5595QAQ",
+   "date": "2026-11-26",
+   "commit": "64234975c64728cbc98c9ebcaf8f331eb533e933",
+   "video_sha256": "3f01569daa23f1dca566ae6abb6627ac6909dbca2ef774c948c14ec6d2b285ac",
+   "steps": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    21,
+    26,
+    27,
+    29,
+    30
+   ],
+   "failed_tasks": [
+    {
+     "task": "15-16-17",
+     "error": "ClientError: 403 PERMISSION_DENIED. {'error': {'code': 403, 'message': 'Spend cap breached for project: projects/537076988065 for service: aiplatform.googleapis.com. Correlation id: 5942729744727030541', 'status': 'PERMISSION_DENIED'}}"
+    },
+    {
+     "task": "18",
+     "error": "ClientError: 403 PERMISSION_DENIED. {'error': {'code': 403, 'message': 'Spend cap breached for project: projects/537076988065 for service: aiplatform.googleapis.com. Correlation id: 5942729744727030541', 'status': 'PERMISSION_DENIED'}}"
+    },
+    {
+     "task": "19",
+     "error": "ClientError: 403 PERMISSION_DENIED. {'error': {'code': 403, 'message': 'Spend cap breached for project: projects/537076988065 for service: aiplatform.googleapis.com. Correlation id: 5942729744727030541', 'status': 'PERMISSION_DENIED'}}"
+    },
+    {
+     "task": "20",
+     "error": "ClientError: 403 PERMISSION_DENIED. {'error': {'code': 403, 'message': 'Spend cap breached for project: projects/537076988065 for service: aiplatform.googleapis.com. Correlation id: 5942729744727030541', 'status': 'PERMISSION_DENIED'}}"
+    },
+    {
+     "task": "22",
+     "error": "ClientError: 403 PERMISSION_DENIED. {'error': {'code': 403, 'message': 'Spend cap breached for project: projects/537076988065 for service: aiplatform.googleapis.com. Correlation id: 5942729744727030541', 'status': 'PERMISSION_DENIED'}}"
+    },
+    {
+     "task": "24",
+     "error": "ClientError: 403 PERMISSION_DENIED. {'error': {'code': 403, 'message': 'Spend cap breached for project: projects/537076988065 for service: aiplatform.googleapis.com. Correlation id: 5942729744727030541', 'status': 'PERMISSION_DENIED'}}"
+    },
+    {
+     "task": "23-24",
+     "error": "ClientError: 403 PERMISSION_DENIED. {'error': {'code': 403, 'message': 'Spend cap breached for project: projects/537076988065 for service: aiplatform.googleapis.com. Correlation id: 5942729744727030541', 'status': 'PERMISSION_DENIED'}}"
+    },
+    {
+     "task": "25-search",
+     "error": "ClientError: 403 PERMISSION_DENIED. {'error': {'code': 403, 'message': 'Spend cap breached for project: projects/537076988065 for service: aiplatform.googleapis.com. Correlation id: 5942729744727030541', 'status': 'PERMISSION_DENIED'}}"
+    },
+    {
+     "task": "28",
+     "error": "ClientError: 403 PERMISSION_DENIED. {'error': {'code': 403, 'message': 'Spend cap breached for project: projects/537076988065 for service: aiplatform.googleapis.com. Correlation id: 5942729744727030541', 'status': 'PERMISSION_DENIED'}}"
+    }
+   ],
+   "segmentation": "sop-video-skill 1.5.12 gemini-4-argon",
+   "usage": {
+    "input_tokens": 850307,
+    "cached_input_tokens": 201300,
+    "output_tokens": 7704,
+    "thinking_tokens": 1935
+   },
+   "segmentation_usage": {
+    "input_tokens": 656452,
+    "cached_input_tokens": 520226,
+    "output_tokens": 32924,
+    "thinking_tokens": 1598
+   },
+   "timing": {
+    "started_at": "2026-11-26T09:29:41+00:00",
+    "segmentation_seconds": 614.3,
+    "grading_seconds": 390.2,
+    "total_seconds": 1004.6
+   }
+  },
+  {
+   "run": 2,
+   "by": "5595QAQ",
+   "date": "2026-11-26",
+   "commit": "64234975c64728cbc98c9ebcaf8f331eb533e933",
+   "video_sha256": "3f01569daa23f1dca566ae6abb6627ac6909dbca2ef774c948c14ec6d2b285ac",
+   "steps": [
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    23,
+    24
+   ],
+   "failed_tasks": [
+    {
+     "task": "22",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    },
+    {
+     "task": "28",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    }
+   ],
+   "segmentation": "recorded segmentation.json",
+   "usage": {
+    "input_tokens": 302817,
+    "cached_input_tokens": 0,
+    "output_tokens": 3086,
+    "thinking_tokens": 567
+   },
+   "timing": {
+    "started_at": "2026-11-26T10:06:04+00:00",
+    "grading_seconds": 817.0,
+    "total_seconds": 817.0,
+    "checkpoints_found": true
+   }
+  },
+  {
+   "run": 3,
+   "by": "5595QAQ",
+   "date": "2026-11-26",
+   "commit": "64234975c64728cbc98c9ebcaf8f331eb533e933",
+   "video_sha256": "3f01569daa23f1dca566ae6abb6627ac6909dbca2ef774c948c14ec6d2b285ac",
+   "steps": [],
+   "failed_tasks": [
+    {
+     "task": "22",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    },
+    {
+     "task": "28",
+     "error": "ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}"
+    }
+   ],
+   "segmentation": "recorded segmentation.json",
+   "usage": {
+    "input_tokens": 0,
+    "cached_input_tokens": 0,
+    "output_tokens": 0,
+    "thinking_tokens": 0
+   },
+   "timing": {
+    "started_at": "2026-11-26T10:20:07+00:00",
+    "grading_seconds": 473.4,
+    "total_seconds": 473.5,
+    "checkpoints_found": true
+   }
+  }
+ ]
+}

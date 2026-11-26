@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 10.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 24353,
+  "cached_input_tokens": 0,
+  "output_tokens": 99,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@144-164（context box，有聲音；片段內 00:00 ＝ 影片 02:24.0）"
+  ],
+  "reply": "{\"action\": \"burst\", \"start\": 148.0, \"end\": 151.0, \"n\": 12, \"region\": [0.35, 0.25, 0.65, 0.55], \"reason\": \"檢查 02:28.5–02:29.7 連續響聲時是否未墊棉片就彈針\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 9.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 25881,
+  "cached_input_tokens": 0,
+  "output_tokens": 129,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@144-164（context box，有聲音；片段內 00:00 ＝ 影片 02:24.0）",
+   "burst@148-151（原始解析度，12 格，每 0.27 s）#0=02:28.0、#1=02:28.3、#2=02:28.5、#3=02:28.8、#4=02:29.1、#5=02:29.4、#6=02:29.6、#7=02:29.9、#8=02:30.2、#9=02:30.5、#10=02:30.7、#11=02:31.0 region=[0.350, 0.250, 0.650, 0.550]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [153.5, 156.5, 159.5, 161.5], \"region\": [0.35, 0.25, 0.65, 0.6], \"reason\": \"確認 02:33.5 推針心、02:36.5 墊棉片、02:39.5 再次彈針及 02:41.5 再次推針心的手部與推桿細節\"}",
+  "errors": []
+ }
+]
