@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 4.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 21919,
+  "cached_input_tokens": 0,
+  "output_tokens": 103,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@477.8-524（hands_box，n=9）#0=07:57.8、#1=08:03.6、#2=08:09.4、#3=08:15.1、#4=08:20.9、#5=08:26.7、#6=08:32.5、#7=08:38.2、#8=08:44.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [488.0, 491.0, 517.0, 520.0], \"region\": [0.35, 0.0, 0.9, 0.55], \"reason\": \"Check plunger pushing and plunger length at 08:08-08:11 and 08:37-08:40\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 7.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 23122,
+  "cached_input_tokens": 20130,
+  "output_tokens": 278,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@477.8-524（hands_box，n=9）#0=07:57.8、#1=08:03.6、#2=08:09.4、#3=08:15.1、#4=08:20.9、#5=08:26.7、#6=08:32.5、#7=08:38.2、#8=08:44.0",
+   "zoom@488/491/517/520 region=[0.350, 0.000, 0.900, 0.550]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"27b\", \"verdict\": \"正確\", \"explanation\": \"考生進行了兩次排氣：第一次於 08:08.0–08:11.0（zoom@488、zoom@491），第二次於 08:37.0–08:40.0（zoom@517、zoom@520），皆清楚看到左手握住針筒並墊著酒精棉片、右手拇指抵住針心尾端圓盤往上推進行排氣，針尖處可見液滴冒出（推桿因被左手遮擋看不出長度變化，以右手拇指壓尾端圓盤往上推的動作判定）。\", \"times\": [[488.0, 491.0], [517.0, 520.0]], \"evidence\": [\"ov@477.8-524 #2\", \"ov@477.8-524 #7\", \"zoom@488\", \"zoom@491\", \"zoom@517\", \"zoom@520\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

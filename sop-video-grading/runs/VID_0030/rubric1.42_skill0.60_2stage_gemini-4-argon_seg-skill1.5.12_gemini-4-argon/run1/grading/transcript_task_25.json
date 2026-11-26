@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 19.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 29144,
+  "cached_input_tokens": 0,
+  "output_tokens": 106,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@477.8-524（context box，有聲音；片段內 00:00 ＝ 影片 07:57.8）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [482.8, 487.8, 513.8, 517.8], \"region\": [0.4, 0.15, 0.85, 0.55], \"reason\": \"用 zoom 確認兩次步驟 25 時段內，針頭與針筒接合處（針柄）是否墊有白色方形酒精棉片。\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 10.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 30421,
+  "cached_input_tokens": 0,
+  "output_tokens": 275,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@477.8-524（context box，有聲音；片段內 00:00 ＝ 影片 07:57.8）",
+   "zoom@482.8/487.8/513.8/517.8 region=[0.400, 0.150, 0.850, 0.550]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"25a\", \"verdict\": \"正確\", \"explanation\": \"考生於兩輪排氣皆有將酒精棉片墊在針柄與針筒接合處：第一輪於 08:00.8–08:13.3（clip@477.8-524 片段內 00:03.0–00:15.5，zoom@482.8 清楚可見白色方形酒精棉片包覆在藍色針座交接處），第二輪重抽後於 08:30.3–08:42.3（片段內 00:32.5–00:44.5，zoom@513.8 可見白色酒精棉片墊在針座交接處）。\", \"times\": [[480.8, 493.3], [510.3, 522.3]], \"evidence\": [\"clip@477.8-524\", \"zoom@482.8\", \"zoom@513.8\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

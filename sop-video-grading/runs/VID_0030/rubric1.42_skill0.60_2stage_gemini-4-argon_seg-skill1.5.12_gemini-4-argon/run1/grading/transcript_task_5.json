@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 17.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 21846,
+  "cached_input_tokens": 0,
+  "output_tokens": 132,
+  "thinking_tokens": 41,
+  "materials": [
+   "clip@135-142（context box，有聲音；片段內 00:00 ＝ 影片 02:15.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [137.0, 137.5, 138.0, 138.5], \"region\": [0.45, 0.35, 0.85, 0.75], \"reason\": \"確認打開 vial 褐色塑膠翻蓋的動作與瓶頂變成銀色鋁圈\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 14.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 23087,
+  "cached_input_tokens": 0,
+  "output_tokens": 197,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@135-142（context box，有聲音；片段內 00:00 ＝ 影片 02:15.0）",
+   "zoom@137/137.5/138/138.5 region=[0.450, 0.350, 0.850, 0.750]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"於 02:17.0–02:18.5（clip@135-142 片段內 00:02.0–00:03.5）左手持 vial，右手將 vial 上的褐色塑膠翻蓋推開取下，02:18.5 清楚可見瓶頂變成銀色鋁圈與中間的橡皮塞。\", \"times\": [[137.0, 138.5]], \"evidence\": [\"clip@135-142\", \"zoom@137\", \"zoom@137.5\", \"zoom@138\", \"zoom@138.5\"], \"confidence\": 1.0, \"reason\": null}]}",
+  "errors": []
+ }
+]

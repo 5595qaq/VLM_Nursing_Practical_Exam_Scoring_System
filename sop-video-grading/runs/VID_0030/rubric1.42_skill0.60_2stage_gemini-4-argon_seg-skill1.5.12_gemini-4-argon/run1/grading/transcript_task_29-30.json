@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 12.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 24407,
+  "cached_input_tokens": 20130,
+  "output_tokens": 367,
+  "thinking_tokens": 276,
+  "materials": [
+   "clip@526-545.48（context box，有聲音；片段內 00:00 ＝ 影片 08:46.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [528.0, 531.0, 533.0], \"region\": [0.25, 0.7, 0.95, 1.0], \"reason\": \"確認給藥紀錄單是否入鏡或被治療車前緣鐵架與器材遮擋，以及右手是否指向紀錄單\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 13.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 25608,
+  "cached_input_tokens": 0,
+  "output_tokens": 581,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@526-545.48（context box，有聲音；片段內 00:00 ＝ 影片 08:46.0）",
+   "zoom@528/531/533 region=[0.250, 0.700, 0.950, 1.000]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"29a\", \"verdict\": \"無法判定\", \"explanation\": \"08:47.5–08:53.5（clip@526-545.48 片段內 00:01.5–00:07.5）學生左手持 vial 空瓶，右手伸向畫面右下角檯面低頭查看，但經 zoom@528、zoom@531、zoom@533 確認，給藥紀錄單位於畫面下緣外且被治療車前緣鐵架擋住，完全未入鏡，無法確認實際查看紀錄單的時間。\", \"times\": [[527.5, 533.5]], \"evidence\": [\"clip@526-545.48\", \"zoom@528\", \"zoom@531\", \"zoom@533\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}, {\"criterion_id\": \"29b\", \"verdict\": \"無法判定\", \"explanation\": \"08:47.5–08:53.5 學生右手手指在畫面右下角檯面移動，但給藥紀錄單與手指接觸處位於畫面下緣外並被前緣鐵架遮擋（zoom@528、zoom@531、zoom@533），無法確認是否有用手指指出紀錄單。\", \"times\": [[527.5, 533.5]], \"evidence\": [\"clip@526-545.48\", \"zoom@528\", \"zoom@531\", \"zoom@533\"], \"confidence\": 0.9, \"reason\": \"畫面被遮擋\"}, {\"criterion_id\": \"29d\", \"verdict\": \"無法判定\", \"explanation\": \"08:46.0–08:53.5 抽完藥的空針已直立插在針座上，學生左手拿起 vial 空瓶並低頭往右下角查看，但因給藥紀錄單完全未入鏡（zoom@528、zoom@531、zoom@533），無法確認是否確實與給藥紀錄單進行核對。\", \"times\": [[527.5, 533.5]], \"evidence\": [\"clip@526-545.48\", \"zoom@528\", \"zoom@531\", \"zoom@533\"], \"confidence\": 0.9, \"reason\": \"畫面被遮擋\"}]}",
+  "errors": []
+ }
+]
