@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 6.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 22383,
+  "cached_input_tokens": 0,
+  "output_tokens": 53,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@29.2-38（context box，有聲音；片段內 00:00 ＝ 影片 00:29.2）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 19.2, \"end\": 29.2, \"fps\": 2, \"reason\": \"檢查 29.2 秒之前是否有查看給藥紀錄單\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 4.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 24332,
+  "cached_input_tokens": 0,
+  "output_tokens": 79,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@29.2-38（context box，有聲音；片段內 00:00 ＝ 影片 00:29.2）",
+   "clip@19.2-29.2（context box，有聲音；片段內 00:00 ＝ 影片 00:19.2）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [30.2, 35.7, 36.2], \"region\": [0.2, 0.55, 0.85, 0.9], \"reason\": \"確認給藥紀錄單在治療車前緣的位置，以及取出vial的時間點\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 29.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 25548,
+  "cached_input_tokens": 20130,
+  "output_tokens": 1183,
+  "thinking_tokens": 631,
+  "materials": [
+   "clip@29.2-38（context box，有聲音；片段內 00:00 ＝ 影片 00:29.2）",
+   "clip@19.2-29.2（context box，有聲音；片段內 00:00 ＝ 影片 00:19.2）",
+   "zoom@30.2/35.7/36.2 region=[0.200, 0.550, 0.850, 0.900]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"2a\", \"verdict\": \"錯誤\", \"explanation\": \"給藥紀錄單位於治療車最前緣鐵架下方（zoom@30.2 可見印有表格及橘、黃色標籤的紙張）。考生於 00:26.7–00:30.2（clip@19.2-29.2 的 00:07.5 至 clip@29.2-38 的 00:01.0）低頭目視給藥紀錄單，累計僅 3.5 秒，未達 10 秒標準；00:30.7 起即抬頭轉向旁邊並彎腰從抽屜取藥，直到 00:35.7 取出 vial。\", \"times\": [[26.7, 30.2]], \"evidence\": [\"clip@19.2-29.2\", \"clip@29.2-38\", \"zoom@30.2\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"2b\", \"verdict\": \"錯誤\", \"explanation\": \"00:26.7–00:30.2 查看給藥紀錄單期間，雙手自然垂放於身體兩側，00:30.2 僅將雙手輕扶於治療車布單後緣，取出 vial（00:35.7）前全程未用手指指出給藥紀錄單。\", \"times\": [[26.7, 30.2]], \"evidence\": [\"clip@19.2-29.2\", \"clip@29.2-38\", \"zoom@30.2\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"2d\", \"verdict\": \"正確\", \"explanation\": \"考生從治療車下方取出藥瓶，於 00:35.7（clip@29.2-38 的 00:06.5）右手將 vial 拿到檯面上方，00:36.2 放於治療車檯面上。\", \"times\": [[35.7, 35.7]], \"evidence\": [\"clip@29.2-38\", \"zoom@35.7\", \"zoom@36.2\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
