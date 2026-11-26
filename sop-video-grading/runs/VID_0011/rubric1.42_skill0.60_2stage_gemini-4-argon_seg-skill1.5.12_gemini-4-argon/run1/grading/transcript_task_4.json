@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 4.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 25086,
+  "cached_input_tokens": 20130,
+  "output_tokens": 88,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@148-171.4（context box，有聲音；片段內 00:00 ＝ 影片 02:28.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [150.0, 152.5, 160.5, 164.0], \"region\": [0.25, 0.65, 0.75, 0.98], \"reason\": \"確認給藥紀錄單位置及手指指出紀錄單核對的動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 17.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 26339,
+  "cached_input_tokens": 20130,
+  "output_tokens": 1255,
+  "thinking_tokens": 750,
+  "materials": [
+   "clip@148-171.4（context box，有聲音；片段內 00:00 ＝ 影片 02:28.0）",
+   "zoom@150/152.5/160.5/164 region=[0.250, 0.650, 0.750, 0.980]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4a\", \"verdict\": \"正確\", \"explanation\": \"給藥紀錄單平放於治療車前緣檯面上（可見表格文字與黃色螢光筆標記）。考生取出 vial 後，於 02:29.5–02:36.5（clip@148-171.4 片段內 00:01.5–00:08.5，共 7.0 秒）左手持 vial、低頭目視並以右手食指指讀給藥紀錄單進行核對；隨後於 02:40.0–02:44.5（片段內 00:12.0–00:16.5，共 4.5 秒）左手扶稀釋液瓶、再次低頭目視並以右手食指指讀給藥紀錄單核對。兩段實際查看給藥紀錄單時間累計共 11.5 秒，已達 10 秒以上。\", \"times\": [[149.5, 156.5], [160.0, 164.5]], \"evidence\": [\"clip@148-171.4\", \"zoom@150\", \"zoom@152.5\", \"zoom@160.5\", \"zoom@164\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"4b\", \"verdict\": \"正確\", \"explanation\": \"於 02:29.5–02:36.5 及 02:40.0–02:44.5 查看給藥紀錄單核對時，考生皆明顯以右手手指逐項指出檯面上的給藥紀錄單。\", \"times\": [[149.5, 156.5], [160.0, 164.5]], \"evidence\": [\"clip@148-171.4\", \"zoom@150\", \"zoom@152.5\", \"zoom@160.5\", \"zoom@164\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

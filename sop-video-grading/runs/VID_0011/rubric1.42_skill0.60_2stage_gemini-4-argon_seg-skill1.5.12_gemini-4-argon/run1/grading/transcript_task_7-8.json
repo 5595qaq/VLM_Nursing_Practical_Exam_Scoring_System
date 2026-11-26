@@ -1,0 +1,64 @@
+[
+ {
+  "turn": 1,
+  "seconds": 9.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 23998,
+  "cached_input_tokens": 0,
+  "output_tokens": 78,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@210-228（context box，有聲音；片段內 00:00 ＝ 影片 03:30.0）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 200.0, \"end\": 210.0, \"fps\": 2, \"reason\": \"依規則7a必須先用clip看區間開始前10秒到區間開始（200-210s），確認是否有更早的消毒動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 17.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 25919,
+  "cached_input_tokens": 0,
+  "output_tokens": 85,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@210-228（context box，有聲音；片段內 00:00 ＝ 影片 03:30.0）",
+   "clip@200-210（context box，有聲音；片段內 00:00 ＝ 影片 03:20.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [213.0, 215.5, 220.0, 222.5], \"region\": [0.4, 0.4, 0.75, 0.75], \"reason\": \"確認考生手上的稀釋液瓶口消毒與打開動作細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 33.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 27162,
+  "cached_input_tokens": 0,
+  "output_tokens": 356,
+  "thinking_tokens": 228,
+  "materials": [
+   "clip@210-228（context box，有聲音；片段內 00:00 ＝ 影片 03:30.0）",
+   "clip@200-210（context box，有聲音；片段內 00:00 ＝ 影片 03:20.0）",
+   "zoom@213/215.5/220/222.5 region=[0.400, 0.400, 0.750, 0.750]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [213.5, 215.5, 221.0, 224.0], \"region\": [0.35, 0.25, 0.75, 0.65], \"reason\": \"將放大區域往上移，清楚確認 03:33–03:36 酒精棉片擦拭稀釋液瓶口，以及 03:41–03:44 扭開稀釋液瓶頂的細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 4,
+  "seconds": 46.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 28411,
+  "cached_input_tokens": 0,
+  "output_tokens": 963,
+  "thinking_tokens": 388,
+  "materials": [
+   "clip@210-228（context box，有聲音；片段內 00:00 ＝ 影片 03:30.0）",
+   "clip@200-210（context box，有聲音；片段內 00:00 ＝ 影片 03:20.0）",
+   "zoom@213/215.5/220/222.5 region=[0.400, 0.400, 0.750, 0.750]",
+   "zoom@213.5/215.5/221/224 region=[0.350, 0.250, 0.750, 0.650]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"7a\", \"verdict\": \"正確\", \"explanation\": \"於 03:32.5–03:37.0（clip@210-228 片段內 00:02.5–00:07.0）拿起細長透明塑膠稀釋液瓶，以酒精棉片擦拭稀釋液瓶頂與瓶頸處進行消毒（zoom@213.5、zoom@215.5 清楚可見棉片擦拭瓶頸與頂端）。\", \"times\": [[212.5, 217.0]], \"evidence\": [\"clip@200-210\", \"clip@210-228\", \"zoom@213.5\", \"zoom@215.5\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"8b\", \"verdict\": \"正確\", \"explanation\": \"考生先於 03:32.5–03:37.0 以酒精棉片消毒稀釋液瓶口，丟棄棉片後才於 03:38.5–03:44.5 扭開稀釋液瓶頂，符合先消毒再打開之順序。\", \"times\": [[212.5, 224.5]], \"evidence\": [\"clip@210-228\", \"zoom@213.5\", \"zoom@215.5\", \"zoom@221\", \"zoom@224\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"8a\", \"verdict\": \"正確\", \"explanation\": \"於 03:38.5–03:44.5（clip@210-228 片段內 00:08.5–00:14.5）雙手握住稀釋液瓶身與瓶頂，將塑膠稀釋液瓶頂扭開並取下丟棄（zoom@220、zoom@221、zoom@222.5、zoom@224）。\", \"times\": [[218.5, 224.5]], \"evidence\": [\"clip@210-228\", \"zoom@220\", \"zoom@221\", \"zoom@222.5\", \"zoom@224\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

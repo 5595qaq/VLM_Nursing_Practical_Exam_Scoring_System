@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 19.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 21858,
+  "cached_input_tokens": 0,
+  "output_tokens": 144,
+  "thinking_tokens": 71,
+  "materials": [
+   "ov@150-179.4（hands_box，n=9）#0=02:30.0、#1=02:33.7、#2=02:37.3、#3=02:41.0、#4=02:44.7、#5=02:48.4、#6=02:52.1、#7=02:55.7、#8=02:59.4"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 150.0, \"end\": 179.4, \"fps\": 2, \"reason\": \"查看 02:30.0–02:59.4 期間是否有拿起稀釋液檢查效期與有無異物的動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 10.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 27381,
+  "cached_input_tokens": 0,
+  "output_tokens": 192,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@150-179.4（hands_box，n=9）#0=02:30.0、#1=02:33.7、#2=02:37.3、#3=02:41.0、#4=02:44.7、#5=02:48.4、#6=02:52.1、#7=02:55.7、#8=02:59.4",
+   "clip@150-179.4（context box，有聲音；片段內 00:00 ＝ 影片 02:30.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4d\", \"verdict\": \"正確\", \"explanation\": \"於 02:38.0–02:45.5（clip@150-179.4 片段內 00:08.0–00:15.5）左手拿起透明塑膠稀釋液瓶，一邊指讀紀錄單一邊查看稀釋液瓶身標示與液體，完成稀釋液檢查。\", \"times\": [[158.0, 165.5]], \"evidence\": [\"clip@150-179.4\", \"ov@150-179.4 #3\", \"ov@150-179.4 #4\"], \"confidence\": 0.85, \"reason\": null}]}",
+  "errors": []
+ }
+]
