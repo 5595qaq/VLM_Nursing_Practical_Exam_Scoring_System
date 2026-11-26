@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 6.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 21840,
+  "cached_input_tokens": 0,
+  "output_tokens": 66,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@66-126（hands_box，n=9）#0=01:06.0、#1=01:13.5、#2=01:21.0、#3=01:28.5、#4=01:36.0、#5=01:43.5、#6=01:51.0、#7=01:58.5、#8=02:06.0"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 100.0, \"end\": 126.0, \"fps\": 2, \"reason\": \"確認學生在 01:40–02:06 期間拿起 vial 檢視的連續動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 12.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 26759,
+  "cached_input_tokens": 0,
+  "output_tokens": 403,
+  "thinking_tokens": 246,
+  "materials": [
+   "ov@66-126（hands_box，n=9）#0=01:06.0、#1=01:13.5、#2=01:21.0、#3=01:28.5、#4=01:36.0、#5=01:43.5、#6=01:51.0、#7=01:58.5、#8=02:06.0",
+   "clip@100-126（context box，有聲音；片段內 00:00 ＝ 影片 01:40.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"3a\", \"verdict\": \"正確\", \"explanation\": \"於 01:36 拿起 vial 檢視瓶底與瓶身，並於 01:42–02:05 右手持 vial 舉起檢視標籤與內容物。影片限制，無法得知檢查內容是否正確。\", \"times\": [[96.0, 96.0], [102.0, 125.0]], \"evidence\": [\"ov@66-126 #4\", \"clip@100-126\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

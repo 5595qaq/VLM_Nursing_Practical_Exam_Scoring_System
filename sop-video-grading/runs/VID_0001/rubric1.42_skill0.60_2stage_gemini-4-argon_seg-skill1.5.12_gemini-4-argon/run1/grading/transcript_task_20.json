@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 8.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 21900,
+  "cached_input_tokens": 0,
+  "output_tokens": 62,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@329.8-492（hands_box，n=9）#0=05:29.8、#1=05:50.1、#2=06:10.4、#3=06:30.6、#4=06:50.9、#5=07:11.2、#6=07:31.4、#7=07:51.7、#8=08:12.0"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 330.0, \"end\": 390.0, \"fps\": 2, \"reason\": \"檢查 05:30–06:30 雙手旋轉 vial 的連續動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 11.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 33114,
+  "cached_input_tokens": 20130,
+  "output_tokens": 204,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@329.8-492（hands_box，n=9）#0=05:29.8、#1=05:50.1、#2=06:10.4、#3=06:30.6、#4=06:50.9、#5=07:11.2、#6=07:31.4、#7=07:51.7、#8=08:12.0",
+   "clip@330-390（context box，有聲音；片段內 00:00 ＝ 影片 05:30.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"20a\", \"verdict\": \"正確\", \"explanation\": \"於 05:32–06:26（clip@330-390 片段內 00:02–00:56）清楚看到考生將 vial 夾在雙手掌心來回搓滾旋轉，讓稀釋液與粉劑融合（期間偶爾查看溶解狀況與單手輕搖，但已明確完成雙手掌心夾持來回搓滾旋轉動作）。\", \"times\": [[332.0, 386.5]], \"evidence\": [\"ov@329.8-492 #1\", \"ov@329.8-492 #2\", \"clip@330-390\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]
