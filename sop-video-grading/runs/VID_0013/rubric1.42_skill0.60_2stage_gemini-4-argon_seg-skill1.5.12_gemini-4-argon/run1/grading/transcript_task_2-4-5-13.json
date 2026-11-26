@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 9.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 21858,
+  "cached_input_tokens": 0,
+  "output_tokens": 210,
+  "thinking_tokens": 128,
+  "materials": [
+   "ov@226-255.5（hands_box，n=9）#0=03:46.0、#1=03:49.7、#2=03:53.4、#3=03:57.1、#4=04:00.8、#5=04:04.4、#6=04:08.1、#7=04:11.8、#8=04:15.5"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [237.1, 240.8, 244.4], \"region\": [0.3, 0.35, 0.7, 0.7], \"reason\": \"放大確認手中持握稀釋液瓶並檢視瓶身標示與液體\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 10.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 23112,
+  "cached_input_tokens": 0,
+  "output_tokens": 210,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@226-255.5（hands_box，n=9）#0=03:46.0、#1=03:49.7、#2=03:53.4、#3=03:57.1、#4=04:00.8、#5=04:04.4、#6=04:08.1、#7=04:11.8、#8=04:15.5",
+   "zoom@237.1/240.8/244.4 region=[0.300, 0.350, 0.700, 0.700]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4d\", \"verdict\": \"正確\", \"explanation\": \"03:56–04:05 學生拿起細長透明塑膠稀釋液瓶（綠色標籤），雙手持瓶在胸前檢視瓶身標示與液體，04:05 後將其立於桌面並於 04:11 拿起以酒精棉片消毒瓶口。\", \"times\": [[236.0, 245.5]], \"evidence\": [\"ov@226-255.5 #3\", \"ov@226-255.5 #4\", \"ov@226-255.5 #5\", \"zoom@237.1\", \"zoom@240.8\", \"zoom@244.4\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

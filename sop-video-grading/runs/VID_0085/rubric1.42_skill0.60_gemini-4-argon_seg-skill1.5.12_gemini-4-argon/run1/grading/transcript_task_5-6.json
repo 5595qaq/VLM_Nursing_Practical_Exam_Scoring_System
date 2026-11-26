@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 7.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 21909,
+  "cached_input_tokens": 0,
+  "output_tokens": 86,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@69-212.5（hands_box，n=9）#0=01:09.0、#1=01:26.9、#2=01:44.9、#3=02:02.8、#4=02:20.8、#5=02:38.7、#6=02:56.6、#7=03:14.6、#8=03:32.5"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 69.0, \"end\": 85.0, \"fps\": 2, \"reason\": \"檢查 01:09.0 至 01:25.0 期間將 vial 瓶口打開（5a）與以酒精棉片消毒 vial 瓶口（6a）的連續動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 8.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 24675,
+  "cached_input_tokens": 0,
+  "output_tokens": 85,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@69-212.5（hands_box，n=9）#0=01:09.0、#1=01:26.9、#2=01:44.9、#3=02:02.8、#4=02:20.8、#5=02:38.7、#6=02:56.6、#7=03:14.6、#8=03:32.5",
+   "clip@69-85（context box，有聲音；片段內 00:00 ＝ 影片 01:09.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [73.0, 74.0, 78.0, 79.5], \"region\": [0.35, 0.6, 0.65, 0.95], \"reason\": \"確認打開vial瓶蓋及酒精棉片擦拭vial瓶口的動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 14.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 25912,
+  "cached_input_tokens": 0,
+  "output_tokens": 532,
+  "thinking_tokens": 201,
+  "materials": [
+   "ov@69-212.5（hands_box，n=9）#0=01:09.0、#1=01:26.9、#2=01:44.9、#3=02:02.8、#4=02:20.8、#5=02:38.7、#6=02:56.6、#7=03:14.6、#8=03:32.5",
+   "clip@69-85（context box，有聲音；片段內 00:00 ＝ 影片 01:09.0）",
+   "zoom@73/74/78/79.5 region=[0.350, 0.600, 0.650, 0.950]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"於 01:11.0–01:14.5（clip@69-85 的 00:02.0–00:05.5），考生左手扶住桌面上的 vial，右手大拇指推開 vial 褐色塑膠翻蓋並放於桌面，露出銀色鋁圈瓶口（zoom@73、zoom@74）。\", \"times\": [[71.0, 74.5]], \"evidence\": [\"clip@69-85\", \"zoom@73\", \"zoom@74\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"6a\", \"verdict\": \"正確\", \"explanation\": \"於 01:17.5–01:20.5（clip@69-85 的 00:08.5–00:11.5），考生撕開酒精棉片包裝後，以右手持白色酒精棉片在 vial 瓶口來回擦拭消毒（zoom@78、zoom@79.5）。\", \"times\": [[77.5, 80.5]], \"evidence\": [\"clip@69-85\", \"zoom@78\", \"zoom@79.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

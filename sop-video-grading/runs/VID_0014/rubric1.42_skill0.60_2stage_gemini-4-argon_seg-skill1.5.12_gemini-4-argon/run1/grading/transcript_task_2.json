@@ -1,0 +1,66 @@
+[
+ {
+  "turn": 1,
+  "seconds": 638.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 28164,
+  "cached_input_tokens": 20130,
+  "output_tokens": 99,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@50-90（context box，有聲音；片段內 00:00 ＝ 影片 00:50.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [55.0, 58.0, 64.5, 76.5], \"region\": [0.25, 0.55, 0.85, 0.98], \"reason\": \"確認給藥紀錄單位置、指讀動作，以及考生在藥盒中翻找並取出最終藥瓶(vial)的細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 5.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 29412,
+  "cached_input_tokens": 20130,
+  "output_tokens": 91,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@50-90（context box，有聲音；片段內 00:00 ＝ 影片 00:50.0）",
+   "zoom@55/58/64.5/76.5 region=[0.250, 0.550, 0.850, 0.980]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [50.0, 77.5, 85.0, 89.5], \"region\": [0.55, 0.45, 0.95, 0.78], \"reason\": \"確認考生在不同時間點從藍色藥盒取出的藥瓶種類，找出真正取出vial的時間點\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 21.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 30671,
+  "cached_input_tokens": 20130,
+  "output_tokens": 1398,
+  "thinking_tokens": 791,
+  "materials": [
+   "clip@50-90（context box，有聲音；片段內 00:00 ＝ 影片 00:50.0）",
+   "zoom@55/58/64.5/76.5 region=[0.250, 0.550, 0.850, 0.980]",
+   "zoom@50/77.5/85/89.5 region=[0.550, 0.450, 0.950, 0.780]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"2a\", \"verdict\": \"錯誤\", \"explanation\": \"給藥紀錄單平放於治療車前緣（鐵架後方可見表格與螢光筆標記）。考生於取出藥瓶過程中多次短暫低頭查看並指讀紀錄單：00:54.5–00:56.0（1.5 秒）、00:57.5–00:59.0（1.5 秒）、01:11.5–01:13.5（2.0 秒）、01:22.5–01:24.0（1.5 秒），其餘時間皆在翻找藥盒及檢視手中的藥瓶，實際查看給藥紀錄單累計僅 6.5 秒，未達 10 秒。\", \"times\": [[54.5, 56.0], [57.5, 59.0], [71.5, 73.5], [82.5, 84.0]], \"evidence\": [\"clip@50-90\", \"zoom@55\", \"zoom@58\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"2b\", \"verdict\": \"正確\", \"explanation\": \"考生於 00:54.5–00:56.0、00:57.5–00:59.0、01:11.5–01:13.5 及 01:22.5–01:24.0 查看給藥紀錄單時，皆有以右手食指指出紀錄單核對。\", \"times\": [[54.5, 56.0], [57.5, 59.0], [71.5, 73.5], [82.5, 84.0]], \"evidence\": [\"clip@50-90\", \"zoom@55\", \"zoom@58\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"2d\", \"verdict\": \"正確\", \"explanation\": \"考生先後拿起多個藥瓶檢視並放回，於 01:16.5（及 01:29.0）從藍色藥盒中取出 vial 藥瓶。\", \"times\": [[76.5, 76.5]], \"evidence\": [\"clip@50-90\", \"zoom@76.5\", \"zoom@77.5\", \"zoom@89.5\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": [
+   "criterion 2a: reading or pointing must end by the vial removal at 76.5 s",
+   "criterion 2b: reading or pointing must end by the vial removal at 76.5 s"
+  ]
+ },
+ {
+  "turn": 4,
+  "seconds": 13.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 31345,
+  "cached_input_tokens": 0,
+  "output_tokens": 614,
+  "thinking_tokens": 59,
+  "materials": [
+   "clip@50-90（context box，有聲音；片段內 00:00 ＝ 影片 00:50.0）",
+   "zoom@55/58/64.5/76.5 region=[0.250, 0.550, 0.850, 0.980]",
+   "zoom@50/77.5/85/89.5 region=[0.550, 0.450, 0.950, 0.780]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"2a\", \"verdict\": \"錯誤\", \"explanation\": \"給藥紀錄單平放於治療車前緣（鐵架後方可見表格與螢光筆標記）。考生於 01:16.5 取出藥瓶前，僅多次短暫低頭查看並指讀紀錄單：00:54.5–00:56.0（1.5 秒）、00:57.5–00:59.0（1.5 秒）、01:11.5–01:13.5（2.0 秒），其餘時間皆在翻找藥盒及檢視手中的藥瓶，取出藥瓶前實際查看給藥紀錄單累計僅 5.0 秒，未達 10 秒。\", \"times\": [[54.5, 56.0], [57.5, 59.0], [71.5, 73.5]], \"evidence\": [\"clip@50-90\", \"zoom@55\", \"zoom@58\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"2b\", \"verdict\": \"正確\", \"explanation\": \"考生於 01:16.5 取出藥瓶前的 00:54.5–00:56.0、00:57.5–00:59.0 及 01:11.5–01:13.5 查看給藥紀錄單時，皆有以右手食指指出紀錄單核對。\", \"times\": [[54.5, 56.0], [57.5, 59.0], [71.5, 73.5]], \"evidence\": [\"clip@50-90\", \"zoom@55\", \"zoom@58\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"2d\", \"verdict\": \"正確\", \"explanation\": \"考生先後拿起多個藥瓶檢視並放回，於 01:16.5 從藍色藥盒中取出 vial 藥瓶。\", \"times\": [[76.5, 76.5]], \"evidence\": [\"clip@50-90\", \"zoom@76.5\", \"zoom@77.5\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

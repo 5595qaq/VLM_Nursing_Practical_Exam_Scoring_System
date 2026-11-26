@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 8.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 27154,
+  "cached_input_tokens": 0,
+  "output_tokens": 93,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@32.5-66.8（context box，有聲音；片段內 00:00 ＝ 影片 00:32.5）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [35.5, 42.5, 55.0, 60.5], \"region\": [0.25, 0.65, 0.85, 0.95], \"reason\": \"確認給藥紀錄單在治療車最前緣鐵架下方的位置，以及考生手部與取藥狀況\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 14.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 28380,
+  "cached_input_tokens": 0,
+  "output_tokens": 524,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@32.5-66.8（context box，有聲音；片段內 00:00 ＝ 影片 00:32.5）",
+   "zoom@35.5/42.5/55/60.5 region=[0.250, 0.650, 0.850, 0.950]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"2a\", \"verdict\": \"無法判定\", \"explanation\": \"00:34.5–01:00.5（clip@32.5-66.8 片段內 00:02.0–00:28.0）考生在治療車後方翻找抽屜與取藥，雖然治療車前緣有一張紙，但考生實際查看的給藥紀錄單可能位於治療車後方檯面或抽屜處，被治療車遮擋未入鏡，無法確認實際查看紀錄單的時間。\", \"times\": [[34.5, 60.5]], \"evidence\": [\"clip@32.5-66.8\", \"zoom@35.5\", \"zoom@42.5\", \"zoom@55\", \"zoom@60.5\"], \"confidence\": 0.8, \"reason\": \"藥單看不見\"}, {\"criterion_id\": \"2b\", \"verdict\": \"無法判定\", \"explanation\": \"00:34.5–01:00.5（clip@32.5-66.8 片段內 00:02.0–00:28.0）考生雙手在治療車後方操作，給藥紀錄單與手部皆被治療車遮擋，無法確認是否有用手指指出紀錄單。\", \"times\": [[34.5, 60.5]], \"evidence\": [\"clip@32.5-66.8\", \"zoom@42.5\", \"zoom@55\"], \"confidence\": 0.8, \"reason\": \"藥單看不見\"}, {\"criterion_id\": \"2d\", \"verdict\": \"正確\", \"explanation\": \"01:00.5（clip@32.5-66.8 片段內 00:28.0）考生從治療車後方取出藥瓶（vial），並在 01:04.5（片段內 00:32.0）拿起其中一瓶檢視。\", \"times\": [[60.5, 60.5]], \"evidence\": [\"clip@32.5-66.8\", \"zoom@60.5\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

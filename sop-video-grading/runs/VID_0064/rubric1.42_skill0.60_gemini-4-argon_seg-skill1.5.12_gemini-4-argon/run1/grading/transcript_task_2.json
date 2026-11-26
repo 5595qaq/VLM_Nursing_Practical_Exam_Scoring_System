@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 58.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 30237,
+  "cached_input_tokens": 20130,
+  "output_tokens": 107,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@1-52（context box，有聲音；片段內 00:00 ＝ 影片 00:01.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [4.0, 29.0, 41.5, 48.0], \"region\": [0.25, 0.55, 0.85, 0.98], \"reason\": \"確認給藥紀錄單的位置、取出vial前是否有指讀，以及00:41.5與00:48.0的動作細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 28.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 31463,
+  "cached_input_tokens": 0,
+  "output_tokens": 817,
+  "thinking_tokens": 726,
+  "materials": [
+   "clip@1-52（context box，有聲音；片段內 00:00 ＝ 影片 00:01.0）",
+   "zoom@4/29/41.5/48 region=[0.250, 0.550, 0.850, 0.980]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [41.0, 42.5, 46.0, 47.5], \"region\": [0.5, 0.55, 0.98, 0.95], \"reason\": \"確認從藍色藥盒取出 vial 的確切時間點，以及右手指向的位置是否被治療車遮擋\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 19.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 32700,
+  "cached_input_tokens": 0,
+  "output_tokens": 544,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@1-52（context box，有聲音；片段內 00:00 ＝ 影片 00:01.0）",
+   "zoom@4/29/41.5/48 region=[0.250, 0.550, 0.850, 0.980]",
+   "zoom@41/42.5/46/47.5 region=[0.500, 0.550, 0.980, 0.950]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"2a\", \"verdict\": \"無法判定\", \"explanation\": \"已搜尋治療車檯面、畫面下緣及周邊區域（如 zoom@4、zoom@29、zoom@48），畫面下緣鐵架後方雖有一小角表格紙張，但治療車後方與考生身前檯面被治療車及考生身體擋住，紀錄單未完整入鏡，且考生於 00:02.0–00:15.0、00:22.0–00:34.0 低頭查看及手指指讀的位置在治療車後方遮擋區，無法確認實際查看給藥紀錄單的時間。\", \"times\": [], \"evidence\": [\"clip@1-52\", \"zoom@4\", \"zoom@29\", \"zoom@48\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}, {\"criterion_id\": \"2b\", \"verdict\": \"無法判定\", \"explanation\": \"給藥紀錄單位於治療車後方未入鏡／被遮擋區域，00:29.5–00:33.5 雖見考生右手向檯面後方比指（clip@1-52 片段內 00:28.5–00:32.5、zoom@29），但因紀錄單本身看不見，無法確認手指是否指出給藥紀錄單。\", \"times\": [[29.5, 33.5]], \"evidence\": [\"clip@1-52\", \"zoom@29\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}, {\"criterion_id\": \"2d\", \"verdict\": \"正確\", \"explanation\": \"00:41.5–00:42.5（clip@1-52 片段內 00:40.5–00:41.5）考生從右側藍色藥盒中取出藥瓶（vial），00:47.5（片段內 00:46.5）左手持 vial 出現於畫面右側。\", \"times\": [[42.5, 42.5]], \"evidence\": [\"clip@1-52\", \"zoom@41.5\", \"zoom@42.5\", \"zoom@47.5\"], \"confidence\": 0.85, \"reason\": null}]}",
+  "errors": []
+ }
+]

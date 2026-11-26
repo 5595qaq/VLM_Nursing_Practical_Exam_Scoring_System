@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 7.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 24411,
+  "cached_input_tokens": 20130,
+  "output_tokens": 89,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@417.4-437.1（context box，有聲音；片段內 00:00 ＝ 影片 06:57.4）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [420.4, 424.9, 427.4, 434.9], \"region\": [0.2, 0.7, 0.75, 0.99], \"reason\": \"確認給藥紀錄單位置、空針放上針座與手指指讀動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 11.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 25672,
+  "cached_input_tokens": 0,
+  "output_tokens": 559,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@417.4-437.1（context box，有聲音；片段內 00:00 ＝ 影片 06:57.4）",
+   "zoom@420.4/424.9/427.4/434.9 region=[0.200, 0.700, 0.750, 0.990]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"29a\", \"verdict\": \"錯誤\", \"explanation\": \"考生於 07:03.9 拿起 vial，07:05.9–07:14.9（clip@417.4-437.1 片段內 00:08.5–00:17.5）左手持 vial 低頭查看並以右手食指指出前緣鐵架下方的給藥紀錄單，累計實際查看時間為 9.0 秒，未達 10 秒。\", \"times\": [[425.9, 434.9]], \"evidence\": [\"clip@417.4-437.1\", \"zoom@427.4\", \"zoom@434.9\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"29b\", \"verdict\": \"正確\", \"explanation\": \"07:05.9–07:14.9（clip@417.4-437.1 片段內 00:08.5–00:17.5）查看給藥紀錄單時，清楚看到右手食指逐項指出紀錄單內容。\", \"times\": [[425.9, 434.9]], \"evidence\": [\"clip@417.4-437.1\", \"zoom@427.4\", \"zoom@434.9\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"29d\", \"verdict\": \"正確\", \"explanation\": \"07:00.4–07:03.4（片段內 00:03.0–00:06.0）考生將空針單手套入立在針座上的針頭套放妥後，於 07:03.9（片段內 00:06.5）拿起 vial，07:05.9–07:14.9 與給藥紀錄單進行核對。\", \"times\": [[420.4, 434.9]], \"evidence\": [\"clip@417.4-437.1\", \"zoom@420.4\", \"zoom@424.9\", \"zoom@427.4\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

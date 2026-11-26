@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 10.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 23209,
+  "cached_input_tokens": 0,
+  "output_tokens": 68,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@300-313.5（context box，有聲音；片段內 00:00 ＝ 影片 05:00.0）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 290.0, \"end\": 300.0, \"fps\": 2, \"reason\": \"依規則檢查任務區間開始前 10 秒到區間開始，確認是否有更早消毒稀釋液瓶頂\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 33.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 25150,
+  "cached_input_tokens": 0,
+  "output_tokens": 90,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@300-313.5（context box，有聲音；片段內 00:00 ＝ 影片 05:00.0）",
+   "clip@290-300（context box，有聲音；片段內 00:00 ＝ 影片 04:50.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [302.5, 304.5, 307.5, 310.0], \"region\": [0.35, 0.35, 0.75, 0.75], \"reason\": \"確認酒精棉片消毒稀釋液瓶頂與扭開瓶頂的細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 12.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 26405,
+  "cached_input_tokens": 0,
+  "output_tokens": 559,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@300-313.5（context box，有聲音；片段內 00:00 ＝ 影片 05:00.0）",
+   "clip@290-300（context box，有聲音；片段內 00:00 ＝ 影片 04:50.0）",
+   "zoom@302.5/304.5/307.5/310 region=[0.350, 0.350, 0.750, 0.750]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"7a\", \"verdict\": \"正確\", \"explanation\": \"05:00.5（clip@300-313.5 片段內 00:00.5）酒精棉片第一次碰到細長稀釋液瓶頂端，05:00.5–05:05.5 持續以酒精棉片擦拭稀釋液瓶口（zoom@302.5、zoom@304.5 清楚看到白色棉片包覆擦拭稀釋液瓶頂）。\", \"times\": [[300.5, 305.5]], \"evidence\": [\"clip@290-300\", \"clip@300-313.5\", \"zoom@302.5\", \"zoom@304.5\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"8b\", \"verdict\": \"正確\", \"explanation\": \"考生於 05:00.5–05:05.5 先用酒精棉片消毒稀釋液瓶頂，接著於 05:06.0–05:10.0 隔著酒精棉片將稀釋液瓶頂扭開，符合先消毒再打開瓶口的順序。\", \"times\": [[300.5, 310.0]], \"evidence\": [\"clip@300-313.5\", \"zoom@302.5\", \"zoom@307.5\", \"zoom@310\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"8a\", \"verdict\": \"正確\", \"explanation\": \"05:06.0–05:10.0（clip@300-313.5 片段內 00:06.0–00:10.0）左手握住稀釋液瓶身、右手隔著酒精棉片捏住瓶頂扭開，05:10.0 瓶頂脫離（zoom@307.5、zoom@310）。\", \"times\": [[306.0, 310.0]], \"evidence\": [\"clip@300-313.5\", \"zoom@307.5\", \"zoom@310\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

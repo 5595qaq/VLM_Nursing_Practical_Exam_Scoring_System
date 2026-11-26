@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 30.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 22253,
+  "cached_input_tokens": 20130,
+  "output_tokens": 280,
+  "thinking_tokens": 209,
+  "materials": [
+   "ov@41-395.5（hands_box，n=9）#0=00:41.0、#1=01:25.3、#2=02:09.6、#3=02:53.9、#4=03:38.2、#5=04:22.6、#6=05:06.9、#7=05:51.2、#8=06:35.5"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 158.0, \"end\": 218.0, \"fps\": 2, \"reason\": \"查看 02:38.0–03:38.0 之間稀釋液瓶口消毒與打開的連續動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 8.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 33467,
+  "cached_input_tokens": 20130,
+  "output_tokens": 127,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@41-395.5（hands_box，n=9）#0=00:41.0、#1=01:25.3、#2=02:09.6、#3=02:53.9、#4=03:38.2、#5=04:22.6、#6=05:06.9、#7=05:51.2、#8=06:35.5",
+   "clip@158-218（context box，有聲音；片段內 00:00 ＝ 影片 02:38.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [191.5, 192.5, 194.0, 197.5], \"region\": [0.45, 0.25, 0.85, 0.75], \"reason\": \"確認 03:11.5–03:18.5（clip 00:33.5–00:40.5）用酒精棉片包住稀釋液瓶口擦拭及扭開的細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 9.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 34714,
+  "cached_input_tokens": 20130,
+  "output_tokens": 204,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@41-395.5（hands_box，n=9）#0=00:41.0、#1=01:25.3、#2=02:09.6、#3=02:53.9、#4=03:38.2、#5=04:22.6、#6=05:06.9、#7=05:51.2、#8=06:35.5",
+   "clip@158-218（context box，有聲音；片段內 00:00 ＝ 影片 02:38.0）",
+   "zoom@191.5/192.5/194/197.5 region=[0.450, 0.250, 0.850, 0.750]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"7a\", \"verdict\": \"正確\", \"explanation\": \"於 03:11.0–03:17.5（clip@158-218 片段內 00:33.0–00:39.5），考生左手持細長塑膠稀釋液瓶，右手拿白色酒精棉片包住稀釋液瓶頂端擦拭並隔著棉片扭開瓶蓋，完成消毒稀釋液瓶口。\", \"times\": [[191.0, 197.5]], \"evidence\": [\"clip@158-218\", \"zoom@191.5\", \"zoom@192.5\", \"zoom@194\", \"zoom@197.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

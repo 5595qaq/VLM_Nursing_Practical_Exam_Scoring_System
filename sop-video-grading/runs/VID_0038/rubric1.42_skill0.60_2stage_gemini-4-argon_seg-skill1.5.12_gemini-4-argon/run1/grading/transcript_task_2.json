@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 11.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 26900,
+  "cached_input_tokens": 0,
+  "output_tokens": 82,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@32-65.5（context box，有聲音；片段內 00:00 ＝ 影片 00:32.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [35.0, 54.0, 63.5, 65.0], \"region\": [0.35, 0.65, 0.9, 1.0], \"reason\": \"確認給藥紀錄單的位置、指讀動作與取出藥瓶的時間\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 5.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 28141,
+  "cached_input_tokens": 20130,
+  "output_tokens": 55,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@32-65.5（context box，有聲音；片段內 00:00 ＝ 影片 00:32.0）",
+   "zoom@35/54/63.5/65 region=[0.350, 0.650, 0.900, 1.000]"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 65.5, \"end\": 75.5, \"fps\": 2, \"reason\": \"查看 65.5 秒之後取出 vial 的完整動作與時間點\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 9.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 30086,
+  "cached_input_tokens": 20130,
+  "output_tokens": 490,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@32-65.5（context box，有聲音；片段內 00:00 ＝ 影片 00:32.0）",
+   "zoom@35/54/63.5/65 region=[0.350, 0.650, 0.900, 1.000]",
+   "clip@65.5-75.5（context box，有聲音；片段內 00:00 ＝ 影片 01:05.5）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"2a\", \"verdict\": \"正確\", \"explanation\": \"給藥紀錄單位於治療車最前緣鐵架下方（可見黃色螢光筆標記）。00:34.0–01:02.0（clip@32-65.5 片段內 00:02.0–00:30.0）考生在洗手過程中及洗完手後持續低頭查看給藥紀錄單並以右手在上方比對，累計實際查看時間為 28.0 秒，滿 10 秒。\", \"times\": [[34.0, 62.0]], \"evidence\": [\"clip@32-65.5\", \"zoom@35\", \"zoom@54\"], \"confidence\": 0.85, \"reason\": null}, {\"criterion_id\": \"2b\", \"verdict\": \"錯誤\", \"explanation\": \"給藥紀錄單位於治療車最前緣鐵架下方，00:53.5–00:59.5（clip@32-65.5 片段內 00:21.5–00:27.5）考生右手手指僅放在治療車上方鋪巾處移動，未實際指出下方的給藥紀錄單。\", \"times\": [[53.5, 59.5]], \"evidence\": [\"clip@32-65.5\", \"zoom@54\"], \"confidence\": 0.8, \"reason\": null}, {\"criterion_id\": \"2d\", \"verdict\": \"正確\", \"explanation\": \"01:02.5–01:06.5 考生打開抽屜取藥，於 01:06.5（clip@65.5-75.5 片段內 00:01.0）取出褐色瓶蓋的 vial 藥瓶。\", \"times\": [[66.5, 66.5]], \"evidence\": [\"clip@32-65.5\", \"clip@65.5-75.5\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

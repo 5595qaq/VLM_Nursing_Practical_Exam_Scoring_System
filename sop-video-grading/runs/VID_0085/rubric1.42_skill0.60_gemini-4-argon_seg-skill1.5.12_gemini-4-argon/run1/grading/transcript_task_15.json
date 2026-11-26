@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 14.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 22340,
+  "cached_input_tokens": 20130,
+  "output_tokens": 81,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@153.5-164（context box，有聲音；片段內 00:00 ＝ 影片 02:33.5）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [156.5, 157.5, 159.5], \"region\": [0.35, 0.25, 0.7, 0.65], \"reason\": \"確認針頭與針筒接合處是否墊有白色方形酒精棉片\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 6.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 23571,
+  "cached_input_tokens": 20130,
+  "output_tokens": 214,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@153.5-164（context box，有聲音；片段內 00:00 ＝ 影片 02:33.5）",
+   "zoom@156.5/157.5/159.5 region=[0.350, 0.250, 0.700, 0.650]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"15a\", \"verdict\": \"正確\", \"explanation\": \"於 02:35.0（clip@153.5-164 的 00:01.5）左手從檯面拿起酒精棉片，02:36.0–02:41.5 將白色方形酒精棉片墊在針頭與針筒交接處並進行排氣動作，zoom@156.5 與 zoom@157.5 清楚可見棉片包覆於針頭接頭處。\", \"times\": [[156.0, 161.5]], \"evidence\": [\"clip@153.5-164\", \"zoom@156.5\", \"zoom@157.5\", \"zoom@159.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

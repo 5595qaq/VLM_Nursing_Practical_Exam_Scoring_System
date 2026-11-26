@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 4.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 29272,
+  "cached_input_tokens": 20130,
+  "output_tokens": 66,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@0-48（context box，有聲音；片段內 00:00 ＝ 影片 00:00.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [0.5, 45.5], \"region\": [0.2, 0.7, 0.85, 1.0], \"reason\": \"檢查治療車前緣或檯面是否有給藥紀錄單\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 24.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 30491,
+  "cached_input_tokens": 0,
+  "output_tokens": 1193,
+  "thinking_tokens": 742,
+  "materials": [
+   "clip@0-48（context box，有聲音；片段內 00:00 ＝ 影片 00:00.0）",
+   "zoom@0.5/45.5 region=[0.200, 0.700, 0.850, 1.000]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"2a\", \"verdict\": \"無法判定\", \"explanation\": \"已檢查治療車檯面、車緣下方（zoom@0.5、zoom@45.5）及背景區域（clip@0-48），給藥紀錄單未入鏡。00:01.0–00:20.5 學生在洗手，00:22.0–00:44.5 拆酒精棉片、開稀釋液瓶與撕空針包裝，00:45.5 拿起藥瓶（vial），期間無法確認給藥紀錄單位置與查看時間。\", \"times\": [], \"evidence\": [\"clip@0-48\", \"zoom@0.5\", \"zoom@45.5\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}, {\"criterion_id\": \"2b\", \"verdict\": \"錯誤\", \"explanation\": \"00:00.0–00:45.5 取出 vial 前雙手全程在畫面內清楚可見（00:01.0–00:20.5 洗手、00:22.0–00:44.5 拆棉片、開稀釋液及撕空針包裝），未有用手指指出給藥紀錄單的動作。\", \"times\": [[0.0, 45.5]], \"evidence\": [\"clip@0-48\", \"zoom@0.5\", \"zoom@45.5\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"2d\", \"verdict\": \"正確\", \"explanation\": \"00:45.5 右手從治療車檯面上拿起 vial 藥瓶。\", \"times\": [[45.5, 45.5]], \"evidence\": [\"clip@0-48\", \"zoom@45.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

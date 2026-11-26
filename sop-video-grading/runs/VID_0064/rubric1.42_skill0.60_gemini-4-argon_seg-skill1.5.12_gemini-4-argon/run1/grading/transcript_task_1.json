@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 9.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 23500,
+  "cached_input_tokens": 0,
+  "output_tokens": 86,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@22-37（context box，有聲音；片段內 00:00 ＝ 影片 00:22.0）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 12.0, \"end\": 25.0, \"fps\": 2, \"reason\": \"檢查 00:22.0 之前是否有按壓洗手液或洗手動作，因 00:22–00:37 雙手多在畫面下方/治療車後方被遮擋\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 11.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 26003,
+  "cached_input_tokens": 0,
+  "output_tokens": 306,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@22-37（context box，有聲音；片段內 00:00 ＝ 影片 00:22.0）",
+   "clip@12-25（context box，有聲音；片段內 00:00 ＝ 影片 00:12.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"1a\", \"verdict\": \"無法判定\", \"explanation\": \"00:24.0–00:35.0（clip@22-37 片段內 00:02.0–00:13.0）考生疑似在進行洗手，但雙手與洗手液瓶皆在治療車下方、低於鏡頭畫面下緣，全程被治療車遮擋而無法看到按壓洗手液及雙手分開的確切時間。\", \"times\": [], \"evidence\": [\"clip@22-37\", \"clip@12-25\"], \"confidence\": 0.9, \"reason\": \"畫面被遮擋\"}, {\"criterion_id\": \"1b\", \"verdict\": \"無法判定\", \"explanation\": \"00:24.0–00:35.0（clip@22-37 片段內 00:02.0–00:13.0）考生雙手位置低於治療車檯面且在畫面外，全程被遮擋，無法確認洗手七個動作是否皆有做到。\", \"times\": [[24.0, 35.0]], \"evidence\": [\"clip@22-37\"], \"confidence\": 0.9, \"reason\": \"畫面被遮擋\"}]}",
+  "errors": []
+ }
+]

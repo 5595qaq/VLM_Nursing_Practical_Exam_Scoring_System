@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 13.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 31396,
+  "cached_input_tokens": 0,
+  "output_tokens": 86,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@10-68（context box，有聲音；片段內 00:00 ＝ 影片 00:10.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [14.5, 24.0, 46.5, 61.0], \"region\": [0.25, 0.35, 0.75, 0.75], \"reason\": \"確認考生手中拿取並指讀的紙張是否為給藥紀錄單\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 13.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 32625,
+  "cached_input_tokens": 0,
+  "output_tokens": 97,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@10-68（context box，有聲音；片段內 00:00 ＝ 影片 00:10.0）",
+   "zoom@14.5/24/46.5/61 region=[0.250, 0.350, 0.750, 0.750]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [39.5, 44.5, 50.5, 65.5], \"region\": [0.25, 0.4, 0.75, 0.8], \"reason\": \"確認考生手持給藥紀錄單查看時是否有用手指指出（指讀）以及01:05.5取出vial的畫面\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 33.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 33878,
+  "cached_input_tokens": 20130,
+  "output_tokens": 2080,
+  "thinking_tokens": 1354,
+  "materials": [
+   "clip@10-68（context box，有聲音；片段內 00:00 ＝ 影片 00:10.0）",
+   "zoom@14.5/24/46.5/61 region=[0.250, 0.350, 0.750, 0.750]",
+   "zoom@39.5/44.5/50.5/65.5 region=[0.250, 0.400, 0.750, 0.800]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"2a\", \"verdict\": \"正確\", \"explanation\": \"考生於取出 vial（01:05.0）前多次拿起給藥紀錄單查看：00:13.0–00:15.5（2.5 秒）、00:21.0–00:24.5（3.5 秒）、00:38.5–00:40.5（2.0 秒）、00:44.0–00:47.5（3.5 秒）、00:49.5–00:51.0（1.5 秒）及 01:00.0–01:02.5（2.5 秒），累計實際查看給藥紀錄單時間共 15.5 秒，達 10 秒以上。\", \"times\": [[13.0, 15.5], [21.0, 24.5], [38.5, 40.5], [44.0, 47.5], [49.5, 51.0], [60.0, 62.5]], \"evidence\": [\"clip@10-68\", \"zoom@14.5\", \"zoom@24\", \"zoom@39.5\", \"zoom@44.5\", \"zoom@46.5\", \"zoom@50.5\", \"zoom@61\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"2b\", \"verdict\": \"錯誤\", \"explanation\": \"於 00:13.0–01:05.0 取出 vial 前查看給藥紀錄單的各時段中，考生僅以雙手捏持紀錄單邊緣或單手拿取紀錄單目視查看，全程未用手指指出紀錄單內容進行核對。\", \"times\": [[13.0, 15.5], [21.0, 24.5], [38.5, 40.5], [44.0, 47.5], [49.5, 51.0], [60.0, 62.5]], \"evidence\": [\"clip@10-68\", \"zoom@14.5\", \"zoom@24\", \"zoom@39.5\", \"zoom@44.5\", \"zoom@46.5\", \"zoom@50.5\", \"zoom@61\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"2d\", \"verdict\": \"正確\", \"explanation\": \"考生於 01:05.0（clip@10-68 片段內 00:55.0）以右手從治療車下層取出 vial 藥瓶，並於 01:06.0 放於治療車檯面上。\", \"times\": [[65.0, 65.0]], \"evidence\": [\"clip@10-68\", \"zoom@65.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

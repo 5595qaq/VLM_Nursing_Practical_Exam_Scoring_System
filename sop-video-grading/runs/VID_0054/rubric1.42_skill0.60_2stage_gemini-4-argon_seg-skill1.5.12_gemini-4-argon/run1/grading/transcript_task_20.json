@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 4.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 21856,
+  "cached_input_tokens": 8192,
+  "output_tokens": 84,
+  "thinking_tokens": 23,
+  "materials": [
+   "ov@474-553.8（hands_box，n=9）#0=07:54.0、#1=08:04.0、#2=08:13.9、#3=08:23.9、#4=08:33.9、#5=08:43.9、#6=08:53.9、#7=09:03.8、#8=09:13.8"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 474.0, \"end\": 534.0, \"fps\": 2, \"reason\": \"查看雙手掌心夾住 vial 來回搓滾旋轉的連續動作與起訖時間\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 24.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 32950,
+  "cached_input_tokens": 0,
+  "output_tokens": 643,
+  "thinking_tokens": 365,
+  "materials": [
+   "ov@474-553.8（hands_box，n=9）#0=07:54.0、#1=08:04.0、#2=08:13.9、#3=08:23.9、#4=08:33.9、#5=08:43.9、#6=08:53.9、#7=09:03.8、#8=09:13.8",
+   "clip@474-534（context box，有聲音；片段內 00:00 ＝ 影片 07:54.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"20a\", \"verdict\": \"正確\", \"explanation\": \"於 07:57–08:50（clip@474-534 片段內 00:03–00:56）及 08:53 起（片段內 00:59.5 起，並延續至 ov@474-553.8 #6 08:53.8）清楚看到考生以雙手掌心夾住 vial 來回搓滾旋轉，讓稀釋液與粉劑融合（期間偶爾舉起檢視溶解狀況），至 09:03.8（#7）舉起檢視、09:13.8（#8）放回桌面。\", \"times\": [[477.0, 530.0], [533.5, 543.8]], \"evidence\": [\"clip@474-534\", \"ov@474-553.8 #1\", \"ov@474-553.8 #6\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

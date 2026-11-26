@@ -1,0 +1,64 @@
+[
+ {
+  "turn": 1,
+  "seconds": 9.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 21914,
+  "cached_input_tokens": 0,
+  "output_tokens": 230,
+  "thinking_tokens": 137,
+  "materials": [
+   "ov@178-333（hands_box，n=9）#0=02:58.0、#1=03:17.4、#2=03:36.8、#3=03:56.1、#4=04:15.5、#5=04:34.9、#6=04:54.2、#7=05:13.6、#8=05:33.0"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 178.0, \"end\": 198.0, \"fps\": 2, \"reason\": \"檢查 5a 將 vial 瓶口打開（03:00–03:02）及 6a 以酒精棉片消毒 vial 瓶口（03:09–03:14）的連續動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 22.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 25648,
+  "cached_input_tokens": 0,
+  "output_tokens": 88,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@178-333（hands_box，n=9）#0=02:58.0、#1=03:17.4、#2=03:36.8、#3=03:56.1、#4=04:15.5、#5=04:34.9、#6=04:54.2、#7=05:13.6、#8=05:33.0",
+   "clip@178-198（context box，有聲音；片段內 00:00 ＝ 影片 02:58.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [181.0, 182.0, 190.5, 191.5], \"region\": [0.4, 0.35, 0.75, 0.75], \"reason\": \"確認打開vial瓶蓋及酒精棉片消毒vial瓶口的細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 12.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 26899,
+  "cached_input_tokens": 20130,
+  "output_tokens": 514,
+  "thinking_tokens": 414,
+  "materials": [
+   "ov@178-333（hands_box，n=9）#0=02:58.0、#1=03:17.4、#2=03:36.8、#3=03:56.1、#4=04:15.5、#5=04:34.9、#6=04:54.2、#7=05:13.6、#8=05:33.0",
+   "clip@178-198（context box，有聲音；片段內 00:00 ＝ 影片 02:58.0）",
+   "zoom@181/182/190.5/191.5 region=[0.400, 0.350, 0.750, 0.750]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [178.5, 181.5, 184.0, 192.0], \"region\": [0.45, 0.45, 0.75, 0.85], \"reason\": \"確認 5a vial 瓶蓋打開前後瓶頂變化與 6a 酒精棉片擦拭 vial 瓶口\"}",
+  "errors": []
+ },
+ {
+  "turn": 4,
+  "seconds": 12.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 28153,
+  "cached_input_tokens": 0,
+  "output_tokens": 377,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@178-333（hands_box，n=9）#0=02:58.0、#1=03:17.4、#2=03:36.8、#3=03:56.1、#4=04:15.5、#5=04:34.9、#6=04:54.2、#7=05:13.6、#8=05:33.0",
+   "clip@178-198（context box，有聲音；片段內 00:00 ＝ 影片 02:58.0）",
+   "zoom@181/182/190.5/191.5 region=[0.400, 0.350, 0.750, 0.750]",
+   "zoom@178.5/181.5/184/192 region=[0.450, 0.450, 0.750, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"03:01.0–03:04.0（clip@178-198 片段內 00:03.0–00:06.0）考生拿起桌上有深紅色翻蓋的 vial，以右手推掉塑膠翻蓋，03:04.0 將翻蓋放回桌上，vial 瓶頂由深紅色圓蓋變成銀色鋁圈。\", \"times\": [[181.0, 184.0]], \"evidence\": [\"clip@178-198\", \"zoom@178.5\", \"zoom@181\", \"zoom@181.5\", \"zoom@182\", \"zoom@184\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"6a\", \"verdict\": \"正確\", \"explanation\": \"03:11.0–03:13.0（clip@178-198 片段內 00:13.0–00:15.0）考生撕開酒精棉片包裝後，左手持 vial，右手拿白色酒精棉片在 vial 瓶口來回旋轉擦拭消毒。\", \"times\": [[191.0, 193.0]], \"evidence\": [\"clip@178-198\", \"zoom@190.5\", \"zoom@191.5\", \"zoom@192\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

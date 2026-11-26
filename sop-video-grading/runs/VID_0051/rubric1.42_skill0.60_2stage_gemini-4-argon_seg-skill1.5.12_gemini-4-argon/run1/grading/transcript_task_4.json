@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 12.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 22019,
+  "cached_input_tokens": 0,
+  "output_tokens": 74,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@30.5-172（hands_box，n=9）#0=00:30.5、#1=00:48.2、#2=01:05.9、#3=01:23.6、#4=01:41.2、#5=01:58.9、#6=02:16.6、#7=02:34.3、#8=02:52.0"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 30.5, \"end\": 70.0, \"fps\": 2, \"reason\": \"確認 00:30.5–01:10.0 期間考生持藥瓶查看及指讀給藥紀錄單的起訖時間\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 10.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 29426,
+  "cached_input_tokens": 20130,
+  "output_tokens": 69,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@30.5-172（hands_box，n=9）#0=00:30.5、#1=00:48.2、#2=01:05.9、#3=01:23.6、#4=01:41.2、#5=01:58.9、#6=02:16.6、#7=02:34.3、#8=02:52.0",
+   "clip@30.5-70（context box，有聲音；片段內 00:00 ＝ 影片 00:30.5）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [35.0, 45.0], \"region\": [0.3, 0.55, 0.8, 0.9], \"reason\": \"確認治療車前緣的給藥紀錄單及手指指讀動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 13.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 30609,
+  "cached_input_tokens": 0,
+  "output_tokens": 410,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@30.5-172（hands_box，n=9）#0=00:30.5、#1=00:48.2、#2=01:05.9、#3=01:23.6、#4=01:41.2、#5=01:58.9、#6=02:16.6、#7=02:34.3、#8=02:52.0",
+   "clip@30.5-70（context box，有聲音；片段內 00:00 ＝ 影片 00:30.5）",
+   "zoom@35/45 region=[0.300, 0.550, 0.800, 0.900]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4a\", \"verdict\": \"正確\", \"explanation\": \"於 00:31.5–00:38.5（7.0 秒）及 00:40.5–00:50.0（9.5 秒）左手持藥瓶與前方的給藥紀錄單核對，並於 00:55.0–01:02.0（7.0 秒）持稀釋液小瓶再次與給藥紀錄單核對，累計實際查看給藥紀錄單時間共 23.5 秒，已達 10 秒以上。\", \"times\": [[31.5, 38.5], [40.5, 50.0], [55.0, 62.0]], \"evidence\": [\"clip@30.5-70\", \"zoom@35\", \"zoom@45\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"4b\", \"verdict\": \"正確\", \"explanation\": \"於 00:31.5–00:38.5、00:40.5–00:50.0 及 00:55.0–01:02.0 查看給藥紀錄單核對藥物時，右手食指皆明顯指向前方的給藥紀錄單進行指讀。\", \"times\": [[31.5, 38.5], [40.5, 50.0], [55.0, 62.0]], \"evidence\": [\"clip@30.5-70\", \"zoom@35\", \"zoom@45\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

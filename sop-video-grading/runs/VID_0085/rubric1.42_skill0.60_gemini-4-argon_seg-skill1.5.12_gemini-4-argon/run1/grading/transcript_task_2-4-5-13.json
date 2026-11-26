@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 110.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 21845,
+  "cached_input_tokens": 0,
+  "output_tokens": 217,
+  "thinking_tokens": 123,
+  "materials": [
+   "ov@48.2-74（hands_box，n=9）#0=00:48.2、#1=00:51.4、#2=00:54.6、#3=00:57.9、#4=01:01.1、#5=01:04.3、#6=01:07.5、#7=01:10.8、#8=01:14.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [59.0, 61.1, 63.0], \"region\": [0.25, 0.4, 0.75, 0.85], \"reason\": \"確認考生在 00:58–01:04 期間拿起稀釋液瓶並檢視瓶身標示與液體\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 6.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 23045,
+  "cached_input_tokens": 20130,
+  "output_tokens": 157,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@48.2-74（hands_box，n=9）#0=00:48.2、#1=00:51.4、#2=00:54.6、#3=00:57.9、#4=01:01.1、#5=01:04.3、#6=01:07.5、#7=01:10.8、#8=01:14.0",
+   "zoom@59/61.1/63 region=[0.250, 0.400, 0.750, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4d\", \"verdict\": \"正確\", \"explanation\": \"00:59.0–01:03.0 考生雙手拿起細長透明塑膠稀釋液瓶，橫持於胸前轉動檢視瓶身標示與瓶內液體有無異物，隨後將其放回桌面上。\", \"times\": [[59.0, 63.0]], \"evidence\": [\"ov@48.2-74 #4\", \"zoom@59\", \"zoom@61.1\", \"zoom@63\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

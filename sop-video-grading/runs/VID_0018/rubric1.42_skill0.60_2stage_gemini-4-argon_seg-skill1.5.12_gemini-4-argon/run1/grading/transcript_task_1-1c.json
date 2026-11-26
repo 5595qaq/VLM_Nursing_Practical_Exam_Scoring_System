@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 7.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 21953,
+  "cached_input_tokens": 0,
+  "output_tokens": 67,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@0-274（hands_box，n=9）#0=00:00.0、#1=00:34.2、#2=01:08.5、#3=01:42.8、#4=02:17.0、#5=02:51.2、#6=03:25.5、#7=03:59.8、#8=04:34.0"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 0.0, \"end\": 60.0, \"fps\": 2, \"reason\": \"檢查 00:00–01:00 間在洗手前接觸與拿取藥瓶等物品的確切時間點\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 12.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 33155,
+  "cached_input_tokens": 20130,
+  "output_tokens": 244,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@0-274（hands_box，n=9）#0=00:00.0、#1=00:34.2、#2=01:08.5、#3=01:42.8、#4=02:17.0、#5=02:51.2、#6=03:25.5、#7=03:59.8、#8=04:34.0",
+   "clip@0-60（context box，有聲音；片段內 00:00 ＝ 影片 00:00.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"1c\", \"verdict\": \"錯誤\", \"explanation\": \"考生於 03:49.5–04:32.0 才進行洗手，但在洗手前已多次實際接觸並操作物品：00:03.5–00:09.0 取出並檢視藥瓶放置於治療車檯面、00:17.0–00:34.0 再次拿取並檢視多個藥瓶、00:35.0–00:40.0 手指觸碰給藥紀錄單並持藥瓶核對。未在接觸物品前完成洗手。\", \"times\": [[3.5, 3.5], [17.0, 17.0], [35.0, 35.0]], \"evidence\": [\"ov@0-274 #1\", \"ov@0-274 #7\", \"clip@0-60\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 10.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 22353,
+  "cached_input_tokens": 0,
+  "output_tokens": 70,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@22.5-32（context box，有聲音；片段內 00:00 ＝ 影片 00:22.5）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [25.0, 27.5], \"region\": [0.25, 0.72, 0.78, 0.99], \"reason\": \"確認治療車檯面上給藥紀錄單的位置及是否可見\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 15.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 23516,
+  "cached_input_tokens": 0,
+  "output_tokens": 287,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@22.5-32（context box，有聲音；片段內 00:00 ＝ 影片 00:22.5）",
+   "zoom@25/27.5 region=[0.250, 0.720, 0.780, 0.990]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4a\", \"verdict\": \"無法判定\", \"explanation\": \"已檢查治療車檯面、畫面下緣及周邊區域（如 zoom@25、zoom@27.5），給藥紀錄單未入鏡或被遮擋，無法確認查看給藥紀錄單的時間。\", \"times\": [[24.5, 30.0]], \"evidence\": [\"clip@22.5-32\", \"zoom@25\", \"zoom@27.5\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}, {\"criterion_id\": \"4b\", \"verdict\": \"錯誤\", \"explanation\": \"00:24.5–00:30.0（clip@22.5-32 片段內 00:02.0–00:07.5）考生雙手皆在胸前握持藥瓶檢視，並未伸手指向給藥紀錄單。\", \"times\": [[24.5, 30.0]], \"evidence\": [\"clip@22.5-32\", \"zoom@25\", \"zoom@27.5\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

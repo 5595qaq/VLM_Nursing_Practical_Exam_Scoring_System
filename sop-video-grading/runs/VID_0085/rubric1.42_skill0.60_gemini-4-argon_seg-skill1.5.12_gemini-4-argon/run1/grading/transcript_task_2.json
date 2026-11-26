@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 9.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 21800,
+  "cached_input_tokens": 0,
+  "output_tokens": 76,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@19.8-26.5（context box，有聲音；片段內 00:00 ＝ 影片 00:19.8）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 9.8, \"end\": 19.8, \"fps\": 2, \"reason\": \"查看 19.8 秒前（00:09.8–00:19.8）洗手或洗手前是否有查看或指讀給藥紀錄單\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 10.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 23585,
+  "cached_input_tokens": 0,
+  "output_tokens": 74,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@19.8-26.5（context box，有聲音；片段內 00:00 ＝ 影片 00:19.8）",
+   "clip@9.8-19.8（context box，有聲音；片段內 00:00 ＝ 影片 00:09.8）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [22.0, 22.8], \"region\": [0.3, 0.75, 0.7, 1.0], \"reason\": \"確認治療車前緣的紙張是否為給藥紀錄單以及取出藥瓶的瞬間\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 15.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 24778,
+  "cached_input_tokens": 20130,
+  "output_tokens": 456,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@19.8-26.5（context box，有聲音；片段內 00:00 ＝ 影片 00:19.8）",
+   "clip@9.8-19.8（context box，有聲音；片段內 00:00 ＝ 影片 00:09.8）",
+   "zoom@22/22.8 region=[0.300, 0.750, 0.700, 1.000]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"2a\", \"verdict\": \"無法判定\", \"explanation\": \"經檢查治療車前緣與檯面（zoom@22、zoom@22.8，可見酒精棉片與空針包裝，未見給藥紀錄單），給藥紀錄單未入鏡（可能在畫面下方外），無法確認考生在 00:22.8 取出 vial 前實際查看給藥紀錄單的時間。\", \"times\": [], \"evidence\": [\"clip@9.8-19.8\", \"clip@19.8-26.5\", \"zoom@22\", \"zoom@22.8\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}, {\"criterion_id\": \"2b\", \"verdict\": \"錯誤\", \"explanation\": \"00:09.8–00:21.8 考生雙手全程在胸前搓洗，00:21.8 洗手結束後右手於 00:22.3–00:22.8 直接伸向檯面拿取 vial，取出前雙手未有指向給藥紀錄單的指讀動作。\", \"times\": [[9.8, 22.8]], \"evidence\": [\"clip@9.8-19.8\", \"clip@19.8-26.5\", \"zoom@22\", \"zoom@22.8\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"2d\", \"verdict\": \"正確\", \"explanation\": \"00:22.8（clip@19.8-26.5 片段內 00:03.0）考生以右手從檯面取出 vial 藥瓶。\", \"times\": [[22.8, 22.8]], \"evidence\": [\"clip@19.8-26.5\", \"zoom@22.8\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

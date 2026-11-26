@@ -1,0 +1,64 @@
+[
+ {
+  "turn": 1,
+  "seconds": 6.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 21912,
+  "cached_input_tokens": 0,
+  "output_tokens": 65,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@193-294（hands_box，n=9）#0=03:13.0、#1=03:25.6、#2=03:38.2、#3=03:50.9、#4=04:03.5、#5=04:16.1、#6=04:28.8、#7=04:41.4、#8=04:54.0"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 200.0, \"end\": 212.0, \"fps\": 2, \"reason\": \"檢查 03:23–03:28 附近是否用手指指出空針包裝核對\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 9.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 24227,
+  "cached_input_tokens": 0,
+  "output_tokens": 236,
+  "thinking_tokens": 168,
+  "materials": [
+   "ov@193-294（hands_box，n=9）#0=03:13.0、#1=03:25.6、#2=03:38.2、#3=03:50.9、#4=04:03.5、#5=04:16.1、#6=04:28.8、#7=04:41.4、#8=04:54.0",
+   "clip@200-212（context box，有聲音；片段內 00:00 ＝ 影片 03:20.0）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 270.0, \"end\": 290.0, \"fps\": 2, \"reason\": \"查看 04:30.0–04:50.0 撕開空針包裝前的核對動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 5.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 28038,
+  "cached_input_tokens": 0,
+  "output_tokens": 82,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@193-294（hands_box，n=9）#0=03:13.0、#1=03:25.6、#2=03:38.2、#3=03:50.9、#4=04:03.5、#5=04:16.1、#6=04:28.8、#7=04:41.4、#8=04:54.0",
+   "clip@200-212（context box，有聲音；片段內 00:00 ＝ 影片 03:20.0）",
+   "clip@270-290（context box，有聲音；片段內 00:00 ＝ 影片 04:30.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [277.0, 278.5, 280.0], \"region\": [0.35, 0.45, 0.7, 0.75], \"reason\": \"確認考生在撕開空針包裝前用手指指出包裝核對的細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 4,
+  "seconds": 10.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 29255,
+  "cached_input_tokens": 0,
+  "output_tokens": 278,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@193-294（hands_box，n=9）#0=03:13.0、#1=03:25.6、#2=03:38.2、#3=03:50.9、#4=04:03.5、#5=04:16.1、#6=04:28.8、#7=04:41.4、#8=04:54.0",
+   "clip@200-212（context box，有聲音；片段內 00:00 ＝ 影片 03:20.0）",
+   "clip@270-290（context box，有聲音；片段內 00:00 ＝ 影片 04:30.0）",
+   "zoom@277/278.5/280 region=[0.350, 0.450, 0.700, 0.750]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4e\", \"verdict\": \"正確\", \"explanation\": \"考生於 03:24.5–03:26.0（clip@200-212 片段內 00:04.5–00:06.0）拿起空針包裝並以左手食指指出包裝核對；隨後於 04:36.5–04:40.5（clip@270-290 片段內 00:06.5–00:10.5）撕開空針包裝前，再次以左手持空針包裝、右手食指清楚指出包裝背面核對，接著才於 04:41.5 開始撕開包裝。\", \"times\": [[204.5, 206.0], [276.5, 280.5]], \"evidence\": [\"clip@200-212\", \"clip@270-290\", \"zoom@277\", \"zoom@278.5\", \"zoom@280\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

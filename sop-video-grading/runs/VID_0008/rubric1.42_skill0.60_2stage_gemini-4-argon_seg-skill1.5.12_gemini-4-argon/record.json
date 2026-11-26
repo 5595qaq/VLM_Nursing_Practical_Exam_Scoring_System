@@ -1,0 +1,104 @@
+{
+ "video_id": "VID_0008",
+ "versions": {
+  "rubric": "1.42",
+  "skill": "0.60",
+  "model": "gemini-4-argon",
+  "segmentation": "skill1.5.12_gemini-4-argon",
+  "pipeline": "two-stage"
+ },
+ "video_sha256": "69e00eb3982dc4bc84750065a84b2ccae9904aaf21cfe2ceea288a21be444f0a",
+ "runs": [
+  {
+   "run": 1,
+   "by": "5595QAQ",
+   "date": "2026-11-26",
+   "commit": "9f112b9655b4a4fd4fa629e2ed21370a67bb69e6",
+   "video_sha256": "69e00eb3982dc4bc84750065a84b2ccae9904aaf21cfe2ceea288a21be444f0a",
+   "steps": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    28
+   ],
+   "failed_tasks": [
+    {
+     "task": "25-26-27",
+     "error": "TimeoutError: "
+    },
+    {
+     "task": "29-30",
+     "error": "TimeoutError: "
+    }
+   ],
+   "segmentation": "sop-video-skill 1.5.12 gemini-4-argon",
+   "usage": {
+    "input_tokens": 1662016,
+    "cached_input_tokens": 261503,
+    "output_tokens": 41612,
+    "thinking_tokens": 14713
+   },
+   "segmentation_usage": {
+    "input_tokens": 553820,
+    "cached_input_tokens": 355616,
+    "output_tokens": 40439,
+    "thinking_tokens": 14375
+   },
+   "timing": {
+    "started_at": "2026-11-26T07:10:27+00:00",
+    "segmentation_seconds": 714.0,
+    "grading_seconds": 1574.2,
+    "total_seconds": 2288.4
+   }
+  },
+  {
+   "run": 2,
+   "by": "5595QAQ",
+   "date": "2026-11-26",
+   "commit": "9f112b9655b4a4fd4fa629e2ed21370a67bb69e6",
+   "video_sha256": "69e00eb3982dc4bc84750065a84b2ccae9904aaf21cfe2ceea288a21be444f0a",
+   "steps": [
+    25,
+    26,
+    27,
+    29,
+    30
+   ],
+   "failed_tasks": [],
+   "segmentation": "recorded segmentation.json",
+   "usage": {
+    "input_tokens": 95026,
+    "cached_input_tokens": 40260,
+    "output_tokens": 953,
+    "thinking_tokens": 0
+   },
+   "timing": {
+    "started_at": "2026-11-26T07:50:15+00:00",
+    "grading_seconds": 879.2,
+    "total_seconds": 879.2,
+    "checkpoints_found": true
+   }
+  }
+ ]
+}

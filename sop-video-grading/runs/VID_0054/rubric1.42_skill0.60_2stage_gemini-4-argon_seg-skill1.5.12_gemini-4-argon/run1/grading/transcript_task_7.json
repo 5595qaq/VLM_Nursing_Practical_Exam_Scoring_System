@@ -1,0 +1,64 @@
+[
+ {
+  "turn": 1,
+  "seconds": 10.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 25536,
+  "cached_input_tokens": 0,
+  "output_tokens": 83,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@293-320（context box，有聲音；片段內 00:00 ＝ 影片 04:53.0）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 283.0, \"end\": 295.0, \"fps\": 2, \"reason\": \"依規則7a，查看區間開始前10秒到區間開始（283-295s），確認拿起稀釋液瓶與棉片第一次碰到瓶頂的時間。\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 8.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 27825,
+  "cached_input_tokens": 20130,
+  "output_tokens": 91,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@293-320（context box，有聲音；片段內 00:00 ＝ 影片 04:53.0）",
+   "clip@283-295（context box，有聲音；片段內 00:00 ＝ 影片 04:43.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [288.5, 293.0, 315.5, 318.0], \"region\": [0.35, 0.28, 0.65, 0.55], \"reason\": \"確認考生手中拿的是哪種藥瓶，以及是否有消毒稀釋液瓶口\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 11.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 29068,
+  "cached_input_tokens": 0,
+  "output_tokens": 242,
+  "thinking_tokens": 153,
+  "materials": [
+   "clip@293-320（context box，有聲音；片段內 00:00 ＝ 影片 04:53.0）",
+   "clip@283-295（context box，有聲音；片段內 00:00 ＝ 影片 04:43.0）",
+   "zoom@288.5/293/315.5/318 region=[0.350, 0.280, 0.650, 0.550]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [288.0, 293.0, 315.5, 318.5], \"region\": [0.3, 0.45, 0.7, 0.72], \"reason\": \"確認考生手中拿的是哪一個藥瓶，以及桌面上的稀釋液瓶狀態\"}",
+  "errors": []
+ },
+ {
+  "turn": 4,
+  "seconds": 21.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 30322,
+  "cached_input_tokens": 0,
+  "output_tokens": 793,
+  "thinking_tokens": 543,
+  "materials": [
+   "clip@293-320（context box，有聲音；片段內 00:00 ＝ 影片 04:53.0）",
+   "clip@283-295（context box，有聲音；片段內 00:00 ＝ 影片 04:43.0）",
+   "zoom@288.5/293/315.5/318 region=[0.350, 0.280, 0.650, 0.550]",
+   "zoom@288/293/315.5/318.5 region=[0.300, 0.450, 0.700, 0.720]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"7a\", \"verdict\": \"正確\", \"explanation\": \"04:48.0（clip@283-295 片段內 00:05.0）拿起稀釋液瓶，04:52.0–05:14.5 推開白色塑膠瓶蓋後，於 05:17.0–05:20.0（clip@293-320 片段內 00:24.0–00:27.0）以酒精棉片來回擦拭稀釋液瓶口消毒（zoom@318.5 可見白色酒精棉片擦拭稀釋液瓶口）。\", \"times\": [[317.0, 320.0]], \"evidence\": [\"clip@283-295\", \"clip@293-320\", \"zoom@315.5\", \"zoom@318.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

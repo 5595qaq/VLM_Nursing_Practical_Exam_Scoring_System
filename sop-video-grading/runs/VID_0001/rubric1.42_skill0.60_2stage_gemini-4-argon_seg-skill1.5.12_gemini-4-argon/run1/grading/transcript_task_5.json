@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 8.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 21846,
+  "cached_input_tokens": 0,
+  "output_tokens": 127,
+  "thinking_tokens": 41,
+  "materials": [
+   "clip@183-190（context box，有聲音；片段內 00:00 ＝ 影片 03:03.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [185.0, 186.0, 186.5, 187.5], \"region\": [0.35, 0.45, 0.7, 0.75], \"reason\": \"確認將 vial 塑膠翻蓋推開並打開瓶口的細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 5.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 23079,
+  "cached_input_tokens": 20130,
+  "output_tokens": 185,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@183-190（context box，有聲音；片段內 00:00 ＝ 影片 03:03.0）",
+   "zoom@185/186/186.5/187.5 region=[0.350, 0.450, 0.700, 0.750]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"於 03:05.5–03:07.5（clip@183-190 片段內 00:02.5–00:04.5）考生右手固定 vial 藥瓶，左手將瓶口深紅色塑膠翻蓋掀開並放置於檯面上，開蓋後可見瓶頂露出銀色鋁圈。\", \"times\": [[185.5, 187.5]], \"evidence\": [\"clip@183-190\", \"zoom@185\", \"zoom@186\", \"zoom@186.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

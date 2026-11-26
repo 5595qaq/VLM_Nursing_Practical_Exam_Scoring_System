@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 19.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 21859,
+  "cached_input_tokens": 0,
+  "output_tokens": 114,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@415.5-459.5（hands_box，n=9）#0=06:55.5、#1=07:01.0、#2=07:06.5、#3=07:12.0、#4=07:17.5、#5=07:23.0、#6=07:28.5、#7=07:34.0、#8=07:39.5"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [437.5, 443.0, 448.5, 452.0], \"region\": [0.25, 0.15, 0.7, 0.55], \"reason\": \"對準針筒與推針心的右手，確認07:17.5至07:32.0期間推桿長度是否變短及手部推針心圓盤動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 34.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 23094,
+  "cached_input_tokens": 0,
+  "output_tokens": 187,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@415.5-459.5（hands_box，n=9）#0=06:55.5、#1=07:01.0、#2=07:06.5、#3=07:12.0、#4=07:17.5、#5=07:23.0、#6=07:28.5、#7=07:34.0、#8=07:39.5",
+   "zoom@437.5/443/448.5/452 region=[0.250, 0.150, 0.700, 0.550]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"17b\", \"verdict\": \"正確\", \"explanation\": \"07:23.0–07:28.5 右手拇指壓在針心尾端圓盤、食指頂住針筒翼緣往上推針心排氣，且對比 07:17.5（彈針時）與 07:23.0–07:32.0 可見外露的推桿明顯變短。\", \"times\": [[443.0, 448.5]], \"evidence\": [\"zoom@437.5\", \"zoom@443\", \"zoom@448.5\", \"zoom@452\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

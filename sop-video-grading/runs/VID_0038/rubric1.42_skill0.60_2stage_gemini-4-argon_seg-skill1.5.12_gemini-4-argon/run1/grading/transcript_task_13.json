@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 4.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 21801,
+  "cached_input_tokens": 0,
+  "output_tokens": 94,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@308-320（hands_box，n=9）#0=05:08.0、#1=05:09.5、#2=05:11.0、#3=05:12.5、#4=05:14.0、#5=05:15.5、#6=05:17.0、#7=05:18.5、#8=05:20.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [313.5, 314.0, 315.5, 317.0], \"region\": [0.3, 0.35, 0.65, 0.65], \"reason\": \"用 zoom 確認針頭插入稀釋液瓶時的針筒方向，以及是否有拔出重插\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 9.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 23063,
+  "cached_input_tokens": 0,
+  "output_tokens": 175,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@308-320（hands_box，n=9）#0=05:08.0、#1=05:09.5、#2=05:11.0、#3=05:12.5、#4=05:14.0、#5=05:15.5、#6=05:17.0、#7=05:18.5、#8=05:20.0",
+   "zoom@313.5/314/315.5/317 region=[0.300, 0.350, 0.650, 0.650]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"13b\", \"verdict\": \"正確\", \"explanation\": \"於 05:14.0–05:15.5 學生右手持空針將針頭插入左手夾住的稀釋液瓶中，針筒由左上往右下斜向下插入，針頭比針筒尾端低，符合針頭朝下插入之標準。\", \"times\": [[314.0, 315.5]], \"evidence\": [\"ov@308-320 #4\", \"ov@308-320 #5\", \"zoom@314\", \"zoom@315.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 3.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 21852,
+  "cached_input_tokens": 0,
+  "output_tokens": 75,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@165-213（hands_box，n=9）#0=02:45.0、#1=02:51.0、#2=02:57.0、#3=03:03.0、#4=03:09.0、#5=03:15.0、#6=03:21.0、#7=03:27.0、#8=03:33.0"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 165.0, \"end\": 213.0, \"fps\": 2, \"reason\": \"檢查 02:45.0–03:33.0 區間內考生是否有拿起稀釋液檢查效期與有無異物\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 225.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 30863,
+  "cached_input_tokens": 0,
+  "output_tokens": 524,
+  "thinking_tokens": 433,
+  "materials": [
+   "ov@165-213（hands_box，n=9）#0=02:45.0、#1=02:51.0、#2=02:57.0、#3=03:03.0、#4=03:09.0、#5=03:15.0、#6=03:21.0、#7=03:27.0、#8=03:33.0",
+   "clip@165-213（context box，有聲音；片段內 00:00 ＝ 影片 02:45.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [197.0, 197.5, 198.0], \"region\": [0.35, 0.4, 0.75, 0.8], \"reason\": \"確認 03:17.0–03:18.0 拿起稀釋液瓶檢視的動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 7.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 32095,
+  "cached_input_tokens": 0,
+  "output_tokens": 260,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@165-213（hands_box，n=9）#0=02:45.0、#1=02:51.0、#2=02:57.0、#3=03:03.0、#4=03:09.0、#5=03:15.0、#6=03:21.0、#7=03:27.0、#8=03:33.0",
+   "clip@165-213（context box，有聲音；片段內 00:00 ＝ 影片 02:45.0）",
+   "zoom@197/197.5/198 region=[0.350, 0.400, 0.750, 0.800]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4d\", \"verdict\": \"正確\", \"explanation\": \"考生於 02:56.0–02:57.0 取出稀釋液瓶放到治療車上，於 03:10.5–03:11.5（clip@165-213 片段內 00:25.5–00:26.5）及 03:17.0–03:18.5（片段內 00:32.0–00:33.5）左手拿起稀釋液瓶轉動並低頭檢視瓶身標示與液體，符合抽藥前拿起稀釋液檢查之要求。\", \"times\": [[190.5, 191.5], [197.0, 198.5]], \"evidence\": [\"clip@165-213\", \"zoom@197\", \"zoom@197.5\", \"zoom@198\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]
