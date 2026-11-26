@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 56.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 28843,
+  "cached_input_tokens": 0,
+  "output_tokens": 96,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@70-114（context box，有聲音；片段內 00:00 ＝ 影片 01:10.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [70.5, 88.0, 105.5, 111.0], \"region\": [0.35, 0.65, 0.85, 0.98], \"reason\": \"確認治療車桌面上平放的紙張是否為給藥紀錄單，以及考生左手食指指讀的位置\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 8.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 30071,
+  "cached_input_tokens": 20130,
+  "output_tokens": 395,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@70-114（context box，有聲音；片段內 00:00 ＝ 影片 01:10.0）",
+   "zoom@70.5/88/105.5/111 region=[0.350, 0.650, 0.850, 0.980]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4a\", \"verdict\": \"無法判定\", \"explanation\": \"01:10.0–01:54.0（clip@70-114 片段內 00:00.0–00:44.0）給藥紀錄單位於治療車後方或檯面下緣，被治療車檯面與白色治療巾擋住而未入鏡（雖於 01:45.5–01:52.0 左手在白色治療巾上做指讀動作，但紀錄單本身看不見），無法確認實際查看給藥紀錄單的時間。\", \"times\": [], \"evidence\": [\"clip@70-114\", \"zoom@70.5\", \"zoom@88\", \"zoom@105.5\", \"zoom@111\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}, {\"criterion_id\": \"4b\", \"verdict\": \"無法判定\", \"explanation\": \"01:10.0–01:54.0 給藥紀錄單未入鏡（01:28.5–01:30.0 左手在車後檯面下緣被擋住，01:45.5–01:52.0 左手指在白色治療巾上而非紀錄單紙張上），無法確認手指是否有指出給藥紀錄單。\", \"times\": [], \"evidence\": [\"clip@70-114\", \"zoom@70.5\", \"zoom@88\", \"zoom@105.5\", \"zoom@111\"], \"confidence\": 0.9, \"reason\": \"藥單看不見\"}]}",
+  "errors": []
+ }
+]

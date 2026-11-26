@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 14.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 25036,
+  "cached_input_tokens": 0,
+  "output_tokens": 94,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@200-223.8（context box，有聲音；片段內 00:00 ＝ 影片 03:20.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [204.0, 205.5, 215.5, 217.0], \"region\": [0.35, 0.5, 0.65, 0.85], \"reason\": \"確認步驟5將vial瓶蓋打開以及步驟6用酒精棉片消毒vial瓶口的細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 8.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 26274,
+  "cached_input_tokens": 20130,
+  "output_tokens": 367,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@200-223.8（context box，有聲音；片段內 00:00 ＝ 影片 03:20.0）",
+   "zoom@204/205.5/215.5/217 region=[0.350, 0.500, 0.650, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"03:23.0–03:25.0（clip@200-223.8 片段內 00:03.0–00:05.0）雙手拿起 vial 並推開深紅色翻蓋（可聽見開蓋聲），03:25.0–03:25.5 將脫落的深紅色翻蓋放在治療車檯面上，vial 瓶頂露出銀色鋁圈。\", \"times\": [[203.0, 205.5]], \"evidence\": [\"clip@200-223.8\", \"zoom@204\", \"zoom@205.5\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"6a\", \"verdict\": \"正確\", \"explanation\": \"03:35.0–03:38.5（clip@200-223.8 片段內 00:15.0–00:18.5）右手持白色方形酒精棉片在 vial 瓶口來回擦拭消毒，之後將棉片蓋在瓶口並將 vial 放回檯面。\", \"times\": [[215.0, 218.5]], \"evidence\": [\"clip@200-223.8\", \"zoom@215.5\", \"zoom@217\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
