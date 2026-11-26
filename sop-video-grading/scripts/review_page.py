@@ -32,7 +32,7 @@ import sys
 from pathlib import Path
 
 from eval_grading import FAULTS, LAST_RECORDED_STEP, UNUSABLE_VIDEOS, load_labels
-from rubric import NOT_APPLICABLE, PENDING, load_rubric, wrong_with_links
+from rubric import NOT_APPLICABLE, PENDING, UNDETERMINED, load_rubric, wrong_with_links
 
 REVIEW_DIR = Path(__file__).resolve().parent.parent / "review"
 VERDICTS = ["正確", "錯誤", "部分正確", "無法判定"]
@@ -44,6 +44,24 @@ def reviewable(criterion: dict) -> bool:
     """A criterion the evidence review asks about: judged by the model or a rule (not a fixed not_visible
     one) and not still pending. Same test as `asked` in the page."""
     return criterion.get("source") != "fixed" and criterion["verdict"] != PENDING
+
+
+def sheet_gate(step: dict, rubric: dict) -> str:
+    """The criterion that alone decides the step: the model judged it 無法判定 for its
+    unconfirmed_step_reason (藥單看不見), which makes the step 無法判定 whatever the other criteria say
+    (rubric aggregate). '' when there is none."""
+    reasons = {c["id"]: c.get("unconfirmed_step_reason") for s in rubric["steps"] for c in s["criteria"]}
+    return next((c["criterion_id"] for c in step["criteria"] if reviewable(c) and c["verdict"] == UNDETERMINED
+                 and reasons.get(c["criterion_id"]) and c.get("reason") == reasons[c["criterion_id"]]), "")
+
+
+def asked_criteria(step: dict, rubric: dict, answers: dict[str, tuple[str, str]]) -> list[dict]:
+    """The criteria the evidence review needs answered: only the sheet_gate one while the reviewer keeps it
+    無法判定 (the others cannot change the step), else every reviewable one. Same rule as `shown` in the page."""
+    gate = sheet_gate(step, rubric)
+    if gate and answers.get(gate, ("", ""))[0] == UNDETERMINED:
+        return [c for c in step["criteria"] if c["criterion_id"] == gate]
+    return [c for c in step["criteria"] if reviewable(c)]
 
 
 def parse_steps(text: str) -> set[int]:
@@ -110,6 +128,7 @@ def build_items(grading: dict, segmentation: dict | None, labels: dict[int, dict
                           "source": c.get("source", ""), "times": c.get("times") or [],
                           "wrong_with": links.get(c["criterion_id"], "")}
                          for c in step["criteria"]],
+            "gate": sheet_gate(step, rubric) if evidence else "",
             "proposal": step["verdict"], "proposal_src": "模型", "why": "",
             "spans": step_spans(segmentation, sid)})
     return items
@@ -306,8 +325,14 @@ const critDone = (d, c) => { const x = (d.crit || {})[c.id] || {}; return !!(x.v
 const isDone = it => {
   const d = got(it);
   if (!EV || it.type !== "step") return !!d.decision;
-  return d.decision === "待老師確認" || it.criteria.filter(asked).every(c => critDone(d, c));
+  return d.decision === "待老師確認" || shown(it, d).every(c => critDone(d, c));
 };
+// the criteria to answer: when the model judged the gate criterion (2a/4a/29a) 無法判定 because the sheet is
+// out of frame, only it until the reviewer judges it otherwise (asked_criteria in review_page.py)
+function shown(it, d) {
+  const all = it.criteria.filter(asked), g = ((d.crit || {})[it.gate] || {}).verdict;
+  return it.gate && (!g || g === "無法判定") ? all.filter(c => c.id === it.gate) : all;
+}
 const dec = key => { const k = dk(byKey[key]); return S.decisions[k] = S.decisions[k] || {}; };
 const $ = id => document.getElementById(id);
 const v = $("v"), picked = {};
@@ -425,9 +450,12 @@ function card(it) {
       it.spans.map(([a, b]) => `<button class="t" data-vid="${esc(it.video_id)}" data-t="${a}">${fmt(a)}–${fmt(b)}</button>`).join("") + "</div>";
     if (it.why) h += `<div class="why"><b>Claude：</b>${linkTimes(it.why, it.video_id)}</div>`;
     if (it.label && it.label.why) h += `<div class="crit"><b>標記表說明：</b>${esc(it.label.why)}</div>`;
+    const ask = EV ? shown(it, d).map(c => c.id) : [];
+    if (EV && it.gate) h += `<div class="why">模型判 ${esc(it.gate)} 藥單看不見，整步無法判定。先確認藥單是不是真的沒拍到：` +
+      `維持「無法判定」時其他標準不必判；藥單其實看得到時改判 ${esc(it.gate)}，其他標準才會出現。</div>`;
     for (const c of it.criteria) h += `<div class="crit">${pill(c.verdict, c.id)} <span class="ct">${esc(c.text)}</span><br>` +
       linkTimes(c.explanation, it.video_id) + (c.review_reason ? `<br><b>需複核：</b>${linkTimes(c.review_reason, it.video_id)}` : "") +
-      (EV && asked(c) ? critControls(it, c) : "") + "</div>";
+      (ask.includes(c.id) ? critControls(it, c) : EV && asked(c) ? '<div class="help">藥單看不見，這一條不必判。</div>' : "") + "</div>";
   }
   h += `<div class="dec">${decisionButtons(it)}</div>` +
     `<textarea data-k="${esc(it.key)}" placeholder="備註（不同意的理由、正確的時間點…）">${esc(d.note || "")}</textarea></div>`;
@@ -523,7 +551,7 @@ function evidenceRows() {
   const rows = [["類型", "影片ID", "版本", "步驟", "標準", "標記表", "模型步驟", "模型", "人工判定", "證據", "決定", "備註", "核對者", "核對時間"]];
   for (const it of D.items) {
     const d = got(it);
-    for (const c of it.criteria.filter(asked)) {
+    for (const c of shown(it, d)) {
       const x = (d.crit || {})[c.id] || {};
       rows.push(["證據", it.video_id, it.run, it.step, c.id, (it.label || {}).verdict, it.model, c.verdict,
                  x.verdict, x.evidence, d.decision, d.note, S.who, d.at]);

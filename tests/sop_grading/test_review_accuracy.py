@@ -231,3 +231,36 @@ def test_parse_steps_rejects_bad_ranges():
     for bad in ("14-10", ",", ""):
         with pytest.raises(argparse.ArgumentTypeError):
             rp.parse_steps(bad)
+
+
+def sheet_out_of_frame(run):
+    """VID_0001 step 2: the model judged 2a 無法判定 because the sheet is out of frame (step 2 無法判定)."""
+    grading = json.loads((run / "grading.json").read_text(encoding="utf-8"))
+    reason = next(c["unconfirmed_step_reason"] for s in load_rubric()["steps"] for c in s["criteria"] if c["id"] == "2a")
+    for step in grading["steps"]:
+        if step["step_id"] == 2:
+            step["criteria"][0].update(verdict="無法判定", reason=reason)
+            step["verdict"] = "無法判定"
+    (run / "grading.json").write_text(json.dumps(grading, ensure_ascii=False), encoding="utf-8")
+    return grading
+
+
+def test_sheet_out_of_frame_asks_only_the_gate(tmp_path, run):
+    grading = sheet_out_of_frame(run)
+    labels = write_labels(tmp_path / "l.csv", [label(2, "錯誤")])
+    seg = json.loads((run / "segmentation.json").read_text(encoding="utf-8"))
+    from eval_grading import load_labels
+    item = rp.build_items(grading, seg, load_labels(labels, set())["VID_0001"], load_rubric(), evidence=True)[0]
+    assert item["step"] == 2 and item["gate"] == "2a"
+    step2 = next(s for s in grading["steps"] if s["step_id"] == 2)
+    ids = lambda answers: [c["criterion_id"] for c in rp.asked_criteria(step2, load_rubric(), answers)]
+    assert ids({"2a": ("無法判定", "正確")}) == ["2a"]
+    assert ids({"2a": ("錯誤", "內容不符")}) == ["2a", "2b", "2d"]  # the sheet was visible: judge the rest
+    assert ids({}) == ["2a", "2b", "2d"]  # unanswered: the step is not finished
+    # the reviewer confirms the sheet is out of frame: the step counts as 無法判定 = model, nothing else asked
+    ev, _ = run_report(run, labels, write_results(tmp_path / "a.csv", {(2, "2a"): ("無法判定", "正確")}))
+    row = next(r for r in ev["rows"] if r["step_id"] == 2)
+    assert row["reviewed"] and row["human"] == "無法判定" and row["strict"]
+    # the sheet was visible: the other criteria are needed before the step counts
+    ev, _ = run_report(run, labels, write_results(tmp_path / "b.csv", {(2, "2a"): ("錯誤", "內容不符")}))
+    assert "VID_0001 步驟 2" in ev["skipped"]["應核對但沒有完成或答案衝突"]

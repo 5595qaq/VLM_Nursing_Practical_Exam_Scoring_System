@@ -5,7 +5,8 @@ usage: python review_accuracy.py RUN [RUN ...] --labels LABELS.csv --results A.c
 RUN is a run-record folder, as given to review_page.py. A step counts in two ways:
   - reviewed (listed by review_page.py --evidence): the reviewers' criterion verdicts give the human step
     verdict (rubric aggregate, wrong_with links applied across the video; fixed and pending criteria keep
-    the model's verdict). 判定一致 = model step verdict equals it; 判定＋證據 also needs no reviewed
+    the model's verdict; when the reviewer keeps a 藥單看不見 gate criterion 無法判定, the step's other
+    criteria are not asked and keep the model's verdict, review_page.asked_criteria). 判定一致 = model step verdict equals it; 判定＋證據 also needs no reviewed
     criterion whose evidence is 時間不對 or 內容不符 (無法確認 is listed but does not count against it);
   - not reviewed (the model agrees with the label sheet and did not judge 錯誤/部分正確): the label sheet
     stands, with eval_grading.py's time check for 判定＋證據 (the evidence was not looked at by a person).
@@ -23,7 +24,7 @@ from collections import defaultdict
 from pathlib import Path
 
 from eval_grading import LAST_RECORDED_STEP, TUNING_SET, UNUSABLE_VIDEOS, compare, load_labels
-from review_page import EVIDENCE_BAD, build_items, load_run, reviewable
+from review_page import EVIDENCE_BAD, asked_criteria, build_items, load_run
 from rubric import NOT_APPLICABLE, PENDING, aggregate, load_rubric, wrong_with_links
 from run_record import TWO_STAGE
 
@@ -107,7 +108,7 @@ def evaluate(runs: list[Path], labels: dict, results: dict, rubric: dict) -> dic
                 if res and res["decision"] == TEACHER:
                     skipped["整步待老師確認"].append(where + (f"：{res['note']}" if res["note"] else ""))
                     continue
-                asked = [c for c in step["criteria"] if reviewable(c)]
+                asked = asked_criteria(step, rubric, res["crit"] if res else {})
                 if not res or res.get("conflict") or any(not all(res["crit"].get(c["criterion_id"], ("", "")))
                                                          for c in asked):
                     skipped["應核對但沒有完成或答案衝突"].append(where)
