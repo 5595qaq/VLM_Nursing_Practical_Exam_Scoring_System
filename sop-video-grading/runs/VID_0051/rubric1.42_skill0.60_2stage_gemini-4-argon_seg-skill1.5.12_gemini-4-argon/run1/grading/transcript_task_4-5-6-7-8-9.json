@@ -1,0 +1,64 @@
+[
+ {
+  "turn": 1,
+  "seconds": 9.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 21897,
+  "cached_input_tokens": 0,
+  "output_tokens": 171,
+  "thinking_tokens": 104,
+  "materials": [
+   "ov@62.4-106（hands_box，n=9）#0=01:02.4、#1=01:07.8、#2=01:13.3、#3=01:18.8、#4=01:24.2、#5=01:29.7、#6=01:35.1、#7=01:40.5、#8=01:46.0"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 70.0, \"end\": 96.0, \"fps\": 2, \"reason\": \"檢查 01:10–01:36 考生手拿空針包裝時是否有用手指指出包裝核對\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 16.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 26808,
+  "cached_input_tokens": 0,
+  "output_tokens": 85,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@62.4-106（hands_box，n=9）#0=01:02.4、#1=01:07.8、#2=01:13.3、#3=01:18.8、#4=01:24.2、#5=01:29.7、#6=01:35.1、#7=01:40.5、#8=01:46.0",
+   "clip@70-96（context box，有聲音；片段內 00:00 ＝ 影片 01:10.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [72.5, 84.5, 89.5, 90.0], \"region\": [0.45, 0.35, 0.85, 0.65], \"reason\": \"確認考生在檢視空針包裝時是否有用手指指出包裝核對\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 58.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 28067,
+  "cached_input_tokens": 0,
+  "output_tokens": 245,
+  "thinking_tokens": 158,
+  "materials": [
+   "ov@62.4-106（hands_box，n=9）#0=01:02.4、#1=01:07.8、#2=01:13.3、#3=01:18.8、#4=01:24.2、#5=01:29.7、#6=01:35.1、#7=01:40.5、#8=01:46.0",
+   "clip@70-96（context box，有聲音；片段內 00:00 ＝ 影片 01:10.0）",
+   "zoom@72.5/84.5/89.5/90 region=[0.450, 0.350, 0.850, 0.650]"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [72.0, 72.5, 84.5, 91.0], \"region\": [0.45, 0.5, 0.85, 0.8], \"reason\": \"調整位置往下框選雙手與空針包裝，確認是否有用手指指出包裝核對\"}",
+  "errors": []
+ },
+ {
+  "turn": 4,
+  "seconds": 12.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 29326,
+  "cached_input_tokens": 0,
+  "output_tokens": 238,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@62.4-106（hands_box，n=9）#0=01:02.4、#1=01:07.8、#2=01:13.3、#3=01:18.8、#4=01:24.2、#5=01:29.7、#6=01:35.1、#7=01:40.5、#8=01:46.0",
+   "clip@70-96（context box，有聲音；片段內 00:00 ＝ 影片 01:10.0）",
+   "zoom@72.5/84.5/89.5/90 region=[0.450, 0.350, 0.850, 0.650]",
+   "zoom@72/72.5/84.5/91 region=[0.450, 0.500, 0.850, 0.800]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4e\", \"verdict\": \"正確\", \"explanation\": \"考生於 01:11.0 拿起第一個空針包裝，01:12.0–01:12.5 右手食指指出空針包裝背面進行核對；01:26.5 拿起第二個空針包裝，01:29.5–01:31.0 右手拇指與食指沿著空針包裝背面指出並核對，之後將兩個包裝放於治療車上，符合撕開空針包裝前用手指指出包裝核對之標準。\", \"times\": [[72.0, 72.5], [89.5, 91.0]], \"evidence\": [\"clip@70-96\", \"zoom@72\", \"zoom@72.5\", \"zoom@89.5\", \"zoom@90\", \"zoom@91\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]
