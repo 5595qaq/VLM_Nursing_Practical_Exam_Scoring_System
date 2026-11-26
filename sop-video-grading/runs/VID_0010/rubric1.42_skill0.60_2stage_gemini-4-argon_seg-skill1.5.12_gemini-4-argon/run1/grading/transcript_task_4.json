@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 6.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 22070,
+  "cached_input_tokens": 0,
+  "output_tokens": 76,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@69-224.8（hands_box，n=9）#0=01:09.0、#1=01:28.5、#2=01:48.0、#3=02:07.4、#4=02:26.9、#5=02:46.4、#6=03:05.8、#7=03:25.3、#8=03:44.8"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 69.0, \"end\": 129.0, \"fps\": 2, \"reason\": \"檢查 01:09.0–02:09.0 期間持藥瓶核對給藥紀錄單與手指指讀的起訖時間\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 15.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 33280,
+  "cached_input_tokens": 0,
+  "output_tokens": 354,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@69-224.8（hands_box，n=9）#0=01:09.0、#1=01:28.5、#2=01:48.0、#3=02:07.4、#4=02:26.9、#5=02:46.4、#6=03:05.8、#7=03:25.3、#8=03:44.8",
+   "clip@69-129（context box，有聲音；片段內 00:00 ＝ 影片 01:09.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4a\", \"verdict\": \"正確\", \"explanation\": \"於 01:11.0–02:04.5（clip@69-129 片段內 00:02.0–00:55.5）左手持 vial 藥瓶，低頭查看檯面上的給藥紀錄單並以右手食指指讀核對，累計實際查看時間為 53.5 秒，已超過 10 秒。\", \"times\": [[71.0, 124.5]], \"evidence\": [\"ov@69-224.8 #1\", \"ov@69-224.8 #2\", \"clip@69-129\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"4b\", \"verdict\": \"正確\", \"explanation\": \"於 01:11.0–02:04.5（clip@69-129 片段內 00:02.0–00:55.5）持 vial 查看給藥紀錄單時，明顯以右手食指在紀錄單上指讀核對。\", \"times\": [[71.0, 124.5]], \"evidence\": [\"ov@69-224.8 #1\", \"ov@69-224.8 #2\", \"clip@69-129\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

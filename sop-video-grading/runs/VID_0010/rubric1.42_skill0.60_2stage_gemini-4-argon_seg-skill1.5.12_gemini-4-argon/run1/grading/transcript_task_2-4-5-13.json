@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 7.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 21858,
+  "cached_input_tokens": 0,
+  "output_tokens": 266,
+  "thinking_tokens": 168,
+  "materials": [
+   "ov@171.5-196（hands_box，n=9）#0=02:51.5、#1=02:54.6、#2=02:57.6、#3=03:00.7、#4=03:03.8、#5=03:06.8、#6=03:09.9、#7=03:12.9、#8=03:16.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [182.5, 183.8, 185.0], \"region\": [0.35, 0.25, 0.75, 0.75], \"reason\": \"放大確認 03:02.5–03:05.0 左手拿起稀釋液瓶檢視的動作與瓶身\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 6.2,
+  "stop_reason": "end_turn",
+  "input_tokens": 23078,
+  "cached_input_tokens": 20130,
+  "output_tokens": 183,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@171.5-196（hands_box，n=9）#0=02:51.5、#1=02:54.6、#2=02:57.6、#3=03:00.7、#4=03:03.8、#5=03:06.8、#6=03:09.9、#7=03:12.9、#8=03:16.0",
+   "zoom@182.5/183.8/185 region=[0.350, 0.250, 0.750, 0.750]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4d\", \"verdict\": \"正確\", \"explanation\": \"於 03:02.5–03:05.0 期間，左手拿起塑膠稀釋液瓶舉至胸前並低頭目視檢查瓶身標示與液體，隨後於 03:06.8 放回治療車右側。\", \"times\": [[182.5, 186.0]], \"evidence\": [\"ov@171.5-196 #4\", \"ov@171.5-196 #5\", \"zoom@182.5\", \"zoom@183.8\", \"zoom@185\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]
