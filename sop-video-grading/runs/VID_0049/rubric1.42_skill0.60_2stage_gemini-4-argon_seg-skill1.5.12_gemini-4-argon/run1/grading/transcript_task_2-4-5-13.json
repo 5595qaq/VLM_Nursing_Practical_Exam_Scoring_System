@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 5.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 21858,
+  "cached_input_tokens": 0,
+  "output_tokens": 104,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@156-182.8（hands_box，n=9）#0=02:36.0、#1=02:39.3、#2=02:42.7、#3=02:46.1、#4=02:49.4、#5=02:52.8、#6=02:56.1、#7=02:59.4、#8=03:02.8"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [162.7, 166.1, 169.4, 172.8], \"region\": [0.45, 0.4, 0.98, 0.78], \"reason\": \"放大查看 02:42.7 至 02:52.8 拿起的物品是否為稀釋液瓶並進行檢查\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 8.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 23096,
+  "cached_input_tokens": 0,
+  "output_tokens": 165,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@156-182.8（hands_box，n=9）#0=02:36.0、#1=02:39.3、#2=02:42.7、#3=02:46.1、#4=02:49.4、#5=02:52.8、#6=02:56.1、#7=02:59.4、#8=03:02.8",
+   "zoom@162.7/166.1/169.4/172.8 region=[0.450, 0.400, 0.980, 0.780]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4d\", \"verdict\": \"正確\", \"explanation\": \"02:46.1–02:49.4 考生左手拿起細長塑膠稀釋液瓶，將瓶身轉向並目視檢視瓶身標示與液體，之後放回車上。\", \"times\": [[166.1, 169.4]], \"evidence\": [\"ov@156-182.8 #3\", \"ov@156-182.8 #4\", \"zoom@166.1\", \"zoom@169.4\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]
