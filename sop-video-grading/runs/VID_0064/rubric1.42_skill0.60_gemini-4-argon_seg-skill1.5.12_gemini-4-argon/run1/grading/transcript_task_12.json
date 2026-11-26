@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 4.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 21809,
+  "cached_input_tokens": 0,
+  "output_tokens": 86,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@198-204（hands_box，n=9）#0=03:18.0、#1=03:18.8、#2=03:19.5、#3=03:20.2、#4=03:21.0、#5=03:21.8、#6=03:22.5、#7=03:23.2、#8=03:24.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [201.0, 201.8, 202.5, 203.2], \"region\": [0.3, 0.35, 0.75, 0.7], \"reason\": \"確認左手是否以食指與中指夾住稀釋液瓶\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 28.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 23070,
+  "cached_input_tokens": 20130,
+  "output_tokens": 149,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@198-204（hands_box，n=9）#0=03:18.0、#1=03:18.8、#2=03:19.5、#3=03:20.2、#4=03:21.0、#5=03:21.8、#6=03:22.5、#7=03:23.2、#8=03:24.0",
+   "zoom@201/201.8/202.5/203.2 region=[0.300, 0.350, 0.750, 0.700]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"12a\", \"verdict\": \"正確\", \"explanation\": \"03:21.0–03:23.2 學生以左手中指及食指夾住稀釋液瓶，符合標準。\", \"times\": [[201.0, 203.2]], \"evidence\": [\"ov@198-204 #4\", \"zoom@201\", \"zoom@201.8\", \"zoom@202.5\", \"zoom@203.2\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
