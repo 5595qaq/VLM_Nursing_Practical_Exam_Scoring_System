@@ -31,7 +31,7 @@ import os
 import sys
 from pathlib import Path
 
-from eval_grading import FAULTS, UNUSABLE_VIDEOS, load_labels
+from eval_grading import FAULTS, LAST_RECORDED_STEP, UNUSABLE_VIDEOS, load_labels
 from rubric import NOT_APPLICABLE, PENDING, load_rubric, wrong_with_links
 
 REVIEW_DIR = Path(__file__).resolve().parent.parent / "review"
@@ -51,7 +51,12 @@ def parse_steps(text: str) -> set[int]:
     out: set[int] = set()
     for part in filter(None, (p.strip() for p in text.split(","))):
         a, _, b = part.partition("-")
-        out.update(range(int(a), int(b or a) + 1))
+        lo, hi = int(a), int(b or a)
+        if lo > hi:
+            raise argparse.ArgumentTypeError(f"步驟範圍 {part} 前面要比後面小")
+        out.update(range(lo, hi + 1))
+    if not out:
+        raise argparse.ArgumentTypeError("--steps 沒有步驟")
     return out
 
 
@@ -76,8 +81,9 @@ def build_items(grading: dict, segmentation: dict | None, labels: dict[int, dict
                 include_all: bool = False, run: str = "", *, evidence: bool = False,
                 steps: set[int] | None = None) -> list[dict]:
     """`run` names the version (the record folder), so two versions of one video stay separate items.
-    `evidence` also lists the model's 錯誤/部分正確 steps and drops removed and pending steps (nothing to
-    review); `steps` keeps only those step ids."""
+    `evidence` also lists the model's 錯誤/部分正確 steps and drops removed and pending steps, steps with no
+    criterion to ask about, and the steps a cut-short video did not record (nothing to review); `steps`
+    keeps only those step ids."""
     names = {s["step_id"]: s["text"] for s in rubric["steps"]}
     texts = {c["id"]: c["text"] for s in rubric["steps"] for c in s["criteria"]}
     links = wrong_with_links(rubric)
@@ -87,7 +93,8 @@ def build_items(grading: dict, segmentation: dict | None, labels: dict[int, dict
         sid, label = step["step_id"], labels.get(step["step_id"])
         if steps is not None and sid not in steps:
             continue
-        if evidence and step["verdict"] in (NOT_APPLICABLE, PENDING):
+        if evidence and (step["verdict"] in (NOT_APPLICABLE, PENDING) or sid > LAST_RECORDED_STEP.get(vid, sid)
+                         or not any(reviewable(c) for c in step["criteria"])):
             continue
         review = bool(step.get("needs_review"))
         differs = label is not None and label["verdict"] != step["verdict"]

@@ -303,7 +303,7 @@ python sop-video-grading/scripts/review_page.py sop-video-grading/runs/VID_0083/
 **證據核對與系統準確率**：用 `--evidence` 逐條核對模型的證據。也可以用 `--steps` 依步驟分給幾個人，每人在自己的電腦產生自己的頁面：
 
 ```bash
-python sop-video-grading/scripts/review_page.py <每支影片一份完整紀錄> --labels 標註表.csv --video-root /path/to/原始影片資料夾 \r
+python sop-video-grading/scripts/review_page.py <每支影片一份完整紀錄> --labels 標註表.csv --video-root /path/to/原始影片資料夾 \
   --evidence --steps 1,2,10-14 -o sop-video-grading/review/證據核對_第1人.html
 python sop-video-grading/scripts/review_accuracy.py <同一批紀錄> --labels 標註表.csv --results 第1人.csv 第2人.csv ... [-o 報告.md]
 ```

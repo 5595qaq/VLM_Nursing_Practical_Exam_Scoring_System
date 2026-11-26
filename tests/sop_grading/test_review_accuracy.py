@@ -38,6 +38,7 @@ def run(tmp_path):
     folder.mkdir(parents=True)
     (folder / "grading.json").write_text(json.dumps(grading, ensure_ascii=False), encoding="utf-8")
     (folder / "segmentation.json").write_text(json.dumps(seg, ensure_ascii=False), encoding="utf-8")
+    (folder / "record.json").write_text(json.dumps({"versions": {"pipeline": "two-stage"}}), encoding="utf-8")
     return folder
 
 
@@ -170,3 +171,63 @@ def test_main_writes_the_report(tmp_path, run, labels):
                     "-o", str(out)]) == 0
     text = out.read_text(encoding="utf-8")
     assert "| 調整組 | 兩段式 | 1 |" in text and "## 不計入：應核對但沒有完成或答案衝突（2）" in text
+
+
+def test_partial_and_repeated_answers_are_not_conflicts(tmp_path, run, labels):
+    old = write_results(tmp_path / "old.csv", {(17, "17a"): ("錯誤", ""), (17, "17b"): ("正確", "正確")})
+    new = write_results(tmp_path / "new.csv", {(17, "17a"): ("錯誤", "正確"), (17, "17b"): ("正確", "正確")})
+    ev, conflicts = run_report(run, labels, new, old)
+    assert not conflicts and {r["step_id"] for r in ev["rows"] if r["reviewed"]} == {17}
+
+
+def test_linked_criterion_counts_with_its_link(tmp_path, run, labels):
+    # 17a judged on its own as 正確, 15b confirmed 錯誤: the linked human 17a is 錯誤, the same as the model
+    results = write_results(tmp_path / "r.csv", {
+        (15, "15a"): ("正確", "正確"), (15, "15b"): ("錯誤", "正確"),
+        (17, "17a"): ("正確", "正確"), (17, "17b"): ("正確", "正確")})
+    ev, _ = run_report(run, labels, results)
+    assert all(c["model_c"] == c["human_c"] for c in ev["crit_rows"])
+    assert "## 判定或證據有錯的標準" not in ra.report(ev, [])
+
+
+def test_human_verdicts_that_stay_pending_are_not_counted(tmp_path, run, labels):
+    grading = json.loads((run / "grading.json").read_text(encoding="utf-8"))
+    set_verdicts(grading, {"15a": "待判定"})  # 15b 錯誤 still makes the step a fault
+    (run / "grading.json").write_text(json.dumps(grading, ensure_ascii=False), encoding="utf-8")
+    results = write_results(tmp_path / "r.csv", {(15, "15b"): ("正確", "正確")})
+    ev, _ = run_report(run, labels, results)
+    assert ev["skipped"]["人工判定後仍待判定"] == ["VID_0001 步驟 15"]
+
+
+def test_a_record_from_another_rubric_is_refused(tmp_path, run, labels):
+    grading = json.loads((run / "grading.json").read_text(encoding="utf-8"))
+    grading["rubric_version"] = "1.0"
+    (run / "grading.json").write_text(json.dumps(grading, ensure_ascii=False), encoding="utf-8")
+    with pytest.raises(SystemExit, match="rubric 1.0"):
+        run_report(run, labels)
+
+
+def test_one_stage_and_judge_only_records_are_reported_apart(tmp_path, run, labels):
+    (run / "record.json").unlink()
+    ev, _ = run_report(run, labels)
+    assert {r["method"] for r in ev["rows"]} == {"一段式"}
+    (run / "record.json").write_text(json.dumps({"versions": {"pipeline": "two-stage-judge"}}), encoding="utf-8")
+    ev, _ = run_report(run, labels)
+    assert {r["method"] for r in ev["rows"]} == {"two-stage-judge"}
+
+
+def test_evidence_items_skip_unrecorded_and_unaskable_steps():
+    seg = make_segmentation()
+    grading = set_verdicts(fill_visual(grade_from_segmentation(seg)), {"25b": "錯誤", "3a": "待判定"})
+    grading["video_id"] = "VID_0016"  # ends after step 22
+    step3 = next(s for s in grading["steps"] if s["step_id"] == 3)
+    step3["verdict"] = "錯誤"  # only 3a (pending) and the fixed 3b: nothing to ask
+    items = rp.build_items(grading, seg, {}, load_rubric(), evidence=True)
+    assert [i["step"] for i in items] == []
+
+
+def test_parse_steps_rejects_bad_ranges():
+    import argparse
+    for bad in ("14-10", ",", ""):
+        with pytest.raises(argparse.ArgumentTypeError):
+            rp.parse_steps(bad)
