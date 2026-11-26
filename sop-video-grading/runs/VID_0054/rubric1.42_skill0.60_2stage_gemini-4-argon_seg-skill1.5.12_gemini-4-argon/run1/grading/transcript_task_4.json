@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 11.9,
+  "stop_reason": "end_turn",
+  "input_tokens": 22010,
+  "cached_input_tokens": 0,
+  "output_tokens": 74,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@64-207.8（hands_box，n=9）#0=01:04.0、#1=01:22.0、#2=01:40.0、#3=01:57.9、#4=02:15.9、#5=02:33.9、#6=02:51.8、#7=03:09.8、#8=03:27.8"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 115.0, \"end\": 175.0, \"fps\": 2, \"reason\": \"查看 01:55–02:55 學生持給藥紀錄單查看並用手指指讀的連續動作與起訖時間\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 7.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 33104,
+  "cached_input_tokens": 20130,
+  "output_tokens": 68,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@64-207.8（hands_box，n=9）#0=01:04.0、#1=01:22.0、#2=01:40.0、#3=01:57.9、#4=02:15.9、#5=02:33.9、#6=02:51.8、#7=03:09.8、#8=03:27.8",
+   "clip@115-175（context box，有聲音；片段內 00:00 ＝ 影片 01:55.0）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 175.0, \"end\": 207.8, \"fps\": 2, \"reason\": \"查看 02:55.0 至 03:27.8 的給藥紀錄單核對結束時間\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 12.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 39272,
+  "cached_input_tokens": 20130,
+  "output_tokens": 375,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@64-207.8（hands_box，n=9）#0=01:04.0、#1=01:22.0、#2=01:40.0、#3=01:57.9、#4=02:15.9、#5=02:33.9、#6=02:51.8、#7=03:09.8、#8=03:27.8",
+   "clip@115-175（context box，有聲音；片段內 00:00 ＝ 影片 01:55.0）",
+   "clip@175-207.8（context box，有聲音；片段內 00:00 ＝ 影片 02:55.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4a\", \"verdict\": \"正確\", \"explanation\": \"考生於取出藥瓶後，在 02:07.0–02:42.5（35.5 秒）及 02:45.0–03:23.0（38.0 秒）持藥瓶與給藥紀錄單進行核對，實際查看給藥紀錄單時間累計達 73.5 秒，超過 10 秒標準。\", \"times\": [[127.0, 162.5], [165.0, 203.0]], \"evidence\": [\"ov@64-207.8 #4\", \"clip@115-175\", \"clip@175-207.8\"], \"confidence\": 0.9, \"reason\": null}, {\"criterion_id\": \"4b\", \"verdict\": \"正確\", \"explanation\": \"考生於 02:07.0–02:42.5 及 02:45.0–03:23.0 查看給藥紀錄單並進行口頭核對時，右手明顯用手指逐項指出手上的給藥紀錄單。\", \"times\": [[127.0, 162.5], [165.0, 203.0]], \"evidence\": [\"ov@64-207.8 #5\", \"clip@115-175\", \"clip@175-207.8\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

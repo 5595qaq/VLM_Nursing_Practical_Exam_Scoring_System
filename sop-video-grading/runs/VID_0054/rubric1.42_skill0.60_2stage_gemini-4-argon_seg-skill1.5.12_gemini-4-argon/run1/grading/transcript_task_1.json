@@ -1,0 +1,16 @@
+[
+ {
+  "turn": 1,
+  "seconds": 11.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 23097,
+  "cached_input_tokens": 0,
+  "output_tokens": 331,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@0-13（context box，有聲音；片段內 00:00 ＝ 影片 00:00.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"1a\", \"verdict\": \"無法判定\", \"explanation\": \"影片 00:00.0 開頭學生已在搓手洗手（未拍到按壓洗手液的開始時間），且於 00:04.5 雙手分開結束洗手，可見洗手時段僅 4.5 秒，因影片開頭未拍到按壓洗手液，無法確認完整洗手時間。\", \"times\": [], \"evidence\": [\"clip@0-13\"], \"confidence\": 0.9, \"reason\": \"資訊不足\"}, {\"criterion_id\": \"1b\", \"verdict\": \"無法判定\", \"explanation\": \"影片 00:00.0 開頭學生已在進行後半段洗手動作（00:00.0–00:01.0 立、00:01.5–00:03.0 腕、00:03.5–00:04.0 內），且 00:01.5–00:03.0 雙手部分被治療車遮擋，因影片未拍到前半段洗手過程，無法確認內、外、夾、弓、大、立、腕七個動作是否皆有做到。\", \"times\": [[0.0, 4.5]], \"evidence\": [\"clip@0-13\"], \"confidence\": 0.9, \"reason\": \"資訊不足\"}]}",
+  "errors": []
+ }
+]
