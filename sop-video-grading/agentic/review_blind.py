@@ -240,8 +240,10 @@ const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const mmss = t => { t = Math.max(0, t); const m = Math.floor(t / 60), s = t - m * 60; return `${String(m).padStart(2,"0")}:${s.toFixed(1).padStart(4,"0")}`; };
 const STORE = "wv134:" + D.store;
-let S = JSON.parse(localStorage.getItem(STORE) || "{}");
-const save = () => { localStorage.setItem(STORE, JSON.stringify(S)); progress(); };
+// storage can be blocked (file:// or site data off): fall back to memory, export still works
+let S = {};
+try { S = JSON.parse(localStorage.getItem(STORE) || "{}"); } catch (e) { S = {}; }
+const save = () => { try { localStorage.setItem(STORE, JSON.stringify(S)); } catch (e) {} progress(); };
 const vid = $("vid");
 let cur = null, tab = 1, zoomed = false;
 const blobs = {};

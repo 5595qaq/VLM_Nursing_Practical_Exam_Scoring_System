@@ -40,6 +40,7 @@ EXCLUDE = {  # reviewer ticked 畫面看不到 but gave a verdict; user: video p
     ("VID_0084", 29),
 }
 FAULT_EVIDENCE = {"時間不對", "內容不符"}
+PENDING = "待老師確認"
 
 
 def fisher(a, b, c, d):
@@ -83,6 +84,8 @@ def main(argv):
             continue
         k = (r["影片ID"], int(r["步驟"]))
         r = dict(r, final=OVERRIDE.get(k, r["核對後判定"]), models=parse_models(r["模型判定"]), k=k)
+        if not r["final"]:
+            raise SystemExit(f"{r['影片ID']} 步驟 {r['步驟']} 沒有核對後判定，先補完再算")
         D.append(r)
     kept = [r for r in D if r["k"] not in EXCLUDE]
     scopes = {"全部": lambda r: True, "盲測": lambda r: r["影片ID"] in BLIND,
@@ -105,8 +108,10 @@ def main(argv):
     out["核對後判定一致"] = agree
     out["各組判錯"] = {a: [f"{r['影片ID']} {r['步驟']}（{r['models'][a]}→{r['final']}）"
                           for r in kept if r["models"][a] != r["final"]] for a in ARMS}
+    # 待老師確認 counts as a mismatch for every arm and for the human label, but it is not a correction
+    out["待老師確認"] = [f"{r['影片ID']} {r['步驟']}" for r in kept if r["final"] == PENDING]
     out["人工判定更正"] = [f"{r['影片ID']} {r['步驟']} {r['人工判定']}→{r['final']}"
-                           for r in kept if r["人工判定"] != r["final"]]
+                           for r in kept if r["人工判定"] != r["final"] and r["final"] != PENDING]
     out["原因"] = dict(Counter(x for r in D for x in r["原因"].split("；") if x).most_common())
     print(json.dumps(out, ensure_ascii=False, indent=1))
     if "--json" in argv:
