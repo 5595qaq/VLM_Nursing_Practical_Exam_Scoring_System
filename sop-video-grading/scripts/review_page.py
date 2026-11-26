@@ -1,7 +1,7 @@
 """Build a local review page: check disputed steps against the video and mark agree / disagree.
 
 usage: python review_page.py RUN [RUN ...] --labels LABELS.csv [--video-root DIR] [--video VID_0083=PATH ...]
-           [--items items.json] [--all] [-o sop-video-grading/review/人工核對_YYYYMMDD.html]
+           [--items items.json] [--all] [--evidence] [--steps 1,2,10-14] [-o sop-video-grading/review/人工核對_YYYYMMDD.html]
 
 RUN is a run-record folder (sop-video-grading/runs/VID_0083/<版本>/) or a grading.json; its sibling
 segmentation.json gives the step times and the hands box. Each maintainer builds the page on their own
@@ -15,6 +15,11 @@ jumps to any time written in the explanations; nothing from the video is copied 
       {"type": "standard", "id": "19b", "title": "...", "before": "...", "after": "...", "why": "..."}
 The reviewer marks 同意建議 / 同意標記表 / 改判 (with the right verdict) / 待老師確認 (standards: 同意 /
 不同意 / 待老師確認) and exports a CSV. Progress stays in the browser until exported.
+--evidence reviews the model's evidence criterion by criterion instead: it also lists the steps the model
+judged 錯誤 or 部分正確 (not removed or pending steps), and for every criterion the model or a rule judged
+the reviewer picks the right verdict and whether the cited evidence holds (EVIDENCE); the CSV has one
+row per criterion and review_accuracy.py turns the results into the system accuracy. --steps keeps only
+those steps, so several reviewers can split the work by step.
 The page holds video paths that may contain student names, so it is written to the gitignored
 sop-video-grading/review/ by default.
 """
@@ -26,11 +31,28 @@ import os
 import sys
 from pathlib import Path
 
-from eval_grading import UNUSABLE_VIDEOS, load_labels
-from rubric import load_rubric
+from eval_grading import FAULTS, UNUSABLE_VIDEOS, load_labels
+from rubric import NOT_APPLICABLE, PENDING, load_rubric, wrong_with_links
 
 REVIEW_DIR = Path(__file__).resolve().parent.parent / "review"
 VERDICTS = ["正確", "錯誤", "部分正確", "無法判定"]
+EVIDENCE = ["正確", "時間不對", "內容不符", "無法確認"]  # 時間不對/內容不符 make the step wrong in review_accuracy.py
+EVIDENCE_BAD = {"時間不對", "內容不符"}
+
+
+def reviewable(criterion: dict) -> bool:
+    """A criterion the evidence review asks about: judged by the model or a rule (not a fixed not_visible
+    one) and not still pending. Same test as `asked` in the page."""
+    return criterion.get("source") != "fixed" and criterion["verdict"] != PENDING
+
+
+def parse_steps(text: str) -> set[int]:
+    """'1,2,10-14' -> {1, 2, 10, 11, 12, 13, 14}."""
+    out: set[int] = set()
+    for part in filter(None, (p.strip() for p in text.split(","))):
+        a, _, b = part.partition("-")
+        out.update(range(int(a), int(b or a) + 1))
+    return out
 
 
 def load_run(path: Path) -> tuple[dict, dict | None, Path]:
@@ -51,24 +73,35 @@ def step_spans(segmentation: dict | None, step_id: int) -> list[list[float]]:
 
 
 def build_items(grading: dict, segmentation: dict | None, labels: dict[int, dict], rubric: dict,
-                include_all: bool = False, run: str = "") -> list[dict]:
-    """`run` names the version (the record folder), so two versions of one video stay separate items."""
+                include_all: bool = False, run: str = "", *, evidence: bool = False,
+                steps: set[int] | None = None) -> list[dict]:
+    """`run` names the version (the record folder), so two versions of one video stay separate items.
+    `evidence` also lists the model's 錯誤/部分正確 steps and drops removed and pending steps (nothing to
+    review); `steps` keeps only those step ids."""
     names = {s["step_id"]: s["text"] for s in rubric["steps"]}
     texts = {c["id"]: c["text"] for s in rubric["steps"] for c in s["criteria"]}
+    links = wrong_with_links(rubric)
     vid = grading["video_id"]
     items = []
     for step in grading["steps"]:
         sid, label = step["step_id"], labels.get(step["step_id"])
+        if steps is not None and sid not in steps:
+            continue
+        if evidence and step["verdict"] in (NOT_APPLICABLE, PENDING):
+            continue
         review = bool(step.get("needs_review"))
         differs = label is not None and label["verdict"] != step["verdict"]
-        if not (differs or review or (include_all and label)):
+        fault = evidence and step["verdict"] in FAULTS
+        if not (differs or review or fault or (include_all and label)):
             continue
         items.append({
             "type": "step", "key": f"{vid}--{run}--{sid}", "run": run, "video_id": vid, "step": sid,
             "name": names.get(sid, ""),
             "label": label, "model": step["verdict"], "review": review,
             "criteria": [{"id": c["criterion_id"], "text": texts.get(c["criterion_id"], ""), "verdict": c["verdict"],
-                          "explanation": c["explanation"], "review_reason": c.get("review_reason", "")}
+                          "explanation": c["explanation"], "review_reason": c.get("review_reason", ""),
+                          "source": c.get("source", ""), "times": c.get("times") or [],
+                          "wrong_with": links.get(c["criterion_id"], "")}
                          for c in step["criteria"]],
             "proposal": step["verdict"], "proposal_src": "模型", "why": "",
             "spans": step_spans(segmentation, sid)})
@@ -135,8 +168,13 @@ def main(argv: list[str]) -> int:
     ap.add_argument("--video-root", type=Path,
                     help="your folder of original videos; each is found by the label sheet's relative path")
     ap.add_argument("--all", action="store_true", help="every labelled step, not only the disputed ones")
+    ap.add_argument("--evidence", action="store_true",
+                    help="review each criterion's verdict and evidence; also lists the model's 錯誤/部分正確 steps")
+    ap.add_argument("--steps", type=parse_steps, help="only these steps, e.g. 1,2,10-14")
     ap.add_argument("-o", "--out", type=Path)
     a = ap.parse_args(argv[1:])
+    if a.evidence and a.items:
+        raise SystemExit("--evidence 核對模型的證據，不能同時給 --items")
     today = datetime.date.today().isoformat()
     out = a.out or REVIEW_DIR / f"人工核對_{today.replace('-', '')}.html"
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -151,7 +189,8 @@ def main(argv: list[str]) -> int:
         if vid in UNUSABLE_VIDEOS:  # broken video file, not reviewed (AGENTS.md, issue #148)
             skipped.append(vid)
             continue
-        items += build_items(grading, seg, labels.get(vid, {}), rubric, a.all, run=folder.name)
+        items += build_items(grading, seg, labels.get(vid, {}), rubric, a.all, run=folder.name,
+                             evidence=a.evidence, steps=a.steps)
         if vid in given:
             path = Path(given[vid])
         else:
@@ -163,8 +202,11 @@ def main(argv: list[str]) -> int:
     keys = [i["key"] for i in items]
     if len(keys) != len(set(keys)):
         raise SystemExit("同一支影片的同一個版本給了兩次（項目重複）：" + "、".join(sorted({k for k in keys if keys.count(k) > 1})))
-    data = {"title": f"SOP 評分人工核對 {today}", "key": f"{out.name}", "rubric": rubric["version"],
-            "items": items, "videos": videos}
+    title = f"SOP 評分{'證據' if a.evidence else ''}人工核對 {today}"
+    if a.steps:
+        title += f"（步驟 {'、'.join(map(str, sorted(a.steps)))}）"
+    data = {"title": title, "key": f"{out.name}", "rubric": rubric["version"], "items": items, "videos": videos,
+            "mode": "evidence" if a.evidence else "verdict", "evidence": EVIDENCE}
     out.write_text(render(data), encoding="utf-8")
     sys.stdout.reconfigure(encoding="utf-8")
     if skipped:
@@ -247,8 +289,18 @@ const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch
 const byKey = Object.fromEntries(D.items.map(it => [it.key, it]));
 // A decision belongs to what the reviewer saw: when a rebuilt page shows another proposal, model or label
 // verdict (or standard text), the old decision no longer applies and the item is to be reviewed again.
-const dk = it => [it.key, it.proposal, it.model, (it.label || {}).verdict, it.before, it.after].join("|");
+const EV = D.mode === "evidence";
+const dk = it => [it.key, it.proposal, it.model, (it.label || {}).verdict, it.before, it.after].join("|") +
+  (EV ? "|" + (it.criteria || []).map(c => c.id + "=" + c.verdict).join(",") : "");
 const got = it => S.decisions[dk(it)] || {};
+// evidence mode: a criterion is asked about unless a fixed not_visible one or still pending (reviewable in review_page.py)
+const asked = c => c.source !== "fixed" && c.verdict !== "待判定";
+const critDone = (d, c) => { const x = (d.crit || {})[c.id] || {}; return !!(x.verdict && x.evidence); };
+const isDone = it => {
+  const d = got(it);
+  if (!EV || it.type !== "step") return !!d.decision;
+  return d.decision === "待老師確認" || it.criteria.filter(asked).every(c => critDone(d, c));
+};
 const dec = key => { const k = dk(byKey[key]); return S.decisions[k] = S.decisions[k] || {}; };
 const $ = id => document.getElementById(id);
 const v = $("v"), picked = {};
@@ -327,6 +379,7 @@ $("file").addEventListener("change", e => {
 function decisionButtons(it) {
   const d = got(it);
   const b = (val, text) => `<button data-k="${esc(it.key)}" data-dec="${esc(val)}" class="${d.decision === val ? "on" : ""}">${esc(text)}</button>`;
+  if (EV) return b("待老師確認", "整步待老師確認");
   if (it.type === "standard") return b("同意", "同意") + b("不同意", "不同意") + b("待老師確認", "待老師確認");
   let h = b("同意建議", `同意建議（${it.proposal}）`);
   if (it.label && it.label.verdict !== it.proposal) h += b("同意標記表", `同意標記表（${it.label.verdict}）`);
@@ -335,9 +388,22 @@ function decisionButtons(it) {
     VERDICTS.map(x => `<option ${d.verdict === x ? "selected" : ""}>${x}</option>`).join("") + "</select>";
   return h;
 }
+// evidence mode: the reviewer's verdict and whether the cited evidence holds, for one criterion
+function critControls(it, c) {
+  const x = (got(it).crit || {})[c.id] || {};
+  const b = (field, val, text) => `<button data-k="${esc(it.key)}" data-c="${esc(c.id)}" data-f="${field}" data-val="${esc(val)}"` +
+    ` class="${x[field] === val ? "on" : ""}">${esc(text)}</button>`;
+  let h = "";
+  if (c.times.length) h += `<div class="spans"><span class="lbl">模型引用時間</span>` +
+    c.times.map(([a, e]) => `<button class="t" data-vid="${esc(it.video_id)}" data-t="${a}">${fmt(a)}–${fmt(e)}</button>`).join("") + "</div>";
+  if (c.wrong_with) h += `<div class="help">${esc(c.wrong_with)} 錯誤時這一條也算錯誤（連動）；這裡只判這一條本身。</div>`;
+  return h + `<div class="dec"><span class="lbl">人工判定</span>` +
+    VERDICTS.map(v => b("verdict", v, v === c.verdict ? v + "（同模型）" : v)).join("") + "</div>" +
+    `<div class="dec"><span class="lbl">證據</span>` + D.evidence.map(v => b("evidence", v, v)).join("") + "</div>";
+}
 function card(it) {
   const d = got(it);
-  let h = `<div class="item${d.decision ? " done" : ""}" id="i-${esc(it.key)}" data-vid="${esc(it.video_id || "")}">`;
+  let h = `<div class="item${isDone(it) ? " done" : ""}" id="i-${esc(it.key)}" data-vid="${esc(it.video_id || "")}">`;
   if (it.type === "standard") {
     h += `<div class="ih"><h2>標準 ${esc(it.id)}：${esc(it.title)}</h2></div>` +
       `<div class="lbl">修改前</div><div class="pre">${esc(it.before)}</div>` +
@@ -353,19 +419,20 @@ function card(it) {
     if (it.why) h += `<div class="why"><b>Claude：</b>${linkTimes(it.why, it.video_id)}</div>`;
     if (it.label && it.label.why) h += `<div class="crit"><b>標記表說明：</b>${esc(it.label.why)}</div>`;
     for (const c of it.criteria) h += `<div class="crit">${pill(c.verdict, c.id)} <span class="ct">${esc(c.text)}</span><br>` +
-      linkTimes(c.explanation, it.video_id) + (c.review_reason ? `<br><b>需複核：</b>${linkTimes(c.review_reason, it.video_id)}` : "") + "</div>";
+      linkTimes(c.explanation, it.video_id) + (c.review_reason ? `<br><b>需複核：</b>${linkTimes(c.review_reason, it.video_id)}` : "") +
+      (EV && asked(c) ? critControls(it, c) : "") + "</div>";
   }
   h += `<div class="dec">${decisionButtons(it)}</div>` +
     `<textarea data-k="${esc(it.key)}" placeholder="備註（不同意的理由、正確的時間點…）">${esc(d.note || "")}</textarea></div>`;
   return h;
 }
 function progress() {
-  const done = D.items.filter(it => got(it).decision).length;
+  const done = D.items.filter(isDone).length;
   $("prog").textContent = `已核對 ${done}/${D.items.length}　rubric ${D.rubric}`;
 }
 function render() {
   const f = $("filter").value;
-  const shown = D.items.filter(it => f === "all" || (f === "done") === !!got(it).decision);
+  const shown = D.items.filter(it => f === "all" || (f === "done") === isDone(it));
   $("items").innerHTML = shown.map(card).join("") || '<p class="help">沒有項目。</p>';
   progress();
 }
@@ -385,6 +452,12 @@ $("filter").addEventListener("change", render);
 $("items").addEventListener("click", e => {
   const t = e.target.closest(".t");
   if (t) { jump(t.dataset.vid, Number(t.dataset.t)); return; }
+  const cb = e.target.closest("button[data-c]");
+  if (cb) {
+    const d = dec(cb.dataset.k), crit = d.crit = d.crit || {}, x = crit[cb.dataset.c] = crit[cb.dataset.c] || {};
+    x[cb.dataset.f] = x[cb.dataset.f] === cb.dataset.val ? "" : cb.dataset.val;
+    d.at = new Date().toISOString(); save(); refresh(cb.dataset.k); return;
+  }
   const btn = e.target.closest("button[data-dec]");
   if (btn) {
     const d = dec(btn.dataset.k);
@@ -426,6 +499,7 @@ document.addEventListener("keydown", e => {
 });
 $("export").addEventListener("click", () => {
   const q = x => `"${String(x ?? "").replace(/"/g, '""')}"`;
+  if (EV) return download(q, evidenceRows());
   const rows = [["類型", "影片ID", "版本", "步驟", "標準", "標記表", "模型", "建議", "建議來源", "決定", "正確判定", "備註", "核對者", "核對時間"]];
   for (const it of D.items) {
     const d = got(it);
@@ -435,10 +509,26 @@ $("export").addEventListener("click", () => {
       : ["步驟", it.video_id, it.run, it.step, "", (it.label || {}).verdict, it.model, it.proposal, it.proposal_src,
          d.decision, verdict, d.note, S.who, d.at]);
   }
+  download(q, rows);
+});
+// one row per asked criterion; the step's 待老師確認 and note repeat on each row (read by review_accuracy.py)
+function evidenceRows() {
+  const rows = [["類型", "影片ID", "版本", "步驟", "標準", "標記表", "模型步驟", "模型", "人工判定", "證據", "決定", "備註", "核對者", "核對時間"]];
+  for (const it of D.items) {
+    const d = got(it);
+    for (const c of it.criteria.filter(asked)) {
+      const x = (d.crit || {})[c.id] || {};
+      rows.push(["證據", it.video_id, it.run, it.step, c.id, (it.label || {}).verdict, it.model, c.verdict,
+                 x.verdict, x.evidence, d.decision, d.note, S.who, d.at]);
+    }
+  }
+  return rows;
+}
+function download(q, rows) {
   const blob = new Blob(["﻿" + rows.map(r => r.map(q).join(",")).join("\r\n")], {type: "text/csv"});
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob); a.download = D.key.replace(/\.html$/, "") + "_結果.csv"; a.click();
-});
+}
 render();
 const first = D.items.find(it => it.video_id);
 if (first) load(first.video_id);

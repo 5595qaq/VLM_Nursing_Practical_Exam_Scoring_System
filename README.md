@@ -173,6 +173,7 @@ Gemini 回傳 429／`RESOURCE_EXHAUSTED`、499、連線中斷，或 Claude 回�
 | `scripts/audio_peaks.py` | 找出任務區間內短促的響聲與連續響聲（彈針聲），並判斷影片有沒有可用的聲音（不呼叫模型） |
 | `scripts/burst.py` | 在 0.3–3 秒內平均取 3–12 張原始解析度的局部畫面，看不到 1 秒的短動作 |
 | `scripts/eval_grading.py` | 與人工標註表比對：每步的人工／模型判定與說明、一致率、錯誤召回、誤報（另外列出有看畫面標準的步驟）。時間也比：評分 agent 的 `times`，舊紀錄或空的 `times` 改看該步說明裡引用的 mm:ss（舊紀錄的計時標準用它的 `span`；寫在 `clip@a-b` 後的片段內時間換算成影片的 a 秒起算，沒寫 `clip@` 的「片段內」時間不算；沒有引用時改用紀錄裡切分的區間，再沒有時用 `logical_window`，表格標「（agent）」的是前者）和標註時間沒有重疊、起點也差超過 3 秒，或標註有時間但模型沒有，判定一致也算錯（一致率以這個為準，括號內是只比判定的結果）；找不到同一支影片的 `segmentation.json` 或標註沒有時間時只比判定。預設排除沒有說明或標「AI判定」的影片（`--exclude`），影片檔有問題而不使用的影片（`UNUSABLE_VIDEOS`，見 `AGENTS.md`「已知有問題的影片」）一律略過，`compare_arms.py`、`review_page.py` 也一樣 |
+| `scripts/review_accuracy.py` | 合併 `review_page.py --evidence` 證據核對頁面匯出的 CSV，計算系統準確率：判定一致、判定＋證據，分調整組／測試組與兩段式／一段式，並列出判定或證據錯的標準（見「人工核對頁面」，不呼叫模型） |
 | `scripts/compare_arms.py` | 在同一批影片上比較多份評分紀錄（不同規則、模型或做法）：一致率、成對差異（McNemar）、重跑翻轉、token 與時間，列出各組判定不同的步驟；可排除步驟（`--exclude-steps`）或讓指定步驟的錯誤＝部分正確（`--merge-faults-steps`），不呼叫模型 |
 | `scripts/labels_to_segmentation.py` | 用人工標註表的開始／結束秒數組出切分結果，調整評分 agent 時可跳過切分 skill |
 | `scripts/make_segmentation_bundle.py` | 從既有紀錄的切分做出 `--segmentation-file` 用的 bundle（可把某一步換成另一份切分的片段），記下來源 |
@@ -298,6 +299,24 @@ python sop-video-grading/scripts/review_page.py sop-video-grading/runs/VID_0083/
 - 每項可選「同意建議／同意標記表／改判（選正確判定）／待老師確認」並寫備註，進度存在瀏覽器；完成後「匯出 CSV」交回。決定綁定當時看到的建議、模型與標記表判定：重新產生頁面後只要其中一個變了，那一項就回到待核對。
 - 同一支影片可以放兩個版本的紀錄一起比較，每個版本各自一項（卡片與 CSV 標出版本）；同一個版本給兩次會報錯。
 - 預設輸出到 `sop-video-grading/review/`（已被 `.gitignore` 忽略：頁面含影片路徑，可能有學生姓名），不要 commit 頁面與匯出的 CSV。
+
+**證據核對與系統準確率**：用 `--evidence` 逐條核對模型的證據。也可以用 `--steps` 依步驟分給幾個人，每人在自己的電腦產生自己的頁面：
+
+```bash
+python sop-video-grading/scripts/review_page.py <每支影片一份完整紀錄> --labels 標註表.csv --video-root /path/to/原始影片資料夾 \r
+  --evidence --steps 1,2,10-14 -o sop-video-grading/review/證據核對_第1人.html
+python sop-video-grading/scripts/review_accuracy.py <同一批紀錄> --labels 標註表.csv --results 第1人.csv 第2人.csv ... [-o 報告.md]
+```
+
+- 列入的步驟：和標記表不同、模型要求人工複核，或模型判錯誤或部分正確的步驟。已刪除和待判定的步驟不列入。
+- 每一條由模型或程式判定的標準，都要選人工判定與證據：正確、時間不對、內容不符或無法確認。固定無法判定（`not_visible`）和待判定的標準不必選。整步可以標成待老師確認。
+- 匯出的 CSV 每條標準一列，`review_accuracy.py` 讀所有人的 CSV 計算準確率：
+  - 有核對的步驟用人工判定的標準，依 rubric 合成步驟判定；`wrong_with` 連動照樣套用。
+  - 「判定一致」只比步驟判定。「判定＋證據」另外要求核對過的標準沒有時間不對或內容不符。
+  - 沒列入核對的步驟沿用標記表，證據改用 `eval_grading.py` 的時間比對。
+  - 調整組與測試組分開，兩段式與一段式也分開。
+  - 沒核對完、兩份 CSV 答案衝突、待老師確認的步驟不計入，報告最後列出來。
+  - 同一支影片給兩份紀錄會報錯（例如 `--steps` 重跑的部分紀錄）。
 
 呼叫模型前會先檢查（任何一項不過就停止，不花錢）：
 
