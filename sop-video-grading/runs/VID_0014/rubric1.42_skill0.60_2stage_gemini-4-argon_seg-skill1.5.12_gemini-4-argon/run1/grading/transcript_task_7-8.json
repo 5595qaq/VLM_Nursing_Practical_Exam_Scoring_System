@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 17.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 23116,
+  "cached_input_tokens": 20130,
+  "output_tokens": 273,
+  "thinking_tokens": 198,
+  "materials": [
+   "clip@263-276（context box，有聲音；片段內 00:00 ＝ 影片 04:23.0）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 253.0, \"end\": 263.0, \"fps\": 2, \"reason\": \"依規則檢查區間開始前 10 秒（253.0–263.0）是否有更早消毒稀釋液瓶口的動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 5.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 25057,
+  "cached_input_tokens": 20130,
+  "output_tokens": 93,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@263-276（context box，有聲音；片段內 00:00 ＝ 影片 04:23.0）",
+   "clip@253-263（context box，有聲音；片段內 00:00 ＝ 影片 04:13.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [265.5, 267.0, 269.5, 271.5], \"region\": [0.45, 0.45, 0.78, 0.85], \"reason\": \"確認酒精棉片消毒稀釋液瓶頂與扭開稀釋液瓶頂的細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 19.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 26309,
+  "cached_input_tokens": 0,
+  "output_tokens": 867,
+  "thinking_tokens": 330,
+  "materials": [
+   "clip@263-276（context box，有聲音；片段內 00:00 ＝ 影片 04:23.0）",
+   "clip@253-263（context box，有聲音；片段內 00:00 ＝ 影片 04:13.0）",
+   "zoom@265.5/267/269.5/271.5 region=[0.450, 0.450, 0.780, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"7a\", \"verdict\": \"正確\", \"explanation\": \"04:25.5–04:27.5（clip@263-276 片段內 00:02.5–00:04.5）左手拿起細長塑膠稀釋液瓶，右手持白色方形酒精棉片擦拭稀釋液瓶頂端與瓶頸處消毒（zoom@265.5、zoom@267）。\", \"times\": [[265.5, 267.5]], \"evidence\": [\"clip@253-263\", \"clip@263-276\", \"zoom@265.5\", \"zoom@267\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"8b\", \"verdict\": \"正確\", \"explanation\": \"考生於 04:25.5–04:27.5 先以酒精棉片擦拭消毒稀釋液瓶頂端，將棉片放下後，才於 04:29.5–04:31.5 扭開稀釋液瓶口，符合先消毒再打開之順序。\", \"times\": [[265.5, 271.5]], \"evidence\": [\"clip@263-276\", \"zoom@265.5\", \"zoom@267\", \"zoom@269.5\", \"zoom@271.5\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"8a\", \"verdict\": \"正確\", \"explanation\": \"04:29.5–04:31.5（clip@263-276 片段內 00:06.5–00:08.5）右手握住稀釋液瓶身，左手捏住稀釋液瓶頂端將其扭開（zoom@269.5、zoom@271.5）。\", \"times\": [[269.5, 271.5]], \"evidence\": [\"clip@263-276\", \"zoom@269.5\", \"zoom@271.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

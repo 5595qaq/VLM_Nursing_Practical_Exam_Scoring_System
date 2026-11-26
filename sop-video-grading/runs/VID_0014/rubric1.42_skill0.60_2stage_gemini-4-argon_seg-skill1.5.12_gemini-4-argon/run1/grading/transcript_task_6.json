@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 12.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 22585,
+  "cached_input_tokens": 0,
+  "output_tokens": 89,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@256-267（context box，有聲音；片段內 00:00 ＝ 影片 04:16.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [258.0, 259.5, 260.5, 263.5], \"region\": [0.45, 0.55, 0.78, 0.85], \"reason\": \"確認以酒精棉片擦拭 vial 瓶口的動作與白色棉片\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 5.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 23822,
+  "cached_input_tokens": 20130,
+  "output_tokens": 193,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@256-267（context box，有聲音；片段內 00:00 ＝ 影片 04:16.0）",
+   "zoom@258/259.5/260.5/263.5 region=[0.450, 0.550, 0.780, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"6a\", \"verdict\": \"正確\", \"explanation\": \"04:18.5–04:21.5（clip@256-267 片段內 00:02.5–00:05.5）學生右手持酒精棉片在 vial 瓶口擦拭消毒，zoom@259.5、zoom@260.5 可清楚確認酒精棉片接觸並擦拭 vial 瓶口。\", \"times\": [[258.5, 261.5]], \"evidence\": [\"clip@256-267\", \"zoom@258\", \"zoom@259.5\", \"zoom@260.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

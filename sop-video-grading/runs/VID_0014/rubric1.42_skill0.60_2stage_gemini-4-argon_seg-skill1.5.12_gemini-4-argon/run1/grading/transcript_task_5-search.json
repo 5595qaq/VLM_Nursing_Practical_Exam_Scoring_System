@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 8.4,
+  "stop_reason": "end_turn",
+  "input_tokens": 22350,
+  "cached_input_tokens": 0,
+  "output_tokens": 120,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@78-577.8（hands_box，n=9）#0=01:18.0、#1=02:20.5、#2=03:22.9、#3=04:25.4、#4=05:27.9、#5=06:30.4、#6=07:32.9、#7=08:35.3、#8=09:37.8"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 240.0, \"end\": 266.0, \"fps\": 2, \"reason\": \"步驟6為04:18-04:25，且在03:22.9瓶蓋仍為深紅褐色、04:25.4瓶蓋已變成銀色鋁圈，因此步驟5打開vial瓶蓋應發生在04:00-04:25之間，用clip檢視連續動作。\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 8.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 27240,
+  "cached_input_tokens": 20130,
+  "output_tokens": 225,
+  "thinking_tokens": 128,
+  "materials": [
+   "ov@78-577.8（hands_box，n=9）#0=01:18.0、#1=02:20.5、#2=03:22.9、#3=04:25.4、#4=05:27.9、#5=06:30.4、#6=07:32.9、#7=08:35.3、#8=09:37.8",
+   "clip@240-266（context box，有聲音；片段內 00:00 ＝ 影片 04:00.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [240.0, 241.0, 241.5, 243.0], \"region\": [0.45, 0.5, 0.75, 0.85], \"reason\": \"確認 04:00–04:03 將 vial 瓶口打開的動作與瓶頂變化\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 32.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 28487,
+  "cached_input_tokens": 20130,
+  "output_tokens": 450,
+  "thinking_tokens": 227,
+  "materials": [
+   "ov@78-577.8（hands_box，n=9）#0=01:18.0、#1=02:20.5、#2=03:22.9、#3=04:25.4、#4=05:27.9、#5=06:30.4、#6=07:32.9、#7=08:35.3、#8=09:37.8",
+   "clip@240-266（context box，有聲音；片段內 00:00 ＝ 影片 04:00.0）",
+   "zoom@240/241/241.5/243 region=[0.450, 0.500, 0.750, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"04:00.5–04:02.5（clip@240-266 片段內 00:00.5–00:02.5）雙手推開右側 vial 瓶口上的深紅色塑膠翻蓋，zoom@240 與 zoom@243 可見瓶頂由深紅色圓蓋變成銀色鋁圈；04:04.0–04:07.0 亦推開左側另一 vial 的白色塑膠翻蓋。\", \"times\": [[240.5, 247.0]], \"evidence\": [\"clip@240-266\", \"zoom@240\", \"zoom@241\", \"zoom@241.5\", \"zoom@243\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
