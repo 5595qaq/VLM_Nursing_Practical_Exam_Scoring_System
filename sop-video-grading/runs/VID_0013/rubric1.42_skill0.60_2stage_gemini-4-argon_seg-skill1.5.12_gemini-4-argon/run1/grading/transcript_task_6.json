@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 8.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 21861,
+  "cached_input_tokens": 0,
+  "output_tokens": 78,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@227-428.6（hands_box，n=9）#0=03:47.0、#1=04:12.2、#2=04:37.4、#3=05:02.6、#4=05:27.8、#5=05:53.0、#6=06:18.2、#7=06:43.4、#8=07:08.6"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 227.0, \"end\": 238.0, \"fps\": 2, \"reason\": \"檢查切分標出的第一段步驟 6（03:49.0–03:54.0）是否有以酒精棉片消毒 vial 瓶口\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 29.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 23973,
+  "cached_input_tokens": 0,
+  "output_tokens": 103,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@227-428.6（hands_box，n=9）#0=03:47.0、#1=04:12.2、#2=04:37.4、#3=05:02.6、#4=05:27.8、#5=05:53.0、#6=06:18.2、#7=06:43.4、#8=07:08.6",
+   "clip@227-238（context box，有聲音；片段內 00:00 ＝ 影片 03:47.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [228.5, 230.0, 231.5, 233.0], \"region\": [0.45, 0.52, 0.8, 0.78], \"reason\": \"放大確認 03:48.5–03:53.0 以酒精棉片擦拭消毒 vial 瓶口的動作細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 10.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 25216,
+  "cached_input_tokens": 0,
+  "output_tokens": 180,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@227-428.6（hands_box，n=9）#0=03:47.0、#1=04:12.2、#2=04:37.4、#3=05:02.6、#4=05:27.8、#5=05:53.0、#6=06:18.2、#7=06:43.4、#8=07:08.6",
+   "clip@227-238（context box，有聲音；片段內 00:00 ＝ 影片 03:47.0）",
+   "zoom@228.5/230/231.5/233 region=[0.450, 0.520, 0.800, 0.780]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"6a\", \"verdict\": \"正確\", \"explanation\": \"於 03:48.5–03:52.5（clip@227-238 片段內 00:01.5–00:05.5）清楚看到考生以酒精棉片在 vial 瓶口來回擦拭消毒，並經 zoom 確認瓶身與酒精棉片。\", \"times\": [[228.5, 232.5]], \"evidence\": [\"clip@227-238\", \"zoom@228.5\", \"zoom@230\", \"zoom@231.5\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

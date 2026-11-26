@@ -1,0 +1,16 @@
+[
+ {
+  "turn": 1,
+  "seconds": 15.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 23752,
+  "cached_input_tokens": 0,
+  "output_tokens": 651,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@496.5-512.54（context box，有聲音；片段內 00:00 ＝ 影片 08:16.5）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [\n  {\n    \"criterion_id\": \"29a\",\n    \"verdict\": \"錯誤\",\n    \"explanation\": \"考生於 08:22.0（clip@496.5-512.54 的 00:05.5）拿起 vial，08:22.5（00:06.0）開始低頭並以右手手指指讀前方的給藥紀錄單，至 08:30.0（00:13.5）停止指讀與查看，準備丟棄空瓶。實際查看給藥紀錄單時間為 496.5+6.0=502.5 秒至 496.5+13.5=510.0 秒，累計共 7.5 秒，未滿 10 秒。\",\n    \"times\": [[502.5, 510.0]],\n    \"evidence\": [\"clip@496.5-512.54\"],\n    \"confidence\": 0.9,\n    \"reason\": null\n  },\n  {\n    \"criterion_id\": \"29b\",\n    \"verdict\": \"正確\",\n    \"explanation\": \"08:22.5–08:30.0（clip@496.5-512.54 的 00:06.0–00:13.5）考生左手持 vial、低頭查看治療車前緣的給藥紀錄單時，右手食指清楚指出紀錄單上的文字進行核對。\",\n    \"times\": [[502.5, 510.0]],\n    \"evidence\": [\"clip@496.5-512.54\"],\n    \"confidence\": 0.9,\n    \"reason\": null\n  },\n  {\n    \"criterion_id\": \"29d\",\n    \"verdict\": \"正確\",\n    \"explanation\": \"08:18.5–08:21.0（clip@496.5-512.54 的 00:02.0–00:04.5）考生將抽完藥的空針放入空針包裝並放置於檯面上後，於 08:22.0（00:05.5）拿起空的 vial，並在 08:22.5–08:30.0 與給藥紀錄單核對，之後將空瓶丟入收集筒。\",\n    \"times\": [[502.0, 510.0]],\n    \"evidence\": [\"clip@496.5-512.54\"],\n    \"confidence\": 0.9,\n    \"reason\": null\n  }\n]}",
+  "errors": []
+ }
+]

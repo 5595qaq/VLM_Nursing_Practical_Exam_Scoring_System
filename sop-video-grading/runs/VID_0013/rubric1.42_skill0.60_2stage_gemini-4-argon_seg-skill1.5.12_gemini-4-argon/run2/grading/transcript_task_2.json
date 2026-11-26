@@ -1,0 +1,82 @@
+[
+ {
+  "turn": 1,
+  "seconds": 16.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 22011,
+  "cached_input_tokens": 0,
+  "output_tokens": 55,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@21.6-98.2（hands_box，n=9）#0=00:21.6、#1=00:31.2、#2=00:40.8、#3=00:50.3、#4=00:59.9、#5=01:09.5、#6=01:19.0、#7=01:28.6、#8=01:38.2"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 21.6, \"end\": 81.6, \"fps\": 2, \"reason\": \"確認開始查看給藥紀錄單與指讀的起點及持續時間\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 25.1,
+  "stop_reason": "end_turn",
+  "input_tokens": 33233,
+  "cached_input_tokens": 20130,
+  "output_tokens": 66,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@21.6-98.2（hands_box，n=9）#0=00:21.6、#1=00:31.2、#2=00:40.8、#3=00:50.3、#4=00:59.9、#5=01:09.5、#6=01:19.0、#7=01:28.6、#8=01:38.2",
+   "clip@21.6-81.6（context box，有聲音；片段內 00:00 ＝ 影片 00:21.6）"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 81.6, \"end\": 98.2, \"fps\": 2, \"reason\": \"查看 01:21.6–01:38.2 的讀單結束時間與取出 vial 的瞬間\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 36.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 36406,
+  "cached_input_tokens": 20130,
+  "output_tokens": 66,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@21.6-98.2（hands_box，n=9）#0=00:21.6、#1=00:31.2、#2=00:40.8、#3=00:50.3、#4=00:59.9、#5=01:09.5、#6=01:19.0、#7=01:28.6、#8=01:38.2",
+   "clip@21.6-81.6（context box，有聲音；片段內 00:00 ＝ 影片 00:21.6）",
+   "clip@81.6-98.2（context box，有聲音；片段內 00:00 ＝ 影片 01:21.6）"
+  ],
+  "reply": "{\"action\": \"overview\", \"start\": 94.0, \"end\": 108.0, \"n\": 9, \"box\": \"hands\", \"reason\": \"查看 01:34 之後考生從抽屜取出 vial 的時間點與畫面\"}",
+  "errors": []
+ },
+ {
+  "turn": 4,
+  "seconds": 9.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 37743,
+  "cached_input_tokens": 20130,
+  "output_tokens": 85,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@21.6-98.2（hands_box，n=9）#0=00:21.6、#1=00:31.2、#2=00:40.8、#3=00:50.3、#4=00:59.9、#5=01:09.5、#6=01:19.0、#7=01:28.6、#8=01:38.2",
+   "clip@21.6-81.6（context box，有聲音；片段內 00:00 ＝ 影片 00:21.6）",
+   "clip@81.6-98.2（context box，有聲音；片段內 00:00 ＝ 影片 01:21.6）",
+   "ov@94-108（hands_box，n=9）#0=01:34.0、#1=01:35.8、#2=01:37.5、#3=01:39.2、#4=01:41.0、#5=01:42.8、#6=01:44.5、#7=01:46.2、#8=01:48.0"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [53.1, 61.6, 95.8, 99.2], \"region\": [0.25, 0.45, 0.85, 0.95], \"reason\": \"確認給藥紀錄單位置與指讀動作，以及取出 vial 的時間\"}",
+  "errors": []
+ },
+ {
+  "turn": 5,
+  "seconds": 67.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 39004,
+  "cached_input_tokens": 0,
+  "output_tokens": 834,
+  "thinking_tokens": 304,
+  "materials": [
+   "ov@21.6-98.2（hands_box，n=9）#0=00:21.6、#1=00:31.2、#2=00:40.8、#3=00:50.3、#4=00:59.9、#5=01:09.5、#6=01:19.0、#7=01:28.6、#8=01:38.2",
+   "clip@21.6-81.6（context box，有聲音；片段內 00:00 ＝ 影片 00:21.6）",
+   "clip@81.6-98.2（context box，有聲音；片段內 00:00 ＝ 影片 01:21.6）",
+   "ov@94-108（hands_box，n=9）#0=01:34.0、#1=01:35.8、#2=01:37.5、#3=01:39.2、#4=01:41.0、#5=01:42.8、#6=01:44.5、#7=01:46.2、#8=01:48.0",
+   "zoom@53.1/61.6/95.8/99.2 region=[0.250, 0.450, 0.850, 0.950]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"2a\", \"verdict\": \"正確\", \"explanation\": \"給藥紀錄單平放於治療車前緣鐵架下方。於 00:24.1–01:29.1（clip@21.6-81.6 的 00:02.5 至 clip@81.6-98.2 的 00:07.5）低頭持續查看並用手指指讀給藥紀錄單，累計共 65.0 秒，大於 10 秒。\", \"times\": [[24.1, 89.1]], \"evidence\": [\"clip@21.6-81.6\", \"clip@81.6-98.2\", \"zoom@53.1\", \"zoom@61.6\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"2b\", \"verdict\": \"正確\", \"explanation\": \"於 00:24.1–01:29.1 查看給藥紀錄單期間，雙手食指持續指著紀錄單上的文字逐項核對（如 00:53.1、01:01.6 zoom 畫面所示）。\", \"times\": [[24.1, 89.1]], \"evidence\": [\"clip@21.6-81.6\", \"clip@81.6-98.2\", \"zoom@53.1\", \"zoom@61.6\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"2d\", \"verdict\": \"正確\", \"explanation\": \"查看完給藥紀錄單後，從治療車抽屜中於 01:36.1（clip@81.6-98.2 的 00:14.5）取出 vial 藥瓶，並於 01:39.2 舉至胸前檢視。\", \"times\": [[96.1, 96.1]], \"evidence\": [\"clip@81.6-98.2\", \"ov@94-108 #3\", \"zoom@95.8\", \"zoom@99.2\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

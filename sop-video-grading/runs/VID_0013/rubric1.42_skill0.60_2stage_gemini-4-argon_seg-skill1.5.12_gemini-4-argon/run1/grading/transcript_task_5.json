@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 10.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 22496,
+  "cached_input_tokens": 20130,
+  "output_tokens": 179,
+  "thinking_tokens": 100,
+  "materials": [
+   "clip@198.8-209.5（context box，有聲音；片段內 00:00 ＝ 影片 03:18.8）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [202.8, 204.3, 205.3], \"region\": [0.45, 0.45, 0.8, 0.75], \"reason\": \"確認推掉 vial 塑膠翻蓋的動作與瓶口狀態\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 12.3,
+  "stop_reason": "end_turn",
+  "input_tokens": 23711,
+  "cached_input_tokens": 20130,
+  "output_tokens": 211,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@198.8-209.5（context box，有聲音；片段內 00:00 ＝ 影片 03:18.8）",
+   "zoom@202.8/204.3/205.3 region=[0.450, 0.450, 0.800, 0.750]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"5a\", \"verdict\": \"正確\", \"explanation\": \"03:20.8–03:25.3（clip@198.8-209.5 片段內 00:02.0–00:06.5）左手握住 vial，右手將 vial 上的褐色塑膠翻蓋推開取下，zoom@205.3 清楚看到右手拿著取下的褐色翻蓋，左手 vial 瓶口露出銀色鋁圈與中間的橡皮塞。\", \"times\": [[200.8, 205.3]], \"evidence\": [\"clip@198.8-209.5\", \"zoom@202.8\", \"zoom@204.3\", \"zoom@205.3\"], \"confidence\": 1.0, \"reason\": null}]}",
+  "errors": []
+ }
+]
