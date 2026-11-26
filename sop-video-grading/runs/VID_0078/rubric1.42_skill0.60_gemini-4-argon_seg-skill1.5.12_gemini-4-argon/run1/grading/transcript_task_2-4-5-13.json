@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 7.7,
+  "stop_reason": "end_turn",
+  "input_tokens": 21848,
+  "cached_input_tokens": 0,
+  "output_tokens": 114,
+  "thinking_tokens": 38,
+  "materials": [
+   "ov@92-115（hands_box，n=9）#0=01:32.0、#1=01:34.9、#2=01:37.8、#3=01:40.6、#4=01:43.5、#5=01:46.4、#6=01:49.2、#7=01:52.1、#8=01:55.0"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 100.0, \"end\": 108.0, \"fps\": 2, \"reason\": \"查看 01:40–01:48 拿起稀釋液時是否有檢視效期與異物，或僅夾起直接抽液\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 8.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 23355,
+  "cached_input_tokens": 0,
+  "output_tokens": 186,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@92-115（hands_box，n=9）#0=01:32.0、#1=01:34.9、#2=01:37.8、#3=01:40.6、#4=01:43.5、#5=01:46.4、#6=01:49.2、#7=01:52.1、#8=01:55.0",
+   "clip@100-108（context box，有聲音；片段內 00:00 ＝ 影片 01:40.0）"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4d\", \"verdict\": \"正確\", \"explanation\": \"於 01:42.5–01:45.0（clip@100-108 片段內 00:02.5–00:05.0），考生在抽取稀釋液前，以左手拿起細長綠色標籤的稀釋液瓶，低頭目視檢查瓶身標示與瓶內液體，隨後才將瓶子夾於指間進行插針抽取。\", \"times\": [[102.5, 105.0]], \"evidence\": [\"ov@92-115 #4\", \"clip@100-108\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]
