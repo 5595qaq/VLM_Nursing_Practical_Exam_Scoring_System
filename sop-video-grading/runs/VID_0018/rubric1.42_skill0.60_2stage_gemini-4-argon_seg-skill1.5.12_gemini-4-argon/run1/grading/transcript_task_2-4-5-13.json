@@ -1,0 +1,47 @@
+[
+ {
+  "turn": 1,
+  "seconds": 10.0,
+  "stop_reason": "end_turn",
+  "input_tokens": 21867,
+  "cached_input_tokens": 0,
+  "output_tokens": 207,
+  "thinking_tokens": 149,
+  "materials": [
+   "ov@114-172.4（hands_box，n=9）#0=01:54.0、#1=02:01.3、#2=02:08.6、#3=02:15.9、#4=02:23.2、#5=02:30.5、#6=02:37.8、#7=02:45.1、#8=02:52.4"
+  ],
+  "reply": "{\"action\": \"clip\", \"start\": 114.0, \"end\": 172.4, \"fps\": 2, \"reason\": \"查看區間內拿起稀釋液瓶檢查效期與有無異物的動作\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 16.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 32844,
+  "cached_input_tokens": 0,
+  "output_tokens": 320,
+  "thinking_tokens": 250,
+  "materials": [
+   "ov@114-172.4（hands_box，n=9）#0=01:54.0、#1=02:01.3、#2=02:08.6、#3=02:15.9、#4=02:23.2、#5=02:30.5、#6=02:37.8、#7=02:45.1、#8=02:52.4",
+   "clip@114-172.4（context box，有聲音；片段內 00:00 ＝ 影片 01:54.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [154.5, 155.5], \"region\": [0.3, 0.35, 0.7, 0.75], \"reason\": \"確認考生拿起稀釋液瓶檢視效期與外觀\"}",
+  "errors": []
+ },
+ {
+  "turn": 3,
+  "seconds": 16.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 34079,
+  "cached_input_tokens": 0,
+  "output_tokens": 283,
+  "thinking_tokens": 0,
+  "materials": [
+   "ov@114-172.4（hands_box，n=9）#0=01:54.0、#1=02:01.3、#2=02:08.6、#3=02:15.9、#4=02:23.2、#5=02:30.5、#6=02:37.8、#7=02:45.1、#8=02:52.4",
+   "clip@114-172.4（context box，有聲音；片段內 00:00 ＝ 影片 01:54.0）",
+   "zoom@154.5/155.5 region=[0.300, 0.350, 0.700, 0.750]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"4d\", \"verdict\": \"正確\", \"explanation\": \"考生於 02:02.0–02:25.0（clip@114-172.4 片段內 00:08.0–00:31.0）左手持白色圓蓋細長稀釋液瓶與給藥紀錄單核對，並於 02:23.0–02:25.0 雙手轉動檢視瓶身；接著於 02:34.0–02:35.5（片段內 00:40.0–00:41.5，zoom@154.5、zoom@155.5）再次拿起該稀釋液瓶舉至胸前檢視確認效期與有無異物。\", \"times\": [[122.0, 145.0], [154.0, 155.5]], \"evidence\": [\"clip@114-172.4\", \"zoom@154.5\", \"zoom@155.5\"], \"confidence\": 0.9, \"reason\": null}]}",
+  "errors": []
+ }
+]

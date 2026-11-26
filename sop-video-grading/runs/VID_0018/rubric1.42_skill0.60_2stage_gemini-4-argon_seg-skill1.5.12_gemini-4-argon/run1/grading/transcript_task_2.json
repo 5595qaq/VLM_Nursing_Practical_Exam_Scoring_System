@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 7.8,
+  "stop_reason": "end_turn",
+  "input_tokens": 21796,
+  "cached_input_tokens": 0,
+  "output_tokens": 88,
+  "thinking_tokens": 0,
+  "materials": [
+   "clip@0-6（context box，有聲音；片段內 00:00 ＝ 影片 00:00.0）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [0.5, 2.0, 3.5, 4.0], \"region\": [0.25, 0.55, 0.75, 0.85], \"reason\": \"確認檯面最前緣的紙張是否為給藥紀錄單，以及考生取出藥瓶的細節\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 27.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 23000,
+  "cached_input_tokens": 0,
+  "output_tokens": 1356,
+  "thinking_tokens": 930,
+  "materials": [
+   "clip@0-6（context box，有聲音；片段內 00:00 ＝ 影片 00:00.0）",
+   "zoom@0.5/2/3.5/4 region=[0.250, 0.550, 0.750, 0.850]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"2a\", \"verdict\": \"錯誤\", \"explanation\": \"給藥紀錄單位於治療車前緣檯面上（可見螢光筆標記），00:00.0–00:04.0 學生低頭拉開抽屜並從抽屜內拿取藥瓶，未查看給藥紀錄單（且自影片開始至 00:03.5 取出藥瓶總時間僅 3.5 秒，未滿 10 秒）。\", \"times\": [], \"evidence\": [\"clip@0-6\", \"zoom@0.5\", \"zoom@2\", \"zoom@3.5\", \"zoom@4\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"2b\", \"verdict\": \"錯誤\", \"explanation\": \"00:00.0–00:04.0 取出藥瓶前，學生雙手皆在抽屜處拿取藥瓶，未用手指指出給藥紀錄單。\", \"times\": [[0.0, 4.0]], \"evidence\": [\"clip@0-6\", \"zoom@0.5\", \"zoom@2\", \"zoom@3.5\", \"zoom@4\"], \"confidence\": 0.95, \"reason\": null}, {\"criterion_id\": \"2d\", \"verdict\": \"正確\", \"explanation\": \"00:03.5–00:04.0 學生從治療車抽屜中取出藥瓶（vial），並於 00:04.5–00:05.5 放到治療車檯面上。\", \"times\": [[3.5, 3.5]], \"evidence\": [\"clip@0-6\", \"zoom@3.5\", \"zoom@4\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]
