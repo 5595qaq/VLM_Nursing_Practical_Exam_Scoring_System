@@ -44,6 +44,13 @@ DEFAULT_EXCLUDE = {"VID_0061", "VID_0062", "VID_0004", "VID_0008"}  # missing ex
 # Never compared or reviewed, whatever --exclude says: the video file itself is broken (AGENTS.md 已知有問題的影片,
 # issue #148). VID_0065 turns 90° at 03:00 until the end.
 UNUSABLE_VIDEOS = {"VID_0065"}
+# a video that ends early: steps after this one are not recorded and never counted (AGENTS.md, issue #148)
+LAST_RECORDED_STEP = {"VID_0016": 22}
+# AGENTS.md「影片分組」(暫定, user 2026-11-11): rules are tuned on these; every other labelled video is the test set
+TUNING_SET = {"VID_0001", "VID_0008", "VID_0010", "VID_0011", "VID_0014", "VID_0018", "VID_0020", "VID_0030",
+              "VID_0072", "VID_0073", "VID_0074", "VID_0076", "VID_0081", "VID_0083", "VID_0087", "VID_0089",
+              "VID_0091", "VID_0095", "VID_0096", "VID_0097", "VID_0098", "VID_0099", "VID_0100", "VID_0103",
+              "VID_0106", "VID_0111", "VID_0118", "VID_0119", "VID_0123", "VID_0134"}
 COMPARED = {"正確", "錯誤", "部分正確", "無法判定"}
 FAULTS = {"錯誤", "部分正確"}
 TIME_SLACK = 3.0  # seconds between starts that still count as the same span
