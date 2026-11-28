@@ -73,8 +73,9 @@ def main(argv: list[str]) -> int:
     ev["crit_rows"] = [r for r in ev["crit_rows"] if (r["video_id"], r["step_id"]) not in drop]
     if drop:
         ev["skipped"]["藥單沒拍到或看不見（考場問題）"] = [f"{v} 步驟 {s}（{why}）" for (v, s), why in sorted(drop.items())]
-    ev["skipped"]["照模型判定（使用者 2026-11-28）"] = [f"{v} 步驟 {s}：{why}" for (v, s), why in sorted(AS_MODEL.items())]
-    text = report(ev, conflicts)
+    # counted (with the model's verdicts), so not in ev["skipped"], which report() prints as 不計入
+    text = report(ev, conflicts) + "\n## 計入，人工判定改用模型判定（使用者 2026-11-28）\n\n" + "".join(
+        f"- {v} 步驟 {s}：{why}\n" for (v, s), why in sorted(AS_MODEL.items()))
     if a.out:
         a.out.write_text(text, encoding="utf-8")
     else:
