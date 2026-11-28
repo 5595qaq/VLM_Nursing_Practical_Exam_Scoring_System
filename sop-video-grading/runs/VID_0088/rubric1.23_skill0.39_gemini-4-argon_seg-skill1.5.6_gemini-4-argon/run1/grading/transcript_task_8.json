@@ -1,0 +1,31 @@
+[
+ {
+  "turn": 1,
+  "seconds": 5.5,
+  "stop_reason": "end_turn",
+  "input_tokens": 19560,
+  "cached_input_tokens": 17296,
+  "output_tokens": 103,
+  "thinking_tokens": 32,
+  "materials": [
+   "clip@107.5-117.5（context box，有聲音；片段內 00:00 ＝ 影片 01:47.5）"
+  ],
+  "reply": "{\"action\": \"zoom\", \"times\": [110.5, 112.0], \"region\": [0.45, 0.3, 0.85, 0.7], \"reason\": \"放大確認稀釋液瓶口扭開的動作與瓶身\"}",
+  "errors": []
+ },
+ {
+  "turn": 2,
+  "seconds": 8.6,
+  "stop_reason": "end_turn",
+  "input_tokens": 20760,
+  "cached_input_tokens": 17262,
+  "output_tokens": 357,
+  "thinking_tokens": 145,
+  "materials": [
+   "clip@107.5-117.5（context box，有聲音；片段內 00:00 ＝ 影片 01:47.5）",
+   "zoom@110.5/112 region=[0.450, 0.300, 0.850, 0.700]"
+  ],
+  "reply": "{\"action\": \"final\", \"criteria\": [{\"criterion_id\": \"8a\", \"verdict\": \"正確\", \"explanation\": \"於 01:50.5–01:52.0（clip@107.5-117.5 片段內 00:03.0–00:04.5）清楚看到左手握住稀釋液瓶身、右手隔著酒精棉片捏住瓶頂將其扭開分離，並於 01:52.5–01:53.5 將打開的稀釋液瓶與扭下的瓶頂放到治療車檯面上。\", \"times\": [[110.5, 112.0]], \"evidence\": [\"clip@107.5-117.5\", \"zoom@110.5\", \"zoom@112\"], \"confidence\": 0.95, \"reason\": null}]}",
+  "errors": []
+ }
+]

@@ -1,0 +1,269 @@
+{
+ "video_id": "VID_0102",
+ "meta": {
+  "duration": 338.833333,
+  "source": "whole-video e2e"
+ },
+ "steps": [
+  {
+   "step_id": 1,
+   "status": "detected",
+   "start": 0.5,
+   "end": 24.0,
+   "evidence": "00:00.5 按壓乾洗手液，00:02.0–00:24.0 雙手互搓洗手",
+   "confidence": 0.95
+  },
+  {
+   "step_id": 2,
+   "status": "not_visually_determinable",
+   "start": null,
+   "end": null,
+   "evidence": "器材一開始已在檯面上，且給藥紀錄單不在畫面內，無從判斷1讀",
+   "confidence": 0.9
+  },
+  {
+   "step_id": 3,
+   "status": "detected",
+   "start": 25.0,
+   "end": 30.5,
+   "evidence": "00:25–00:30 拿起 vial 舉到眼前檢視；影片缺乏資訊，無法確認學生的藥瓶是否正確",
+   "confidence": 0.4
+  },
+  {
+   "step_id": 4,
+   "status": "not_visually_determinable",
+   "start": null,
+   "end": null,
+   "evidence": "給藥紀錄單不在畫面內，00:25–00:31 雖拿藥看、00:44–00:50 看稀釋液，但無法確認讀單",
+   "confidence": 0.8
+  },
+  {
+   "step_id": 5,
+   "status": "detected",
+   "start": 35.0,
+   "end": 37.5,
+   "evidence": "00:35–00:37.5 拇指推開 vial 褐色塑膠翻蓋並放到車上",
+   "confidence": 0.95
+  },
+  {
+   "step_id": 6,
+   "status": "detected",
+   "start": 40.5,
+   "end": 42.0,
+   "evidence": "00:40.5–00:42.0 以酒精棉片擦拭 vial 瓶口",
+   "confidence": 0.9
+  },
+  {
+   "step_id": 6,
+   "status": "detected",
+   "start": 200.5,
+   "end": 203.5,
+   "evidence": "03:20.5–03:23.5 搓滾 vial 後再次以酒精棉片擦拭 vial 瓶口",
+   "confidence": 0.9
+  },
+  {
+   "step_id": 7,
+   "status": "detected",
+   "start": 56.5,
+   "end": 64.0,
+   "evidence": "00:56.5 棉片碰到稀釋液瓶頂擦拭並包住扭開至 01:04.0",
+   "confidence": 0.9
+  },
+  {
+   "step_id": 8,
+   "status": "detected",
+   "start": 58.0,
+   "end": 64.5,
+   "evidence": "00:58.0–01:04.5 隔著酒精棉片扭開稀釋液瓶頂",
+   "confidence": 0.95
+  },
+  {
+   "step_id": 9,
+   "status": "detected",
+   "start": 66.0,
+   "end": 84.0,
+   "evidence": "01:06 拿起空針包裝檢視，01:21–01:24 撕開包裝袋",
+   "confidence": 0.95
+  },
+  {
+   "step_id": 10,
+   "status": "detected",
+   "start": 84.5,
+   "end": 98.5,
+   "evidence": "01:24.5–01:33.5 於包裝內握持空針並抽出，01:35–01:38.5 旋緊固定針頭與針心",
+   "confidence": 0.9
+  },
+  {
+   "step_id": 11,
+   "status": "not_performed",
+   "start": null,
+   "end": null,
+   "evidence": "評分表已移除此步驟",
+   "confidence": 1.0
+  },
+  {
+   "step_id": 12,
+   "status": "detected",
+   "start": 107.0,
+   "end": 109.0,
+   "evidence": "01:47–01:49 左手食指與中指夾住稀釋液瓶",
+   "confidence": 0.9
+  },
+  {
+   "step_id": 13,
+   "status": "detected",
+   "start": 102.0,
+   "end": 111.5,
+   "evidence": "01:42 拔除針套，01:49–01:51.5 右手將針頭插入稀釋液瓶、左手手指固定針筒",
+   "confidence": 0.9
+  },
+  {
+   "step_id": 14,
+   "status": "detected",
+   "start": 111.5,
+   "end": 137.0,
+   "evidence": "01:51.5–02:17.0 右手拉針心抽取稀釋液至拔出針頭",
+   "confidence": 0.95
+  },
+  {
+   "step_id": 15,
+   "status": "not_performed",
+   "start": null,
+   "end": null,
+   "evidence": "02:17–02:25 抽完稀釋液到刺入 vial 期間，僅拿起棉片看過又放下，未墊在針頭接合處",
+   "confidence": 0.9
+  },
+  {
+   "step_id": 16,
+   "status": "not_performed",
+   "start": null,
+   "end": null,
+   "evidence": "02:17–02:25 抽完稀釋液後直接準備注入 vial，未將針心往後抽",
+   "confidence": 0.9
+  },
+  {
+   "step_id": 17,
+   "status": "not_performed",
+   "start": null,
+   "end": null,
+   "evidence": "02:17–02:25 抽完稀釋液後未彈針也未推針心排氣",
+   "confidence": 0.9
+  },
+  {
+   "step_id": 18,
+   "status": "detected",
+   "start": 144.5,
+   "end": 158.5,
+   "evidence": "02:24.5–02:38.5 將針頭插入桌上的 vial 並推針心打入稀釋液",
+   "confidence": 0.95
+  },
+  {
+   "step_id": 19,
+   "status": "detected",
+   "start": 158.5,
+   "end": 160.5,
+   "evidence": "02:38.5–02:40.5 抽出針頭，單手將針頭插回針架上的針套",
+   "confidence": 0.95
+  },
+  {
+   "step_id": 20,
+   "status": "detected",
+   "start": 161.5,
+   "end": 192.5,
+   "evidence": "02:41.5–03:12.5 雙手掌心夾住 vial 來回搓滾融合（中間 02:57 短暫舉起檢視）",
+   "confidence": 0.95
+  },
+  {
+   "step_id": 21,
+   "status": "detected",
+   "start": 206.0,
+   "end": 222.0,
+   "evidence": "03:26 拿起空針拉推針心，03:32 拔針套後於 03:35–03:41 拉針心抽取空氣",
+   "confidence": 0.9
+  },
+  {
+   "step_id": 22,
+   "status": "detected",
+   "start": 223.0,
+   "end": 228.5,
+   "evidence": "03:43.0–03:48.5 將空針插入手持的 vial 並推針心打入空氣",
+   "confidence": 0.9
+  },
+  {
+   "step_id": 23,
+   "status": "detected",
+   "start": 228.5,
+   "end": 252.5,
+   "evidence": "03:48.5–04:12.5 將 vial 倒舉，針頭朝上刺入瓶口抽藥至拔出針頭",
+   "confidence": 0.95
+  },
+  {
+   "step_id": 24,
+   "status": "detected",
+   "start": 229.5,
+   "end": 251.5,
+   "evidence": "03:49.5–04:11.5 右手持針心尾端拉針心抽取藥液",
+   "confidence": 0.95
+  },
+  {
+   "step_id": 25,
+   "status": "not_performed",
+   "start": null,
+   "end": null,
+   "evidence": "04:12.5–04:16.5 拔出針頭後直接回套於針架，之後 04:51–04:58 再拿起空針也未墊酒精棉片",
+   "confidence": 0.9
+  },
+  {
+   "step_id": 26,
+   "status": "not_performed",
+   "start": null,
+   "end": null,
+   "evidence": "04:12.5–04:16.5 拔針後直接回套，04:51–04:58 拿起空針也未做針心往後抽",
+   "confidence": 0.9
+  },
+  {
+   "step_id": 27,
+   "status": "not_performed",
+   "start": null,
+   "end": null,
+   "evidence": "04:12.5–04:16.5 及 04:51–04:58 皆未彈針或排氣",
+   "confidence": 0.9
+  },
+  {
+   "step_id": 28,
+   "status": "detected",
+   "start": 253.0,
+   "end": 256.5,
+   "evidence": "04:13.0–04:16.5 抽完藥後單手將針頭插回針架上的針套",
+   "confidence": 0.95
+  },
+  {
+   "step_id": 28,
+   "status": "detected",
+   "start": 295.5,
+   "end": 299.0,
+   "evidence": "04:55.5–04:59.0 再次拔蓋檢視後，單手將空針插回針架上的針套並壓緊",
+   "confidence": 0.9
+  },
+  {
+   "step_id": 29,
+   "status": "not_performed",
+   "start": null,
+   "end": null,
+   "evidence": "04:17–04:24 雖拿起空 vial 檢視，但放回治療車上並未丟棄，且畫面中無給藥紀錄單",
+   "confidence": 0.9
+  },
+  {
+   "step_id": 30,
+   "status": "detected",
+   "start": 295.5,
+   "end": 299.0,
+   "evidence": "04:55.5–04:59.0 給藥前將空針插在針架上放手（05:13 拿去點滴架給藥，05:31 給藥後丟入收集筒）",
+   "confidence": 0.85
+  }
+ ],
+ "unassigned_spans": [],
+ "package_spans": [],
+ "observations": [],
+ "zoom_log": []
+}
