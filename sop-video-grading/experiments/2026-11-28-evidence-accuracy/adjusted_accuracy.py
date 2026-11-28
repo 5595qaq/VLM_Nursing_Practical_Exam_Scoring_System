@@ -38,18 +38,12 @@ AS_MODEL = {
 SHEET_NOTE = "沒有藥單"
 
 
-def main(argv: list[str]) -> int:
-    ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("runs", nargs="+", type=Path)
-    ap.add_argument("--labels", required=True, type=Path)
-    ap.add_argument("--results", nargs="+", required=True, type=Path, help="CSVs exported by the evidence pages")
-    ap.add_argument("--drop-sheet", action="store_true", help="do not count the drug-sheet steps (考場問題)")
-    ap.add_argument("-o", "--out", type=Path)
-    a = ap.parse_args(argv[1:])
+def adjusted(runs: list[Path], labels: Path, result_paths: list[Path], drop_sheet: bool) -> tuple[dict, list[str]]:
+    """review_accuracy.evaluate with the 2026-11-28 decisions applied (AS_MODEL, optional drug-sheet drop)."""
     rubric = load_rubric()
-    results, conflicts = load_results(a.results)
+    results, conflicts = load_results(result_paths)
     grading = {(run.parent.name, run.name): json.loads((run / "grading.json").read_text(encoding="utf-8"))["steps"]
-               for run in a.runs}
+               for run in runs}
 
     for (vid, ver, sid), res in results.items():
         if (vid, sid) in AS_MODEL and (vid, ver) in grading:
@@ -59,7 +53,7 @@ def main(argv: list[str]) -> int:
             res["crit"] = {cid: (model[cid], ev) for cid, (_, ev) in res["crit"].items()}
 
     drop = {}
-    if a.drop_sheet:
+    if drop_sheet:
         for (vid, _), steps in grading.items():
             for step in steps:
                 if sheet_gate(step, rubric):
@@ -68,11 +62,23 @@ def main(argv: list[str]) -> int:
             if SHEET_NOTE in (res.get("note") or ""):
                 drop[(vid, sid)] = "核對者：沒拍到藥單"
 
-    ev = evaluate(a.runs, load_labels(a.labels, set()), results, rubric)
+    ev = evaluate(runs, load_labels(labels, set()), results, rubric)
     ev["rows"] = [r for r in ev["rows"] if (r["video_id"], r["step_id"]) not in drop]
     ev["crit_rows"] = [r for r in ev["crit_rows"] if (r["video_id"], r["step_id"]) not in drop]
     if drop:
         ev["skipped"]["藥單沒拍到或看不見（考場問題）"] = [f"{v} 步驟 {s}（{why}）" for (v, s), why in sorted(drop.items())]
+    return ev, conflicts
+
+
+def main(argv: list[str]) -> int:
+    ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    ap.add_argument("runs", nargs="+", type=Path)
+    ap.add_argument("--labels", required=True, type=Path)
+    ap.add_argument("--results", nargs="+", required=True, type=Path, help="CSVs exported by the evidence pages")
+    ap.add_argument("--drop-sheet", action="store_true", help="do not count the drug-sheet steps (考場問題)")
+    ap.add_argument("-o", "--out", type=Path)
+    a = ap.parse_args(argv[1:])
+    ev, conflicts = adjusted(a.runs, a.labels, a.results, a.drop_sheet)
     # counted (with the model's verdicts), so not in ev["skipped"], which report() prints as 不計入
     text = report(ev, conflicts) + "\n## 計入，人工判定改用模型判定（使用者 2026-11-28）\n\n" + "".join(
         f"- {v} 步驟 {s}：{why}\n" for (v, s), why in sorted(AS_MODEL.items()))
